@@ -1,22 +1,19 @@
-import 'package:flutter/material.dart';
-
 // 引言卡片的数据结构
 class QuoteData {
   final String text;
-  final LinearGradient gradient;
 
-  QuoteData({required this.text, required this.gradient});
+  QuoteData({required this.text});
 }
 
 // 日记条目的数据结构
-class DiaryEntryData {
+class DiaryItem {
   final String time;
   final String title;
   final String description;
   final List<String> tags;
   final String location;
 
-  DiaryEntryData({
+  DiaryItem({
     required this.time,
     required this.title,
     required this.description,
@@ -25,18 +22,15 @@ class DiaryEntryData {
   });
 }
 
-// 管理日记条目的单例类
-class DataManager {
-  // 单例模式
-  static final DataManager _instance = DataManager._internal();
-  factory DataManager() => _instance;
-  DataManager._internal();
+// 日记类，包含日期和日记条目列表
+class Diary {
+  final String date;
 
-  final String date = 'April 19, 2025';
+  Diary({required this.date});
 
   // 日记条目列表
-  final List<DiaryEntryData> entries = [
-    DiaryEntryData(
+  final List<DiaryItem> entries = [
+    DiaryItem(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       description:
@@ -44,7 +38,7 @@ class DataManager {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryEntryData(
+    DiaryItem(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       description:
@@ -52,7 +46,7 @@ class DataManager {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryEntryData(
+    DiaryItem(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       description:
@@ -61,21 +55,21 @@ class DataManager {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryEntryData(
+    DiaryItem(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       description: 'Discussed future plans and shared some laughs over coffee.',
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryEntryData(
+    DiaryItem(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       description: 'A peaceful walk in the park to clear my mind.',
       tags: ['peaceful', 'outdoor', 'exercise'],
       location: 'Park',
     ),
-    DiaryEntryData(
+    DiaryItem(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       description:
@@ -83,7 +77,7 @@ class DataManager {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryEntryData(
+    DiaryItem(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       description:
@@ -91,7 +85,7 @@ class DataManager {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryEntryData(
+    DiaryItem(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       description:
@@ -100,14 +94,14 @@ class DataManager {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryEntryData(
+    DiaryItem(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       description: 'Discussed future plans and shared some laughs over coffee.',
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryEntryData(
+    DiaryItem(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       description: 'A peaceful walk in the park to clear my mind.',
@@ -121,47 +115,32 @@ class DataManager {
     QuoteData(
       text:
           '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
-      gradient: const LinearGradient(
-        colors: [Colors.pinkAccent, Colors.purpleAccent],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
     ),
     QuoteData(
       text:
           '"Meaningful connections with others help me understand myself better and grow as a person."',
-      gradient: const LinearGradient(
-        colors: [Colors.greenAccent, Colors.blueAccent],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
     ),
     QuoteData(
       text:
           '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
-      gradient: const LinearGradient(
-        colors: [Colors.blueAccent, Colors.lightBlueAccent],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
     ),
     QuoteData(
       text:
           '"Every day is a new opportunity to learn, grow, and make meaningful memories."',
-      gradient: const LinearGradient(
-        colors: [Colors.orangeAccent, Colors.redAccent],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
     ),
     QuoteData(
       text:
           '"Happiness is found in the little moments of gratitude and connection."',
-      gradient: const LinearGradient(
-        colors: [Colors.tealAccent, Colors.cyanAccent],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
     ),
   ];
+}
+
+// 管理日记条目的单例类
+class DataManager {
+  // 单例模式
+  static final DataManager _instance = DataManager._internal();
+  factory DataManager() => _instance;
+  DataManager._internal();
+
+  final Diary currentDiary = Diary(date: 'April 19, 2025');
 }

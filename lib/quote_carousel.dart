@@ -13,6 +13,30 @@ class QuoteCarousel extends StatefulWidget {
 
 class _QuoteCarouselState extends State<QuoteCarousel> {
   int _currentPage = 0;
+  final Map<int, LinearGradient> gradientMap = {};
+
+  LinearGradient _randomGradient(QuoteData quote) {
+    if (!gradientMap.containsKey(quote.text.hashCode)) {
+      final colors = [
+        Colors.red,
+        Colors.green,
+        Colors.blue,
+        Colors.yellow,
+        Colors.purple,
+        Colors.orange,
+      ];
+      gradientMap[quote.text.hashCode] = LinearGradient(
+        colors: [
+          colors[quote.text.hashCode % colors.length],
+          colors[(quote.text.hashCode ~/ 2) % colors.length],
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+    }
+
+    return gradientMap[quote.text.hashCode]!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +58,7 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  gradient: quote.gradient,
+                  gradient: _randomGradient(quote),
                 ),
                 child: Center(
                   child: Text(
