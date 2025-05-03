@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
-import 'package:nirva_app/test_page.dart';
+import 'package:nirva_app/diary_details_page.dart';
 
 // 修改 DiaryEntry 组件
 class DiaryEntry extends StatelessWidget {
@@ -16,7 +16,7 @@ class DiaryEntry extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TestPage(diaryData: diaryData),
+            builder: (context) => DiaryDetailsPage(diaryData: diaryData),
           ),
         );
       },
