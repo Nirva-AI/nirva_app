@@ -40,7 +40,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _getBodyContent() {
     switch (_selectedPage) {
       case 0:
-        return const Center(child: Text('Smart Diary Page'));
+        return Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TestPage()),
+              );
+            },
+            child: const Text('测试按钮'),
+          ),
+        );
       case 1:
         return const Center(child: Text('Reflections Page'));
       case 2:
@@ -147,12 +157,32 @@ class _MyHomePageState extends State<MyHomePage> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 20,
               color: isSelected ? Colors.blue : Colors.grey,
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class TestPage extends StatelessWidget {
+  const TestPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('测试页面'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: const Center(child: Text('这是一个空的测试页面')),
     );
   }
 }

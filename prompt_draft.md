@@ -36,3 +36,27 @@
 请在appBar内添加一个按钮，置于appBar的右侧。按钮只有一个icon。
 icon可以选择 表达 ‘to-do list’意图的图标。这个你可以自选。
 这个按钮的相应函数有一个打印语句，打印“to-do list”。
+
+
+# 我希望进一步添加这一段代码的case0 的内容。即——Smart Diary Page
+
+## 代码段
+```dart
+  Widget _getBodyContent() {
+    switch (_selectedPage) {
+      case 0:
+        return const Center(child: Text('Smart Diary Page'));
+      case 1:
+        return const Center(child: Text('Reflections Page'));
+      case 2:
+        return const Center(child: Text('Dashboard Page'));
+      default:
+        return const Center(child: Text('Unknown Page'));
+    }
+  }
+```
+
+## 我的需求：
+1. 将case 0的内容修改为如下：一个页面，居中有一个测试按钮，按钮上文本为“测试按钮”。
+2. 点击按钮后，将整个HomePage切换到另外一个空的测试页面。
+3. 空的页面有一个返回的按钮，点击后返回到HomePage。
