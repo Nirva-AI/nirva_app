@@ -233,7 +233,103 @@ class DiaryEntryManager {
       tags: ['peaceful', 'outdoor', 'exercise'],
       location: 'Park',
     ),
+    DiaryEntryData(
+      time: '10:00 AM - 1:00 PM',
+      title: 'Morning in the Park with Ashley',
+      description:
+          'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
+      tags: ['peaceful', 'outdoor', 'conversation'],
+      location: 'Park',
+    ),
+    DiaryEntryData(
+      time: '1:00 PM - 1:30 PM',
+      title: 'Departure from Park',
+      description:
+          'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
+      tags: ['calm', 'outdoor', 'transportation'],
+      location: 'Park',
+    ),
+    DiaryEntryData(
+      time: '1:30 PM - 2:50 PM',
+      title: 'Drive to San Francisco with Trent',
+      description:
+          'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
+      tags: ['engaged', 'transportation', 'conversation'],
+      location: 'In the car',
+    ),
+    // 添加更多测试数据
+    DiaryEntryData(
+      time: '3:00 PM - 4:00 PM',
+      title: 'Coffee Break with Sarah',
+      description: 'Discussed future plans and shared some laughs over coffee.',
+      tags: ['relaxing', 'indoor', 'conversation'],
+      location: 'Cafe',
+    ),
+    DiaryEntryData(
+      time: '4:30 PM - 6:00 PM',
+      title: 'Evening Walk',
+      description: 'A peaceful walk in the park to clear my mind.',
+      tags: ['peaceful', 'outdoor', 'exercise'],
+      location: 'Park',
+    ),
   ];
+
+  // 引言卡片数据
+  final List<QuoteData> quotes = [
+    QuoteData(
+      text:
+          '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
+      gradient: const LinearGradient(
+        colors: [Colors.pinkAccent, Colors.purpleAccent],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    ),
+    QuoteData(
+      text:
+          '"Meaningful connections with others help me understand myself better and grow as a person."',
+      gradient: const LinearGradient(
+        colors: [Colors.greenAccent, Colors.blueAccent],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    ),
+    QuoteData(
+      text:
+          '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
+      gradient: const LinearGradient(
+        colors: [Colors.blueAccent, Colors.lightBlueAccent],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    ),
+    QuoteData(
+      text:
+          '"Every day is a new opportunity to learn, grow, and make meaningful memories."',
+      gradient: const LinearGradient(
+        colors: [Colors.orangeAccent, Colors.redAccent],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    ),
+    QuoteData(
+      text:
+          '"Happiness is found in the little moments of gratitude and connection."',
+      gradient: const LinearGradient(
+        colors: [Colors.tealAccent, Colors.cyanAccent],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    ),
+  ];
+}
+
+// 引言卡片的数据结构
+class QuoteData {
+  final String text;
+  final LinearGradient gradient;
+
+  QuoteData({required this.text, required this.gradient});
 }
 
 // 日记条目的数据结构
@@ -259,36 +355,8 @@ class SmartDiaryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 引言卡片数据
-    final quotes = [
-      {
-        'text':
-            '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
-        'gradient': const LinearGradient(
-          colors: [Colors.pinkAccent, Colors.purpleAccent],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      },
-      {
-        'text':
-            '"Meaningful connections with others help me understand myself better and grow as a person."',
-        'gradient': const LinearGradient(
-          colors: [Colors.greenAccent, Colors.blueAccent],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      },
-      {
-        'text':
-            '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
-        'gradient': const LinearGradient(
-          colors: [Colors.blueAccent, Colors.lightBlueAccent],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      },
-    ];
+    // 获取引言卡片数据
+    final quotes = DiaryEntryManager().quotes;
 
     return SingleChildScrollView(
       child: Column(
@@ -329,9 +397,9 @@ class SmartDiaryPage extends StatelessWidget {
   }
 }
 
-// 引言卡片轮播组件
+// 修改 QuoteCarousel 组件
 class QuoteCarousel extends StatefulWidget {
-  final List<Map<String, dynamic>> quotes;
+  final List<QuoteData> quotes;
 
   const QuoteCarousel({super.key, required this.quotes});
 
@@ -362,11 +430,11 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  gradient: quote['gradient'],
+                  gradient: quote.gradient,
                 ),
                 child: Center(
                   child: Text(
-                    quote['text'],
+                    quote.text,
                     style: const TextStyle(
                       fontSize: 16,
                       fontStyle: FontStyle.italic,
