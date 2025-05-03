@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/guided_reflection_page.dart'; // 导入新页面
 
 class DiaryDetailsPage extends StatelessWidget {
   final DiaryItem diaryData;
@@ -88,8 +89,13 @@ class DiaryDetailsPage extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // 按钮点击事件
-                  debugPrint('Reflect on this button pressed');
+                  // 跳转到 GuidedReflectionPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GuidedReflectionPage(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple, // 按钮背景颜色
