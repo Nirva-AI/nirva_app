@@ -1,41 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/test_page.dart';
 
 // 修改 DiaryEntry 组件
 class DiaryEntry extends StatelessWidget {
-  final String time;
-  final String title;
-  final String description;
-  final List<String> tags;
-  final String location;
+  final DiaryItem diaryData;
 
-  const DiaryEntry({
-    super.key,
-    required this.time,
-    required this.title,
-    required this.description,
-    required this.tags,
-    required this.location,
-  });
+  const DiaryEntry({super.key, required this.diaryData});
 
   @override
   Widget build(BuildContext context) {
-    // 拼接卡片的所有文本内容
-    final cardContent = '''
-Time: $time
-Title: $title
-Description: $description
-Tags: ${tags.join(', ')}
-Location: $location
-''';
-
     return GestureDetector(
       onTap: () {
         // 跳转到 TestPage，并传递卡片内容
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TestPage(content: cardContent),
+            builder: (context) => TestPage(diaryData: diaryData),
           ),
         );
       },
@@ -51,12 +32,12 @@ Location: $location
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  time,
+                  diaryData.time,
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  title,
+                  diaryData.title,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -64,14 +45,14 @@ Location: $location
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  description,
+                  diaryData.description,
                   style: const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8.0,
                   children:
-                      tags
+                      diaryData.tags
                           .map(
                             (tag) => Chip(
                               label: Text(tag),
@@ -85,7 +66,7 @@ Location: $location
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      location,
+                      diaryData.location,
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const Icon(Icons.star_border), // 收藏按钮
