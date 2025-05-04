@@ -264,6 +264,13 @@ class ScoreCardData {
   });
 }
 
+class HighlightCardData {
+  final String title;
+  final String content;
+
+  HighlightCardData({required this.title, required this.content});
+}
+
 // Dashboard 数据类
 class DashboardData {
   final ScoreCardData moodScore = ScoreCardData(
@@ -277,15 +284,31 @@ class DashboardData {
     value: 3.2,
     change: -1.3,
   );
+
+  final List<HighlightCardData> highlights = [
+    HighlightCardData(
+      title: 'ACHIEVEMENT',
+      content: 'Completed your morning meditation streak - 7 days!',
+    ),
+    HighlightCardData(
+      title: 'INSIGHT',
+      content: 'You\'re most productive between 9-11 AM.',
+    ),
+    HighlightCardData(
+      title: 'SOCIAL',
+      content: 'You\'ve connected with 3 friends this week.',
+    ),
+  ];
 }
 
-// 管理日记条目的单例类
+// 管理全局数据的类
 class DataManager {
   // 单例模式
   static final DataManager _instance = DataManager._internal();
   factory DataManager() => _instance;
   DataManager._internal();
-
+  // 当前的日记和仪表板数据
   final DiaryData currentDiary = DiaryData(date: 'April 19, 2025');
-  final DashboardData dashboardData = DashboardData();
+  // 当前的仪表板数据
+  final DashboardData currentDashboard = DashboardData();
 }
