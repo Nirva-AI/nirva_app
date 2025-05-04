@@ -6,7 +6,7 @@ class QuoteData {
 }
 
 // 日记条目的数据结构
-class DiaryItem {
+class DiaryItemData {
   final String time;
   final String title;
   final String summary;
@@ -14,7 +14,7 @@ class DiaryItem {
   final List<String> tags;
   final String location;
 
-  DiaryItem({
+  DiaryItemData({
     required this.time,
     required this.title,
     required this.summary,
@@ -33,17 +33,17 @@ class ReflectionData {
 }
 
 // 日记类，包含日期和日记条目列表
-class Diary {
+class DiaryData {
   final String date;
 
-  Diary({required this.date});
+  DiaryData({required this.date});
 
   final String summary =
       'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
   // 日记条目列表
-  final List<DiaryItem> items = [
-    DiaryItem(
+  final List<DiaryItemData> items = [
+    DiaryItemData(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       summary:
@@ -53,7 +53,7 @@ class Diary {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryItem(
+    DiaryItemData(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       summary:
@@ -63,7 +63,7 @@ class Diary {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryItem(
+    DiaryItemData(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       summary:
@@ -74,7 +74,7 @@ class Diary {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryItem(
+    DiaryItemData(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -83,7 +83,7 @@ class Diary {
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryItem(
+    DiaryItemData(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       summary: 'A peaceful walk in the park to clear my mind.',
@@ -92,7 +92,7 @@ class Diary {
       tags: ['peaceful', 'outdoor', 'exercise'],
       location: 'Park',
     ),
-    DiaryItem(
+    DiaryItemData(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       summary:
@@ -102,7 +102,7 @@ class Diary {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryItem(
+    DiaryItemData(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       summary:
@@ -112,7 +112,7 @@ class Diary {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryItem(
+    DiaryItemData(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       summary:
@@ -123,7 +123,7 @@ class Diary {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryItem(
+    DiaryItemData(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -132,7 +132,7 @@ class Diary {
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryItem(
+    DiaryItemData(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       summary: 'A peaceful walk in the park to clear my mind.',
@@ -258,5 +258,5 @@ class DataManager {
   factory DataManager() => _instance;
   DataManager._internal();
 
-  final Diary currentDiary = Diary(date: 'April 19, 2025');
+  final DiaryData currentDiary = DiaryData(date: 'April 19, 2025');
 }
