@@ -251,6 +251,34 @@ class DiaryData {
   ];
 }
 
+// 评分卡片数据结构
+class ScoreCardData {
+  final String title;
+  final double value;
+  final double change;
+
+  ScoreCardData({
+    required this.title,
+    required this.value,
+    required this.change,
+  });
+}
+
+// Dashboard 数据类
+class DashboardData {
+  final ScoreCardData moodScore = ScoreCardData(
+    title: 'Mood Score',
+    value: 7.8,
+    change: 0.5,
+  );
+
+  final ScoreCardData stressLevel = ScoreCardData(
+    title: 'Stress Level',
+    value: 3.2,
+    change: -1.3,
+  );
+}
+
 // 管理日记条目的单例类
 class DataManager {
   // 单例模式
@@ -259,4 +287,5 @@ class DataManager {
   DataManager._internal();
 
   final DiaryData currentDiary = DiaryData(date: 'April 19, 2025');
+  final DashboardData dashboardData = DashboardData();
 }
