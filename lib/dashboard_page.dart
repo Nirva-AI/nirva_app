@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/score_card.dart';
 import 'package:nirva_app/energy_level_chart.dart';
 import 'package:nirva_app/mood_tracking.dart';
+import 'package:nirva_app/social_map.dart';
+import 'package:nirva_app/awake_time_allocation.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -56,61 +57,11 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildAwakeTimeAllocation() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Awake Time Allocation', style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [BarChartRodData(toY: 8, color: Colors.purple)],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [BarChartRodData(toY: 2, color: Colors.green)],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [BarChartRodData(toY: 3, color: Colors.red)],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const AwakeTimeAllocation();
   }
 
   Widget _buildSocialMap() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Social Map', style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            Center(
-              child: Text('Social Map Placeholder'), // 替换为实际社交图实现
-            ),
-          ],
-        ),
-      ),
-    );
+    return const SocialMap();
   }
 
   Widget _buildHighlights() {
