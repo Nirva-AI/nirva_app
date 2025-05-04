@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/date_and_summary.dart';
 import 'package:nirva_app/reflection_card.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/goal_reflection_card.dart';
 
 class ReflectionsPage extends StatelessWidget {
   const ReflectionsPage({super.key});
@@ -83,7 +84,7 @@ class ReflectionsPage extends StatelessWidget {
         ...goals.map(
           (goal) => Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
-            child: ReflectionCard(data: goal),
+            child: GoalReflectionCard(data: goal),
           ),
         ),
       ],
