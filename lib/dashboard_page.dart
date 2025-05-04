@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart'; // 用于绘制图表
+import 'package:nirva_app/data_manager.dart'; // 假设你有一个数据模型文件
+import 'package:nirva_app/score_card.dart'; // 假设你有一个 ScoreCard 组件
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -32,66 +34,14 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildScoreCards() {
+    final dashboardData = DataManager().dashboardData;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildCard(
-          title: 'Mood Score',
-          value: '7.8',
-          change: '+0.5',
-          changeColor: Colors.green,
-        ),
-        _buildCard(
-          title: 'Stress Level',
-          value: '3.2',
-          change: '-1.3',
-          changeColor: Colors.red,
-        ),
+        ScoreCard(data: dashboardData.moodScore),
+        ScoreCard(data: dashboardData.stressLevel),
       ],
-    );
-  }
-
-  Widget _buildCard({
-    required String title,
-    required String value,
-    required String change,
-    required Color changeColor,
-  }) {
-    return Expanded(
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 8),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    changeColor == Colors.green
-                        ? Icons.arrow_upward
-                        : Icons.arrow_downward,
-                    color: changeColor,
-                    size: 16,
-                  ),
-                  Text(change, style: TextStyle(color: changeColor)),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
