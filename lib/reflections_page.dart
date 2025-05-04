@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/date_and_summary.dart';
 
 class ReflectionsPage extends StatelessWidget {
   const ReflectionsPage({super.key});
@@ -11,7 +12,7 @@ class ReflectionsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDateAndSummary(),
+            const DateAndSummary(),
             const SizedBox(height: 16),
             _buildPersonalReflections(),
             const SizedBox(height: 16),
@@ -20,29 +21,6 @@ class ReflectionsPage extends StatelessWidget {
             _buildCulturalPerspectivesAndGoals(),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDateAndSummary() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.yellow[100],
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
-            'April 19, 2025 Reflections',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.',
-          ),
-        ],
       ),
     );
   }
