@@ -28,6 +28,9 @@ class Diary {
 
   Diary({required this.date});
 
+  final String dateAndSummary =
+      'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
+
   // 日记条目列表
   final List<DiaryItem> entries = [
     DiaryItem(
