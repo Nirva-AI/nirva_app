@@ -92,7 +92,16 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _floatingActionButtonPressed,
         tooltip: 'FloatingActionButton',
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.purple, // 设置背景颜色为紫色
+        shape: const CircleBorder(), // 确保按钮为圆形
+        child: const Text(
+          'N',
+          style: TextStyle(
+            fontSize: 24, // 字体大小
+            color: Colors.white, // 字体颜色为白色
+            fontWeight: FontWeight.bold, // 字体加粗
+          ),
+        ),
       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.endFloat, // 自定义位置

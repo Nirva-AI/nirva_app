@@ -36,9 +36,9 @@ class SmartDiaryPage extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true, // 使 ListView 适应父组件高度
             physics: const NeverScrollableScrollPhysics(), // 禁用内部滚动
-            itemCount: DataManager().currentDiary.entries.length,
+            itemCount: DataManager().currentDiary.items.length,
             itemBuilder: (context, index) {
-              final entry = DataManager().currentDiary.entries[index];
+              final entry = DataManager().currentDiary.items[index];
               return DiaryEntry(diaryData: entry);
             },
           ),

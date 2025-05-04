@@ -45,7 +45,7 @@ class DiaryEntry extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  diaryData.description,
+                  diaryData.summary,
                   style: const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
                 const SizedBox(height: 8),
