@@ -5,6 +5,7 @@ import 'package:nirva_app/energy_level_chart.dart';
 import 'package:nirva_app/mood_tracking.dart';
 import 'package:nirva_app/social_map.dart';
 import 'package:nirva_app/awake_time_allocation.dart';
+import 'package:nirva_app/high_lights.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -37,7 +38,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildScoreCards() {
-    final dashboardData = DataManager().dashboardData;
+    final dashboardData = DataManager().currentDashboard;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -65,63 +66,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildHighlights() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Today\'s Highlights', style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            _buildHighlightCard(
-              'ACHIEVEMENT',
-              'Completed your morning meditation streak - 7 days!',
-              Colors.purple,
-            ),
-            const SizedBox(height: 8),
-            _buildHighlightCard(
-              'INSIGHT',
-              'You\'re most productive between 9-11 AM.',
-              Colors.green,
-            ),
-            const SizedBox(height: 8),
-            _buildHighlightCard(
-              'SOCIAL',
-              'You\'ve connected with 3 friends this week.',
-              Colors.orange,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHighlightCard(String title, String content, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        // 使用正确的命名参数调用 .withValues()
-        color: color.withValues(
-          red: color.r / 255.0, // 将 0-255 转换为 0.0-1.0
-          green: color.g / 255.0,
-          blue: color.b / 255.0,
-          alpha: 0.1, // 设置透明度
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(content),
-        ],
-      ),
-    );
+    final highlights = DataManager().currentDashboard.highlights;
+    return Highlights(highlights: highlights);
   }
 }
