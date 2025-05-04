@@ -290,7 +290,13 @@ class DashboardPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        // 使用正确的命名参数调用 .withValues()
+        color: color.withValues(
+          red: color.r / 255.0, // 将 0-255 转换为 0.0-1.0
+          green: color.g / 255.0,
+          blue: color.b / 255.0,
+          alpha: 0.1, // 设置透明度
+        ),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
