@@ -22,6 +22,14 @@ class DiaryItem {
   });
 }
 
+// ReflectionData Class
+class ReflectionData {
+  final String title;
+  final List<String> items;
+
+  ReflectionData({required this.title, required this.items});
+}
+
 // 日记类，包含日期和日记条目列表
 class Diary {
   final String date;
@@ -134,6 +142,97 @@ class Diary {
     QuoteData(
       text:
           '"Happiness is found in the little moments of gratitude and connection."',
+    ),
+  ];
+
+  // 个人反思
+  final List<ReflectionData> personalReflections = [
+    ReflectionData(
+      title: 'I am feeling grateful for:',
+      items: [
+        'Deep conversations with friends who listen and share wisdom',
+        'Access to art and film that opens my eyes to different perspectives',
+        'The privilege to contemplate my future on my own terms',
+      ],
+    ),
+    ReflectionData(
+      title: 'I can celebrate:',
+      items: [
+        'Making time for meaningful connections despite a busy schedule',
+        'Being open to different cultural experiences and perspectives',
+        'Taking steps to consider my future options thoughtfully',
+      ],
+    ),
+    ReflectionData(
+      title: 'I can do better at:',
+      items: [
+        'Finding better balance between solitude and social connection',
+        'Being more productive with my free time instead of oversleeping',
+        'Managing feelings of envy about others\' lives more constructively',
+      ],
+    ),
+  ];
+
+  // 详细见解
+  final List<ReflectionData> detailedInsights = [
+    ReflectionData(
+      title: 'Relationships',
+      items: [
+        'Deep conversations with friends provide invaluable emotional support and perspective.',
+        'I value authentic connections but feel frustrated by unpredictable dating experiences.',
+        'Being \'ghosted\' after meaningful connections is a recurring pattern that causes confusion.',
+      ],
+    ),
+    ReflectionData(
+      title: 'Self-Discovery',
+      items: [
+        'I\'m contemplating the balance between solitude and social connection in my life.',
+        'When I have excess free time, I tend toward unproductive behaviors like oversleeping.',
+        'I feel both curious about and envious of others\' stable family lives.',
+      ],
+    ),
+    ReflectionData(
+      title: 'Future Planning',
+      items: [
+        'I\'m considering egg freezing and planning to make decisions about children by age 40.',
+        'Financial considerations and family support are important factors in my fertility decisions.',
+        'I\'m open to alternative pathways to parenthood beyond traditional routes.',
+      ],
+    ),
+    ReflectionData(
+      title: '🌍 Cultural Perspectives',
+      items: [
+        'Art and film provide windows into different cultural and historical experiences.',
+        'My family background gives me a unique perspective on political events like Tiananmen Square.',
+        'I\'m exploring philosophical concepts from different cultures like Tibetan Buddhist compassion.',
+      ],
+    ),
+  ];
+
+  // 目标
+  final List<ReflectionData> goals = [
+    ReflectionData(
+      title: 'Deepen meaningful relationships',
+      items: [
+        'Schedule monthly deep conversations with close friends',
+        'Join a community group aligned with my interests',
+        'Practice active listening techniques',
+      ],
+    ),
+    ReflectionData(
+      title: 'Explore fertility options',
+      items: [
+        'Research egg freezing clinics and costs',
+        'Schedule consultation with fertility specialist',
+        'Create financial plan for family planning options',
+      ],
+    ),
+    ReflectionData(
+      title: 'Expand cultural understanding',
+      items: [
+        'Watch one international film per week',
+        'Read books from diverse cultural perspectives',
+      ],
     ),
   ];
 }
