@@ -9,14 +9,16 @@ class QuoteData {
 class DiaryItem {
   final String time;
   final String title;
-  final String description;
+  final String summary;
+  final String content;
   final List<String> tags;
   final String location;
 
   DiaryItem({
     required this.time,
     required this.title,
-    required this.description,
+    required this.summary,
+    required this.content,
     required this.tags,
     required this.location,
   });
@@ -36,32 +38,38 @@ class Diary {
 
   Diary({required this.date});
 
-  final String dateAndSummary =
+  final String summary =
       'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
   // 日记条目列表
-  final List<DiaryItem> entries = [
+  final List<DiaryItem> items = [
     DiaryItem(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
-      description:
+      summary:
           'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
+      content:
+          'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
     DiaryItem(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
-      description:
+      summary:
           'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
+      content:
+          'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
     DiaryItem(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
-      description:
+      summary:
           'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
+      content:
+          'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
       tags: ['engaged', 'transportation', 'conversation'],
       location: 'In the car',
     ),
@@ -69,38 +77,48 @@ class Diary {
     DiaryItem(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
-      description: 'Discussed future plans and shared some laughs over coffee.',
+      summary: 'Discussed future plans and shared some laughs over coffee.',
+      content:
+          'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
     DiaryItem(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
-      description: 'A peaceful walk in the park to clear my mind.',
+      summary: 'A peaceful walk in the park to clear my mind.',
+      content:
+          'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
       tags: ['peaceful', 'outdoor', 'exercise'],
       location: 'Park',
     ),
     DiaryItem(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
-      description:
+      summary:
           'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
+      content:
+          'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
     DiaryItem(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
-      description:
+      summary:
           'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
+      content:
+          'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
     DiaryItem(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
-      description:
+      summary:
           'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
+      content:
+          'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
       tags: ['engaged', 'transportation', 'conversation'],
       location: 'In the car',
     ),
@@ -108,14 +126,18 @@ class Diary {
     DiaryItem(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
-      description: 'Discussed future plans and shared some laughs over coffee.',
+      summary: 'Discussed future plans and shared some laughs over coffee.',
+      content:
+          'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
     DiaryItem(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
-      description: 'A peaceful walk in the park to clear my mind.',
+      summary: 'A peaceful walk in the park to clear my mind.',
+      content:
+          'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
       tags: ['peaceful', 'outdoor', 'exercise'],
       location: 'Park',
     ),
@@ -134,14 +156,6 @@ class Diary {
     QuoteData(
       text:
           '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
-    ),
-    QuoteData(
-      text:
-          '"Every day is a new opportunity to learn, grow, and make meaningful memories."',
-    ),
-    QuoteData(
-      text:
-          '"Happiness is found in the little moments of gratitude and connection."',
     ),
   ];
 

@@ -20,7 +20,7 @@ class DateAndSummary extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
-          Text(DataManager().currentDiary.dateAndSummary),
+          Text(DataManager().currentDiary.summary),
         ],
       ),
     );

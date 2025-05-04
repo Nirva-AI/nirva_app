@@ -79,7 +79,7 @@ class DiaryDetailsPage extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 child: Text(
-                  diaryData.description,
+                  diaryData.content,
                   style: const TextStyle(fontSize: 16, height: 1.5),
                 ),
               ),
