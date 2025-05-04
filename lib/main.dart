@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/smart_diary_page.dart';
+import 'package:nirva_app/reflections_page.dart';
+import 'package:nirva_app/dashboard_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,6 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // 不同平台可能会有不同的UI表现与调用函数。
     debugPrint('Running on: ${Theme.of(context).platform}');
+    // 获取当前设备的screen size
+    final screenSize = MediaQuery.of(context).size;
+    debugPrint('Screen size: ${screenSize.width} x ${screenSize.height}');
+
     return MaterialApp(
       title: 'Nirva App',
       theme: ThemeData(
@@ -45,9 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         return SmartDiaryPage(); // 使用新的 SmartDiaryPage 组件
       case 1:
-        return const Center(child: Text('Reflections Page'));
+        return const ReflectionsPage(); // 使用独立的 ReflectionsPage 类
       case 2:
-        return const Center(child: Text('Dashboard Page'));
+        return const DashboardPage(); // 使用独立的 DashboardPage 类
       default:
         return const Center(child: Text('Unknown Page'));
     }
