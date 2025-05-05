@@ -3,6 +3,7 @@ import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list.dart'; // 导入 TodoList 类
+import 'package:nirva_app/custom_dialog.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,9 +43,13 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedPage = 0;
 
   void _floatingActionButtonPressed() {
-    setState(() {
-      debugPrint('_floatingActionButtonPressed');
-    });
+    showDialog(
+      context: context,
+      barrierDismissible: true, // 点击对话框外部关闭
+      builder: (BuildContext context) {
+        return const CustomDialog(); // 使用提取后的 CustomDialog 组件
+      },
+    );
   }
 
   Widget _getBodyContent() {
