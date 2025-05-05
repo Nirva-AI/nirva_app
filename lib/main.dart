@@ -72,6 +72,155 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _showToDoList(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0), // 从右侧滑入
+              end: Offset.zero,
+            ).animate(animation),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Material(
+                color: Colors.transparent, // 背景透明
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.6, // 宽度为屏幕的 60%
+                  height:
+                      MediaQuery.of(context).size.height *
+                      0.6, // 高度为 body 的 60%
+                  margin: EdgeInsets.only(
+                    top:
+                        kToolbarHeight +
+                        MediaQuery.of(context).padding.top, // 确保从 AppBar 下方开始
+                  ),
+                  color: Colors.white, // 背景为白色
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 标题栏
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'To-Do List',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // 关闭面板
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(),
+                      // 内容
+                      Expanded(
+                        child: ListView(
+                          padding: const EdgeInsets.all(16.0),
+                          children: [
+                            const Text(
+                              'Wellness',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.red,
+                                radius: 5,
+                              ),
+                              title: Text('Morning meditation'),
+                            ),
+                            const ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.orange,
+                                radius: 5,
+                              ),
+                              title: Text('Evening reading - 30 mins'),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Work',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.red,
+                                radius: 5,
+                              ),
+                              title: Text('Prepare presentation for meeting'),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Personal',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.orange,
+                                radius: 5,
+                              ),
+                              title: Text(
+                                'Call mom',
+                                style: TextStyle(
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Health',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.green,
+                                radius: 5,
+                              ),
+                              title: Text('Schedule dentist appointment'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(),
+                      ListTile(
+                        leading: const Icon(Icons.add),
+                        title: const Text('Add New Task'),
+                        onTap: () {
+                          debugPrint('Add New Task tapped');
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.checklist), // 选择一个表示 "to-do list" 的图标
             onPressed: () {
               debugPrint('to-do list'); // 打印 "to-do list"
+              _showToDoList(context); // 打开 To-Do List 面板
             },
           ),
         ],
