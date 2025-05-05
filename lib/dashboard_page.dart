@@ -38,13 +38,13 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildScoreCards() {
-    final dashboardData = DataManager().currentDashboard;
+    final currentDiary = DataManager().currentPersonalData;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        ScoreCard(data: dashboardData.moodScore),
-        ScoreCard(data: dashboardData.stressLevel),
+        ScoreCard(data: currentDiary.moodScore),
+        ScoreCard(data: currentDiary.stressLevel),
       ],
     );
   }
@@ -66,7 +66,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildHighlights() {
-    final highlights = DataManager().currentDashboard.highlights;
+    final highlights = DataManager().currentPersonalData.highlights;
     return Highlights(highlights: highlights);
   }
 }
