@@ -16,11 +16,11 @@ class DateAndSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '''${DataManager().currentPersonalData.date} Reflections''',
+            '''${DataManager().activePersonalData.date} Reflections''',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
-          Text(DataManager().currentPersonalData.summary),
+          Text(DataManager().activePersonalData.summary),
         ],
       ),
     );

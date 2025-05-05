@@ -52,147 +52,6 @@ class HighlightCardData {
   HighlightCardData({required this.title, required this.content});
 }
 
-/*
-class TodoList extends StatelessWidget {
-  const TodoList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Material(
-        color: Colors.transparent, // 背景透明
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.6, // 宽度为屏幕的 60%
-          height: MediaQuery.of(context).size.height * 0.6, // 高度为屏幕的 60%
-          margin: EdgeInsets.only(
-            top:
-                kToolbarHeight +
-                MediaQuery.of(context).padding.top, // 从 AppBar 下方开始
-          ),
-          color: Colors.white, // 背景为白色
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 标题栏
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'To-Do List',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.of(context).pop(); // 关闭面板
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(),
-              // 内容
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(16.0),
-                  children: [
-                    const Text(
-                      'Wellness',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 5,
-                      ),
-                      title: Text('Morning meditation'),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.orange,
-                        radius: 5,
-                      ),
-                      title: Text('Evening reading - 30 mins'),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Work',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 5,
-                      ),
-                      title: Text('Prepare presentation for meeting'),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Personal',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.orange,
-                        radius: 5,
-                      ),
-                      title: Text(
-                        'Call mom',
-                        style: TextStyle(
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Health',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.green,
-                        radius: 5,
-                      ),
-                      title: Text('Schedule dentist appointment'),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.add),
-                title: const Text('Add New Task'),
-                onTap: () {
-                  debugPrint('Add New Task tapped');
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-*/
-
 // 任务数据结构
 class TaskData {
   final String description;
@@ -214,7 +73,7 @@ class TodoListData {
     }
   }
 
-  testAddTask() {
+  addTestTask() {
     categorizedTasks.clear(); // 清空之前的任务数据
     addTask('Wellness', TaskData(description: 'Morning meditation'));
     addTask('Wellness', TaskData(description: 'Evening reading - 30 mins'));
@@ -472,14 +331,72 @@ class PersonalData {
   ];
 }
 
+// 写一个枚举类，表示消息的角色，目前只有AI 和用户和非法。
+enum MessageRole { user, ai, illegal }
+
+class BaseMessage {
+  final MessageRole role;
+  final String content;
+
+  BaseMessage({required this.role, required this.content});
+}
+
+class AIMessage extends BaseMessage {
+  AIMessage({required super.content}) : super(role: MessageRole.ai);
+}
+
+class UserMessage extends BaseMessage {
+  UserMessage({required super.content}) : super(role: MessageRole.user);
+}
+
+class RobotDialogData {
+  List<BaseMessage> messages = [];
+
+  BaseMessage getMessage(int index) {
+    if (index < 0 || index >= messages.length) {
+      return BaseMessage(
+        role: MessageRole.illegal,
+        content: 'Invalid message index',
+      );
+    }
+    return messages[index];
+  }
+
+  addAIMessage(String content) {
+    messages.add(AIMessage(content: content));
+  }
+
+  addUserMessage(String content) {
+    messages.add(UserMessage(content: content));
+  }
+
+  addTestMessage() {
+    messages.clear(); // 清空之前的消息数据
+    addAIMessage(
+      'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
+    );
+  }
+}
+
 // 管理全局数据的类
 class DataManager {
   // 单例模式
   static final DataManager _instance = DataManager._internal();
   factory DataManager() => _instance;
   DataManager._internal();
-  // 当前的日记和仪表板数据
-  final PersonalData currentPersonalData = PersonalData(date: 'April 19, 2025');
 
-  final TodoListData currentTodoListData = TodoListData();
+  // 当前的日记和仪表板数据
+  final PersonalData activePersonalData = PersonalData(date: 'April 19, 2025');
+
+  // 当前的待办事项数据
+  final TodoListData activeTodoListData = TodoListData();
+
+  // 当前的对话数据
+  final RobotDialogData activeRobotDialogData = RobotDialogData();
+
+  //
+  initialize() {
+    activeTodoListData.addTestTask();
+    activeRobotDialogData.addTestMessage();
+  }
 }

@@ -1,32 +1,26 @@
 import 'package:flutter/material.dart';
-import 'data_manager.dart'; // 导入 TodoListData 数据
+import 'data_manager.dart';
 
 class TodoList extends StatelessWidget {
   const TodoList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 获取测试数据
-    final todoListData = DataManager().currentTodoListData;
-    todoListData.testAddTask(); // 添加测试数据
-
+    final todoListData = DataManager().activeTodoListData;
     return Align(
       alignment: Alignment.topRight,
       child: Material(
-        color: Colors.transparent, // 背景透明
+        color: Colors.transparent,
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.6, // 宽度为屏幕的 60%
-          height: MediaQuery.of(context).size.height * 0.6, // 高度为屏幕的 60%
+          width: MediaQuery.of(context).size.width * 0.6,
+          height: MediaQuery.of(context).size.height * 0.6,
           margin: EdgeInsets.only(
-            top:
-                kToolbarHeight +
-                MediaQuery.of(context).padding.top, // 从 AppBar 下方开始
+            top: kToolbarHeight + MediaQuery.of(context).padding.top,
           ),
-          color: Colors.white, // 背景为白色
+          color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 标题栏
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
@@ -42,14 +36,13 @@ class TodoList extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () {
-                        Navigator.of(context).pop(); // 关闭面板
+                        Navigator.of(context).pop();
                       },
                     ),
                   ],
                 ),
               ),
               const Divider(),
-              // 动态生成任务列表
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
@@ -61,7 +54,6 @@ class TodoList extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // 分类标题
                             Text(
                               category,
                               style: const TextStyle(
@@ -70,7 +62,6 @@ class TodoList extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // 分类下的任务列表
                             ...tasks.map((task) {
                               return ListTile(
                                 leading: CircleAvatar(

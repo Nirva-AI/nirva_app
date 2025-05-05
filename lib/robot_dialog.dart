@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/data_manager.dart';
 
 class RobotDialog extends StatelessWidget {
   const RobotDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
+    RobotDialogData robotDialogData = DataManager().activeRobotDialogData;
+    BaseMessage firstMessage = robotDialogData.getMessage(0);
     return Stack(
       children: [
         Positioned(
@@ -66,9 +69,12 @@ class RobotDialog extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 8),
-                        const Text(
-                          'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        Text(
+                          firstMessage.content,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
                           textAlign: TextAlign.left,
                         ),
                       ],
