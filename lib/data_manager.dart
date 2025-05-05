@@ -6,7 +6,7 @@ class QuoteData {
 }
 
 // 日记条目的数据结构
-class DiaryItemData {
+class DiaryData {
   final String time;
   final String title;
   final String summary;
@@ -14,7 +14,7 @@ class DiaryItemData {
   final List<String> tags;
   final String location;
 
-  DiaryItemData({
+  DiaryData({
     required this.time,
     required this.title,
     required this.summary,
@@ -32,18 +32,38 @@ class ReflectionData {
   ReflectionData({required this.title, required this.items});
 }
 
+// 评分卡片数据结构
+class ScoreCardData {
+  final String title;
+  final double value;
+  final double change;
+
+  ScoreCardData({
+    required this.title,
+    required this.value,
+    required this.change,
+  });
+}
+
+class HighlightCardData {
+  final String title;
+  final String content;
+
+  HighlightCardData({required this.title, required this.content});
+}
+
 // 日记类，包含日期和日记条目列表
-class DiaryData {
+class PersonalData {
   final String date;
 
-  DiaryData({required this.date});
+  PersonalData({required this.date});
 
   final String summary =
       'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
   // 日记条目列表
-  final List<DiaryItemData> items = [
-    DiaryItemData(
+  final List<DiaryData> diaryEntries = [
+    DiaryData(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       summary:
@@ -53,7 +73,7 @@ class DiaryData {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryItemData(
+    DiaryData(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       summary:
@@ -63,7 +83,7 @@ class DiaryData {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryItemData(
+    DiaryData(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       summary:
@@ -74,7 +94,7 @@ class DiaryData {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryItemData(
+    DiaryData(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -83,7 +103,7 @@ class DiaryData {
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryItemData(
+    DiaryData(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       summary: 'A peaceful walk in the park to clear my mind.',
@@ -92,7 +112,7 @@ class DiaryData {
       tags: ['peaceful', 'outdoor', 'exercise'],
       location: 'Park',
     ),
-    DiaryItemData(
+    DiaryData(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       summary:
@@ -102,7 +122,7 @@ class DiaryData {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryItemData(
+    DiaryData(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       summary:
@@ -112,7 +132,7 @@ class DiaryData {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryItemData(
+    DiaryData(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       summary:
@@ -123,7 +143,7 @@ class DiaryData {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryItemData(
+    DiaryData(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -132,7 +152,7 @@ class DiaryData {
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryItemData(
+    DiaryData(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       summary: 'A peaceful walk in the park to clear my mind.',
@@ -249,30 +269,7 @@ class DiaryData {
       ],
     ),
   ];
-}
 
-// 评分卡片数据结构
-class ScoreCardData {
-  final String title;
-  final double value;
-  final double change;
-
-  ScoreCardData({
-    required this.title,
-    required this.value,
-    required this.change,
-  });
-}
-
-class HighlightCardData {
-  final String title;
-  final String content;
-
-  HighlightCardData({required this.title, required this.content});
-}
-
-// Dashboard 数据类
-class DashboardData {
   final ScoreCardData moodScore = ScoreCardData(
     title: 'Mood Score',
     value: 7.8,
@@ -308,7 +305,5 @@ class DataManager {
   factory DataManager() => _instance;
   DataManager._internal();
   // 当前的日记和仪表板数据
-  final DiaryData currentDiary = DiaryData(date: 'April 19, 2025');
-  // 当前的仪表板数据
-  final DashboardData currentDashboard = DashboardData();
+  final PersonalData currentPersonalData = PersonalData(date: 'April 19, 2025');
 }

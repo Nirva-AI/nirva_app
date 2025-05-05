@@ -3,7 +3,7 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/guided_reflection_page.dart'; // 导入新页面
 
 class DiaryDetailsPage extends StatelessWidget {
-  final DiaryItemData diaryData;
+  final DiaryData diaryData;
 
   const DiaryDetailsPage({super.key, required this.diaryData});
 
@@ -71,7 +71,7 @@ class DiaryDetailsPage extends StatelessWidget {
             const SizedBox(height: 8),
             // 日期
             Text(
-              DataManager().currentDiary.date, // 示例日期，可动态替换
+              DataManager().currentPersonalData.date, // 示例日期，可动态替换
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 16),
