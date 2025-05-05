@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'data_manager.dart'; // 导入 TodoListData 数据
 
 class TodoList extends StatelessWidget {
   const TodoList({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // 获取测试数据
+    final todoListData = DataManager().currentTodoListData;
+    todoListData.testAddTask(); // 添加测试数据
+
     return Align(
       alignment: Alignment.topRight,
       child: Material(
@@ -44,86 +49,57 @@ class TodoList extends StatelessWidget {
                 ),
               ),
               const Divider(),
-              // 内容
+              // 动态生成任务列表
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
-                  children: [
-                    const Text(
-                      'Wellness',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 5,
-                      ),
-                      title: Text('Morning meditation'),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.orange,
-                        radius: 5,
-                      ),
-                      title: Text('Evening reading - 30 mins'),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Work',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 5,
-                      ),
-                      title: Text('Prepare presentation for meeting'),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Personal',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.orange,
-                        radius: 5,
-                      ),
-                      title: Text(
-                        'Call mom',
-                        style: TextStyle(
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Health',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.green,
-                        radius: 5,
-                      ),
-                      title: Text('Schedule dentist appointment'),
-                    ),
-                  ],
+                  children:
+                      todoListData.categorizedTasks.entries.map((entry) {
+                        final category = entry.key;
+                        final tasks = entry.value;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 分类标题
+                            Text(
+                              category,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            // 分类下的任务列表
+                            ...tasks.map((task) {
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      task.isCompleted
+                                          ? Colors.green
+                                          : Colors.red,
+                                  radius: 4,
+                                ),
+                                title: Text(
+                                  task.description,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    decoration:
+                                        task.isCompleted
+                                            ? TextDecoration.lineThrough
+                                            : TextDecoration.none,
+                                  ),
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 16),
+                          ],
+                        );
+                      }).toList(),
                 ),
               ),
               const Divider(),
+              // 添加新任务按钮
               ListTile(
                 leading: const Icon(Icons.add),
                 title: const Text('Add New Task'),

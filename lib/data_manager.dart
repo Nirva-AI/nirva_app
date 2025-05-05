@@ -52,6 +52,180 @@ class HighlightCardData {
   HighlightCardData({required this.title, required this.content});
 }
 
+/*
+class TodoList extends StatelessWidget {
+  const TodoList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Material(
+        color: Colors.transparent, // 背景透明
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.6, // 宽度为屏幕的 60%
+          height: MediaQuery.of(context).size.height * 0.6, // 高度为屏幕的 60%
+          margin: EdgeInsets.only(
+            top:
+                kToolbarHeight +
+                MediaQuery.of(context).padding.top, // 从 AppBar 下方开始
+          ),
+          color: Colors.white, // 背景为白色
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 标题栏
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'To-Do List',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // 关闭面板
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              // 内容
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(16.0),
+                  children: [
+                    const Text(
+                      'Wellness',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.red,
+                        radius: 5,
+                      ),
+                      title: Text('Morning meditation'),
+                    ),
+                    const ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.orange,
+                        radius: 5,
+                      ),
+                      title: Text('Evening reading - 30 mins'),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Work',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.red,
+                        radius: 5,
+                      ),
+                      title: Text('Prepare presentation for meeting'),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Personal',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.orange,
+                        radius: 5,
+                      ),
+                      title: Text(
+                        'Call mom',
+                        style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Health',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.green,
+                        radius: 5,
+                      ),
+                      title: Text('Schedule dentist appointment'),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.add),
+                title: const Text('Add New Task'),
+                onTap: () {
+                  debugPrint('Add New Task tapped');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+*/
+
+// 任务数据结构
+class TaskData {
+  final String description;
+  bool isCompleted = false;
+
+  TaskData({required this.description});
+}
+
+// 任务列表数据结构
+class TodoListData {
+  final Map<String, List<TaskData>> categorizedTasks = {};
+  TodoListData();
+
+  addTask(String category, TaskData task) {
+    if (categorizedTasks.containsKey(category)) {
+      categorizedTasks[category]!.add(task);
+    } else {
+      categorizedTasks[category] = [task];
+    }
+  }
+
+  testAddTask() {
+    categorizedTasks.clear(); // 清空之前的任务数据
+    addTask('Wellness', TaskData(description: 'Morning meditation'));
+    addTask('Wellness', TaskData(description: 'Evening reading - 30 mins'));
+    addTask('Work', TaskData(description: 'Prepare presentation for meeting'));
+    TaskData callMomTask = TaskData(description: 'Call mom');
+    callMomTask.isCompleted = true; // 标记为已完成
+    addTask('Personal', callMomTask);
+    addTask('Health', TaskData(description: 'Schedule dentist appointment'));
+  }
+}
+
 // 日记类，包含日期和日记条目列表
 class PersonalData {
   final String date;
@@ -306,4 +480,6 @@ class DataManager {
   DataManager._internal();
   // 当前的日记和仪表板数据
   final PersonalData currentPersonalData = PersonalData(date: 'April 19, 2025');
+
+  final TodoListData currentTodoListData = TodoListData();
 }
