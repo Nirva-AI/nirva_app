@@ -29,6 +29,8 @@ class EnergyLevelChart extends StatelessWidget {
                 LineChartData(
                   minY: 0, // 设置 Y 轴的最小值
                   maxY: 4, // 设置 Y 轴的最大值
+                  minX: 0, // 设置 X 轴的最小值
+                  maxX: 9, // 设置 X 轴的最大值（对应 9 个时间点）
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: true,
@@ -106,7 +108,96 @@ class EnergyLevelChart extends StatelessWidget {
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: false, // 隐藏底部的数字刻度
+                        showTitles: true, // 显示底部的时间序列
+                        reservedSize: 30,
+                        interval: 1,
+                        getTitlesWidget: (value, meta) {
+                          // 根据 X 值映射时间标签
+                          switch (value.toInt()) {
+                            case 0:
+                              return const Text(
+                                '10:00',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 1:
+                              return const Text(
+                                '10:30',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 2:
+                              return const Text(
+                                '11:30',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 3:
+                              return const Text(
+                                '13:00',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 4:
+                              return const Text(
+                                '13:30',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 5:
+                              return const Text(
+                                '14:30',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 6:
+                              return const Text(
+                                '15:10',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 7:
+                              return const Text(
+                                '16:30',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 8:
+                              return const Text(
+                                '18:30',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 9:
+                              return const Text(
+                                '19:00',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            default:
+                              return const SizedBox.shrink();
+                          }
+                        },
                       ),
                     ),
                     topTitles: AxisTitles(
@@ -130,12 +221,16 @@ class EnergyLevelChart extends StatelessWidget {
                   lineBarsData: [
                     LineChartBarData(
                       spots: [
-                        FlSpot(0, 0), // 修改为从 0 开始
-                        FlSpot(1, 1),
-                        FlSpot(2, 0.5),
-                        FlSpot(3, 2.8),
-                        FlSpot(4, 2),
-                        FlSpot(5, 3),
+                        FlSpot(0, 1), // 对应 10:00
+                        FlSpot(1, 2), // 对应 10:30
+                        FlSpot(2, 1.5), // 对应 11:30
+                        FlSpot(3, 2.8), // 对应 13:00
+                        FlSpot(4, 2), // 对应 13:30
+                        FlSpot(5, 3), // 对应 14:30
+                        FlSpot(6, 1.5), // 对应 15:10
+                        FlSpot(7, 2.5), // 对应 16:30
+                        FlSpot(8, 3.2), // 对应 18:30
+                        FlSpot(9, 2.8), // 对应 19:00
                       ],
                       isCurved: true,
                       color: Colors.purple,
