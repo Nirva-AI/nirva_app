@@ -128,6 +128,26 @@ class EnergyData {
   String get energyLabelString => energyLabel.label;
 }
 
+class MoodData {
+  final String mood;
+  final double moodValue;
+  final double moodPercentage;
+  MoodData(this.mood, this.moodValue, this.moodPercentage);
+}
+
+class MoodTracker {
+  final List<MoodData> moods;
+  MoodTracker(this.moods);
+
+  Map<String, double> get data {
+    final Map<String, double> moodMap = {};
+    for (var mood in moods) {
+      moodMap[mood.mood] = mood.moodPercentage;
+    }
+    return moodMap;
+  }
+}
+
 // 日记类，包含日期和日记条目列表
 class PersonalData {
   final String date;
@@ -385,6 +405,13 @@ class PersonalData {
     EnergyData(dateTime: DateTime(2025, 5, 6, 18, 30), energyLevel: 3.2),
     EnergyData(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
   ];
+
+  final MoodTracker moodTracker = MoodTracker([
+    MoodData('Happy', 0.5, 50),
+    MoodData('Calm', 0.3, 30),
+    MoodData('Stressed', -0.9, 10),
+    MoodData('Focused', -0.5, 10),
+  ]);
 }
 
 // 写一个枚举类，表示消息的角色，目前只有AI 和用户和非法。
