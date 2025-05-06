@@ -1,32 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-
-class MoodData {
-  final String mood;
-  final double moodValue;
-  final double moodPercentage;
-  MoodData(this.mood, this.moodValue, this.moodPercentage);
-}
-
-class MoodMapData {
-  final List<MoodData> moods;
-  MoodMapData(this.moods);
-
-  Map<String, double> get data {
-    final Map<String, double> moodMap = {};
-    for (var mood in moods) {
-      moodMap[mood.mood] = mood.moodPercentage;
-    }
-    return moodMap;
-  }
-}
-
-MoodMapData moodMapData = MoodMapData([
-  MoodData('Happy', 0.5, 50),
-  MoodData('Calm', 0.3, 30),
-  MoodData('Stressed', -0.9, 10),
-  MoodData('Focused', -0.5, 10),
-]);
+import 'package:nirva_app/data_manager.dart';
 
 class MoodTracking extends StatelessWidget {
   const MoodTracking({super.key});
@@ -47,23 +21,25 @@ class MoodTracking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final moodTracker = DataManager().activePersonalData.moodTracker;
+
     final Map<String, Color> moodColors = {
-      for (var mood in moodMapData.moods)
+      for (var mood in moodTracker.moods)
         mood.mood: _getMoodColor(mood.moodValue),
     };
 
     final sections =
-        moodMapData.data.entries.map((entry) {
+        moodTracker.data.entries.map((entry) {
           return PieChartSectionData(
             value: entry.value.toDouble(),
             color: moodColors[entry.key] ?? Colors.grey,
-            radius: 60, // 控制扇形半径
+            radius: 25, // 缩小扇形半径
             badgeWidget: _buildBadge(
               entry.key,
               entry.value,
               moodColors[entry.key]!,
             ),
-            badgePositionPercentageOffset: 1.2, // 控制文字位置在外围
+            badgePositionPercentageOffset: 2.0, // 调整文字位置稍远离饼图
           );
         }).toList();
 
@@ -83,7 +59,7 @@ class MoodTracking extends StatelessWidget {
                 PieChartData(
                   sections: sections,
                   sectionsSpace: 2, // 扇形之间的间距
-                  centerSpaceRadius: 40, // 中心空白半径
+                  centerSpaceRadius: 50, // 增大中心空白半径，缩小饼图面积
                 ),
               ),
             ),
