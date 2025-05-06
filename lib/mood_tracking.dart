@@ -26,7 +26,7 @@ class MoodTracking extends StatelessWidget {
 
     final Map<String, Color> moodColors = {
       for (var mood in moodTracker.moods)
-        mood.mood: _getMoodColor(mood.moodValue),
+        mood.name: _getMoodColor(mood.moodValue),
     };
 
     final sections =

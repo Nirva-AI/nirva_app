@@ -29,8 +29,7 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildPersonalReflections() {
-    final personalReflections =
-        DataManager().activePersonal.personalReflections;
+    final personalReflections = DataManager().activePersonal.selfReflections;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

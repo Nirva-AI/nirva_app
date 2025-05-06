@@ -6,20 +6,16 @@ class EnergyLevelChart extends StatelessWidget {
   const EnergyLevelChart({super.key});
 
   //
-  List<FlSpot> _generateSpots(List<EnergyData> data) {
+  List<FlSpot> _generateSpots(List<Energy> data) {
     return data.asMap().entries.map((entry) {
       int index = entry.key;
-      EnergyData energy = entry.value;
+      Energy energy = entry.value;
       return FlSpot(index.toDouble(), energy.energyLevel);
     }).toList();
   }
 
   //
-  Widget _generateBottomTitle(
-    double value,
-    TitleMeta meta,
-    List<EnergyData> data,
-  ) {
+  Widget _generateBottomTitle(double value, TitleMeta meta, List<Energy> data) {
     int index = value.toInt();
     if (index >= 0 && index < data.length) {
       return Text(
@@ -32,7 +28,7 @@ class EnergyLevelChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<EnergyData> energyRecords = DataManager().activePersonal.energyRecords;
+    List<Energy> energyRecords = DataManager().activePersonal.energyRecords;
     final spots = _generateSpots(energyRecords);
 
     return Card(
@@ -83,7 +79,7 @@ class EnergyLevelChart extends StatelessWidget {
                         reservedSize: 40,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          final energyData = EnergyData(
+                          final energyData = Energy(
                             dateTime: DateTime.now(),
                             energyLevel: value,
                           );

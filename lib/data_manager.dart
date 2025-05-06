@@ -1,13 +1,13 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 
-class QuoteData {
+class Quote {
   final String text;
 
-  QuoteData({required this.text});
+  Quote({required this.text});
 }
 
 // 日记条目的数据结构
-class DiaryData {
+class Diary {
   final String time;
   final String title;
   final String summary;
@@ -15,7 +15,7 @@ class DiaryData {
   final List<String> tags;
   final String location;
 
-  DiaryData({
+  Diary({
     required this.time,
     required this.title,
     required this.summary,
@@ -26,44 +26,44 @@ class DiaryData {
 }
 
 // ReflectionData Class
-class ReflectionData {
+class SelfReflection {
   final String title;
   final List<String> items;
 
-  ReflectionData({required this.title, required this.items});
+  SelfReflection({required this.title, required this.items});
 }
 
 // 评分卡片数据结构
-class ScoreData {
+class Score {
   final String title;
   final double value;
   final double change;
 
-  ScoreData({required this.title, required this.value, required this.change});
+  Score({required this.title, required this.value, required this.change});
 }
 
-class HighlightData {
+class Highlight {
   final String title;
   final String content;
   final int color = 0xFF00FF00; // 默认颜色为绿色
 
-  HighlightData({required this.title, required this.content});
+  Highlight({required this.title, required this.content});
 }
 
 // 任务数据结构
-class TaskData {
+class Task {
   final String description;
   bool isCompleted = false;
 
-  TaskData({required this.description});
+  Task({required this.description});
 }
 
 // 任务列表数据结构
-class TodoListData {
-  final Map<String, List<TaskData>> categorizedTasks = {};
-  TodoListData();
+class TodoList {
+  final Map<String, List<Task>> categorizedTasks = {};
+  TodoList();
 
-  addTask(String category, TaskData task) {
+  addTask(String category, Task task) {
     if (categorizedTasks.containsKey(category)) {
       categorizedTasks[category]!.add(task);
     } else {
@@ -73,13 +73,13 @@ class TodoListData {
 
   addTestTask() {
     categorizedTasks.clear(); // 清空之前的任务数据
-    addTask('Wellness', TaskData(description: 'Morning meditation'));
-    addTask('Wellness', TaskData(description: 'Evening reading - 30 mins'));
-    addTask('Work', TaskData(description: 'Prepare presentation for meeting'));
-    TaskData callMomTask = TaskData(description: 'Call mom');
+    addTask('Wellness', Task(description: 'Morning meditation'));
+    addTask('Wellness', Task(description: 'Evening reading - 30 mins'));
+    addTask('Work', Task(description: 'Prepare presentation for meeting'));
+    Task callMomTask = Task(description: 'Call mom');
     callMomTask.isCompleted = true; // 标记为已完成
     addTask('Personal', callMomTask);
-    addTask('Health', TaskData(description: 'Schedule dentist appointment'));
+    addTask('Health', Task(description: 'Schedule dentist appointment'));
   }
 }
 
@@ -95,11 +95,11 @@ enum EnergyLabel {
   const EnergyLabel(this.label, this.measurementValue);
 }
 
-class EnergyData {
+class Energy {
   final DateTime dateTime; // 标准时间格式
   final double energyLevel; // 能量值，例如 1.0
 
-  EnergyData({required this.dateTime, required this.energyLevel});
+  Energy({required this.dateTime, required this.energyLevel});
 
   // 动态生成时间字符串，仅输出时间部分
   String get time =>
@@ -126,47 +126,47 @@ class EnergyData {
   String get energyLabelString => energyLabel.label;
 }
 
-class MoodData {
-  final String mood;
+class Mood {
+  final String name;
   final double moodValue;
   final double moodPercentage;
   final int color = 0xFF00FF00; // 默认颜色为绿色
-  MoodData(this.mood, this.moodValue, this.moodPercentage);
+  Mood(this.name, this.moodValue, this.moodPercentage);
 }
 
 class MoodTracker {
-  final List<MoodData> moods;
+  final List<Mood> moods;
   MoodTracker(this.moods);
 
   Map<String, double> get data {
     final Map<String, double> moodMap = {};
     for (var mood in moods) {
-      moodMap[mood.mood] = mood.moodPercentage;
+      moodMap[mood.name] = mood.moodPercentage;
     }
     return moodMap;
   }
 }
 
-class AwakeTimeAllocationData {
+class AwakeTimeAction {
   final String label;
   final double value;
   final int color = 0xFF00FF00; // 默认颜色为绿色
 
-  AwakeTimeAllocationData({required this.label, required this.value});
+  AwakeTimeAction({required this.label, required this.value});
 }
 
 // 日记类，包含日期和日记条目列表
-class PersonalData {
+class Personal {
   final String date;
 
-  PersonalData({required this.date});
+  Personal({required this.date});
 
   final String summary =
       'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
   // 日记条目列表
-  final List<DiaryData> diaryEntries = [
-    DiaryData(
+  final List<Diary> diaryEntries = [
+    Diary(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       summary:
@@ -176,7 +176,7 @@ class PersonalData {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryData(
+    Diary(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       summary:
@@ -186,7 +186,7 @@ class PersonalData {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryData(
+    Diary(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       summary:
@@ -197,7 +197,7 @@ class PersonalData {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryData(
+    Diary(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -206,7 +206,7 @@ class PersonalData {
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryData(
+    Diary(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       summary: 'A peaceful walk in the park to clear my mind.',
@@ -215,7 +215,7 @@ class PersonalData {
       tags: ['peaceful', 'outdoor', 'exercise'],
       location: 'Park',
     ),
-    DiaryData(
+    Diary(
       time: '10:00 AM - 1:00 PM',
       title: 'Morning in the Park with Ashley',
       summary:
@@ -225,7 +225,7 @@ class PersonalData {
       tags: ['peaceful', 'outdoor', 'conversation'],
       location: 'Park',
     ),
-    DiaryData(
+    Diary(
       time: '1:00 PM - 1:30 PM',
       title: 'Departure from Park',
       summary:
@@ -235,7 +235,7 @@ class PersonalData {
       tags: ['calm', 'outdoor', 'transportation'],
       location: 'Park',
     ),
-    DiaryData(
+    Diary(
       time: '1:30 PM - 2:50 PM',
       title: 'Drive to San Francisco with Trent',
       summary:
@@ -246,7 +246,7 @@ class PersonalData {
       location: 'In the car',
     ),
     // 添加更多测试数据
-    DiaryData(
+    Diary(
       time: '3:00 PM - 4:00 PM',
       title: 'Coffee Break with Sarah',
       summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -255,7 +255,7 @@ class PersonalData {
       tags: ['relaxing', 'indoor', 'conversation'],
       location: 'Cafe',
     ),
-    DiaryData(
+    Diary(
       time: '4:30 PM - 6:00 PM',
       title: 'Evening Walk',
       summary: 'A peaceful walk in the park to clear my mind.',
@@ -267,24 +267,24 @@ class PersonalData {
   ];
 
   // 引言卡片数据
-  final List<QuoteData> quotes = [
-    QuoteData(
+  final List<Quote> quotes = [
+    Quote(
       text:
           '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
     ),
-    QuoteData(
+    Quote(
       text:
           '"Meaningful connections with others help me understand myself better and grow as a person."',
     ),
-    QuoteData(
+    Quote(
       text:
           '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
     ),
   ];
 
   // 个人反思
-  final List<ReflectionData> personalReflections = [
-    ReflectionData(
+  final List<SelfReflection> selfReflections = [
+    SelfReflection(
       title: 'I am feeling grateful for:',
       items: [
         'Deep conversations with friends who listen and share wisdom',
@@ -292,7 +292,7 @@ class PersonalData {
         'The privilege to contemplate my future on my own terms',
       ],
     ),
-    ReflectionData(
+    SelfReflection(
       title: 'I can celebrate:',
       items: [
         'Making time for meaningful connections despite a busy schedule',
@@ -300,7 +300,7 @@ class PersonalData {
         'Taking steps to consider my future options thoughtfully',
       ],
     ),
-    ReflectionData(
+    SelfReflection(
       title: 'I can do better at:',
       items: [
         'Finding better balance between solitude and social connection',
@@ -311,8 +311,8 @@ class PersonalData {
   ];
 
   // 详细见解
-  final List<ReflectionData> detailedInsights = [
-    ReflectionData(
+  final List<SelfReflection> detailedInsights = [
+    SelfReflection(
       title: 'Relationships',
       items: [
         'Deep conversations with friends provide invaluable emotional support and perspective.',
@@ -320,7 +320,7 @@ class PersonalData {
         'Being \'ghosted\' after meaningful connections is a recurring pattern that causes confusion.',
       ],
     ),
-    ReflectionData(
+    SelfReflection(
       title: 'Self-Discovery',
       items: [
         'I\'m contemplating the balance between solitude and social connection in my life.',
@@ -328,7 +328,7 @@ class PersonalData {
         'I feel both curious about and envious of others\' stable family lives.',
       ],
     ),
-    ReflectionData(
+    SelfReflection(
       title: 'Future Planning',
       items: [
         'I\'m considering egg freezing and planning to make decisions about children by age 40.',
@@ -336,8 +336,8 @@ class PersonalData {
         'I\'m open to alternative pathways to parenthood beyond traditional routes.',
       ],
     ),
-    ReflectionData(
-      title: '🌍 Cultural Perspectives',
+    SelfReflection(
+      title: 'Cultural Perspectives',
       items: [
         'Art and film provide windows into different cultural and historical experiences.',
         'My family background gives me a unique perspective on political events like Tiananmen Square.',
@@ -347,8 +347,8 @@ class PersonalData {
   ];
 
   // 目标
-  final List<ReflectionData> goals = [
-    ReflectionData(
+  final List<SelfReflection> goals = [
+    SelfReflection(
       title: 'Deepen meaningful relationships',
       items: [
         'Schedule monthly deep conversations with close friends',
@@ -356,7 +356,7 @@ class PersonalData {
         'Practice active listening techniques',
       ],
     ),
-    ReflectionData(
+    SelfReflection(
       title: 'Explore fertility options',
       items: [
         'Research egg freezing clinics and costs',
@@ -364,7 +364,7 @@ class PersonalData {
         'Create financial plan for family planning options',
       ],
     ),
-    ReflectionData(
+    SelfReflection(
       title: 'Expand cultural understanding',
       items: [
         'Watch one international film per week',
@@ -373,66 +373,63 @@ class PersonalData {
     ),
   ];
 
-  final ScoreData moodScore = ScoreData(
-    title: 'Mood Score',
-    value: 7.8,
-    change: 0.5,
-  );
+  final Score moodScore = Score(title: 'Mood Score', value: 7.8, change: 0.5);
 
-  final ScoreData stressLevel = ScoreData(
+  final Score stressLevel = Score(
     title: 'Stress Level',
     value: 3.2,
     change: -1.3,
   );
 
-  final List<HighlightData> highlights = [
-    HighlightData(
+  final List<Highlight> highlights = [
+    Highlight(
       title: 'ACHIEVEMENT',
       content: 'Completed your morning meditation streak - 7 days!',
     ),
-    HighlightData(
+    Highlight(
       title: 'INSIGHT',
       content: 'You\'re most productive between 9-11 AM.',
     ),
-    HighlightData(
+    Highlight(
       title: 'SOCIAL',
       content: 'You\'ve connected with 3 friends this week.',
     ),
   ];
 
-  final List<EnergyData> energyRecords = [
-    EnergyData(dateTime: DateTime(2025, 5, 6, 10, 0), energyLevel: 1.0),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 10, 30), energyLevel: 2.0),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 11, 30), energyLevel: 1.5),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 13, 0), energyLevel: 2.8),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 13, 30), energyLevel: 2.0),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 14, 30), energyLevel: 3.0),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 15, 10), energyLevel: 1.5),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 16, 30), energyLevel: 2.5),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 18, 30), energyLevel: 3.2),
-    EnergyData(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
+  final List<Energy> energyRecords = [
+    Energy(dateTime: DateTime(2025, 5, 6, 10, 0), energyLevel: 1.0),
+    Energy(dateTime: DateTime(2025, 5, 6, 10, 30), energyLevel: 2.0),
+    Energy(dateTime: DateTime(2025, 5, 6, 11, 30), energyLevel: 1.5),
+    Energy(dateTime: DateTime(2025, 5, 6, 13, 0), energyLevel: 2.8),
+    Energy(dateTime: DateTime(2025, 5, 6, 13, 30), energyLevel: 2.0),
+    Energy(dateTime: DateTime(2025, 5, 6, 14, 30), energyLevel: 3.0),
+    Energy(dateTime: DateTime(2025, 5, 6, 15, 10), energyLevel: 1.5),
+    Energy(dateTime: DateTime(2025, 5, 6, 16, 30), energyLevel: 2.5),
+    Energy(dateTime: DateTime(2025, 5, 6, 18, 30), energyLevel: 3.2),
+    Energy(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
   ];
 
   final MoodTracker moodTracker = MoodTracker([
-    MoodData('Happy', 0.5, 50),
-    MoodData('Calm', 0.3, 30),
-    MoodData('Stressed', -0.9, 10),
-    MoodData('Focused', -0.5, 10),
+    Mood('Happy', 0.5, 50),
+    Mood('Calm', 0.3, 30),
+    Mood('Stressed', -0.9, 10),
+    Mood('Focused', -0.5, 10),
   ]);
 
-  final List<AwakeTimeAllocationData> awakeTimeAllocationDataList = [
-    AwakeTimeAllocationData(label: 'Work', value: 8),
-    AwakeTimeAllocationData(label: 'Exercise', value: 2),
-    AwakeTimeAllocationData(label: 'Social', value: 3),
-    AwakeTimeAllocationData(label: 'Learning', value: 3),
-    AwakeTimeAllocationData(label: 'Self-care', value: 1),
-    AwakeTimeAllocationData(label: 'Other', value: 4),
+  final List<AwakeTimeAction> awakeTimeAllocations = [
+    AwakeTimeAction(label: 'Work', value: 8),
+    AwakeTimeAction(label: 'Exercise', value: 2),
+    AwakeTimeAction(label: 'Social', value: 3),
+    AwakeTimeAction(label: 'Learning', value: 3),
+    AwakeTimeAction(label: 'Self-care', value: 1),
+    AwakeTimeAction(label: 'Other', value: 4),
   ];
 }
 
 // 写一个枚举类，表示消息的角色，目前只有AI 和用户和非法。
 enum MessageRole { user, ai, illegal }
 
+// 基础消息类
 class BaseMessage {
   final MessageRole role;
   final String content;
@@ -440,15 +437,18 @@ class BaseMessage {
   BaseMessage({required this.role, required this.content});
 }
 
+// AI 消息类
 class AIMessage extends BaseMessage {
   AIMessage({required super.content}) : super(role: MessageRole.ai);
 }
 
+// 用户消息类
 class UserMessage extends BaseMessage {
   UserMessage({required super.content}) : super(role: MessageRole.user);
 }
 
-class RobotDialogData {
+// 对话上下文类
+class RobotDialogContext {
   List<BaseMessage> messages = [];
 
   BaseMessage getMessage(int index) {
@@ -485,13 +485,13 @@ class DataManager {
   DataManager._internal();
 
   // 当前的日记和仪表板数据
-  final PersonalData activePersonal = PersonalData(date: 'April 19, 2025');
+  final Personal activePersonal = Personal(date: 'April 19, 2025');
 
   // 当前的待办事项数据
-  final TodoListData activeTodoList = TodoListData();
+  final TodoList activeTodoList = TodoList();
 
   // 当前的对话数据
-  final RobotDialogData activeRobotDialog = RobotDialogData();
+  final RobotDialogContext activeRobotDialog = RobotDialogContext();
 
   //
   initialize() {

@@ -6,7 +6,7 @@ class RobotDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    RobotDialogData robotDialogData = DataManager().activeRobotDialog;
+    RobotDialogContext robotDialogData = DataManager().activeRobotDialog;
     BaseMessage firstMessage = robotDialogData.getMessage(0);
     return Stack(
       children: [
