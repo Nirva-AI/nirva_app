@@ -27,8 +27,8 @@ class EnergyLevelChart extends StatelessWidget {
               height: 200,
               child: LineChart(
                 LineChartData(
-                  minY: 1, // 设置 Y 轴的最小值
-                  maxY: 5, // 设置 Y 轴的最大值
+                  minY: 0, // 设置 Y 轴的最小值
+                  maxY: 4, // 设置 Y 轴的最大值
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: true,
@@ -52,18 +52,13 @@ class EnergyLevelChart extends StatelessWidget {
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: true,
+                        showTitles: true, // 保留左侧的自定义标签
                         reservedSize: 40,
-                        interval: 1, // 明确设置刻度间隔为 1
+                        interval: 1,
                         getTitlesWidget: (value, meta) {
-                          // 仅处理整数值，忽略非整数值
-                          if (value % 1 != 0) {
-                            return const SizedBox.shrink();
-                          }
-
                           // 根据刻度值映射标签
                           switch (value.toInt()) {
-                            case 1:
+                            case 0:
                               return const Text(
                                 'Low-',
                                 style: TextStyle(
@@ -71,7 +66,7 @@ class EnergyLevelChart extends StatelessWidget {
                                   fontSize: 10,
                                 ),
                               );
-                            case 2:
+                            case 1:
                               return const Text(
                                 'Low',
                                 style: TextStyle(
@@ -79,7 +74,7 @@ class EnergyLevelChart extends StatelessWidget {
                                   fontSize: 10,
                                 ),
                               );
-                            case 3:
+                            case 2:
                               return const Text(
                                 'Neutral',
                                 style: TextStyle(
@@ -87,7 +82,7 @@ class EnergyLevelChart extends StatelessWidget {
                                   fontSize: 10,
                                 ),
                               );
-                            case 4:
+                            case 3:
                               return const Text(
                                 'High',
                                 style: TextStyle(
@@ -95,7 +90,7 @@ class EnergyLevelChart extends StatelessWidget {
                                   fontSize: 10,
                                 ),
                               );
-                            case 5:
+                            case 4:
                               return const Text(
                                 'High+',
                                 style: TextStyle(
@@ -111,61 +106,17 @@ class EnergyLevelChart extends StatelessWidget {
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 22,
-                        getTitlesWidget: (value, meta) {
-                          switch (value.toInt()) {
-                            case 0:
-                              return const Text(
-                                '10:00',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              );
-                            case 1:
-                              return const Text(
-                                '10:30',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              );
-                            case 2:
-                              return const Text(
-                                '11:30',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              );
-                            case 3:
-                              return const Text(
-                                '13:30',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              );
-                            case 4:
-                              return const Text(
-                                '14:50',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              );
-                            case 5:
-                              return const Text(
-                                '16:30',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              );
-                          }
-                          return const SizedBox.shrink();
-                        },
+                        showTitles: false, // 隐藏底部的数字刻度
+                      ),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: false, // 隐藏顶部的数字刻度
+                      ),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: false, // 隐藏右侧的数字刻度
                       ),
                     ),
                   ),
@@ -179,9 +130,9 @@ class EnergyLevelChart extends StatelessWidget {
                   lineBarsData: [
                     LineChartBarData(
                       spots: [
-                        FlSpot(0, 1),
-                        FlSpot(1, 2),
-                        FlSpot(2, 1.5),
+                        FlSpot(0, 0), // 修改为从 0 开始
+                        FlSpot(1, 1),
+                        FlSpot(2, 0.5),
                         FlSpot(3, 2.8),
                         FlSpot(4, 2),
                         FlSpot(5, 3),
