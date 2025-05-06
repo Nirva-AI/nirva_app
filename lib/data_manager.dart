@@ -34,23 +34,19 @@ class ReflectionData {
 }
 
 // 评分卡片数据结构
-class ScoreCardData {
+class ScoreData {
   final String title;
   final double value;
   final double change;
 
-  ScoreCardData({
-    required this.title,
-    required this.value,
-    required this.change,
-  });
+  ScoreData({required this.title, required this.value, required this.change});
 }
 
-class HighlightCardData {
+class HighlightData {
   final String title;
   final String content;
 
-  HighlightCardData({required this.title, required this.content});
+  HighlightData({required this.title, required this.content});
 }
 
 // 任务数据结构
@@ -376,28 +372,28 @@ class PersonalData {
     ),
   ];
 
-  final ScoreCardData moodScore = ScoreCardData(
+  final ScoreData moodScore = ScoreData(
     title: 'Mood Score',
     value: 7.8,
     change: 0.5,
   );
 
-  final ScoreCardData stressLevel = ScoreCardData(
+  final ScoreData stressLevel = ScoreData(
     title: 'Stress Level',
     value: 3.2,
     change: -1.3,
   );
 
-  final List<HighlightCardData> highlights = [
-    HighlightCardData(
+  final List<HighlightData> highlights = [
+    HighlightData(
       title: 'ACHIEVEMENT',
       content: 'Completed your morning meditation streak - 7 days!',
     ),
-    HighlightCardData(
+    HighlightData(
       title: 'INSIGHT',
       content: 'You\'re most productive between 9-11 AM.',
     ),
-    HighlightCardData(
+    HighlightData(
       title: 'SOCIAL',
       content: 'You\'ve connected with 3 friends this week.',
     ),

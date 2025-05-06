@@ -5,7 +5,7 @@ import 'package:nirva_app/energy_level_chart.dart';
 import 'package:nirva_app/mood_tracking.dart';
 import 'package:nirva_app/social_map.dart';
 import 'package:nirva_app/awake_time_allocation.dart';
-import 'package:nirva_app/high_lights.dart';
+import 'package:nirva_app/today_high_lights.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -67,6 +67,6 @@ class DashboardPage extends StatelessWidget {
 
   Widget _buildHighlights() {
     final highlights = DataManager().activePersonal.highlights;
-    return Highlights(highlights: highlights);
+    return TodayHighlights(highlights: highlights);
   }
 }
