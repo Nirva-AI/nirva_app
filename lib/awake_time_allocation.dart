@@ -27,11 +27,16 @@ class AwakeTimeAllocation extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 28,
+                        interval: 2, // 设置刻度间隔为 2
                         getTitlesWidget: (value, meta) {
-                          return Text(
-                            '${value.toInt()}h',
-                            style: const TextStyle(fontSize: 12),
-                          );
+                          // 仅显示 0 到 maxY 范围内的整数刻度
+                          if (value >= 0 && value <= 8 && value % 2 == 0) {
+                            return Text(
+                              '${value.toInt()}h',
+                              style: const TextStyle(fontSize: 12),
+                            );
+                          }
+                          return const SizedBox.shrink(); // 不显示其他值
                         },
                       ),
                     ),
