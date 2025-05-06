@@ -1,35 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart'; // 用于绘制图表
-
-class EnergyData {
-  final DateTime dateTime; // 标准时间格式
-  final double energyLevel; // 能量值，例如 1.0
-
-  EnergyData({required this.dateTime, required this.energyLevel});
-
-  // 动态生成时间字符串，仅输出时间部分
-  String get time =>
-      "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
-}
-
-final List<EnergyData> energyDataList = [
-  EnergyData(dateTime: DateTime(2025, 5, 6, 10, 0), energyLevel: 1.0),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 10, 30), energyLevel: 2.0),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 11, 30), energyLevel: 1.5),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 13, 0), energyLevel: 2.8),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 13, 30), energyLevel: 2.0),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 14, 30), energyLevel: 3.0),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 15, 10), energyLevel: 1.5),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 16, 30), energyLevel: 2.5),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 18, 30), energyLevel: 3.2),
-  EnergyData(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
-];
+import 'package:fl_chart/fl_chart.dart';
+import 'package:nirva_app/data_manager.dart';
 
 class EnergyLevelChart extends StatelessWidget {
   const EnergyLevelChart({super.key});
 
-  // 生成图表数据点
-  List<FlSpot> generateSpots(List<EnergyData> data) {
+  //
+  List<FlSpot> _generateSpots(List<EnergyData> data) {
     return data.asMap().entries.map((entry) {
       int index = entry.key;
       EnergyData energy = entry.value;
@@ -37,8 +14,8 @@ class EnergyLevelChart extends StatelessWidget {
     }).toList();
   }
 
-  // 生成底部标题
-  Widget generateBottomTitle(
+  //
+  Widget _generateBottomTitle(
     double value,
     TitleMeta meta,
     List<EnergyData> data,
@@ -46,7 +23,7 @@ class EnergyLevelChart extends StatelessWidget {
     int index = value.toInt();
     if (index >= 0 && index < data.length) {
       return Text(
-        data[index].time, // 调用动态生成的时间字符串
+        data[index].time,
         style: const TextStyle(color: Colors.grey, fontSize: 10),
       );
     }
@@ -55,7 +32,9 @@ class EnergyLevelChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spots = generateSpots(energyDataList);
+    List<EnergyData> energyRecords =
+        DataManager().activePersonalData.energyRecords;
+    final spots = _generateSpots(energyRecords);
 
     return Card(
       elevation: 2,
@@ -78,10 +57,10 @@ class EnergyLevelChart extends StatelessWidget {
               height: 200,
               child: LineChart(
                 LineChartData(
-                  minY: 0,
-                  maxY: 4,
+                  minY: EnergyLabel.lowMinus.measurementValue,
+                  maxY: EnergyLabel.highPlus.measurementValue,
                   minX: 0,
-                  maxX: (energyDataList.length - 1).toDouble(),
+                  maxX: (energyRecords.length - 1).toDouble(),
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: true,
@@ -105,50 +84,19 @@ class EnergyLevelChart extends StatelessWidget {
                         reservedSize: 40,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          switch (value.toInt()) {
-                            case 0:
-                              return const Text(
-                                'Low-',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              );
-                            case 1:
-                              return const Text(
-                                'Low',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              );
-                            case 2:
-                              return const Text(
-                                'Neutral',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              );
-                            case 3:
-                              return const Text(
-                                'High',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              );
-                            case 4:
-                              return const Text(
-                                'High+',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              );
-                            default:
-                              return const SizedBox.shrink();
-                          }
+                          final energyData = EnergyData(
+                            dateTime: DateTime.now(),
+                            energyLevel: value,
+                          );
+                          final label = energyData.energyLabelString;
+
+                          return Text(
+                            label,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 10,
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -158,10 +106,10 @@ class EnergyLevelChart extends StatelessWidget {
                         reservedSize: 30,
                         interval: 1,
                         getTitlesWidget:
-                            (value, meta) => generateBottomTitle(
+                            (value, meta) => _generateBottomTitle(
                               value,
                               meta,
-                              energyDataList,
+                              energyRecords,
                             ),
                       ),
                     ),

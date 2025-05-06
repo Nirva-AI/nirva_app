@@ -85,6 +85,49 @@ class TodoListData {
   }
 }
 
+enum EnergyLabel {
+  lowMinus('', 0.0),
+  low('Low', 1.0),
+  neutral('Neutral', 2.0),
+  high('High', 3.0),
+  highPlus('', 4.0);
+
+  final String label;
+  final double measurementValue;
+  const EnergyLabel(this.label, this.measurementValue);
+}
+
+class EnergyData {
+  final DateTime dateTime; // 标准时间格式
+  final double energyLevel; // 能量值，例如 1.0
+
+  EnergyData({required this.dateTime, required this.energyLevel});
+
+  // 动态生成时间字符串，仅输出时间部分
+  String get time =>
+      "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+
+  // 根据 energyLevel 动态生成标签
+  EnergyLabel get energyLabel {
+    if (energyLevel <= EnergyLabel.lowMinus.measurementValue) {
+      return EnergyLabel.lowMinus;
+    }
+    if (energyLevel <= EnergyLabel.low.measurementValue) {
+      return EnergyLabel.low;
+    }
+    if (energyLevel <= EnergyLabel.neutral.measurementValue) {
+      return EnergyLabel.neutral;
+    }
+    if (energyLevel <= EnergyLabel.high.measurementValue) {
+      return EnergyLabel.high;
+    }
+    return EnergyLabel.highPlus;
+  }
+
+  // 获取能量标签的字符串值
+  String get energyLabelString => energyLabel.label;
+}
+
 // 日记类，包含日期和日记条目列表
 class PersonalData {
   final String date;
@@ -328,6 +371,19 @@ class PersonalData {
       title: 'SOCIAL',
       content: 'You\'ve connected with 3 friends this week.',
     ),
+  ];
+
+  final List<EnergyData> energyRecords = [
+    EnergyData(dateTime: DateTime(2025, 5, 6, 10, 0), energyLevel: 1.0),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 10, 30), energyLevel: 2.0),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 11, 30), energyLevel: 1.5),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 13, 0), energyLevel: 2.8),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 13, 30), energyLevel: 2.0),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 14, 30), energyLevel: 3.0),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 15, 10), energyLevel: 1.5),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 16, 30), energyLevel: 2.5),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 18, 30), energyLevel: 3.2),
+    EnergyData(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
   ];
 }
 
