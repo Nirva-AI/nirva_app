@@ -27,6 +27,8 @@ class EnergyLevelChart extends StatelessWidget {
               height: 200,
               child: LineChart(
                 LineChartData(
+                  minY: 1, // 设置 Y 轴的最小值
+                  maxY: 5, // 设置 Y 轴的最大值
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: true,
@@ -52,34 +54,58 @@ class EnergyLevelChart extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 40,
+                        interval: 1, // 明确设置刻度间隔为 1
                         getTitlesWidget: (value, meta) {
+                          // 仅处理整数值，忽略非整数值
+                          if (value % 1 != 0) {
+                            return const SizedBox.shrink();
+                          }
+
+                          // 根据刻度值映射标签
                           switch (value.toInt()) {
                             case 1:
                               return const Text(
-                                'Low',
+                                'Low-',
                                 style: TextStyle(
                                   color: Colors.grey,
-                                  fontSize: 12,
+                                  fontSize: 10,
                                 ),
                               );
                             case 2:
                               return const Text(
-                                'Neutral',
+                                'Low',
                                 style: TextStyle(
                                   color: Colors.grey,
-                                  fontSize: 12,
+                                  fontSize: 10,
                                 ),
                               );
                             case 3:
                               return const Text(
+                                'Neutral',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            case 4:
+                              return const Text(
                                 'High',
                                 style: TextStyle(
                                   color: Colors.grey,
-                                  fontSize: 12,
+                                  fontSize: 10,
                                 ),
                               );
+                            case 5:
+                              return const Text(
+                                'High+',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                              );
+                            default:
+                              return const SizedBox.shrink(); // 对未定义的值返回空
                           }
-                          return const SizedBox.shrink();
                         },
                       ),
                     ),
