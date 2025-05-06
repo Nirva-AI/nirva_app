@@ -38,7 +38,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildScoreCards() {
-    final currentDiary = DataManager().activePersonalData;
+    final currentDiary = DataManager().activePersonal;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,7 +66,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildHighlights() {
-    final highlights = DataManager().activePersonalData.highlights;
+    final highlights = DataManager().activePersonal.highlights;
     return Highlights(highlights: highlights);
   }
 }

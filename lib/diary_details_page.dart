@@ -71,7 +71,7 @@ class DiaryDetailsPage extends StatelessWidget {
             const SizedBox(height: 8),
             // 日期
             Text(
-              DataManager().activePersonalData.date, // 示例日期，可动态替换
+              DataManager().activePersonal.date, // 示例日期，可动态替换
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 16),

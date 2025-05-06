@@ -1,4 +1,5 @@
-// 引言卡片的数据结构
+// 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
+
 class QuoteData {
   final String text;
 
@@ -132,6 +133,7 @@ class MoodData {
   final String mood;
   final double moodValue;
   final double moodPercentage;
+  final int color = 0xFF00FF00; // 默认颜色为绿色
   MoodData(this.mood, this.moodValue, this.moodPercentage);
 }
 
@@ -146,6 +148,14 @@ class MoodTracker {
     }
     return moodMap;
   }
+}
+
+class AwakeTimeAllocationData {
+  final String label;
+  final double value;
+  final int color = 0xFF00FF00; // 默认颜色为绿色
+
+  AwakeTimeAllocationData({required this.label, required this.value});
 }
 
 // 日记类，包含日期和日记条目列表
@@ -412,6 +422,15 @@ class PersonalData {
     MoodData('Stressed', -0.9, 10),
     MoodData('Focused', -0.5, 10),
   ]);
+
+  final List<AwakeTimeAllocationData> awakeTimeAllocationDataList = [
+    AwakeTimeAllocationData(label: 'Work', value: 8),
+    AwakeTimeAllocationData(label: 'Exercise', value: 2),
+    AwakeTimeAllocationData(label: 'Social', value: 3),
+    AwakeTimeAllocationData(label: 'Learning', value: 3),
+    AwakeTimeAllocationData(label: 'Self-care', value: 1),
+    AwakeTimeAllocationData(label: 'Other', value: 4),
+  ];
 }
 
 // 写一个枚举类，表示消息的角色，目前只有AI 和用户和非法。
@@ -469,17 +488,17 @@ class DataManager {
   DataManager._internal();
 
   // 当前的日记和仪表板数据
-  final PersonalData activePersonalData = PersonalData(date: 'April 19, 2025');
+  final PersonalData activePersonal = PersonalData(date: 'April 19, 2025');
 
   // 当前的待办事项数据
-  final TodoListData activeTodoListData = TodoListData();
+  final TodoListData activeTodoList = TodoListData();
 
   // 当前的对话数据
-  final RobotDialogData activeRobotDialogData = RobotDialogData();
+  final RobotDialogData activeRobotDialog = RobotDialogData();
 
   //
   initialize() {
-    activeTodoListData.addTestTask();
-    activeRobotDialogData.addTestMessage();
+    activeTodoList.addTestTask();
+    activeRobotDialog.addTestMessage();
   }
 }
