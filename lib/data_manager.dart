@@ -493,6 +493,9 @@ class DataManager {
   // 当前的对话数据
   final RobotDialogContext activeRobotDialog = RobotDialogContext();
 
+  // 用户信息
+  final String userName = 'Wei';
+
   //
   initialize() {
     activeTodoList.addTestTask();
