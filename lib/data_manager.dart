@@ -477,6 +477,20 @@ class RobotDialogContext {
   }
 }
 
+class SocialEntity {
+  final String name; // 社交对象的名字
+  final String details; // 详细信息
+  final List<String> tips;
+  final String timeSpent; // 互动时间
+
+  SocialEntity({
+    required this.name,
+    required this.details,
+    required this.tips,
+    required this.timeSpent,
+  });
+}
+
 // 管理全局数据的类
 class DataManager {
   // 单例模式
@@ -495,6 +509,54 @@ class DataManager {
 
   // 用户信息
   final String userName = 'Wei';
+
+  // 社交对象列表
+  final List<SocialEntity> socialMap = [
+    SocialEntity(
+      name: 'Ashley',
+      details:
+          'Deep, supportive conversation. Vulnerability was met with understanding.',
+      tips: [
+        'Reciprocate Support: Ensure you\'re actively listening and offering support for her challenges (job search, etc.) as she does for you.',
+        'Follow Through: Act on plans discussed, like the library meet-up, to build reliability.',
+        'Shared Fun: Continue exploring shared interests beyond processing difficulties, like the arts or potential future activities.',
+      ],
+      timeSpent: '~3 hours',
+    ),
+    SocialEntity(
+      name: 'Trent',
+      details:
+          'Shared a fun hiking trip. Great teamwork and mutual encouragement.',
+      tips: [
+        'Acknowledge Commitments: Address things like listening to the record he gave you to show you value his gestures and follow through.',
+        'Appreciate His Perspective: Even when disagreeing (like on AI ethics), acknowledge and show respect for his viewpoint to maintain positive discourse.',
+        'Continue Shared Exploration: Lean into shared interests like film, exploring challenging ideas, and trying new experiences (restaurants, neighborhoods). Ask about his work/life updates proactively.',
+      ],
+      timeSpent: '~2 hours',
+    ),
+    SocialEntity(
+      name: 'Charlie',
+      details:
+          'Had a long discussion about books and movies. Discovered shared interests.',
+      tips: [
+        'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+        'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+        'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+      ],
+      timeSpent: '~1.5 hours',
+    ),
+    SocialEntity(
+      name: 'Diana',
+      details:
+          'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
+      tips: [
+        'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+        'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+        'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+      ],
+      timeSpent: '~4 hours',
+    ),
+  ];
 
   //
   initialize() {
