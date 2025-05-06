@@ -32,8 +32,7 @@ class EnergyLevelChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<EnergyData> energyRecords =
-        DataManager().activePersonalData.energyRecords;
+    List<EnergyData> energyRecords = DataManager().activePersonal.energyRecords;
     final spots = _generateSpots(energyRecords);
 
     return Card(

@@ -5,6 +5,7 @@ import 'package:nirva_app/data_manager.dart';
 class MoodTracking extends StatelessWidget {
   const MoodTracking({super.key});
 
+  // 因为情绪是线性能规划的，负面～正面，所以就用一个数值来在几个色块里挑选。
   Color _getMoodColor(double moodValue) {
     if (moodValue <= -0.8) {
       return Colors.red;
@@ -21,7 +22,7 @@ class MoodTracking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moodTracker = DataManager().activePersonalData.moodTracker;
+    final moodTracker = DataManager().activePersonal.moodTracker;
 
     final Map<String, Color> moodColors = {
       for (var mood in moodTracker.moods)

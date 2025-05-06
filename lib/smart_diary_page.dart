@@ -10,7 +10,7 @@ class SmartDiaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 获取引言卡片数据
-    final quotes = DataManager().activePersonalData.quotes;
+    final quotes = DataManager().activePersonal.quotes;
 
     return SingleChildScrollView(
       child: Column(
@@ -28,7 +28,7 @@ class SmartDiaryPage extends StatelessWidget {
               vertical: 8.0,
             ),
             child: Text(
-              DataManager().activePersonalData.date,
+              DataManager().activePersonal.date,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
@@ -36,10 +36,9 @@ class SmartDiaryPage extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true, // 使 ListView 适应父组件高度
             physics: const NeverScrollableScrollPhysics(), // 禁用内部滚动
-            itemCount: DataManager().activePersonalData.diaryEntries.length,
+            itemCount: DataManager().activePersonal.diaryEntries.length,
             itemBuilder: (context, index) {
-              final entry =
-                  DataManager().activePersonalData.diaryEntries[index];
+              final entry = DataManager().activePersonal.diaryEntries[index];
               return DiaryEntry(diaryData: entry);
             },
           ),

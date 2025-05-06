@@ -1,11 +1,31 @@
+import 'dart:math' as math; // 将 Math 改为小写 math
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:nirva_app/data_manager.dart';
+
+//创建一个成员变量Map<String, Color>，用于存储每个时间段的颜色
+final Map<String, Color> awakeTimeColors = {};
 
 class AwakeTimeAllocation extends StatelessWidget {
   const AwakeTimeAllocation({super.key});
 
+  //临时：创建一个方法, 输入一个String, 返回一个Color, Color是随机生成的，如果已经存在于awakeTimeColors中，则返回对应的颜色
+  Color _getColor(String label) {
+    if (awakeTimeColors.containsKey(label)) {
+      return awakeTimeColors[label]!;
+    } else {
+      final color = Color(
+        (math.Random().nextDouble() * 0xFFFFFF).toInt(), // 使用小写 math
+      ).withAlpha(255);
+      awakeTimeColors[label] = color;
+      return color;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final awakeTimeAllocationDataList =
+        DataManager().activePersonal.awakeTimeAllocationDataList;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -21,13 +41,13 @@ class AwakeTimeAllocation extends StatelessWidget {
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: 8, // 设置纵轴最大值为 8
+                  maxY: 8,
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 28,
-                        interval: 2, // 设置刻度间隔为 2
+                        interval: 2,
                         getTitlesWidget: (value, meta) {
                           if (value >= 0 && value <= 8 && value % 2 == 0) {
                             return Text(
@@ -43,78 +63,42 @@ class AwakeTimeAllocation extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          switch (value.toInt()) {
-                            case 0:
-                              return const Text(
-                                'Work',
-                                style: TextStyle(fontSize: 10),
-                              );
-                            case 1:
-                              return const Text(
-                                'Exercise',
-                                style: TextStyle(fontSize: 10),
-                              );
-                            case 2:
-                              return const Text(
-                                'Social',
-                                style: TextStyle(fontSize: 10),
-                              );
-                            case 3:
-                              return const Text(
-                                'Learning',
-                                style: TextStyle(fontSize: 10),
-                              );
-                            case 4:
-                              return const Text(
-                                'Self-care',
-                                style: TextStyle(fontSize: 10),
-                              );
-                            case 5:
-                              return const Text(
-                                'Other',
-                                style: TextStyle(fontSize: 10),
-                              );
-                            default:
-                              return const Text('');
+                          if (value.toInt() >= 0 &&
+                              value.toInt() <
+                                  awakeTimeAllocationDataList.length) {
+                            return Text(
+                              awakeTimeAllocationDataList[value.toInt()].label,
+                              style: const TextStyle(fontSize: 10),
+                            );
                           }
+                          return const SizedBox.shrink();
                         },
                       ),
                     ),
                     topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false), // 隐藏顶部数字
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                     rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false), // 隐藏右侧数字
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [BarChartRodData(toY: 8, color: Colors.purple)],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [BarChartRodData(toY: 2, color: Colors.green)],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [BarChartRodData(toY: 3, color: Colors.red)],
-                    ),
-                    BarChartGroupData(
-                      x: 3,
-                      barRods: [BarChartRodData(toY: 3, color: Colors.orange)],
-                    ),
-                    BarChartGroupData(
-                      x: 4,
-                      barRods: [BarChartRodData(toY: 1, color: Colors.yellow)],
-                    ),
-                    BarChartGroupData(
-                      x: 5,
-                      barRods: [
-                        BarChartRodData(toY: 4, color: Colors.blueGrey),
-                      ],
-                    ),
-                  ],
+                  barGroups:
+                      awakeTimeAllocationDataList
+                          .asMap()
+                          .entries
+                          .map(
+                            (entry) => BarChartGroupData(
+                              x: entry.key,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: entry.value.value,
+                                  color: _getColor(entry.value.label),
+                                  width: 15,
+                                ),
+                              ],
+                            ),
+                          )
+                          .toList(),
                   gridData: FlGridData(show: false),
                   borderData: FlBorderData(show: false),
                 ),
