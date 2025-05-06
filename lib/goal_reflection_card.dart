@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 
 class GoalReflectionCard extends StatelessWidget {
-  final ReflectionData data;
+  final SelfReflection data;
 
   const GoalReflectionCard({super.key, required this.data});
 
@@ -56,7 +56,7 @@ class GoalReflectionCard extends StatelessWidget {
   }
 
   // 封装的 _getSnackBar 函数
-  SnackBar _getSnackBar(BuildContext context, ReflectionData data) {
+  SnackBar _getSnackBar(BuildContext context, SelfReflection data) {
     return SnackBar(
       behavior: SnackBarBehavior.fixed, // 固定在屏幕底部
       backgroundColor: Colors.white, // 背景颜色

@@ -4,7 +4,7 @@ import 'package:nirva_app/diary_details_page.dart';
 
 // 修改 DiaryEntry 组件
 class DiaryEntry extends StatelessWidget {
-  final DiaryData diaryData;
+  final Diary diaryData;
 
   const DiaryEntry({super.key, required this.diaryData});
 

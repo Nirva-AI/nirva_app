@@ -6,8 +6,8 @@ import 'package:nirva_app/data_manager.dart';
 //创建一个成员变量Map<String, Color>，用于存储每个时间段的颜色
 final Map<String, Color> awakeTimeColors = {};
 
-class AwakeTimeAllocation extends StatelessWidget {
-  const AwakeTimeAllocation({super.key});
+class AwakeTimeAllocationChart extends StatelessWidget {
+  const AwakeTimeAllocationChart({super.key});
 
   //临时：创建一个方法, 输入一个String, 返回一个Color, Color是随机生成的，如果已经存在于awakeTimeColors中，则返回对应的颜色
   Color _getColor(String label) {
@@ -25,7 +25,7 @@ class AwakeTimeAllocation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final awakeTimeAllocationDataList =
-        DataManager().activePersonal.awakeTimeAllocationDataList;
+        DataManager().activePersonal.awakeTimeAllocations;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

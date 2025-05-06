@@ -4,7 +4,7 @@ import 'package:nirva_app/score_card.dart';
 import 'package:nirva_app/energy_level_chart.dart';
 import 'package:nirva_app/mood_tracking.dart';
 import 'package:nirva_app/social_map.dart';
-import 'package:nirva_app/awake_time_allocation.dart';
+import 'package:nirva_app/awake_time_allocation_chart.dart';
 import 'package:nirva_app/today_high_lights.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -58,7 +58,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildAwakeTimeAllocation() {
-    return const AwakeTimeAllocation();
+    return const AwakeTimeAllocationChart();
   }
 
   Widget _buildSocialMap() {

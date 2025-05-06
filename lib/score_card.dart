@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart'; // 假设你有一个数据模型文件
 
 class ScoreCard extends StatelessWidget {
-  final ScoreData data;
+  final Score data;
 
   const ScoreCard({super.key, required this.data});
 

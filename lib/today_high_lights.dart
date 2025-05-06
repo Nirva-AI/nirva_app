@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 
 class HighlightCard extends StatelessWidget {
-  final HighlightData highlight;
+  final Highlight highlight;
   final Color backgroundColor;
 
   const HighlightCard({
@@ -46,7 +46,7 @@ class HighlightCard extends StatelessWidget {
 }
 
 class TodayHighlights extends StatelessWidget {
-  final List<HighlightData> highlights;
+  final List<Highlight> highlights;
 
   const TodayHighlights({super.key, required this.highlights});
 

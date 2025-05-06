@@ -3,7 +3,7 @@ import 'package:nirva_app/data_manager.dart';
 
 // ReflectionCard Widget
 class ReflectionCard extends StatelessWidget {
-  final ReflectionData data;
+  final SelfReflection data;
 
   const ReflectionCard({super.key, required this.data});
 

@@ -3,7 +3,7 @@ import 'package:nirva_app/data_manager.dart';
 
 // 修改 QuoteCarousel 组件
 class QuoteCarousel extends StatefulWidget {
-  final List<QuoteData> quotes;
+  final List<Quote> quotes;
 
   const QuoteCarousel({super.key, required this.quotes});
 
@@ -15,7 +15,7 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
   int _currentPage = 0;
   final Map<int, LinearGradient> gradientMap = {};
 
-  LinearGradient _randomGradient(QuoteData quote) {
+  LinearGradient _randomGradient(Quote quote) {
     if (!gradientMap.containsKey(quote.text.hashCode)) {
       final colors = [
         Colors.red,
