@@ -29,14 +29,13 @@ class AwakeTimeAllocation extends StatelessWidget {
                         reservedSize: 28,
                         interval: 2, // 设置刻度间隔为 2
                         getTitlesWidget: (value, meta) {
-                          // 仅显示 0 到 maxY 范围内的整数刻度
                           if (value >= 0 && value <= 8 && value % 2 == 0) {
                             return Text(
                               '${value.toInt()}h',
                               style: const TextStyle(fontSize: 12),
                             );
                           }
-                          return const SizedBox.shrink(); // 不显示其他值
+                          return const SizedBox.shrink();
                         },
                       ),
                     ),
@@ -48,38 +47,44 @@ class AwakeTimeAllocation extends StatelessWidget {
                             case 0:
                               return const Text(
                                 'Work',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 10),
                               );
                             case 1:
                               return const Text(
                                 'Exercise',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 10),
                               );
                             case 2:
                               return const Text(
                                 'Social',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 10),
                               );
                             case 3:
                               return const Text(
                                 'Learning',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 10),
                               );
                             case 4:
                               return const Text(
                                 'Self-care',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 10),
                               );
                             case 5:
                               return const Text(
                                 'Other',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 10),
                               );
                             default:
                               return const Text('');
                           }
                         },
                       ),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false), // 隐藏顶部数字
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false), // 隐藏右侧数字
                     ),
                   ),
                   barGroups: [
