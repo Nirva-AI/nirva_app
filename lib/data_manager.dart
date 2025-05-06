@@ -45,6 +45,7 @@ class ScoreData {
 class HighlightData {
   final String title;
   final String content;
+  final int color = 0xFF00FF00; // 默认颜色为绿色
 
   HighlightData({required this.title, required this.content});
 }
