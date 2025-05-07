@@ -33,7 +33,7 @@ class _SocialMapState extends State<SocialMap> {
 
   @override
   Widget build(BuildContext context) {
-    final List<SocialEntity> socialEntities = DataManager().socialMap;
+    final List<SocialEntity> socialEntities = DataManager().socialEntities;
 
     if (selectedEntityIndex >= 0 &&
         selectedEntityIndex < socialEntities.length) {

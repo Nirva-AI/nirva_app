@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 
 class GoalReflectionCard extends StatelessWidget {
-  final SelfReflection data;
+  final Reflection data;
 
   const GoalReflectionCard({super.key, required this.data});
 
@@ -54,7 +54,7 @@ class GoalReflectionCard extends StatelessWidget {
   }
 
   // 封装的 _showTopOverlay 函数
-  void _showTopOverlay(BuildContext context, SelfReflection data) {
+  void _showTopOverlay(BuildContext context, Reflection data) {
     final overlay = Overlay.of(context);
     final overlayEntry = OverlayEntry(
       builder:

@@ -29,7 +29,8 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildPersonalReflections() {
-    final personalReflections = DataManager().activePersonal.selfReflections;
+    final personalReflections =
+        DataManager().currentJournalEntry.selfReflections;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +51,7 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildDetailedInsights() {
-    final detailedInsights = DataManager().activePersonal.detailedInsights;
+    final detailedInsights = DataManager().currentJournalEntry.detailedInsights;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +72,7 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildGoals() {
-    final goals = DataManager().activePersonal.goals;
+    final goals = DataManager().currentJournalEntry.goals;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
