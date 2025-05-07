@@ -53,8 +53,8 @@ class EnergyLevelChart extends StatelessWidget {
               height: 200,
               child: LineChart(
                 LineChartData(
-                  minY: EnergyLabel.lowMinus.measurementValue,
-                  maxY: EnergyLabel.highPlus.measurementValue,
+                  minY: Energy.lowMinus.measurementValue,
+                  maxY: Energy.highPlus.measurementValue,
                   minX: 0,
                   maxX: (energyRecords.length - 1).toDouble(),
                   gridData: FlGridData(

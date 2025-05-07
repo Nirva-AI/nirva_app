@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 
-class SocialMap extends StatefulWidget {
-  const SocialMap({super.key});
+class SocialMapView extends StatefulWidget {
+  const SocialMapView({super.key});
 
   @override
-  State<SocialMap> createState() => _SocialMapState();
+  State<SocialMapView> createState() => _SocialMapViewState();
 }
 
-class _SocialMapState extends State<SocialMap> {
+class _SocialMapViewState extends State<SocialMapView> {
   int selectedEntityIndex = -1;
 
   void selectEntity(int index) {
@@ -33,7 +33,8 @@ class _SocialMapState extends State<SocialMap> {
 
   @override
   Widget build(BuildContext context) {
-    final List<SocialEntity> socialEntities = DataManager().socialEntities;
+    final List<SocialEntity> socialEntities =
+        DataManager().socialMap.socialEntities;
 
     if (selectedEntityIndex >= 0 &&
         selectedEntityIndex < socialEntities.length) {
