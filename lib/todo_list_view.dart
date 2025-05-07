@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'data_manager.dart';
 
-class TodoList extends StatelessWidget {
-  const TodoList({super.key});
+class TodoListView extends StatelessWidget {
+  const TodoListView({super.key});
 
   @override
   Widget build(BuildContext context) {
