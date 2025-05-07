@@ -58,9 +58,6 @@ class ChatManager {
   // 获取单例实例
   factory ChatManager() => _instance;
 
-  //
-  String userName = '';
-
   // 存储对话记录
   final ValueNotifier<List<BaseMessage>> _chatMessages = ValueNotifier([]);
 
@@ -85,11 +82,16 @@ class ChatManager {
   }
 
   // 清空消息
+  clear() {
+    // 清空消息
+    _chatMessages.value = [];
+  }
+
+  // 清空消息
   initialize() {
-    userName = 'Wei';
     // 初始化对话记录
     addAIMessage(
-      'Hi $userName! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
+      'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
     );
   }
 }
