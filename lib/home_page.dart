@@ -3,7 +3,6 @@ import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list.dart';
-import 'package:nirva_app/robot_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -17,12 +16,31 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedPage = 0;
 
+  final ValueNotifier<List<Map<String, dynamic>>> _chatMessages = ValueNotifier(
+    [],
+  ); // 存储对话记录
+  final TextEditingController _textController = TextEditingController();
+
   void _floatingActionButtonPressed() {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return const RobotDialog();
+      isScrollControlled: true,
+      enableDrag: false,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return ChatModal(
+          chatMessages: _chatMessages,
+          textController: _textController,
+          onSend: (message) {
+            _chatMessages.value = [
+              ..._chatMessages.value,
+              {'message': message, 'isUser': true},
+              {'message': '智能助理的回复', 'isUser': false},
+            ];
+          },
+        );
       },
     );
   }
@@ -165,6 +183,112 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(
               fontSize: 20,
               color: isSelected ? Colors.blue : Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatModal extends StatelessWidget {
+  final ValueNotifier<List<Map<String, dynamic>>> chatMessages;
+  final TextEditingController textController;
+  final Function(String) onSend;
+
+  const ChatModal({
+    super.key, // 使用 super 参数
+    required this.chatMessages,
+    required this.textController,
+    required this.onSend,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          SizedBox(height: 16),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[400],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          SizedBox(height: 16),
+          Expanded(
+            child: ValueListenableBuilder<List<Map<String, dynamic>>>(
+              valueListenable: chatMessages,
+              builder: (context, chatMessagesValue, _) {
+                return ListView.builder(
+                  itemCount: chatMessagesValue.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      child: Align(
+                        alignment:
+                            chatMessagesValue[index]['isUser']
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color:
+                                chatMessagesValue[index]['isUser']
+                                    ? Colors.blue[100]
+                                    : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Text(
+                            chatMessagesValue[index]['message'],
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: textController,
+                    decoration: InputDecoration(
+                      hintText: '输入内容...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(Icons.send, color: Colors.blue),
+                  onPressed: () {
+                    final message = textController.text.trim();
+                    if (message.isNotEmpty) {
+                      onSend(message);
+                      textController.clear();
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ],
