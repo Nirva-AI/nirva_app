@@ -43,9 +43,7 @@ class GoalReflectionCard extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.checklist, color: Colors.purple),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    _getSnackBar(context, data), // 调用封装的函数
-                  );
+                  _showTopOverlay(context, data);
                 },
               ),
             ),
@@ -55,46 +53,48 @@ class GoalReflectionCard extends StatelessWidget {
     );
   }
 
-  // 封装的 _getSnackBar 函数
-  SnackBar _getSnackBar(BuildContext context, SelfReflection data) {
-    return SnackBar(
-      behavior: SnackBarBehavior.fixed, // 固定在屏幕底部
-      backgroundColor: Colors.white, // 背景颜色
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0), // 圆角
-      ),
-      content: Row(
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Added to todo list',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+  // 封装的 _showTopOverlay 函数
+  void _showTopOverlay(BuildContext context, SelfReflection data) {
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder:
+          (context) => Positioned(
+            top: kToolbarHeight, // 设置为 AppBar 的高度
+            left: 0,
+            right: 0,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Added to todo list',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '"${data.title}" and ${data.items.length} tasks have been added to your todo list.',
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '"${data.title}" and ${data.items.length} tasks have been added to your todo list.',
-                  style: const TextStyle(color: Colors.black),
-                ),
-              ],
+              ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
-            onPressed: () {
-              // 关闭当前 SnackBar
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ],
-      ),
-      duration: const Duration(seconds: 2), // 显示时间
     );
+
+    // 显示 Overlay
+    overlay.insert(overlayEntry);
+
+    // 自动移除 Overlay
+    Future.delayed(const Duration(seconds: 2), () {
+      overlayEntry.remove();
+    });
   }
 }
