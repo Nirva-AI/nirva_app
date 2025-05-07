@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
-import 'package:nirva_app/todo_list.dart';
+import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/robot_chat_modal.dart';
+import 'package:nirva_app/chat_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -16,18 +17,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedPage = 0;
-  bool _hasBeenOpened = true;
 
   final TextEditingController _textController = TextEditingController();
 
   void _floatingActionButtonPressed() {
-    if (_hasBeenOpened) {
-      _hasBeenOpened = false;
-      ChatMessageManager().addAIMessage(
-        'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
-      );
-    }
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -37,11 +30,11 @@ class _HomePageState extends State<HomePage> {
       ),
       builder: (context) {
         return RobotChatModal(
-          chatMessages: ChatMessageManager().getMessages(),
+          chatMessages: ChatManager().getMessages(),
           textController: _textController,
           onSend: (message) {
-            ChatMessageManager().addUserMessage(message);
-            ChatMessageManager().addAIMessage('回复: $message');
+            ChatManager().addUserMessage(message);
+            ChatManager().addAIMessage('回复: $message');
           },
         );
       },
@@ -84,7 +77,7 @@ class _HomePageState extends State<HomePage> {
               begin: const Offset(1, 0),
               end: Offset.zero,
             ).animate(animation),
-            child: const TodoList(),
+            child: const TodoListView(),
           );
         },
       ),
