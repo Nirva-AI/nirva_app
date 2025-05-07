@@ -426,57 +426,6 @@ class Personal {
   ];
 }
 
-// 写一个枚举类，表示消息的角色，目前只有AI 和用户和非法。
-enum MessageRole { user, ai, illegal }
-
-// 基础消息类
-class BaseMessage {
-  final MessageRole role;
-  final String content;
-
-  BaseMessage({required this.role, required this.content});
-}
-
-// AI 消息类
-class AIMessage extends BaseMessage {
-  AIMessage({required super.content}) : super(role: MessageRole.ai);
-}
-
-// 用户消息类
-class UserMessage extends BaseMessage {
-  UserMessage({required super.content}) : super(role: MessageRole.user);
-}
-
-// 对话上下文类
-class RobotDialogContext {
-  List<BaseMessage> messages = [];
-
-  BaseMessage getMessage(int index) {
-    if (index < 0 || index >= messages.length) {
-      return BaseMessage(
-        role: MessageRole.illegal,
-        content: 'Invalid message index',
-      );
-    }
-    return messages[index];
-  }
-
-  addAIMessage(String content) {
-    messages.add(AIMessage(content: content));
-  }
-
-  addUserMessage(String content) {
-    messages.add(UserMessage(content: content));
-  }
-
-  addTestMessage() {
-    messages.clear(); // 清空之前的消息数据
-    addAIMessage(
-      'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
-    );
-  }
-}
-
 class SocialEntity {
   final String name; // 社交对象的名字
   final String details; // 详细信息
@@ -503,9 +452,6 @@ class DataManager {
 
   // 当前的待办事项数据
   final TodoList activeTodoList = TodoList();
-
-  // 当前的对话数据
-  final RobotDialogContext activeRobotDialog = RobotDialogContext();
 
   // 用户信息
   final String userName = 'Wei';
@@ -561,6 +507,5 @@ class DataManager {
   //
   initialize() {
     activeTodoList.addTestTask();
-    activeRobotDialog.addTestMessage();
   }
 }

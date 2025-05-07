@@ -3,6 +3,7 @@ import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list.dart';
+import 'package:nirva_app/robot_chat_modal.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -15,13 +16,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedPage = 0;
+  bool _hasBeenOpened = true;
 
-  final ValueNotifier<List<Map<String, dynamic>>> _chatMessages = ValueNotifier(
-    [],
-  ); // 存储对话记录
   final TextEditingController _textController = TextEditingController();
 
   void _floatingActionButtonPressed() {
+    if (_hasBeenOpened) {
+      _hasBeenOpened = false;
+      ChatMessageManager().addAIMessage(
+        'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
+      );
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -31,14 +37,11 @@ class _HomePageState extends State<HomePage> {
       ),
       builder: (context) {
         return RobotChatModal(
-          chatMessages: _chatMessages,
+          chatMessages: ChatMessageManager().getMessages(),
           textController: _textController,
           onSend: (message) {
-            _chatMessages.value = [
-              ..._chatMessages.value,
-              {'message': '智能助理的回复', 'isUser': false},
-              {'message': message, 'isUser': true},
-            ];
+            ChatMessageManager().addUserMessage(message);
+            ChatMessageManager().addAIMessage('回复: $message');
           },
         );
       },
@@ -183,118 +186,6 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(
               fontSize: 20,
               color: isSelected ? Colors.blue : Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class RobotChatModal extends StatelessWidget {
-  final ValueNotifier<List<Map<String, dynamic>>> chatMessages;
-  final TextEditingController textController;
-  final Function(String) onSend;
-
-  const RobotChatModal({
-    super.key, // 使用 super 参数
-    required this.chatMessages,
-    required this.textController,
-    required this.onSend,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          SizedBox(height: 16),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[400],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          SizedBox(height: 16),
-          Expanded(
-            child: ValueListenableBuilder<List<Map<String, dynamic>>>(
-              valueListenable: chatMessages,
-              builder: (context, chatMessagesValue, _) {
-                return ListView.builder(
-                  itemCount: chatMessagesValue.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8.0,
-                      ),
-                      child: Align(
-                        alignment:
-                            chatMessagesValue[index]['isUser']
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            color:
-                                chatMessagesValue[index]['isUser']
-                                    ? Colors.blue[100]
-                                    : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Text(
-                            chatMessagesValue[index]['message'],
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                bottom: 16.0, // 固定间距，确保输入框上移
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: textController,
-                      decoration: InputDecoration(
-                        hintText: '输入内容...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  IconButton(
-                    icon: Icon(Icons.send, color: Colors.blue),
-                    onPressed: () {
-                      final message = textController.text.trim();
-                      if (message.isNotEmpty) {
-                        onSend(message);
-                        textController.clear();
-                      }
-                    },
-                  ),
-                ],
-              ),
             ),
           ),
         ],
