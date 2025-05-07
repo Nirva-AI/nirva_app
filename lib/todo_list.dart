@@ -6,7 +6,7 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final todoListData = DataManager().activeTodoList;
+    final todoListData = DataManager().toDoList;
     return Align(
       alignment: Alignment.topRight,
       child: Material(

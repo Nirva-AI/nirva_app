@@ -25,7 +25,7 @@ class AwakeTimeAllocationChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final awakeTimeAllocationDataList =
-        DataManager().activePersonal.awakeTimeAllocations;
+        DataManager().currentJournalEntry.awakeTimeActions;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

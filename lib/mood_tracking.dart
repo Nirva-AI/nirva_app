@@ -22,15 +22,15 @@ class MoodTracking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moodTracker = DataManager().activePersonal.moodTracker;
+    //final moodTracker = DataManager().activePersonal.moodMap;
 
     final Map<String, Color> moodColors = {
-      for (var mood in moodTracker.moods)
+      for (var mood in DataManager().currentJournalEntry.moods)
         mood.name: _getMoodColor(mood.moodValue),
     };
 
     final sections =
-        moodTracker.data.entries.map((entry) {
+        DataManager().currentJournalEntry.moodMap.entries.map((entry) {
           return PieChartSectionData(
             value: entry.value.toDouble(),
             color: moodColors[entry.key] ?? Colors.grey,
