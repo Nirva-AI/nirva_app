@@ -30,14 +30,14 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return ChatModal(
+        return RobotChatModal(
           chatMessages: _chatMessages,
           textController: _textController,
           onSend: (message) {
             _chatMessages.value = [
               ..._chatMessages.value,
-              {'message': message, 'isUser': true},
               {'message': '智能助理的回复', 'isUser': false},
+              {'message': message, 'isUser': true},
             ];
           },
         );
@@ -191,12 +191,12 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class ChatModal extends StatelessWidget {
+class RobotChatModal extends StatelessWidget {
   final ValueNotifier<List<Map<String, dynamic>>> chatMessages;
   final TextEditingController textController;
   final Function(String) onSend;
 
-  const ChatModal({
+  const RobotChatModal({
     super.key, // 使用 super 参数
     required this.chatMessages,
     required this.textController,
@@ -262,33 +262,39 @@ class ChatModal extends StatelessWidget {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: textController,
-                    decoration: InputDecoration(
-                      hintText: '输入内容...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                bottom: 16.0, // 固定间距，确保输入框上移
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: textController,
+                      decoration: InputDecoration(
+                        hintText: '输入内容...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: 8),
-                IconButton(
-                  icon: Icon(Icons.send, color: Colors.blue),
-                  onPressed: () {
-                    final message = textController.text.trim();
-                    if (message.isNotEmpty) {
-                      onSend(message);
-                      textController.clear();
-                    }
-                  },
-                ),
-              ],
+                  SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(Icons.send, color: Colors.blue),
+                    onPressed: () {
+                      final message = textController.text.trim();
+                      if (message.isNotEmpty) {
+                        onSend(message);
+                        textController.clear();
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ],
