@@ -3,7 +3,7 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/score_card.dart';
 import 'package:nirva_app/energy_level_chart.dart';
 import 'package:nirva_app/mood_tracking.dart';
-import 'package:nirva_app/social_map.dart';
+import 'package:nirva_app/social_map_view.dart';
 import 'package:nirva_app/awake_time_allocation_chart.dart';
 import 'package:nirva_app/today_high_lights.dart';
 
@@ -62,7 +62,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildSocialMap() {
-    return const SocialMap();
+    return const SocialMapView();
   }
 
   Widget _buildHighlights() {

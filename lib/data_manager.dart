@@ -1,12 +1,23 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
+import 'package:flutter/cupertino.dart';
+import 'package:json_annotation/json_annotation.dart';
+part 'data_manager.g.dart'; // 引入生成的文件
 
+// 引言卡片数据结构
+@JsonSerializable(explicitToJson: true)
 class Quote {
   final String text;
 
   Quote({required this.text});
+
+  // JSON序列化和反序列化
+  factory Quote.fromJson(Map<String, dynamic> json) =>
+      _$QuoteFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$QuoteToJson(this); // 序列化
 }
 
 // 日记条目的数据结构
+@JsonSerializable(explicitToJson: true)
 class Diary {
   final String time;
   final String title;
@@ -23,70 +34,137 @@ class Diary {
     required this.tags,
     required this.location,
   });
+
+  // JSON序列化和反序列化
+  factory Diary.fromJson(Map<String, dynamic> json) =>
+      _$DiaryFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$DiaryToJson(this); // 序列化
 }
 
 // 个人反思数据结构
+@JsonSerializable(explicitToJson: true)
 class Reflection {
   final String title;
   final List<String> items;
 
   Reflection({required this.title, required this.items});
+
+  // JSON序列化和反序列化
+  factory Reflection.fromJson(Map<String, dynamic> json) =>
+      _$ReflectionFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$ReflectionToJson(this); // 序列化
 }
 
 // 评分卡片数据结构
+@JsonSerializable(explicitToJson: true)
 class Score {
   final String title;
   final double value;
   final double change;
 
   Score({required this.title, required this.value, required this.change});
+
+  // JSON序列化和反序列化
+  factory Score.fromJson(Map<String, dynamic> json) =>
+      _$ScoreFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$ScoreToJson(this); // 序列化
 }
 
 // 高亮数据结构
+@JsonSerializable(explicitToJson: true)
 class Highlight {
   final String title;
   final String content;
   final int color = 0xFF00FF00; // 默认颜色为绿色
 
   Highlight({required this.title, required this.content});
+
+  // JSON序列化和反序列化
+  factory Highlight.fromJson(Map<String, dynamic> json) =>
+      _$HighlightFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$HighlightToJson(this); // 序列化
 }
 
 // 任务数据结构
+@JsonSerializable(explicitToJson: true)
 class Task {
+  final String category;
   final String description;
   bool isCompleted = false;
 
-  Task({required this.description});
+  Task({required this.category, required this.description});
+
+  bool equalsTask(Task other) {
+    return category == other.category && description == other.description;
+  }
+
+  // JSON序列化和反序列化
+  factory Task.fromJson(Map<String, dynamic> json) =>
+      _$TaskFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$TaskToJson(this); // 序列化
 }
 
 // 任务列表数据结构
+@JsonSerializable(explicitToJson: true)
 class TodoList {
-  final Map<String, List<Task>> categorizedTasks = {};
-  TodoList();
+  final String userName;
+  final List<Task> tasks;
 
-  addTask(String category, Task task) {
-    if (categorizedTasks.containsKey(category)) {
-      categorizedTasks[category]!.add(task);
-    } else {
-      categorizedTasks[category] = [task];
+  TodoList({required this.userName, required this.tasks});
+
+  void addTask(Task task) {
+    for (var existingTask in tasks) {
+      if (existingTask.equalsTask(task)) {
+        return; // 任务已存在，直接返回
+      }
     }
+    tasks.add(task);
   }
+
+  //实现一个getter 名叫 categorizedTasks，数据结构为 Map<String, List<Task>>
+  Map<String, List<Task>> get categorizedTasks {
+    final Map<String, List<Task>> categorizedTasks = {};
+    for (var task in tasks) {
+      if (!categorizedTasks.containsKey(task.category)) {
+        categorizedTasks[task.category] = [];
+      }
+      categorizedTasks[task.category]!.add(task);
+    }
+    return categorizedTasks;
+  }
+
+  // JSON序列化和反序列化
+  factory TodoList.fromJson(Map<String, dynamic> json) =>
+      _$TodoListFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$TodoListToJson(this); // 序列化
 }
 
 // 能量标签枚举
-enum EnergyLabel {
-  lowMinus('', 0.0),
-  low('Low', 1.0),
-  neutral('Neutral', 2.0),
-  high('High', 3.0),
-  highPlus('', 4.0);
-
+@JsonSerializable(explicitToJson: true)
+class EnergyLabel {
   final String label;
   final double measurementValue;
   const EnergyLabel(this.label, this.measurementValue);
+
+  // JSON序列化和反序列化
+  factory EnergyLabel.fromJson(Map<String, dynamic> json) =>
+      _$EnergyLabelFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$EnergyLabelToJson(this); // 序列化
 }
 
+// 能量数据结构
+@JsonSerializable(explicitToJson: true)
 class Energy {
+  /*
+  我希望添加class的静态变量：lowMinus，low，neutral，high，highPlus
+  具体设置见 enum EnergyLabel
+  */
+  static const lowMinus = EnergyLabel('', 0.0);
+  static const low = EnergyLabel('Low', 1.0);
+  static const neutral = EnergyLabel('Neutral', 2.0);
+  static const high = EnergyLabel('High', 3.0);
+  static const highPlus = EnergyLabel('', 4.0);
+
   final DateTime dateTime; // 标准时间格式
   final double energyLevel; // 能量值，例如 1.0
 
@@ -98,48 +176,67 @@ class Energy {
 
   // 根据 energyLevel 动态生成标签
   EnergyLabel get energyLabel {
-    if (energyLevel <= EnergyLabel.lowMinus.measurementValue) {
-      return EnergyLabel.lowMinus;
+    if (energyLevel <= Energy.lowMinus.measurementValue) {
+      return Energy.lowMinus;
     }
-    if (energyLevel <= EnergyLabel.low.measurementValue) {
-      return EnergyLabel.low;
+    if (energyLevel <= Energy.low.measurementValue) {
+      return Energy.low;
     }
-    if (energyLevel <= EnergyLabel.neutral.measurementValue) {
-      return EnergyLabel.neutral;
+    if (energyLevel <= Energy.neutral.measurementValue) {
+      return Energy.neutral;
     }
-    if (energyLevel <= EnergyLabel.high.measurementValue) {
-      return EnergyLabel.high;
+    if (energyLevel <= Energy.high.measurementValue) {
+      return Energy.high;
     }
-    return EnergyLabel.highPlus;
+    return Energy.highPlus;
   }
 
   // 获取能量标签的字符串值
   String get energyLabelString => energyLabel.label;
+
+  // JSON序列化和反序列化
+  factory Energy.fromJson(Map<String, dynamic> json) =>
+      _$EnergyFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$EnergyToJson(this); // 序列化
 }
 
 // 情绪心情数据结构
+@JsonSerializable(explicitToJson: true)
 class Mood {
   final String name;
   final double moodValue;
   final double moodPercentage;
   final int color = 0xFF00FF00; // 默认颜色为绿色
   Mood(this.name, this.moodValue, this.moodPercentage);
+
+  // JSON序列化和反序列化
+  factory Mood.fromJson(Map<String, dynamic> json) =>
+      _$MoodFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$MoodToJson(this); // 序列化
 }
 
 // 醒着时间的行为数据结构
+@JsonSerializable(explicitToJson: true)
 class AwakeTimeAction {
   final String label;
   final double value;
   final int color = 0xFF00FF00; // 默认颜色为绿色
 
   AwakeTimeAction({required this.label, required this.value});
+
+  // JSON序列化和反序列化
+  factory AwakeTimeAction.fromJson(Map<String, dynamic> json) =>
+      _$AwakeTimeActionFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$AwakeTimeActionToJson(this); // 序列化
 }
 
 // 日记类，包含日期和日记条目列表
+@JsonSerializable(explicitToJson: true)
 class PersonalJournal {
-  PersonalJournal({required this.dateTime});
-
+  final String userName;
   final DateTime dateTime; // 标准时间格式
+
+  PersonalJournal({required this.userName, required this.dateTime});
 
   String summary = "";
 
@@ -162,7 +259,7 @@ class PersonalJournal {
   Score moodScore = Score(title: 'Mood Score', value: 0.0, change: 0.0);
 
   // 评分卡片数据
-  Score stressLevel = Score(title: 'Stress Level', value: 0.0, change: 0.0);
+  Score stressLevel = Score(title: 'Stress Level', value: 0.0, change: -1.3);
 
   // 重点
   List<Highlight> highlights = [];
@@ -204,8 +301,15 @@ class PersonalJournal {
     ];
     return '${monthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
   }
+
+  // JSON序列化和反序列化
+  factory PersonalJournal.fromJson(Map<String, dynamic> json) =>
+      _$PersonalJournalFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$PersonalJournalToJson(this); // 序列化
 }
 
+// 社交对象数据结构
+@JsonSerializable(explicitToJson: true)
 class SocialEntity {
   final String name; // 社交对象的名字
   final String details; // 详细信息
@@ -218,6 +322,23 @@ class SocialEntity {
     required this.tips,
     required this.timeSpent,
   });
+
+  // JSON序列化和反序列化
+  factory SocialEntity.fromJson(Map<String, dynamic> json) =>
+      _$SocialEntityFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$SocialEntityToJson(this); // 序列化
+}
+
+// 社交对象列表数据结构
+@JsonSerializable(explicitToJson: true)
+class SocialMap {
+  final String userName;
+  List<SocialEntity> socialEntities = [];
+  SocialMap({required this.userName, required this.socialEntities});
+  // JSON序列化和反序列化
+  factory SocialMap.fromJson(Map<String, dynamic> json) =>
+      _$SocialMapFromJson(json); // 反序列化
+  Map<String, dynamic> toJson() => _$SocialMapToJson(this); // 序列化
 }
 
 // 管理全局数据的类
@@ -227,51 +348,70 @@ class DataManager {
   factory DataManager() => _instance;
   DataManager._internal();
 
-  // 用户信息
   String userName = '';
 
   // 当前的日记和仪表板数据
   PersonalJournal currentJournalEntry = PersonalJournal(
+    userName: "",
     dateTime: DateTime.now(),
   );
 
   // 当前的待办事项数据
-  TodoList toDoList = TodoList();
+  TodoList todoList = TodoList(userName: "", tasks: []);
 
-  // 社交对象列表
-  List<SocialEntity> socialEntities = [];
+  // 社交对象数据
+  SocialMap socialMap = SocialMap(userName: "", socialEntities: []);
 
   // 初始化方法
   initialize() {
-    // 初始化用户信息
+    // 初始化用户数据
     userName = 'Wei';
+
     // 初始化待办事项数据
-    currentJournalEntry = PersonalJournal(dateTime: DateTime(2025, 4, 19));
+    currentJournalEntry = PersonalJournal(
+      userName: userName,
+      dateTime: DateTime(2025, 4, 19),
+    );
+
+    //
+    todoList = TodoList(userName: userName, tasks: []);
+
+    // 初始化社交对象数据
+    socialMap = SocialMap(userName: userName, socialEntities: []);
+
     // 添加测试数据
     _addTestTodoList();
     // 添加测试数据
     _addTestPersonal();
     // 添加测试数据
     _addTestSocialMap();
+
+    Map<String, dynamic> json1 = todoList.toJson();
+    debugPrint('toDoList=\n${json1.toString()}');
+
+    Map<String, dynamic> json2 = currentJournalEntry.toJson();
+    debugPrint('currentJournalEntry=\n${json2.toString()}');
+
+    Map<String, dynamic> json3 = socialMap.toJson();
+    debugPrint('socialMap=\n${json3.toString()}');
   }
 
   // 测试数据： 初始化待办事项数据
   void _addTestTodoList() {
-    toDoList.addTask('Wellness', Task(description: 'Morning meditation'));
-    toDoList.addTask(
-      'Wellness',
-      Task(description: 'Evening reading - 30 mins'),
+    todoList.addTask(
+      Task(category: 'Wellness', description: 'Morning meditation'),
     );
-    toDoList.addTask(
-      'Work',
-      Task(description: 'Prepare presentation for meeting'),
+    todoList.addTask(
+      Task(category: 'Wellness', description: 'Evening reading - 30 mins'),
     );
-    Task callMomTask = Task(description: 'Call mom');
+    todoList.addTask(
+      Task(category: 'Work', description: 'Prepare presentation for meeting'),
+    );
+    Task callMomTask = Task(category: 'Personal', description: 'Call mom');
     callMomTask.isCompleted = true; // 标记为已完成
-    toDoList.addTask('Personal', callMomTask);
-    toDoList.addTask(
-      'Health',
-      Task(description: 'Schedule dentist appointment'),
+    todoList.addTask(callMomTask);
+    todoList.addTask(
+      Task(category: 'Health', description: 'Schedule dentist appointment'),
     );
   }
 
@@ -548,7 +688,7 @@ class DataManager {
 
   // 测试数据： 初始化社交对象数据
   void _addTestSocialMap() {
-    socialEntities = [
+    socialMap.socialEntities = [
       SocialEntity(
         name: 'Ashley',
         details:
