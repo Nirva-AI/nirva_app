@@ -107,10 +107,9 @@ class Task {
 // 任务列表数据结构
 @JsonSerializable(explicitToJson: true)
 class TodoList {
-  final String userName;
   final List<Task> tasks;
 
-  TodoList({required this.userName, required this.tasks});
+  TodoList({required this.tasks});
 
   void addTask(Task task) {
     for (var existingTask in tasks) {
@@ -155,10 +154,6 @@ class EnergyLabel {
 // 能量数据结构
 @JsonSerializable(explicitToJson: true)
 class Energy {
-  /*
-  我希望添加class的静态变量：lowMinus，low，neutral，high，highPlus
-  具体设置见 enum EnergyLabel
-  */
   static const lowMinus = EnergyLabel('', 0.0);
   static const low = EnergyLabel('Low', 1.0);
   static const neutral = EnergyLabel('Neutral', 2.0);
@@ -233,10 +228,9 @@ class AwakeTimeAction {
 // 日记类，包含日期和日记条目列表
 @JsonSerializable(explicitToJson: true)
 class PersonalJournal {
-  final String userName;
   final DateTime dateTime; // 标准时间格式
 
-  PersonalJournal({required this.userName, required this.dateTime});
+  PersonalJournal({required this.dateTime});
 
   String summary = "";
 
@@ -332,9 +326,8 @@ class SocialEntity {
 // 社交对象列表数据结构
 @JsonSerializable(explicitToJson: true)
 class SocialMap {
-  final String userName;
   List<SocialEntity> socialEntities = [];
-  SocialMap({required this.userName, required this.socialEntities});
+  SocialMap({required this.socialEntities});
   // JSON序列化和反序列化
   factory SocialMap.fromJson(Map<String, dynamic> json) =>
       _$SocialMapFromJson(json); // 反序列化
@@ -348,36 +341,34 @@ class DataManager {
   factory DataManager() => _instance;
   DataManager._internal();
 
-  String userName = '';
-
   // 当前的日记和仪表板数据
   PersonalJournal currentJournalEntry = PersonalJournal(
-    userName: "",
     dateTime: DateTime.now(),
   );
 
   // 当前的待办事项数据
-  TodoList todoList = TodoList(userName: "", tasks: []);
+  TodoList todoList = TodoList(tasks: []);
 
   // 社交对象数据
-  SocialMap socialMap = SocialMap(userName: "", socialEntities: []);
+  SocialMap socialMap = SocialMap(socialEntities: []);
+
+  // 清空数据
+  clear() {
+    currentJournalEntry = PersonalJournal(dateTime: DateTime.now());
+    todoList = TodoList(tasks: []);
+    socialMap = SocialMap(socialEntities: []);
+  }
 
   // 初始化方法
   initialize() {
-    // 初始化用户数据
-    userName = 'Wei';
-
     // 初始化待办事项数据
-    currentJournalEntry = PersonalJournal(
-      userName: userName,
-      dateTime: DateTime(2025, 4, 19),
-    );
+    currentJournalEntry = PersonalJournal(dateTime: DateTime(2025, 4, 19));
 
     //
-    todoList = TodoList(userName: userName, tasks: []);
+    todoList = TodoList(tasks: []);
 
     // 初始化社交对象数据
-    socialMap = SocialMap(userName: userName, socialEntities: []);
+    socialMap = SocialMap(socialEntities: []);
 
     // 添加测试数据
     _addTestTodoList();

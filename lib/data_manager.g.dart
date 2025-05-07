@@ -73,7 +73,6 @@ Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
 };
 
 TodoList _$TodoListFromJson(Map<String, dynamic> json) => TodoList(
-  userName: json['userName'] as String,
   tasks:
       (json['tasks'] as List<dynamic>)
           .map((e) => Task.fromJson(e as Map<String, dynamic>))
@@ -81,7 +80,6 @@ TodoList _$TodoListFromJson(Map<String, dynamic> json) => TodoList(
 );
 
 Map<String, dynamic> _$TodoListToJson(TodoList instance) => <String, dynamic>{
-  'userName': instance.userName,
   'tasks': instance.tasks.map((e) => e.toJson()).toList(),
 };
 
@@ -128,10 +126,7 @@ Map<String, dynamic> _$AwakeTimeActionToJson(AwakeTimeAction instance) =>
     <String, dynamic>{'label': instance.label, 'value': instance.value};
 
 PersonalJournal _$PersonalJournalFromJson(Map<String, dynamic> json) =>
-    PersonalJournal(
-        userName: json['userName'] as String,
-        dateTime: DateTime.parse(json['dateTime'] as String),
-      )
+    PersonalJournal(dateTime: DateTime.parse(json['dateTime'] as String))
       ..summary = json['summary'] as String
       ..diaryEntries =
           (json['diaryEntries'] as List<dynamic>)
@@ -177,7 +172,6 @@ PersonalJournal _$PersonalJournalFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PersonalJournalToJson(
   PersonalJournal instance,
 ) => <String, dynamic>{
-  'userName': instance.userName,
   'dateTime': instance.dateTime.toIso8601String(),
   'summary': instance.summary,
   'diaryEntries': instance.diaryEntries.map((e) => e.toJson()).toList(),
@@ -209,7 +203,6 @@ Map<String, dynamic> _$SocialEntityToJson(SocialEntity instance) =>
     };
 
 SocialMap _$SocialMapFromJson(Map<String, dynamic> json) => SocialMap(
-  userName: json['userName'] as String,
   socialEntities:
       (json['socialEntities'] as List<dynamic>)
           .map((e) => SocialEntity.fromJson(e as Map<String, dynamic>))
@@ -217,6 +210,5 @@ SocialMap _$SocialMapFromJson(Map<String, dynamic> json) => SocialMap(
 );
 
 Map<String, dynamic> _$SocialMapToJson(SocialMap instance) => <String, dynamic>{
-  'userName': instance.userName,
   'socialEntities': instance.socialEntities.map((e) => e.toJson()).toList(),
 };
