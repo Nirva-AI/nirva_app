@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 
-// 修改 QuoteCarousel 组件
 class QuoteCarousel extends StatefulWidget {
   final List<Quote> quotes;
 
@@ -76,7 +75,6 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
           ),
         ),
         const SizedBox(height: 8),
-        // 分页指示器
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
