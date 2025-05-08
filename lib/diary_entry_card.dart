@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/diary_details_page.dart';
 
-// 修改 DiaryEntry 组件
-class DiaryEntry extends StatelessWidget {
+class DiaryEntryCard extends StatelessWidget {
   final Diary diaryData;
 
-  const DiaryEntry({super.key, required this.diaryData});
+  const DiaryEntryCard({super.key, required this.diaryData});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // 跳转到 TestPage，并传递卡片内容
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -69,7 +67,7 @@ class DiaryEntry extends StatelessWidget {
                       diaryData.location,
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
-                    const Icon(Icons.star_border), // 收藏按钮
+                    const Icon(Icons.star_border),
                   ],
                 ),
               ],

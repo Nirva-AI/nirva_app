@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/diary_entry.dart';
+import 'package:nirva_app/diary_entry_card.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/quote_carousel.dart';
 
-// 修改 SmartDiaryPage 组件
 class SmartDiaryPage extends StatelessWidget {
   const SmartDiaryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 获取引言卡片数据
     final quotes = DataManager().currentJournalEntry.quotes;
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +37,7 @@ class SmartDiaryPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final entry =
                   DataManager().currentJournalEntry.diaryEntries[index];
-              return DiaryEntry(diaryData: entry);
+              return DiaryEntryCard(diaryData: entry);
             },
           ),
         ],
