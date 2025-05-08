@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/splash_screen.dart'; // 引入 SplashScreen
+import 'package:nirva_app/splash_screen.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -17,13 +17,5 @@ class MainApp extends StatelessWidget {
       ),
       home: const SplashScreen(), // 设置 SplashScreen 为初始页面
     );
-
-    // return MaterialApp(
-    //   title: 'Nirva App',
-    //   theme: ThemeData(
-    //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-    //   ),
-    //   home: const HomePage(title: 'Nirva App Home Page'),
-    // );
   }
 }
