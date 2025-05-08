@@ -1,0 +1,29 @@
+{
+  "tasks": [
+    {
+      "category": "Wellness",
+      "description": "Morning meditation",
+      "isCompleted": false
+    },
+    {
+      "category": "Wellness",
+      "description": "Evening reading - 30 mins",
+      "isCompleted": false
+    },
+    {
+      "category": "Work",
+      "description": "Prepare presentation for meeting",
+      "isCompleted": false
+    },
+    {
+      "category": "Personal",
+      "description": "Call mom",
+      "isCompleted": true
+    },
+    {
+      "category": "Health",
+      "description": "Schedule dentist appointment",
+      "isCompleted": false
+    }
+  ]
+}

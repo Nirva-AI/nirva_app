@@ -1,5 +1,7 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nirva_app/utils.dart';
+import 'dart:convert'; // 用于 JSON 编码和解码
 part 'data_manager.g.dart'; // 引入生成的文件
 
 // 引言卡片数据结构
@@ -376,14 +378,15 @@ class DataManager {
     // 添加测试数据
     _addTestSocialMap();
 
-    // Map<String, dynamic> json1 = todoList.toJson();
-    // debugPrint('toDoList=\n${json1.toString()}');
+    // 直接用 Logger.d 来打印todoList序列化成的json，要求是合规的json数据格式。
+    String todoListJson = jsonEncode(todoList.toJson());
+    Logger.d('todoList=\n$todoListJson');
 
-    // Map<String, dynamic> json2 = currentJournalEntry.toJson();
-    // debugPrint('currentJournalEntry=\n${json2.toString()}');
+    String personalJson = jsonEncode(currentJournalEntry.toJson());
+    Logger.d('personalJson=\n$personalJson');
 
-    // Map<String, dynamic> json3 = socialMap.toJson();
-    // debugPrint('socialMap=\n${json3.toString()}');
+    String socialMapJson = jsonEncode(socialMap.toJson());
+    Logger.d('socialMapJson=\n$socialMapJson');
   }
 
   // 测试数据： 初始化待办事项数据
@@ -726,3 +729,8 @@ class DataManager {
     ];
   }
 }
+
+
+/*
+
+*/

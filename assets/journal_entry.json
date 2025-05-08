@@ -1,0 +1,336 @@
+{
+  "dateTime": "2025-04-19T00:00:00.000",
+  "summary": "Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.",
+  "diaryEntries": [
+    {
+      "time": "10:00 AM - 1:00 PM",
+      "title": "Morning in the Park with Ashley",
+      "summary": "Deep conversations about life, dating experiences, and exploring crystals and tarot cards.",
+      "content": "Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.",
+      "tags": [
+        "peaceful",
+        "outdoor",
+        "conversation"
+      ],
+      "location": "Park"
+    },
+    {
+      "time": "1:00 PM - 1:30 PM",
+      "title": "Departure from Park",
+      "summary": "Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.",
+      "content": "After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.",
+      "tags": [
+        "calm",
+        "outdoor",
+        "transportation"
+      ],
+      "location": "Park"
+    },
+    {
+      "time": "1:30 PM - 2:50 PM",
+      "title": "Drive to San Francisco with Trent",
+      "summary": "Philosophical discussions about work, life perspectives, and AI companionship during our drive.",
+      "content": "The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.",
+      "tags": [
+        "engaged",
+        "transportation",
+        "conversation"
+      ],
+      "location": "In the car"
+    },
+    {
+      "time": "3:00 PM - 4:00 PM",
+      "title": "Coffee Break with Sarah",
+      "summary": "Discussed future plans and shared some laughs over coffee.",
+      "content": "Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.",
+      "tags": [
+        "relaxing",
+        "indoor",
+        "conversation"
+      ],
+      "location": "Cafe"
+    },
+    {
+      "time": "4:30 PM - 6:00 PM",
+      "title": "Evening Walk",
+      "summary": "A peaceful walk in the park to clear my mind.",
+      "content": "I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.",
+      "tags": [
+        "peaceful",
+        "outdoor",
+        "exercise"
+      ],
+      "location": "Park"
+    },
+    {
+      "time": "10:00 AM - 1:00 PM",
+      "title": "Morning in the Park with Ashley",
+      "summary": "Deep conversations about life, dating experiences, and exploring crystals and tarot cards.",
+      "content": "Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.",
+      "tags": [
+        "peaceful",
+        "outdoor",
+        "conversation"
+      ],
+      "location": "Park"
+    },
+    {
+      "time": "1:00 PM - 1:30 PM",
+      "title": "Departure from Park",
+      "summary": "Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.",
+      "content": "After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.",
+      "tags": [
+        "calm",
+        "outdoor",
+        "transportation"
+      ],
+      "location": "Park"
+    },
+    {
+      "time": "1:30 PM - 2:50 PM",
+      "title": "Drive to San Francisco with Trent",
+      "summary": "Philosophical discussions about work, life perspectives, and AI companionship during our drive.",
+      "content": "The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.",
+      "tags": [
+        "engaged",
+        "transportation",
+        "conversation"
+      ],
+      "location": "In the car"
+    },
+    {
+      "time": "3:00 PM - 4:00 PM",
+      "title": "Coffee Break with Sarah",
+      "summary": "Discussed future plans and shared some laughs over coffee.",
+      "content": "Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.",
+      "tags": [
+        "relaxing",
+        "indoor",
+        "conversation"
+      ],
+      "location": "Cafe"
+    },
+    {
+      "time": "4:30 PM - 6:00 PM",
+      "title": "Evening Walk",
+      "summary": "A peaceful walk in the park to clear my mind.",
+      "content": "I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.",
+      "tags": [
+        "peaceful",
+        "outdoor",
+        "exercise"
+      ],
+      "location": "Park"
+    }
+  ],
+  "quotes": [
+    {
+      "text": "\"Today was a day of deep conversations with friends, self-reflection, and cultural experiences.\""
+    },
+    {
+      "text": "\"Meaningful connections with others help me understand myself better and grow as a person.\""
+    },
+    {
+      "text": "\"I am grateful for friends who share their wisdom and provide space for authentic expression.\""
+    }
+  ],
+  "selfReflections": [
+    {
+      "title": "I am feeling grateful for:",
+      "items": [
+        "Deep conversations with friends who listen and share wisdom",
+        "Access to art and film that opens my eyes to different perspectives",
+        "The privilege to contemplate my future on my own terms"
+      ]
+    },
+    {
+      "title": "I can celebrate:",
+      "items": [
+        "Making time for meaningful connections despite a busy schedule",
+        "Being open to different cultural experiences and perspectives",
+        "Taking steps to consider my future options thoughtfully"
+      ]
+    },
+    {
+      "title": "I can do better at:",
+      "items": [
+        "Finding better balance between solitude and social connection",
+        "Being more productive with my free time instead of oversleeping",
+        "Managing feelings of envy about others' lives more constructively"
+      ]
+    }
+  ],
+  "detailedInsights": [
+    {
+      "title": "Relationships",
+      "items": [
+        "Deep conversations with friends provide invaluable emotional support and perspective.",
+        "I value authentic connections but feel frustrated by unpredictable dating experiences.",
+        "Being 'ghosted' after meaningful connections is a recurring pattern that causes confusion."
+      ]
+    },
+    {
+      "title": "Self-Discovery",
+      "items": [
+        "I'm contemplating the balance between solitude and social connection in my life.",
+        "When I have excess free time, I tend toward unproductive behaviors like oversleeping.",
+        "I feel both curious about and envious of others' stable family lives."
+      ]
+    },
+    {
+      "title": "Future Planning",
+      "items": [
+        "I'm considering egg freezing and planning to make decisions about children by age 40.",
+        "Financial considerations and family support are important factors in my fertility decisions.",
+        "I'm open to alternative pathways to parenthood beyond traditional routes."
+      ]
+    },
+    {
+      "title": "Cultural Perspectives",
+      "items": [
+        "Art and film provide windows into different cultural and historical experiences.",
+        "My family background gives me a unique perspective on political events like Tiananmen Square.",
+        "I'm exploring philosophical concepts from different cultures like Tibetan Buddhist compassion."
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "title": "Deepen meaningful relationships",
+      "items": [
+        "Schedule monthly deep conversations with close friends",
+        "Join a community group aligned with my interests",
+        "Practice active listening techniques"
+      ]
+    },
+    {
+      "title": "Explore fertility options",
+      "items": [
+        "Research egg freezing clinics and costs",
+        "Schedule consultation with fertility specialist",
+        "Create financial plan for family planning options"
+      ]
+    },
+    {
+      "title": "Expand cultural understanding",
+      "items": [
+        "Watch one international film per week",
+        "Read books from diverse cultural perspectives"
+      ]
+    }
+  ],
+  "moodScore": {
+    "title": "Mood Score",
+    "value": 7.8,
+    "change": 0.5
+  },
+  "stressLevel": {
+    "title": "Stress Level",
+    "value": 3.2,
+    "change": -1.3
+  },
+  "highlights": [
+    {
+      "title": "ACHIEVEMENT",
+      "content": "Completed your morning meditation streak - 7 days!"
+    },
+    {
+      "title": "INSIGHT",
+      "content": "You're most productive between 9-11 AM."
+    },
+    {
+      "title": "SOCIAL",
+      "content": "You've connected with 3 friends this week."
+    }
+  ],
+  "energyRecords": [
+    {
+      "dateTime": "2025-05-06T10:00:00.000",
+      "energyLevel": 1.0
+    },
+    {
+      "dateTime": "2025-05-06T10:30:00.000",
+      "energyLevel": 2.0
+    },
+    {
+      "dateTime": "2025-05-06T11:30:00.000",
+      "energyLevel": 1.5
+    },
+    {
+      "dateTime": "2025-05-06T13:00:00.000",
+      "energyLevel": 2.8
+    },
+    {
+      "dateTime": "2025-05-06T13:30:00.000",
+      "energyLevel": 2.0
+    },
+    {
+      "dateTime": "2025-05-06T14:30:00.000",
+      "energyLevel": 3.0
+    },
+    {
+      "dateTime": "2025-05-06T15:10:00.000",
+      "energyLevel": 1.5
+    },
+    {
+      "dateTime": "2025-05-06T16:30:00.000",
+      "energyLevel": 2.5
+    },
+    {
+      "dateTime": "2025-05-06T18:30:00.000",
+      "energyLevel": 3.2
+    },
+    {
+      "dateTime": "2025-05-06T19:00:00.000",
+      "energyLevel": 2.8
+    }
+  ],
+  "moods": [
+    {
+      "name": "Happy",
+      "moodValue": 0.5,
+      "moodPercentage": 50.0
+    },
+    {
+      "name": "Calm",
+      "moodValue": 0.3,
+      "moodPercentage": 30.0
+    },
+    {
+      "name": "Stressed",
+      "moodValue": -0.9,
+      "moodPercentage": 10.0
+    },
+    {
+      "name": "Focused",
+      "moodValue": -0.5,
+      "moodPercentage": 10.0
+    }
+  ],
+  "awakeTimeActions": [
+    {
+      "label": "Work",
+      "value": 8.0
+    },
+    {
+      "label": "Exercise",
+      "value": 2.0
+    },
+    {
+      "label": "Social",
+      "value": 3.0
+    },
+    {
+      "label": "Learning",
+      "value": 3.0
+    },
+    {
+      "label": "Self-care",
+      "value": 1.0
+    },
+    {
+      "label": "Other",
+      "value": 4.0
+    }
+  ]
+}
