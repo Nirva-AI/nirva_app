@@ -1,5 +1,4 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
-import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'data_manager.g.dart'; // 引入生成的文件
 
@@ -377,14 +376,14 @@ class DataManager {
     // 添加测试数据
     _addTestSocialMap();
 
-    Map<String, dynamic> json1 = todoList.toJson();
-    debugPrint('toDoList=\n${json1.toString()}');
+    // Map<String, dynamic> json1 = todoList.toJson();
+    // debugPrint('toDoList=\n${json1.toString()}');
 
-    Map<String, dynamic> json2 = currentJournalEntry.toJson();
-    debugPrint('currentJournalEntry=\n${json2.toString()}');
+    // Map<String, dynamic> json2 = currentJournalEntry.toJson();
+    // debugPrint('currentJournalEntry=\n${json2.toString()}');
 
-    Map<String, dynamic> json3 = socialMap.toJson();
-    debugPrint('socialMap=\n${json3.toString()}');
+    // Map<String, dynamic> json3 = socialMap.toJson();
+    // debugPrint('socialMap=\n${json3.toString()}');
   }
 
   // 测试数据： 初始化待办事项数据
