@@ -5,8 +5,9 @@ class AssistantChatPanel extends StatelessWidget {
   final ValueNotifier<List<BaseMessage>> chatMessages;
   final TextEditingController textController;
   final Function(String) onSend;
+  final ScrollController _scrollController = ScrollController();
 
-  const AssistantChatPanel({
+  AssistantChatPanel({
     super.key,
     required this.chatMessages,
     required this.textController,
@@ -22,11 +23,20 @@ class AssistantChatPanel extends StatelessWidget {
     return 'Illegal: ${message.content}';
   }
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          true, // Ensures the input is not covered by the keyboard
+      resizeToAvoidBottomInset: true,
       body: Container(
         height: MediaQuery.of(context).size.height * 0.85,
         width: double.infinity,
@@ -37,20 +47,37 @@ class AssistantChatPanel extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(height: 16),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[400],
-                borderRadius: BorderRadius.circular(2),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 40), // 占位，保持对称
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.grey),
+                  onPressed: () {
+                    FocusScope.of(context).unfocus(); // 关闭软键盘
+                    Navigator.pop(context); // 关闭当前界面
+                  },
+                ),
+              ],
             ),
             SizedBox(height: 16),
             Expanded(
               child: ValueListenableBuilder<List<BaseMessage>>(
                 valueListenable: chatMessages,
                 builder: (context, chatMessagesValue, _) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _scrollToBottom(); // 每次消息更新后滚动到底部
+                  });
                   return ListView.builder(
+                    controller: _scrollController, // 绑定 ScrollController
                     itemCount: chatMessagesValue.length,
                     itemBuilder: (context, index) {
                       final message = chatMessagesValue[index];
@@ -112,6 +139,7 @@ class AssistantChatPanel extends StatelessWidget {
                         if (message.isNotEmpty) {
                           onSend(message);
                           textController.clear();
+                          _scrollToBottom(); // 发送消息后滚动到底部
                         }
                       },
                     ),
