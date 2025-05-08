@@ -3,7 +3,7 @@ import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
-import 'package:nirva_app/robot_chat_modal.dart';
+import 'package:nirva_app/assistant_chat_panel.dart';
 import 'package:nirva_app/chat_manager.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return RobotChatModal(
+        return AssistantChatPanel(
           chatMessages: ChatManager().getMessages(),
           textController: _textController,
           onSend: (message) {

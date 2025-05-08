@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/chat_manager.dart';
 
-class RobotChatModal extends StatelessWidget {
+class AssistantChatPanel extends StatelessWidget {
   final ValueNotifier<List<BaseMessage>> chatMessages;
   final TextEditingController textController;
   final Function(String) onSend;
 
-  const RobotChatModal({
+  const AssistantChatPanel({
     super.key,
     required this.chatMessages,
     required this.textController,
@@ -19,9 +19,8 @@ class RobotChatModal extends StatelessWidget {
       return 'You: ${message.content}';
     } else if (message.role == ChatRole.ai) {
       return 'Nirva: ${message.content}';
-    } else {
-      return 'Illegal: ${message.content}';
     }
+    return 'Illegal: ${message.content}';
   }
 
   @override
