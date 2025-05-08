@@ -23,19 +23,22 @@ class _HomePageState extends State<HomePage> {
   void _floatingActionButtonPressed() {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
+      isScrollControlled: true, // 保持内容可滚动
       enableDrag: false,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return AssistantChatPanel(
-          chatMessages: ChatManager().getMessages(),
-          textController: _textController,
-          onSend: (message) {
-            ChatManager().addUserMessage(message);
-            ChatManager().addAIMessage('回复: $message');
-          },
+        return FractionallySizedBox(
+          heightFactor: 0.9, // 设置 ModalBottomSheet 占屏幕高度的 90%
+          child: AssistantChatPanel(
+            chatMessages: ChatManager().getMessages(),
+            textController: _textController,
+            onSend: (message) {
+              ChatManager().addUserMessage(message);
+              ChatManager().addAIMessage('回复: $message');
+            },
+          ),
         );
       },
     );
