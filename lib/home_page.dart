@@ -184,19 +184,31 @@ class _HomePageState extends State<HomePage> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 20, color: isSelected ? Colors.blue : Colors.grey),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 20,
-              color: isSelected ? Colors.blue : Colors.grey,
-            ),
+      child: Container(
+        width: 100, // 设置按钮的固定宽度
+        height: double.infinity, // 占满父容器的高度
+        color: Colors.transparent, // 设置透明背景，确保整个区域可点击
+        child: FittedBox(
+          fit: BoxFit.scaleDown, // 缩放内容以适应父容器
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: isSelected ? Colors.blue : Colors.grey,
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: isSelected ? Colors.blue : Colors.grey,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -15,7 +15,7 @@ void main() async {
 
   // 初始化其他模块
   DataManager().initialize();
-  await DataManager().loadTestData();
+  //await DataManager().loadTestData();
   ChatManager().initialize();
 
   // 运行应用

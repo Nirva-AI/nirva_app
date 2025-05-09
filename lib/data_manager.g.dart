@@ -61,13 +61,12 @@ Map<String, dynamic> _$HighlightToJson(Highlight instance) => <String, dynamic>{
   'content': instance.content,
 };
 
-Task _$TaskFromJson(Map<String, dynamic> json) => Task(
-  category: json['category'] as String,
-  description: json['description'] as String,
-)..isCompleted = json['isCompleted'] as bool;
+Task _$TaskFromJson(Map<String, dynamic> json) =>
+    Task(tag: json['tag'] as String, description: json['description'] as String)
+      ..isCompleted = json['isCompleted'] as bool;
 
 Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
-  'category': instance.category,
+  'tag': instance.tag,
   'description': instance.description,
   'isCompleted': instance.isCompleted,
 };

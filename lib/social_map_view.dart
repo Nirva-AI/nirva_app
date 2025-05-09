@@ -34,7 +34,7 @@ class _SocialMapViewState extends State<SocialMapView> {
   @override
   Widget build(BuildContext context) {
     final List<SocialEntity> socialEntities =
-        DataManager().socialMap.socialEntities;
+        DataManager().currentJournalEntry.socialMap.socialEntities;
 
     if (selectedEntityIndex >= 0 &&
         selectedEntityIndex < socialEntities.length) {

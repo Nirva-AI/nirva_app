@@ -13,6 +13,27 @@ class Logger {
   }
 }
 
+class FormatString {
+  static final monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  static String formattedDate(DateTime dateTime) {
+    return '${monthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
+  }
+}
+
 class Utils {
   // 静态方法：加载 JSON 文件并解析为 Map
   static Future<Map<String, dynamic>> loadJsonAsset(String path) async {
