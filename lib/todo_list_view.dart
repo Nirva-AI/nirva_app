@@ -47,7 +47,7 @@ class TodoListView extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
                   children:
-                      todoListData.categorizedTasks.entries.map((entry) {
+                      todoListData.groupedTasks.entries.map((entry) {
                         final category = entry.key;
                         final tasks = entry.value;
 
