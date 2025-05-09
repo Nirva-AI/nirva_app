@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'data_manager.dart';
 
-class TodoListView extends StatelessWidget {
+class TodoListView extends StatefulWidget {
   const TodoListView({super.key});
 
+  @override
+  State<TodoListView> createState() => _TodoListViewState();
+}
+
+class _TodoListViewState extends State<TodoListView> {
   @override
   Widget build(BuildContext context) {
     final todoListData = DataManager().todoList;
@@ -63,22 +68,33 @@ class TodoListView extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             ...tasks.map((task) {
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor:
-                                      task.isCompleted
-                                          ? Colors.green
-                                          : Colors.red,
-                                  radius: 4,
-                                ),
-                                title: Text(
-                                  task.description,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    decoration:
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    task.isCompleted =
+                                        !task.isCompleted; // Toggle completion
+                                  });
+                                  debugPrint(
+                                    'Task tapped: ${task.description}',
+                                  );
+                                },
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor:
                                         task.isCompleted
-                                            ? TextDecoration.lineThrough
-                                            : TextDecoration.none,
+                                            ? Colors.green
+                                            : Colors.red,
+                                    radius: 4,
+                                  ),
+                                  title: Text(
+                                    task.description,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      decoration:
+                                          task.isCompleted
+                                              ? TextDecoration.lineThrough
+                                              : TextDecoration.none,
+                                    ),
                                   ),
                                 ),
                               );
