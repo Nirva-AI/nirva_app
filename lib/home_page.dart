@@ -73,14 +73,26 @@ class _HomePageState extends State<HomePage> {
   void _showToDoList(BuildContext context) {
     Navigator.of(context).push(
       PageRouteBuilder(
-        opaque: false,
+        opaque: false, // 设置为透明背景
+        transitionDuration: const Duration(milliseconds: 100), // 动画持续时间
         pageBuilder: (context, animation, secondaryAnimation) {
           return SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(1, 0),
-              end: Offset.zero,
+              begin: const Offset(1, 0), // 从屏幕右侧滑入
+              end: Offset.zero, // 到达屏幕位置
             ).animate(animation),
-            child: const TodoListView(),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop(); // 点击外部区域关闭视图
+              },
+              child: Container(
+                color: Colors.black.withAlpha(0), // 半透明背景
+                child: GestureDetector(
+                  onTap: () {}, // 阻止点击 TodoListView 内部区域触发关闭
+                  child: const TodoListView(),
+                ),
+              ),
+            ),
           );
         },
       ),
