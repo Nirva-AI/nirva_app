@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return const DashboardPage();
       default:
-        return const Center(child: Text('Unknown Page'));
+        return const Center(child: Text('User Profile Screen'));
     }
   }
 
@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return 'Dashboard';
       default:
-        return 'Unknown Page';
+        return 'Me';
     }
   }
 
@@ -137,37 +137,55 @@ class _HomePageState extends State<HomePage> {
         child: SizedBox(
           height: 70,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildBottomAppBarItem(
-                icon: Icons.book,
-                label: 'Smart Diary',
-                isSelected: _selectedPage == 0,
-                onTap: () {
-                  setState(() {
-                    _selectedPage = 0;
-                  });
-                },
+              Expanded(
+                child: _buildBottomAppBarItem(
+                  icon: Icons.book,
+                  label: 'Smart Diary',
+                  isSelected: _selectedPage == 0,
+                  onTap: () {
+                    setState(() {
+                      _selectedPage = 0;
+                    });
+                  },
+                ),
               ),
-              _buildBottomAppBarItem(
-                icon: Icons.lightbulb,
-                label: 'Reflections',
-                isSelected: _selectedPage == 1,
-                onTap: () {
-                  setState(() {
-                    _selectedPage = 1;
-                  });
-                },
+              Expanded(
+                child: _buildBottomAppBarItem(
+                  icon: Icons.lightbulb,
+                  label: 'Reflections',
+                  isSelected: _selectedPage == 1,
+                  onTap: () {
+                    setState(() {
+                      _selectedPage = 1;
+                    });
+                  },
+                ),
               ),
-              _buildBottomAppBarItem(
-                icon: Icons.dashboard,
-                label: 'Dashboard',
-                isSelected: _selectedPage == 2,
-                onTap: () {
-                  setState(() {
-                    _selectedPage = 2;
-                  });
-                },
+              Expanded(
+                child: _buildBottomAppBarItem(
+                  icon: Icons.dashboard,
+                  label: 'Dashboard',
+                  isSelected: _selectedPage == 2,
+                  onTap: () {
+                    setState(() {
+                      _selectedPage = 2;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: _buildBottomAppBarItem(
+                  icon: Icons.person,
+                  label: 'Me',
+                  isSelected: _selectedPage == 3,
+                  onTap: () {
+                    debugPrint('Me button tapped');
+                    setState(() {
+                      _selectedPage = 3;
+                    });
+                  },
+                ),
               ),
             ],
           ),
@@ -185,29 +203,24 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100, // 设置按钮的固定宽度
         height: double.infinity, // 占满父容器的高度
         color: Colors.transparent, // 设置透明背景，确保整个区域可点击
-        child: FittedBox(
-          fit: BoxFit.scaleDown, // 缩放内容以适应父容器
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 20,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 30, // 调整图标大小
+              color: isSelected ? Colors.blue : Colors.grey,
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10, // 调整字体大小
                 color: isSelected ? Colors.blue : Colors.grey,
               ),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: isSelected ? Colors.blue : Colors.grey,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
