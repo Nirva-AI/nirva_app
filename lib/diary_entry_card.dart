@@ -67,7 +67,7 @@ class DiaryEntryCard extends StatelessWidget {
                       diaryData.location,
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
-                    const Icon(Icons.star_border),
+                    //const Icon(Icons.star_border),
                   ],
                 ),
               ],

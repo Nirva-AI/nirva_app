@@ -22,20 +22,20 @@ class DiaryDetailsPage extends StatelessWidget {
             },
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.star_border, color: Colors.black),
-              onPressed: () {
-                // 星形按钮点击事件
-                debugPrint('Star button pressed');
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.share, color: Colors.black),
-              onPressed: () {
-                // 分享按钮点击事件
-                debugPrint('Share button pressed');
-              },
-            ),
+            // IconButton(
+            //   icon: const Icon(Icons.star_border, color: Colors.black),
+            //   onPressed: () {
+            //     // 星形按钮点击事件
+            //     debugPrint('Star button pressed');
+            //   },
+            // ),
+            // IconButton(
+            //   icon: const Icon(Icons.share, color: Colors.black),
+            //   onPressed: () {
+            //     // 分享按钮点击事件
+            //     debugPrint('Share button pressed');
+            //   },
+            // ),
           ],
         ),
       ),
