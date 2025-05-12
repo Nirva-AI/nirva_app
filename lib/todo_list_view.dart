@@ -11,7 +11,6 @@ class TodoListView extends StatefulWidget {
 class _TodoListViewState extends State<TodoListView> {
   @override
   Widget build(BuildContext context) {
-    final todoListData = DataManager().todoList;
     return Align(
       alignment: Alignment.topRight,
       child: Material(
@@ -52,7 +51,7 @@ class _TodoListViewState extends State<TodoListView> {
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
                   children:
-                      todoListData.groupedTasks.entries.map((entry) {
+                      DataManager().groupedTasks.entries.map((entry) {
                         final category = entry.key;
                         final tasks = entry.value;
 
@@ -71,8 +70,7 @@ class _TodoListViewState extends State<TodoListView> {
                               return InkWell(
                                 onTap: () {
                                   setState(() {
-                                    task.isCompleted =
-                                        !task.isCompleted; // Toggle completion
+                                    DataManager().toggleTaskCompletion(task);
                                   });
                                   debugPrint(
                                     'Task tapped: ${task.description}',

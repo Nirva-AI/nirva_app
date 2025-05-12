@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/data_manager.dart'; // 假设你有一个数据模型文件
+//import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/data.dart';
 
 class ScoreCard extends StatelessWidget {
   final Score data;

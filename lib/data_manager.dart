@@ -1,144 +1,123 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:json_annotation/json_annotation.dart';
 import 'package:nirva_app/utils.dart';
-import 'package:nirva_app/user.dart';
+import 'package:nirva_app/data.dart';
 import 'dart:convert';
 part 'data_manager.g.dart';
 
 // 引言卡片数据结构
-@JsonSerializable(explicitToJson: true)
-class Quote {
-  final String text;
+// @JsonSerializable(explicitToJson: true)
+// class Quote {
+//   final String text;
 
-  Quote({required this.text});
+//   Quote({required this.text});
 
-  // JSON序列化和反序列化
-  factory Quote.fromJson(Map<String, dynamic> json) =>
-      _$QuoteFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$QuoteToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory Quote.fromJson(Map<String, dynamic> json) =>
+//       _$QuoteFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$QuoteToJson(this); // 序列化
+// }
 
 // 日记条目的数据结构
-@JsonSerializable(explicitToJson: true)
-class Diary {
-  final String time;
-  final String title;
-  final String summary;
-  final String content;
-  final List<String> tags;
-  final String location;
+// @JsonSerializable(explicitToJson: true)
+// class Diary {
+//   final String time;
+//   final String title;
+//   final String summary;
+//   final String content;
+//   final List<String> tags;
+//   final String location;
 
-  Diary({
-    required this.time,
-    required this.title,
-    required this.summary,
-    required this.content,
-    required this.tags,
-    required this.location,
-  });
+//   Diary({
+//     required this.time,
+//     required this.title,
+//     required this.summary,
+//     required this.content,
+//     required this.tags,
+//     required this.location,
+//   });
 
-  // JSON序列化和反序列化
-  factory Diary.fromJson(Map<String, dynamic> json) =>
-      _$DiaryFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$DiaryToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory Diary.fromJson(Map<String, dynamic> json) =>
+//       _$DiaryFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$DiaryToJson(this); // 序列化
+// }
 
 // 个人反思数据结构
-@JsonSerializable(explicitToJson: true)
-class Reflection {
-  final String title;
-  final List<String> items;
+// @JsonSerializable(explicitToJson: true)
+// class Reflection {
+//   final String title;
+//   final List<String> items;
 
-  Reflection({required this.title, required this.items});
+//   Reflection({required this.title, required this.items});
 
-  // JSON序列化和反序列化
-  factory Reflection.fromJson(Map<String, dynamic> json) =>
-      _$ReflectionFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$ReflectionToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory Reflection.fromJson(Map<String, dynamic> json) =>
+//       _$ReflectionFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$ReflectionToJson(this); // 序列化
+// }
 
 // 评分卡片数据结构
-@JsonSerializable(explicitToJson: true)
-class Score {
-  final String title;
-  final double value;
-  final double change;
+// @JsonSerializable(explicitToJson: true)
+// class Score {
+//   final String title;
+//   final double value;
+//   final double change;
 
-  Score({required this.title, required this.value, required this.change});
+//   Score({required this.title, required this.value, required this.change});
 
-  // JSON序列化和反序列化
-  factory Score.fromJson(Map<String, dynamic> json) =>
-      _$ScoreFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$ScoreToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory Score.fromJson(Map<String, dynamic> json) =>
+//       _$ScoreFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$ScoreToJson(this); // 序列化
+// }
 
 // 高亮数据结构
-@JsonSerializable(explicitToJson: true)
-class Highlight {
-  final String title;
-  final String content;
-  final int color = 0xFF00FF00; // 默认颜色为绿色
+// @JsonSerializable(explicitToJson: true)
+// class Highlight {
+//   final String title;
+//   final String content;
+//   final int color = 0xFF00FF00; // 默认颜色为绿色
 
-  Highlight({required this.title, required this.content});
+//   Highlight({required this.title, required this.content});
 
-  // JSON序列化和反序列化
-  factory Highlight.fromJson(Map<String, dynamic> json) =>
-      _$HighlightFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$HighlightToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory Highlight.fromJson(Map<String, dynamic> json) =>
+//       _$HighlightFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$HighlightToJson(this); // 序列化
+// }
 
 // 任务数据结构
-@JsonSerializable(explicitToJson: true)
-class Task {
-  final String tag;
-  final String description;
-  bool isCompleted = false;
+// @JsonSerializable(explicitToJson: true)
+// class Task {
+//   final String tag;
+//   final String description;
+//   bool isCompleted = false;
 
-  Task({required this.tag, required this.description});
+//   Task({required this.tag, required this.description});
 
-  bool equalsTask(Task other) {
-    return tag == other.tag && description == other.description;
-  }
+//   bool equalsTask(Task other) {
+//     return tag == other.tag && description == other.description;
+//   }
 
-  // JSON序列化和反序列化
-  factory Task.fromJson(Map<String, dynamic> json) =>
-      _$TaskFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$TaskToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory Task.fromJson(Map<String, dynamic> json) =>
+//       _$TaskFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$TaskToJson(this); // 序列化
+// }
 
 // 任务列表数据结构
-@JsonSerializable(explicitToJson: true)
-class TodoList {
-  final List<Task> tasks;
+// @JsonSerializable(explicitToJson: true)
+// class TodoList {
+//   final List<Task> tasks;
 
-  TodoList({required this.tasks});
+//   TodoList({required this.tasks});
 
-  void addTask(Task task) {
-    for (var existingTask in tasks) {
-      if (existingTask.equalsTask(task)) {
-        return; // 任务已存在，直接返回
-      }
-    }
-    tasks.add(task);
-  }
-
-  //实现一个getter 名叫 categorizedTasks，数据结构为 Map<String, List<Task>>
-  Map<String, List<Task>> get groupedTasks {
-    final Map<String, List<Task>> categorizedTasks = {};
-    for (var task in tasks) {
-      if (!categorizedTasks.containsKey(task.tag)) {
-        categorizedTasks[task.tag] = [];
-      }
-      categorizedTasks[task.tag]!.add(task);
-    }
-    return categorizedTasks;
-  }
-
-  // JSON序列化和反序列化
-  factory TodoList.fromJson(Map<String, dynamic> json) =>
-      _$TodoListFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$TodoListToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory TodoList.fromJson(Map<String, dynamic> json) =>
+//       _$TodoListFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$TodoListToJson(this); // 序列化
+// }
 
 // 能量标签枚举
 @JsonSerializable(explicitToJson: true)
@@ -343,7 +322,23 @@ class DataManager {
   void clear() {
     currentJournalEntry = PersonalJournal(dateTime: DateTime.now());
     todoList = TodoList(tasks: []);
-    //socialMap = SocialMap(socialEntities: []);
+  }
+
+  //
+  Map<String, List<Task>> get groupedTasks {
+    final Map<String, List<Task>> groupedTasks = {};
+    for (var task in todoList.tasks) {
+      if (!groupedTasks.containsKey(task.tag)) {
+        groupedTasks[task.tag] = [];
+      }
+      groupedTasks[task.tag]!.add(task);
+    }
+    return groupedTasks;
+  }
+
+  void toggleTaskCompletion(Task task) {
+    // 切换任务的完成状态
+    todoList = todoList.toggleTaskCompletion(task);
   }
 
   // 初始化方法
@@ -397,19 +392,34 @@ class DataManager {
 
   // 测试数据： 初始化待办事项数据
   void _addTestTodoList() {
-    todoList.addTask(Task(tag: 'Wellness', description: 'Morning meditation'));
-    todoList.addTask(
+    // todoList.addTask(Task(tag: 'Wellness', description: 'Morning meditation'));
+    // todoList.addTask(
+    //   Task(tag: 'Wellness', description: 'Evening reading - 30 mins'),
+    // );
+    // todoList.addTask(
+    //   Task(tag: 'Work', description: 'Prepare presentation for meeting'),
+    // );
+    // Task callMomTask = Task(
+    //   tag: 'Personal',
+    //   description: 'Call mom',
+    //   isCompleted: true,
+    // );
+    // //callMomTask.isCompleted = true; // 标记为已完成
+    // //callMomTask.setCompleted(true);
+    // todoList.addTask(callMomTask);
+    // todoList.addTask(
+    //   Task(tag: 'Health', description: 'Schedule dentist appointment'),
+    // );
+
+    final List<Task> testTasks = [
+      Task(tag: 'Wellness', description: 'Morning meditation'),
       Task(tag: 'Wellness', description: 'Evening reading - 30 mins'),
-    );
-    todoList.addTask(
       Task(tag: 'Work', description: 'Prepare presentation for meeting'),
-    );
-    Task callMomTask = Task(tag: 'Personal', description: 'Call mom');
-    callMomTask.isCompleted = true; // 标记为已完成
-    todoList.addTask(callMomTask);
-    todoList.addTask(
+      Task(tag: 'Personal', description: 'Call mom', isCompleted: true),
       Task(tag: 'Health', description: 'Schedule dentist appointment'),
-    );
+    ];
+
+    todoList = TodoList(tasks: testTasks);
   }
 
   // 测试数据： 初始化个人数据

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart'; // 导入新页面
 
 class DiaryDetailsPage extends StatelessWidget {
