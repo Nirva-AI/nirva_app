@@ -1544,3 +1544,771 @@ abstract class _TodoList implements TodoList {
   _$$TodoListImplCopyWith<_$TodoListImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+EnergyLabel _$EnergyLabelFromJson(Map<String, dynamic> json) {
+  return _EnergyLabel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EnergyLabel {
+  String get label => throw _privateConstructorUsedError;
+  double get measurementValue => throw _privateConstructorUsedError;
+
+  /// Serializes this EnergyLabel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of EnergyLabel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EnergyLabelCopyWith<EnergyLabel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EnergyLabelCopyWith<$Res> {
+  factory $EnergyLabelCopyWith(
+    EnergyLabel value,
+    $Res Function(EnergyLabel) then,
+  ) = _$EnergyLabelCopyWithImpl<$Res, EnergyLabel>;
+  @useResult
+  $Res call({String label, double measurementValue});
+}
+
+/// @nodoc
+class _$EnergyLabelCopyWithImpl<$Res, $Val extends EnergyLabel>
+    implements $EnergyLabelCopyWith<$Res> {
+  _$EnergyLabelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of EnergyLabel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? label = null, Object? measurementValue = null}) {
+    return _then(
+      _value.copyWith(
+            label:
+                null == label
+                    ? _value.label
+                    : label // ignore: cast_nullable_to_non_nullable
+                        as String,
+            measurementValue:
+                null == measurementValue
+                    ? _value.measurementValue
+                    : measurementValue // ignore: cast_nullable_to_non_nullable
+                        as double,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$EnergyLabelImplCopyWith<$Res>
+    implements $EnergyLabelCopyWith<$Res> {
+  factory _$$EnergyLabelImplCopyWith(
+    _$EnergyLabelImpl value,
+    $Res Function(_$EnergyLabelImpl) then,
+  ) = __$$EnergyLabelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String label, double measurementValue});
+}
+
+/// @nodoc
+class __$$EnergyLabelImplCopyWithImpl<$Res>
+    extends _$EnergyLabelCopyWithImpl<$Res, _$EnergyLabelImpl>
+    implements _$$EnergyLabelImplCopyWith<$Res> {
+  __$$EnergyLabelImplCopyWithImpl(
+    _$EnergyLabelImpl _value,
+    $Res Function(_$EnergyLabelImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EnergyLabel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? label = null, Object? measurementValue = null}) {
+    return _then(
+      _$EnergyLabelImpl(
+        label:
+            null == label
+                ? _value.label
+                : label // ignore: cast_nullable_to_non_nullable
+                    as String,
+        measurementValue:
+            null == measurementValue
+                ? _value.measurementValue
+                : measurementValue // ignore: cast_nullable_to_non_nullable
+                    as double,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EnergyLabelImpl implements _EnergyLabel {
+  const _$EnergyLabelImpl({
+    required this.label,
+    required this.measurementValue,
+  });
+
+  factory _$EnergyLabelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EnergyLabelImplFromJson(json);
+
+  @override
+  final String label;
+  @override
+  final double measurementValue;
+
+  @override
+  String toString() {
+    return 'EnergyLabel(label: $label, measurementValue: $measurementValue)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EnergyLabelImpl &&
+            (identical(other.label, label) || other.label == label) &&
+            (identical(other.measurementValue, measurementValue) ||
+                other.measurementValue == measurementValue));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, label, measurementValue);
+
+  /// Create a copy of EnergyLabel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EnergyLabelImplCopyWith<_$EnergyLabelImpl> get copyWith =>
+      __$$EnergyLabelImplCopyWithImpl<_$EnergyLabelImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EnergyLabelImplToJson(this);
+  }
+}
+
+abstract class _EnergyLabel implements EnergyLabel {
+  const factory _EnergyLabel({
+    required final String label,
+    required final double measurementValue,
+  }) = _$EnergyLabelImpl;
+
+  factory _EnergyLabel.fromJson(Map<String, dynamic> json) =
+      _$EnergyLabelImpl.fromJson;
+
+  @override
+  String get label;
+  @override
+  double get measurementValue;
+
+  /// Create a copy of EnergyLabel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EnergyLabelImplCopyWith<_$EnergyLabelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+Energy _$EnergyFromJson(Map<String, dynamic> json) {
+  return _Energy.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Energy {
+  DateTime get dateTime => throw _privateConstructorUsedError;
+  double get energyLevel => throw _privateConstructorUsedError;
+
+  /// Serializes this Energy to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Energy
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EnergyCopyWith<Energy> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EnergyCopyWith<$Res> {
+  factory $EnergyCopyWith(Energy value, $Res Function(Energy) then) =
+      _$EnergyCopyWithImpl<$Res, Energy>;
+  @useResult
+  $Res call({DateTime dateTime, double energyLevel});
+}
+
+/// @nodoc
+class _$EnergyCopyWithImpl<$Res, $Val extends Energy>
+    implements $EnergyCopyWith<$Res> {
+  _$EnergyCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Energy
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? energyLevel = null}) {
+    return _then(
+      _value.copyWith(
+            dateTime:
+                null == dateTime
+                    ? _value.dateTime
+                    : dateTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            energyLevel:
+                null == energyLevel
+                    ? _value.energyLevel
+                    : energyLevel // ignore: cast_nullable_to_non_nullable
+                        as double,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$EnergyImplCopyWith<$Res> implements $EnergyCopyWith<$Res> {
+  factory _$$EnergyImplCopyWith(
+    _$EnergyImpl value,
+    $Res Function(_$EnergyImpl) then,
+  ) = __$$EnergyImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime dateTime, double energyLevel});
+}
+
+/// @nodoc
+class __$$EnergyImplCopyWithImpl<$Res>
+    extends _$EnergyCopyWithImpl<$Res, _$EnergyImpl>
+    implements _$$EnergyImplCopyWith<$Res> {
+  __$$EnergyImplCopyWithImpl(
+    _$EnergyImpl _value,
+    $Res Function(_$EnergyImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of Energy
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? energyLevel = null}) {
+    return _then(
+      _$EnergyImpl(
+        dateTime:
+            null == dateTime
+                ? _value.dateTime
+                : dateTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        energyLevel:
+            null == energyLevel
+                ? _value.energyLevel
+                : energyLevel // ignore: cast_nullable_to_non_nullable
+                    as double,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EnergyImpl implements _Energy {
+  const _$EnergyImpl({required this.dateTime, required this.energyLevel});
+
+  factory _$EnergyImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EnergyImplFromJson(json);
+
+  @override
+  final DateTime dateTime;
+  @override
+  final double energyLevel;
+
+  @override
+  String toString() {
+    return 'Energy(dateTime: $dateTime, energyLevel: $energyLevel)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EnergyImpl &&
+            (identical(other.dateTime, dateTime) ||
+                other.dateTime == dateTime) &&
+            (identical(other.energyLevel, energyLevel) ||
+                other.energyLevel == energyLevel));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, dateTime, energyLevel);
+
+  /// Create a copy of Energy
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EnergyImplCopyWith<_$EnergyImpl> get copyWith =>
+      __$$EnergyImplCopyWithImpl<_$EnergyImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EnergyImplToJson(this);
+  }
+}
+
+abstract class _Energy implements Energy {
+  const factory _Energy({
+    required final DateTime dateTime,
+    required final double energyLevel,
+  }) = _$EnergyImpl;
+
+  factory _Energy.fromJson(Map<String, dynamic> json) = _$EnergyImpl.fromJson;
+
+  @override
+  DateTime get dateTime;
+  @override
+  double get energyLevel;
+
+  /// Create a copy of Energy
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EnergyImplCopyWith<_$EnergyImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+Mood _$MoodFromJson(Map<String, dynamic> json) {
+  return _Mood.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Mood {
+  String get name => throw _privateConstructorUsedError;
+  double get moodValue => throw _privateConstructorUsedError;
+  double get moodPercentage => throw _privateConstructorUsedError;
+  int get color => throw _privateConstructorUsedError;
+
+  /// Serializes this Mood to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Mood
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MoodCopyWith<Mood> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MoodCopyWith<$Res> {
+  factory $MoodCopyWith(Mood value, $Res Function(Mood) then) =
+      _$MoodCopyWithImpl<$Res, Mood>;
+  @useResult
+  $Res call({String name, double moodValue, double moodPercentage, int color});
+}
+
+/// @nodoc
+class _$MoodCopyWithImpl<$Res, $Val extends Mood>
+    implements $MoodCopyWith<$Res> {
+  _$MoodCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Mood
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? moodValue = null,
+    Object? moodPercentage = null,
+    Object? color = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            name:
+                null == name
+                    ? _value.name
+                    : name // ignore: cast_nullable_to_non_nullable
+                        as String,
+            moodValue:
+                null == moodValue
+                    ? _value.moodValue
+                    : moodValue // ignore: cast_nullable_to_non_nullable
+                        as double,
+            moodPercentage:
+                null == moodPercentage
+                    ? _value.moodPercentage
+                    : moodPercentage // ignore: cast_nullable_to_non_nullable
+                        as double,
+            color:
+                null == color
+                    ? _value.color
+                    : color // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$MoodImplCopyWith<$Res> implements $MoodCopyWith<$Res> {
+  factory _$$MoodImplCopyWith(
+    _$MoodImpl value,
+    $Res Function(_$MoodImpl) then,
+  ) = __$$MoodImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String name, double moodValue, double moodPercentage, int color});
+}
+
+/// @nodoc
+class __$$MoodImplCopyWithImpl<$Res>
+    extends _$MoodCopyWithImpl<$Res, _$MoodImpl>
+    implements _$$MoodImplCopyWith<$Res> {
+  __$$MoodImplCopyWithImpl(_$MoodImpl _value, $Res Function(_$MoodImpl) _then)
+    : super(_value, _then);
+
+  /// Create a copy of Mood
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? moodValue = null,
+    Object? moodPercentage = null,
+    Object? color = null,
+  }) {
+    return _then(
+      _$MoodImpl(
+        name:
+            null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                    as String,
+        moodValue:
+            null == moodValue
+                ? _value.moodValue
+                : moodValue // ignore: cast_nullable_to_non_nullable
+                    as double,
+        moodPercentage:
+            null == moodPercentage
+                ? _value.moodPercentage
+                : moodPercentage // ignore: cast_nullable_to_non_nullable
+                    as double,
+        color:
+            null == color
+                ? _value.color
+                : color // ignore: cast_nullable_to_non_nullable
+                    as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MoodImpl implements _Mood {
+  const _$MoodImpl({
+    required this.name,
+    required this.moodValue,
+    required this.moodPercentage,
+    this.color = 0xFF00FF00,
+  });
+
+  factory _$MoodImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MoodImplFromJson(json);
+
+  @override
+  final String name;
+  @override
+  final double moodValue;
+  @override
+  final double moodPercentage;
+  @override
+  @JsonKey()
+  final int color;
+
+  @override
+  String toString() {
+    return 'Mood(name: $name, moodValue: $moodValue, moodPercentage: $moodPercentage, color: $color)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MoodImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.moodValue, moodValue) ||
+                other.moodValue == moodValue) &&
+            (identical(other.moodPercentage, moodPercentage) ||
+                other.moodPercentage == moodPercentage) &&
+            (identical(other.color, color) || other.color == color));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, name, moodValue, moodPercentage, color);
+
+  /// Create a copy of Mood
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MoodImplCopyWith<_$MoodImpl> get copyWith =>
+      __$$MoodImplCopyWithImpl<_$MoodImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MoodImplToJson(this);
+  }
+}
+
+abstract class _Mood implements Mood {
+  const factory _Mood({
+    required final String name,
+    required final double moodValue,
+    required final double moodPercentage,
+    final int color,
+  }) = _$MoodImpl;
+
+  factory _Mood.fromJson(Map<String, dynamic> json) = _$MoodImpl.fromJson;
+
+  @override
+  String get name;
+  @override
+  double get moodValue;
+  @override
+  double get moodPercentage;
+  @override
+  int get color;
+
+  /// Create a copy of Mood
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MoodImplCopyWith<_$MoodImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+AwakeTimeAction _$AwakeTimeActionFromJson(Map<String, dynamic> json) {
+  return _AwakeTimeAction.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AwakeTimeAction {
+  String get label => throw _privateConstructorUsedError;
+  double get value => throw _privateConstructorUsedError;
+  int get color => throw _privateConstructorUsedError;
+
+  /// Serializes this AwakeTimeAction to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of AwakeTimeAction
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AwakeTimeActionCopyWith<AwakeTimeAction> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AwakeTimeActionCopyWith<$Res> {
+  factory $AwakeTimeActionCopyWith(
+    AwakeTimeAction value,
+    $Res Function(AwakeTimeAction) then,
+  ) = _$AwakeTimeActionCopyWithImpl<$Res, AwakeTimeAction>;
+  @useResult
+  $Res call({String label, double value, int color});
+}
+
+/// @nodoc
+class _$AwakeTimeActionCopyWithImpl<$Res, $Val extends AwakeTimeAction>
+    implements $AwakeTimeActionCopyWith<$Res> {
+  _$AwakeTimeActionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of AwakeTimeAction
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? label = null,
+    Object? value = null,
+    Object? color = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            label:
+                null == label
+                    ? _value.label
+                    : label // ignore: cast_nullable_to_non_nullable
+                        as String,
+            value:
+                null == value
+                    ? _value.value
+                    : value // ignore: cast_nullable_to_non_nullable
+                        as double,
+            color:
+                null == color
+                    ? _value.color
+                    : color // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$AwakeTimeActionImplCopyWith<$Res>
+    implements $AwakeTimeActionCopyWith<$Res> {
+  factory _$$AwakeTimeActionImplCopyWith(
+    _$AwakeTimeActionImpl value,
+    $Res Function(_$AwakeTimeActionImpl) then,
+  ) = __$$AwakeTimeActionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String label, double value, int color});
+}
+
+/// @nodoc
+class __$$AwakeTimeActionImplCopyWithImpl<$Res>
+    extends _$AwakeTimeActionCopyWithImpl<$Res, _$AwakeTimeActionImpl>
+    implements _$$AwakeTimeActionImplCopyWith<$Res> {
+  __$$AwakeTimeActionImplCopyWithImpl(
+    _$AwakeTimeActionImpl _value,
+    $Res Function(_$AwakeTimeActionImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AwakeTimeAction
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? label = null,
+    Object? value = null,
+    Object? color = null,
+  }) {
+    return _then(
+      _$AwakeTimeActionImpl(
+        label:
+            null == label
+                ? _value.label
+                : label // ignore: cast_nullable_to_non_nullable
+                    as String,
+        value:
+            null == value
+                ? _value.value
+                : value // ignore: cast_nullable_to_non_nullable
+                    as double,
+        color:
+            null == color
+                ? _value.color
+                : color // ignore: cast_nullable_to_non_nullable
+                    as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AwakeTimeActionImpl implements _AwakeTimeAction {
+  const _$AwakeTimeActionImpl({
+    required this.label,
+    required this.value,
+    this.color = 0xFF00FF00,
+  });
+
+  factory _$AwakeTimeActionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AwakeTimeActionImplFromJson(json);
+
+  @override
+  final String label;
+  @override
+  final double value;
+  @override
+  @JsonKey()
+  final int color;
+
+  @override
+  String toString() {
+    return 'AwakeTimeAction(label: $label, value: $value, color: $color)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AwakeTimeActionImpl &&
+            (identical(other.label, label) || other.label == label) &&
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.color, color) || other.color == color));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, label, value, color);
+
+  /// Create a copy of AwakeTimeAction
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AwakeTimeActionImplCopyWith<_$AwakeTimeActionImpl> get copyWith =>
+      __$$AwakeTimeActionImplCopyWithImpl<_$AwakeTimeActionImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AwakeTimeActionImplToJson(this);
+  }
+}
+
+abstract class _AwakeTimeAction implements AwakeTimeAction {
+  const factory _AwakeTimeAction({
+    required final String label,
+    required final double value,
+    final int color,
+  }) = _$AwakeTimeActionImpl;
+
+  factory _AwakeTimeAction.fromJson(Map<String, dynamic> json) =
+      _$AwakeTimeActionImpl.fromJson;
+
+  @override
+  String get label;
+  @override
+  double get value;
+  @override
+  int get color;
+
+  /// Create a copy of AwakeTimeAction
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AwakeTimeActionImplCopyWith<_$AwakeTimeActionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

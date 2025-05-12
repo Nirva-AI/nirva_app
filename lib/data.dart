@@ -1,6 +1,5 @@
 // model/user.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 part 'data.freezed.dart';
 part 'data.g.dart';
 
@@ -133,4 +132,86 @@ extension TodoListExtensions on TodoList {
               .toList(),
     );
   }
+}
+
+@freezed
+class EnergyLabel with _$EnergyLabel {
+  const factory EnergyLabel({
+    required String label,
+    required double measurementValue,
+  }) = _EnergyLabel;
+
+  factory EnergyLabel.fromJson(Map<String, dynamic> json) =>
+      _$EnergyLabelFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _EnergyLabel).toJson();
+}
+
+@freezed
+class Energy with _$Energy {
+  const factory Energy({
+    required DateTime dateTime,
+    required double energyLevel,
+  }) = _Energy;
+
+  factory Energy.fromJson(Map<String, dynamic> json) => _$EnergyFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _Energy).toJson();
+
+  static const lowMinus = EnergyLabel(label: '', measurementValue: 0.0);
+  static const low = EnergyLabel(label: 'Low', measurementValue: 1.0);
+  static const neutral = EnergyLabel(label: 'Neutral', measurementValue: 2.0);
+  static const high = EnergyLabel(label: 'High', measurementValue: 3.0);
+  static const highPlus = EnergyLabel(label: '', measurementValue: 4.0);
+}
+
+extension EnergyExtensions on Energy {
+  String get time =>
+      "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+
+  EnergyLabel get energyLabel {
+    if (energyLevel <= Energy.lowMinus.measurementValue) {
+      return Energy.lowMinus;
+    }
+    if (energyLevel <= Energy.low.measurementValue) {
+      return Energy.low;
+    }
+    if (energyLevel <= Energy.neutral.measurementValue) {
+      return Energy.neutral;
+    }
+    if (energyLevel <= Energy.high.measurementValue) {
+      return Energy.high;
+    }
+    return Energy.highPlus;
+  }
+
+  String get energyLabelString => energyLabel.label;
+}
+
+@freezed
+class Mood with _$Mood {
+  const factory Mood({
+    required String name,
+    required double moodValue,
+    required double moodPercentage,
+    @Default(0xFF00FF00) int color, // 默认颜色为绿色
+  }) = _Mood;
+
+  factory Mood.fromJson(Map<String, dynamic> json) => _$MoodFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _Mood).toJson();
+}
+
+@freezed
+class AwakeTimeAction with _$AwakeTimeAction {
+  const factory AwakeTimeAction({
+    required String label,
+    required double value,
+    @Default(0xFF00FF00) int color, // 默认颜色为绿色
+  }) = _AwakeTimeAction;
+
+  factory AwakeTimeAction.fromJson(Map<String, dynamic> json) =>
+      _$AwakeTimeActionFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _AwakeTimeAction).toJson();
 }
