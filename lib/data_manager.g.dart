@@ -166,7 +166,10 @@ PersonalJournal _$PersonalJournalFromJson(Map<String, dynamic> json) =>
       ..awakeTimeActions =
           (json['awakeTimeActions'] as List<dynamic>)
               .map((e) => AwakeTimeAction.fromJson(e as Map<String, dynamic>))
-              .toList();
+              .toList()
+      ..socialMap = SocialMap.fromJson(
+        json['socialMap'] as Map<String, dynamic>,
+      );
 
 Map<String, dynamic> _$PersonalJournalToJson(
   PersonalJournal instance,
@@ -184,6 +187,7 @@ Map<String, dynamic> _$PersonalJournalToJson(
   'energyRecords': instance.energyRecords.map((e) => e.toJson()).toList(),
   'moods': instance.moods.map((e) => e.toJson()).toList(),
   'awakeTimeActions': instance.awakeTimeActions.map((e) => e.toJson()).toList(),
+  'socialMap': instance.socialMap.toJson(),
 };
 
 SocialEntity _$SocialEntityFromJson(Map<String, dynamic> json) => SocialEntity(
