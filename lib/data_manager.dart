@@ -1,7 +1,7 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
-import 'package:nirva_app/logger.dart';
+//import 'package:nirva_app/logger.dart';
 import 'package:nirva_app/data.dart';
-import 'dart:convert';
+//import 'dart:convert';
 
 // 管理全局数据的类
 class DataManager {
@@ -44,8 +44,8 @@ class DataManager {
     _fillTestData();
     // User testUser = User(id: 1, name: 'Test User');
     // Logger.d('testUser=\n${testUser.toJson()}');
-    String todoListJson = jsonEncode(todoList.toJson());
-    Logger.d('testUserJson=\n$todoListJson');
+    // String todoListJson = jsonEncode(todoList.toJson());
+    // Logger.d('testUserJson=\n$todoListJson');
   }
 
   void _fillTestData() {

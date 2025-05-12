@@ -5,6 +5,7 @@ import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/assistant_chat_panel.dart';
 import 'package:nirva_app/chat_manager.dart';
+import 'package:nirva_app/me_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return const DashboardPage();
       default:
-        return const Center(child: Text('User Profile Screen'));
+        return const MePage();
     }
   }
 
