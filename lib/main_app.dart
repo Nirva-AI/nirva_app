@@ -6,10 +6,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint('Running on: ${Theme.of(context).platform}');
-    // final screenSize = MediaQuery.of(context).size;
-    // debugPrint('Screen size: ${screenSize.width} x ${screenSize.height}');
-
     return MaterialApp(
       title: 'Nirva App',
       theme: ThemeData(
