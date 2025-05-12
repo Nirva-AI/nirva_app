@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/data.dart';
 
 class MoodTracking extends StatelessWidget {
   const MoodTracking({super.key});

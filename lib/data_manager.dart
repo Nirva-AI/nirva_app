@@ -1,106 +1,7 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
-import 'package:json_annotation/json_annotation.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/data.dart';
 import 'dart:convert';
-part 'data_manager.g.dart';
-
-// 日记类，包含日期和日记条目列表
-@JsonSerializable(explicitToJson: true)
-class PersonalJournal {
-  final DateTime dateTime; // 标准时间格式
-
-  PersonalJournal({required this.dateTime});
-
-  String summary = "";
-
-  // 日记条目列表
-  List<Diary> diaryEntries = [];
-
-  // 引言卡片数据
-  List<Quote> quotes = [];
-
-  // 个人反思
-  List<Reflection> selfReflections = [];
-
-  // 详细见解
-  List<Reflection> detailedInsights = [];
-
-  // 目标
-  List<Reflection> goals = [];
-
-  // 评分卡片数据
-  Score moodScore = Score(title: 'Mood Score', value: 0.0, change: 0.0);
-
-  // 评分卡片数据
-  Score stressLevel = Score(title: 'Stress Level', value: 0.0, change: -1.3);
-
-  // 重点
-  List<Highlight> highlights = [];
-
-  // 能量记录
-  List<Energy> energyRecords = [];
-
-  // 心情追踪器
-  List<Mood> moods = [];
-
-  // 社交对象列表
-  List<AwakeTimeAction> awakeTimeActions = [];
-
-  // 社交对象数据
-  SocialMap socialMap = SocialMap(socialEntities: []);
-
-  // 获取心情数据
-  Map<String, double> get moodMap {
-    final Map<String, double> moodMap = {};
-    for (var mood in moods) {
-      moodMap[mood.name] = mood.moodPercentage;
-    }
-    return moodMap;
-  }
-
-  // 输出日期字符串
-  String get formattedDate {
-    return FormatString.formattedDate(dateTime);
-  }
-
-  // JSON序列化和反序列化
-  factory PersonalJournal.fromJson(Map<String, dynamic> json) =>
-      _$PersonalJournalFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$PersonalJournalToJson(this); // 序列化
-}
-
-// 社交对象数据结构
-// @JsonSerializable(explicitToJson: true)
-// class SocialEntity {
-//   final String name; // 社交对象的名字
-//   final String details; // 详细信息
-//   final List<String> tips;
-//   final String timeSpent; // 互动时间
-
-//   SocialEntity({
-//     required this.name,
-//     required this.details,
-//     required this.tips,
-//     required this.timeSpent,
-//   });
-
-//   // JSON序列化和反序列化
-//   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
-//       _$SocialEntityFromJson(json); // 反序列化
-//   Map<String, dynamic> toJson() => _$SocialEntityToJson(this); // 序列化
-// }
-
-// 社交对象列表数据结构
-// @JsonSerializable(explicitToJson: true)
-// class SocialMap {
-//   List<SocialEntity> socialEntities = [];
-//   SocialMap({required this.socialEntities});
-//   // JSON序列化和反序列化
-//   factory SocialMap.fromJson(Map<String, dynamic> json) =>
-//       _$SocialMapFromJson(json); // 反序列化
-//   Map<String, dynamic> toJson() => _$SocialMapToJson(this); // 序列化
-// }
 
 // 管理全局数据的类
 class DataManager {
@@ -110,17 +11,15 @@ class DataManager {
   DataManager._internal();
 
   // 当前的日记和仪表板数据
-  PersonalJournal currentJournalEntry = PersonalJournal(
-    dateTime: DateTime.now(),
-  );
+  PersonalJournal currentJournalEntry = PersonalJournal.createEmpty();
 
   // 当前的待办事项数据
-  TodoList todoList = TodoList(tasks: []);
+  TodoList todoList = TodoList.createEmpty();
 
   // 清空数据
   void clear() {
-    currentJournalEntry = PersonalJournal(dateTime: DateTime.now());
-    todoList = TodoList(tasks: []);
+    currentJournalEntry = PersonalJournal.createEmpty();
+    todoList = TodoList.createEmpty();
   }
 
   //
@@ -142,74 +41,21 @@ class DataManager {
 
   // 初始化方法
   void initialize() {
-    // 初始化待办事项数据
-    currentJournalEntry = PersonalJournal(dateTime: DateTime(2025, 4, 19));
-    //
-    todoList = TodoList(tasks: []);
-    // 添加测试数据
-    _addTestJournalEntry();
-    // 添加测试数据
-    _addTestSocialMap();
-    // 添加测试数据
-    _addTestTodoList();
-
+    _fillTestData();
     User testUser = User(id: 1, name: 'Test User');
     Logger.d('testUser=\n${testUser.toJson()}');
     String testUserJson = jsonEncode(testUser.toJson());
     Logger.d('testUserJson=\n$testUserJson');
   }
 
-  // Future<void> loadTestData() async {
-  //   final Map<String, dynamic> todoListJson = await Utils.loadJsonAsset(
-  //     'assets/todo_list.json',
-  //   );
-  //   todoList = TodoList.fromJson(todoListJson);
-  //   final Map<String, dynamic> journalEntryJson = await Utils.loadJsonAsset(
-  //     'assets/journal_entry.json',
-  //   );
-  //   currentJournalEntry = PersonalJournal.fromJson(journalEntryJson);
-
-  //   final Map<String, dynamic> socialMapJson = await Utils.loadJsonAsset(
-  //     'assets/social_map.json',
-  //   );
-  //   socialMap = SocialMap.fromJson(socialMapJson);
-
-  //   _logDebug();
-  // }
-
-  // void _logDebug() {
-  //   // 直接用 Logger.d 来打印todoList序列化成的json，要求是合规的json数据格式。
-  //   String todoListJson = jsonEncode(todoList.toJson());
-  //   Logger.d('todoList=\n$todoListJson');
-
-  //   String journalEntryJson = jsonEncode(currentJournalEntry.toJson());
-  //   Logger.d('personalJson=\n$journalEntryJson');
-
-  //   String socialMapJson = jsonEncode(socialMap.toJson());
-  //   Logger.d('socialMapJson=\n$socialMapJson');
-  // }
+  void _fillTestData() {
+    // 添加测试数据
+    todoList = _createTestTodoList();
+    currentJournalEntry = _createTestPersonalJournal();
+  }
 
   // 测试数据： 初始化待办事项数据
-  void _addTestTodoList() {
-    // todoList.addTask(Task(tag: 'Wellness', description: 'Morning meditation'));
-    // todoList.addTask(
-    //   Task(tag: 'Wellness', description: 'Evening reading - 30 mins'),
-    // );
-    // todoList.addTask(
-    //   Task(tag: 'Work', description: 'Prepare presentation for meeting'),
-    // );
-    // Task callMomTask = Task(
-    //   tag: 'Personal',
-    //   description: 'Call mom',
-    //   isCompleted: true,
-    // );
-    // //callMomTask.isCompleted = true; // 标记为已完成
-    // //callMomTask.setCompleted(true);
-    // todoList.addTask(callMomTask);
-    // todoList.addTask(
-    //   Task(tag: 'Health', description: 'Schedule dentist appointment'),
-    // );
-
+  TodoList _createTestTodoList() {
     final List<Task> testTasks = [
       Task(tag: 'Wellness', description: 'Morning meditation'),
       Task(tag: 'Wellness', description: 'Evening reading - 30 mins'),
@@ -218,16 +64,16 @@ class DataManager {
       Task(tag: 'Health', description: 'Schedule dentist appointment'),
     ];
 
-    todoList = TodoList(tasks: testTasks);
+    return TodoList(tasks: testTasks);
   }
 
   // 测试数据： 初始化个人数据
-  void _addTestJournalEntry() {
-    currentJournalEntry.summary =
+  PersonalJournal _createTestPersonalJournal() {
+    final String summary =
         'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
     // 日记条目列表
-    currentJournalEntry.diaryEntries = [
+    final List<Diary> diaryEntries = [
       Diary(
         time: '10:00 AM - 1:00 PM',
         title: 'Morning in the Park with Ashley',
@@ -329,7 +175,7 @@ class DataManager {
     ];
 
     // 引言卡片数据
-    currentJournalEntry.quotes = [
+    final List<Quote> quotes = [
       Quote(
         text:
             '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
@@ -345,7 +191,7 @@ class DataManager {
     ];
 
     // 个人反思
-    currentJournalEntry.selfReflections = [
+    final List<Reflection> selfReflections = [
       Reflection(
         title: 'I am feeling grateful for:',
         items: [
@@ -373,7 +219,7 @@ class DataManager {
     ];
 
     // 详细见解
-    currentJournalEntry.detailedInsights = [
+    final List<Reflection> detailedInsights = [
       Reflection(
         title: 'Relationships',
         items: [
@@ -409,7 +255,7 @@ class DataManager {
     ];
 
     // 目标
-    currentJournalEntry.goals = [
+    final List<Reflection> goals = [
       Reflection(
         title: 'Deepen meaningful relationships',
         items: [
@@ -435,19 +281,15 @@ class DataManager {
       ),
     ];
 
-    currentJournalEntry.moodScore = Score(
-      title: 'Mood Score',
-      value: 7.8,
-      change: 0.5,
-    );
+    final Score moodScore = Score(title: 'Mood Score', value: 7.8, change: 0.5);
 
-    currentJournalEntry.stressLevel = Score(
+    final Score stressLevel = Score(
       title: 'Stress Level',
       value: 3.2,
       change: -1.3,
     );
 
-    currentJournalEntry.highlights = [
+    final List<Highlight> highlights = [
       Highlight(
         title: 'ACHIEVEMENT',
         content: 'Completed your morning meditation streak - 7 days!',
@@ -462,7 +304,7 @@ class DataManager {
       ),
     ];
 
-    currentJournalEntry.energyRecords = [
+    final List<Energy> energyRecords = [
       Energy(dateTime: DateTime(2025, 5, 6, 10, 0), energyLevel: 1.0),
       Energy(dateTime: DateTime(2025, 5, 6, 10, 30), energyLevel: 2.0),
       Energy(dateTime: DateTime(2025, 5, 6, 11, 30), energyLevel: 1.5),
@@ -475,14 +317,14 @@ class DataManager {
       Energy(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
     ];
 
-    currentJournalEntry.moods = [
+    final List<Mood> moods = [
       Mood(name: 'Happy', moodValue: 0.5, moodPercentage: 50),
       Mood(name: 'Calm', moodValue: 0.3, moodPercentage: 30),
       Mood(name: 'Stressed', moodValue: -0.9, moodPercentage: 10),
       Mood(name: 'Focused', moodValue: -0.5, moodPercentage: 10),
     ];
 
-    currentJournalEntry.awakeTimeActions = [
+    final List<AwakeTimeAction> awakeTimeActions = [
       AwakeTimeAction(label: 'Work', value: 8),
       AwakeTimeAction(label: 'Exercise', value: 2),
       AwakeTimeAction(label: 'Social', value: 3),
@@ -490,10 +332,7 @@ class DataManager {
       AwakeTimeAction(label: 'Self-care', value: 1),
       AwakeTimeAction(label: 'Other', value: 4),
     ];
-  }
 
-  // 测试数据： 初始化社交对象数据
-  void _addTestSocialMap() {
     List<SocialEntity> socialEntities = [
       SocialEntity(
         name: 'Ashley',
@@ -541,6 +380,21 @@ class DataManager {
       ),
     ];
 
-    currentJournalEntry.socialMap = SocialMap(socialEntities: socialEntities);
+    return PersonalJournal(
+      dateTime: DateTime(2025, 4, 19),
+      summary: summary,
+      diaryEntries: diaryEntries,
+      quotes: quotes,
+      selfReflections: selfReflections,
+      detailedInsights: detailedInsights,
+      goals: goals,
+      moodScore: moodScore,
+      stressLevel: stressLevel,
+      highlights: highlights,
+      energyRecords: energyRecords,
+      moods: moods,
+      awakeTimeActions: awakeTimeActions,
+      socialMap: SocialMap(socialEntities: socialEntities),
+    );
   }
 }
