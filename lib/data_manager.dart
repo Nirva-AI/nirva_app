@@ -71,36 +71,36 @@ class PersonalJournal {
 }
 
 // 社交对象数据结构
-@JsonSerializable(explicitToJson: true)
-class SocialEntity {
-  final String name; // 社交对象的名字
-  final String details; // 详细信息
-  final List<String> tips;
-  final String timeSpent; // 互动时间
+// @JsonSerializable(explicitToJson: true)
+// class SocialEntity {
+//   final String name; // 社交对象的名字
+//   final String details; // 详细信息
+//   final List<String> tips;
+//   final String timeSpent; // 互动时间
 
-  SocialEntity({
-    required this.name,
-    required this.details,
-    required this.tips,
-    required this.timeSpent,
-  });
+//   SocialEntity({
+//     required this.name,
+//     required this.details,
+//     required this.tips,
+//     required this.timeSpent,
+//   });
 
-  // JSON序列化和反序列化
-  factory SocialEntity.fromJson(Map<String, dynamic> json) =>
-      _$SocialEntityFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$SocialEntityToJson(this); // 序列化
-}
+//   // JSON序列化和反序列化
+//   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
+//       _$SocialEntityFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$SocialEntityToJson(this); // 序列化
+// }
 
 // 社交对象列表数据结构
-@JsonSerializable(explicitToJson: true)
-class SocialMap {
-  List<SocialEntity> socialEntities = [];
-  SocialMap({required this.socialEntities});
-  // JSON序列化和反序列化
-  factory SocialMap.fromJson(Map<String, dynamic> json) =>
-      _$SocialMapFromJson(json); // 反序列化
-  Map<String, dynamic> toJson() => _$SocialMapToJson(this); // 序列化
-}
+// @JsonSerializable(explicitToJson: true)
+// class SocialMap {
+//   List<SocialEntity> socialEntities = [];
+//   SocialMap({required this.socialEntities});
+//   // JSON序列化和反序列化
+//   factory SocialMap.fromJson(Map<String, dynamic> json) =>
+//       _$SocialMapFromJson(json); // 反序列化
+//   Map<String, dynamic> toJson() => _$SocialMapToJson(this); // 序列化
+// }
 
 // 管理全局数据的类
 class DataManager {
@@ -494,7 +494,7 @@ class DataManager {
 
   // 测试数据： 初始化社交对象数据
   void _addTestSocialMap() {
-    currentJournalEntry.socialMap.socialEntities = [
+    List<SocialEntity> socialEntities = [
       SocialEntity(
         name: 'Ashley',
         details:
@@ -540,5 +540,7 @@ class DataManager {
         timeSpent: '~4 hours',
       ),
     ];
+
+    currentJournalEntry.socialMap = SocialMap(socialEntities: socialEntities);
   }
 }
