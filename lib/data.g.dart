@@ -96,3 +96,57 @@ _$TodoListImpl _$$TodoListImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$TodoListImplToJson(_$TodoListImpl instance) =>
     <String, dynamic>{'tasks': instance.tasks};
+
+_$EnergyLabelImpl _$$EnergyLabelImplFromJson(Map<String, dynamic> json) =>
+    _$EnergyLabelImpl(
+      label: json['label'] as String,
+      measurementValue: (json['measurementValue'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$$EnergyLabelImplToJson(_$EnergyLabelImpl instance) =>
+    <String, dynamic>{
+      'label': instance.label,
+      'measurementValue': instance.measurementValue,
+    };
+
+_$EnergyImpl _$$EnergyImplFromJson(Map<String, dynamic> json) => _$EnergyImpl(
+  dateTime: DateTime.parse(json['dateTime'] as String),
+  energyLevel: (json['energyLevel'] as num).toDouble(),
+);
+
+Map<String, dynamic> _$$EnergyImplToJson(_$EnergyImpl instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'energyLevel': instance.energyLevel,
+    };
+
+_$MoodImpl _$$MoodImplFromJson(Map<String, dynamic> json) => _$MoodImpl(
+  name: json['name'] as String,
+  moodValue: (json['moodValue'] as num).toDouble(),
+  moodPercentage: (json['moodPercentage'] as num).toDouble(),
+  color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
+);
+
+Map<String, dynamic> _$$MoodImplToJson(_$MoodImpl instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'moodValue': instance.moodValue,
+      'moodPercentage': instance.moodPercentage,
+      'color': instance.color,
+    };
+
+_$AwakeTimeActionImpl _$$AwakeTimeActionImplFromJson(
+  Map<String, dynamic> json,
+) => _$AwakeTimeActionImpl(
+  label: json['label'] as String,
+  value: (json['value'] as num).toDouble(),
+  color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
+);
+
+Map<String, dynamic> _$$AwakeTimeActionImplToJson(
+  _$AwakeTimeActionImpl instance,
+) => <String, dynamic>{
+  'label': instance.label,
+  'value': instance.value,
+  'color': instance.color,
+};

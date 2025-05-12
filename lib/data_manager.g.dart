@@ -6,59 +6,6 @@ part of 'data_manager.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TodoList _$TodoListFromJson(Map<String, dynamic> json) => TodoList(
-  tasks:
-      (json['tasks'] as List<dynamic>)
-          .map((e) => Task.fromJson(e as Map<String, dynamic>))
-          .toList(),
-);
-
-Map<String, dynamic> _$TodoListToJson(TodoList instance) => <String, dynamic>{
-  'tasks': instance.tasks.map((e) => e.toJson()).toList(),
-};
-
-EnergyLabel _$EnergyLabelFromJson(Map<String, dynamic> json) => EnergyLabel(
-  json['label'] as String,
-  (json['measurementValue'] as num).toDouble(),
-);
-
-Map<String, dynamic> _$EnergyLabelToJson(EnergyLabel instance) =>
-    <String, dynamic>{
-      'label': instance.label,
-      'measurementValue': instance.measurementValue,
-    };
-
-Energy _$EnergyFromJson(Map<String, dynamic> json) => Energy(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  energyLevel: (json['energyLevel'] as num).toDouble(),
-);
-
-Map<String, dynamic> _$EnergyToJson(Energy instance) => <String, dynamic>{
-  'dateTime': instance.dateTime.toIso8601String(),
-  'energyLevel': instance.energyLevel,
-};
-
-Mood _$MoodFromJson(Map<String, dynamic> json) => Mood(
-  json['name'] as String,
-  (json['moodValue'] as num).toDouble(),
-  (json['moodPercentage'] as num).toDouble(),
-);
-
-Map<String, dynamic> _$MoodToJson(Mood instance) => <String, dynamic>{
-  'name': instance.name,
-  'moodValue': instance.moodValue,
-  'moodPercentage': instance.moodPercentage,
-};
-
-AwakeTimeAction _$AwakeTimeActionFromJson(Map<String, dynamic> json) =>
-    AwakeTimeAction(
-      label: json['label'] as String,
-      value: (json['value'] as num).toDouble(),
-    );
-
-Map<String, dynamic> _$AwakeTimeActionToJson(AwakeTimeAction instance) =>
-    <String, dynamic>{'label': instance.label, 'value': instance.value};
-
 PersonalJournal _$PersonalJournalFromJson(Map<String, dynamic> json) =>
     PersonalJournal(dateTime: DateTime.parse(json['dateTime'] as String))
       ..summary = json['summary'] as String
