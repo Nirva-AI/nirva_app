@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/data.dart';
 
 class SocialMapView extends StatefulWidget {
   const SocialMapView({super.key});

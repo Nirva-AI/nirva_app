@@ -150,3 +150,30 @@ Map<String, dynamic> _$$AwakeTimeActionImplToJson(
   'value': instance.value,
   'color': instance.color,
 };
+
+_$SocialEntityImpl _$$SocialEntityImplFromJson(Map<String, dynamic> json) =>
+    _$SocialEntityImpl(
+      name: json['name'] as String,
+      details: json['details'] as String,
+      tips: (json['tips'] as List<dynamic>).map((e) => e as String).toList(),
+      timeSpent: json['timeSpent'] as String,
+    );
+
+Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'details': instance.details,
+      'tips': instance.tips,
+      'timeSpent': instance.timeSpent,
+    };
+
+_$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>
+    _$SocialMapImpl(
+      socialEntities:
+          (json['socialEntities'] as List<dynamic>)
+              .map((e) => SocialEntity.fromJson(e as Map<String, dynamic>))
+              .toList(),
+    );
+
+Map<String, dynamic> _$$SocialMapImplToJson(_$SocialMapImpl instance) =>
+    <String, dynamic>{'socialEntities': instance.socialEntities};
