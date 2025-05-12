@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/main_app.dart';
+//import 'package:nirva_app/test_chat_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
@@ -8,6 +9,7 @@ void main() async {
   await initializeApp();
 
   // 运行应用
+  //runApp(const TestChatApp());
   runApp(const MainApp());
 }
 
