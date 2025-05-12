@@ -42,10 +42,10 @@ class DataManager {
   // 初始化方法
   void initialize() {
     _fillTestData();
-    User testUser = User(id: 1, name: 'Test User');
-    Logger.d('testUser=\n${testUser.toJson()}');
-    String testUserJson = jsonEncode(testUser.toJson());
-    Logger.d('testUserJson=\n$testUserJson');
+    // User testUser = User(id: 1, name: 'Test User');
+    // Logger.d('testUser=\n${testUser.toJson()}');
+    String todoListJson = jsonEncode(todoList.toJson());
+    Logger.d('testUserJson=\n$todoListJson');
   }
 
   void _fillTestData() {

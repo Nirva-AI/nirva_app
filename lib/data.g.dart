@@ -6,12 +6,6 @@ part of 'data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) =>
-    _$UserImpl(id: (json['id'] as num).toInt(), name: json['name'] as String);
-
-Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
-    <String, dynamic>{'id': instance.id, 'name': instance.name};
-
 _$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) =>
     _$QuoteImpl(text: json['text'] as String);
 
