@@ -1,4 +1,3 @@
-// model/user.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'data.freezed.dart';
 part 'data.g.dart';
@@ -105,6 +104,10 @@ class TodoList with _$TodoList {
       _$TodoListFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _TodoList).toJson();
+
+  static TodoList createEmpty() {
+    return TodoList(tasks: []);
+  }
 }
 
 extension TodoListExtensions on TodoList {
@@ -216,27 +219,6 @@ class AwakeTimeAction with _$AwakeTimeAction {
   Map<String, dynamic> toJson() => (this as _AwakeTimeAction).toJson();
 }
 
-// 社交对象数据结构
-// @JsonSerializable(explicitToJson: true)
-// class SocialEntity {
-//   final String name; // 社交对象的名字
-//   final String details; // 详细信息
-//   final List<String> tips;
-//   final String timeSpent; // 互动时间
-
-//   SocialEntity({
-//     required this.name,
-//     required this.details,
-//     required this.tips,
-//     required this.timeSpent,
-//   });
-
-//   // JSON序列化和反序列化
-//   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
-//       _$SocialEntityFromJson(json); // 反序列化
-//   Map<String, dynamic> toJson() => _$SocialEntityToJson(this); // 序列化
-// }
-
 @freezed
 class SocialEntity with _$SocialEntity {
   const factory SocialEntity({
@@ -252,16 +234,6 @@ class SocialEntity with _$SocialEntity {
   Map<String, dynamic> toJson() => (this as _SocialEntity).toJson();
 }
 
-// @JsonSerializable(explicitToJson: true)
-// class SocialMap {
-//   List<SocialEntity> socialEntities = [];
-//   SocialMap({required this.socialEntities});
-//   // JSON序列化和反序列化
-//   factory SocialMap.fromJson(Map<String, dynamic> json) =>
-//       _$SocialMapFromJson(json); // 反序列化
-//   Map<String, dynamic> toJson() => _$SocialMapToJson(this); // 序列化
-// }
-
 @freezed
 class SocialMap with _$SocialMap {
   const factory SocialMap({required List<SocialEntity> socialEntities}) =
@@ -271,4 +243,77 @@ class SocialMap with _$SocialMap {
       _$SocialMapFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _SocialMap).toJson();
+}
+
+@freezed
+class PersonalJournal with _$PersonalJournal {
+  const factory PersonalJournal({
+    required DateTime dateTime,
+    required String summary,
+    required List<Diary> diaryEntries,
+    required List<Quote> quotes,
+    required List<Reflection> selfReflections,
+    required List<Reflection> detailedInsights,
+    required List<Reflection> goals,
+    required Score moodScore,
+    required Score stressLevel,
+    required List<Highlight> highlights,
+    required List<Energy> energyRecords,
+    required List<Mood> moods,
+    required List<AwakeTimeAction> awakeTimeActions,
+    required SocialMap socialMap,
+  }) = _PersonalJournal;
+
+  factory PersonalJournal.fromJson(Map<String, dynamic> json) =>
+      _$PersonalJournalFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _PersonalJournal).toJson();
+
+  static PersonalJournal createEmpty() {
+    return PersonalJournal(
+      dateTime: DateTime.now(),
+      summary: '',
+      diaryEntries: [],
+      quotes: [],
+      selfReflections: [],
+      detailedInsights: [],
+      goals: [],
+      moodScore: Score(title: 'Mood Score', value: 0.0, change: 0.0),
+      stressLevel: Score(title: 'Stress Level', value: 0.0, change: -1.3),
+      highlights: [],
+      energyRecords: [],
+      moods: [],
+      awakeTimeActions: [],
+      socialMap: SocialMap(socialEntities: []),
+    );
+  }
+}
+
+extension PersonalJournalExtensions on PersonalJournal {
+  Map<String, double> get moodMap {
+    final Map<String, double> moodMap = {};
+    for (var mood in moods) {
+      moodMap[mood.name] = mood.moodPercentage;
+    }
+    return moodMap;
+  }
+
+  static final monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  String get formattedDate {
+    return '${monthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
+  }
 }

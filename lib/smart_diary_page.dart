@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/diary_entry_card.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/quote_carousel.dart';
+import 'package:nirva_app/data.dart';
 
 class SmartDiaryPage extends StatelessWidget {
   const SmartDiaryPage({super.key});

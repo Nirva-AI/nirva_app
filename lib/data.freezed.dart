@@ -2710,3 +2710,601 @@ abstract class _SocialMap implements SocialMap {
   _$$SocialMapImplCopyWith<_$SocialMapImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+PersonalJournal _$PersonalJournalFromJson(Map<String, dynamic> json) {
+  return _PersonalJournal.fromJson(json);
+}
+
+/// @nodoc
+mixin _$PersonalJournal {
+  DateTime get dateTime => throw _privateConstructorUsedError;
+  String get summary => throw _privateConstructorUsedError;
+  List<Diary> get diaryEntries => throw _privateConstructorUsedError;
+  List<Quote> get quotes => throw _privateConstructorUsedError;
+  List<Reflection> get selfReflections => throw _privateConstructorUsedError;
+  List<Reflection> get detailedInsights => throw _privateConstructorUsedError;
+  List<Reflection> get goals => throw _privateConstructorUsedError;
+  Score get moodScore => throw _privateConstructorUsedError;
+  Score get stressLevel => throw _privateConstructorUsedError;
+  List<Highlight> get highlights => throw _privateConstructorUsedError;
+  List<Energy> get energyRecords => throw _privateConstructorUsedError;
+  List<Mood> get moods => throw _privateConstructorUsedError;
+  List<AwakeTimeAction> get awakeTimeActions =>
+      throw _privateConstructorUsedError;
+  SocialMap get socialMap => throw _privateConstructorUsedError;
+
+  /// Serializes this PersonalJournal to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $PersonalJournalCopyWith<PersonalJournal> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PersonalJournalCopyWith<$Res> {
+  factory $PersonalJournalCopyWith(
+    PersonalJournal value,
+    $Res Function(PersonalJournal) then,
+  ) = _$PersonalJournalCopyWithImpl<$Res, PersonalJournal>;
+  @useResult
+  $Res call({
+    DateTime dateTime,
+    String summary,
+    List<Diary> diaryEntries,
+    List<Quote> quotes,
+    List<Reflection> selfReflections,
+    List<Reflection> detailedInsights,
+    List<Reflection> goals,
+    Score moodScore,
+    Score stressLevel,
+    List<Highlight> highlights,
+    List<Energy> energyRecords,
+    List<Mood> moods,
+    List<AwakeTimeAction> awakeTimeActions,
+    SocialMap socialMap,
+  });
+
+  $ScoreCopyWith<$Res> get moodScore;
+  $ScoreCopyWith<$Res> get stressLevel;
+  $SocialMapCopyWith<$Res> get socialMap;
+}
+
+/// @nodoc
+class _$PersonalJournalCopyWithImpl<$Res, $Val extends PersonalJournal>
+    implements $PersonalJournalCopyWith<$Res> {
+  _$PersonalJournalCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? dateTime = null,
+    Object? summary = null,
+    Object? diaryEntries = null,
+    Object? quotes = null,
+    Object? selfReflections = null,
+    Object? detailedInsights = null,
+    Object? goals = null,
+    Object? moodScore = null,
+    Object? stressLevel = null,
+    Object? highlights = null,
+    Object? energyRecords = null,
+    Object? moods = null,
+    Object? awakeTimeActions = null,
+    Object? socialMap = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            dateTime:
+                null == dateTime
+                    ? _value.dateTime
+                    : dateTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            summary:
+                null == summary
+                    ? _value.summary
+                    : summary // ignore: cast_nullable_to_non_nullable
+                        as String,
+            diaryEntries:
+                null == diaryEntries
+                    ? _value.diaryEntries
+                    : diaryEntries // ignore: cast_nullable_to_non_nullable
+                        as List<Diary>,
+            quotes:
+                null == quotes
+                    ? _value.quotes
+                    : quotes // ignore: cast_nullable_to_non_nullable
+                        as List<Quote>,
+            selfReflections:
+                null == selfReflections
+                    ? _value.selfReflections
+                    : selfReflections // ignore: cast_nullable_to_non_nullable
+                        as List<Reflection>,
+            detailedInsights:
+                null == detailedInsights
+                    ? _value.detailedInsights
+                    : detailedInsights // ignore: cast_nullable_to_non_nullable
+                        as List<Reflection>,
+            goals:
+                null == goals
+                    ? _value.goals
+                    : goals // ignore: cast_nullable_to_non_nullable
+                        as List<Reflection>,
+            moodScore:
+                null == moodScore
+                    ? _value.moodScore
+                    : moodScore // ignore: cast_nullable_to_non_nullable
+                        as Score,
+            stressLevel:
+                null == stressLevel
+                    ? _value.stressLevel
+                    : stressLevel // ignore: cast_nullable_to_non_nullable
+                        as Score,
+            highlights:
+                null == highlights
+                    ? _value.highlights
+                    : highlights // ignore: cast_nullable_to_non_nullable
+                        as List<Highlight>,
+            energyRecords:
+                null == energyRecords
+                    ? _value.energyRecords
+                    : energyRecords // ignore: cast_nullable_to_non_nullable
+                        as List<Energy>,
+            moods:
+                null == moods
+                    ? _value.moods
+                    : moods // ignore: cast_nullable_to_non_nullable
+                        as List<Mood>,
+            awakeTimeActions:
+                null == awakeTimeActions
+                    ? _value.awakeTimeActions
+                    : awakeTimeActions // ignore: cast_nullable_to_non_nullable
+                        as List<AwakeTimeAction>,
+            socialMap:
+                null == socialMap
+                    ? _value.socialMap
+                    : socialMap // ignore: cast_nullable_to_non_nullable
+                        as SocialMap,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ScoreCopyWith<$Res> get moodScore {
+    return $ScoreCopyWith<$Res>(_value.moodScore, (value) {
+      return _then(_value.copyWith(moodScore: value) as $Val);
+    });
+  }
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ScoreCopyWith<$Res> get stressLevel {
+    return $ScoreCopyWith<$Res>(_value.stressLevel, (value) {
+      return _then(_value.copyWith(stressLevel: value) as $Val);
+    });
+  }
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SocialMapCopyWith<$Res> get socialMap {
+    return $SocialMapCopyWith<$Res>(_value.socialMap, (value) {
+      return _then(_value.copyWith(socialMap: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$PersonalJournalImplCopyWith<$Res>
+    implements $PersonalJournalCopyWith<$Res> {
+  factory _$$PersonalJournalImplCopyWith(
+    _$PersonalJournalImpl value,
+    $Res Function(_$PersonalJournalImpl) then,
+  ) = __$$PersonalJournalImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    DateTime dateTime,
+    String summary,
+    List<Diary> diaryEntries,
+    List<Quote> quotes,
+    List<Reflection> selfReflections,
+    List<Reflection> detailedInsights,
+    List<Reflection> goals,
+    Score moodScore,
+    Score stressLevel,
+    List<Highlight> highlights,
+    List<Energy> energyRecords,
+    List<Mood> moods,
+    List<AwakeTimeAction> awakeTimeActions,
+    SocialMap socialMap,
+  });
+
+  @override
+  $ScoreCopyWith<$Res> get moodScore;
+  @override
+  $ScoreCopyWith<$Res> get stressLevel;
+  @override
+  $SocialMapCopyWith<$Res> get socialMap;
+}
+
+/// @nodoc
+class __$$PersonalJournalImplCopyWithImpl<$Res>
+    extends _$PersonalJournalCopyWithImpl<$Res, _$PersonalJournalImpl>
+    implements _$$PersonalJournalImplCopyWith<$Res> {
+  __$$PersonalJournalImplCopyWithImpl(
+    _$PersonalJournalImpl _value,
+    $Res Function(_$PersonalJournalImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? dateTime = null,
+    Object? summary = null,
+    Object? diaryEntries = null,
+    Object? quotes = null,
+    Object? selfReflections = null,
+    Object? detailedInsights = null,
+    Object? goals = null,
+    Object? moodScore = null,
+    Object? stressLevel = null,
+    Object? highlights = null,
+    Object? energyRecords = null,
+    Object? moods = null,
+    Object? awakeTimeActions = null,
+    Object? socialMap = null,
+  }) {
+    return _then(
+      _$PersonalJournalImpl(
+        dateTime:
+            null == dateTime
+                ? _value.dateTime
+                : dateTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        summary:
+            null == summary
+                ? _value.summary
+                : summary // ignore: cast_nullable_to_non_nullable
+                    as String,
+        diaryEntries:
+            null == diaryEntries
+                ? _value._diaryEntries
+                : diaryEntries // ignore: cast_nullable_to_non_nullable
+                    as List<Diary>,
+        quotes:
+            null == quotes
+                ? _value._quotes
+                : quotes // ignore: cast_nullable_to_non_nullable
+                    as List<Quote>,
+        selfReflections:
+            null == selfReflections
+                ? _value._selfReflections
+                : selfReflections // ignore: cast_nullable_to_non_nullable
+                    as List<Reflection>,
+        detailedInsights:
+            null == detailedInsights
+                ? _value._detailedInsights
+                : detailedInsights // ignore: cast_nullable_to_non_nullable
+                    as List<Reflection>,
+        goals:
+            null == goals
+                ? _value._goals
+                : goals // ignore: cast_nullable_to_non_nullable
+                    as List<Reflection>,
+        moodScore:
+            null == moodScore
+                ? _value.moodScore
+                : moodScore // ignore: cast_nullable_to_non_nullable
+                    as Score,
+        stressLevel:
+            null == stressLevel
+                ? _value.stressLevel
+                : stressLevel // ignore: cast_nullable_to_non_nullable
+                    as Score,
+        highlights:
+            null == highlights
+                ? _value._highlights
+                : highlights // ignore: cast_nullable_to_non_nullable
+                    as List<Highlight>,
+        energyRecords:
+            null == energyRecords
+                ? _value._energyRecords
+                : energyRecords // ignore: cast_nullable_to_non_nullable
+                    as List<Energy>,
+        moods:
+            null == moods
+                ? _value._moods
+                : moods // ignore: cast_nullable_to_non_nullable
+                    as List<Mood>,
+        awakeTimeActions:
+            null == awakeTimeActions
+                ? _value._awakeTimeActions
+                : awakeTimeActions // ignore: cast_nullable_to_non_nullable
+                    as List<AwakeTimeAction>,
+        socialMap:
+            null == socialMap
+                ? _value.socialMap
+                : socialMap // ignore: cast_nullable_to_non_nullable
+                    as SocialMap,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$PersonalJournalImpl implements _PersonalJournal {
+  const _$PersonalJournalImpl({
+    required this.dateTime,
+    required this.summary,
+    required final List<Diary> diaryEntries,
+    required final List<Quote> quotes,
+    required final List<Reflection> selfReflections,
+    required final List<Reflection> detailedInsights,
+    required final List<Reflection> goals,
+    required this.moodScore,
+    required this.stressLevel,
+    required final List<Highlight> highlights,
+    required final List<Energy> energyRecords,
+    required final List<Mood> moods,
+    required final List<AwakeTimeAction> awakeTimeActions,
+    required this.socialMap,
+  }) : _diaryEntries = diaryEntries,
+       _quotes = quotes,
+       _selfReflections = selfReflections,
+       _detailedInsights = detailedInsights,
+       _goals = goals,
+       _highlights = highlights,
+       _energyRecords = energyRecords,
+       _moods = moods,
+       _awakeTimeActions = awakeTimeActions;
+
+  factory _$PersonalJournalImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PersonalJournalImplFromJson(json);
+
+  @override
+  final DateTime dateTime;
+  @override
+  final String summary;
+  final List<Diary> _diaryEntries;
+  @override
+  List<Diary> get diaryEntries {
+    if (_diaryEntries is EqualUnmodifiableListView) return _diaryEntries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_diaryEntries);
+  }
+
+  final List<Quote> _quotes;
+  @override
+  List<Quote> get quotes {
+    if (_quotes is EqualUnmodifiableListView) return _quotes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_quotes);
+  }
+
+  final List<Reflection> _selfReflections;
+  @override
+  List<Reflection> get selfReflections {
+    if (_selfReflections is EqualUnmodifiableListView) return _selfReflections;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selfReflections);
+  }
+
+  final List<Reflection> _detailedInsights;
+  @override
+  List<Reflection> get detailedInsights {
+    if (_detailedInsights is EqualUnmodifiableListView)
+      return _detailedInsights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_detailedInsights);
+  }
+
+  final List<Reflection> _goals;
+  @override
+  List<Reflection> get goals {
+    if (_goals is EqualUnmodifiableListView) return _goals;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_goals);
+  }
+
+  @override
+  final Score moodScore;
+  @override
+  final Score stressLevel;
+  final List<Highlight> _highlights;
+  @override
+  List<Highlight> get highlights {
+    if (_highlights is EqualUnmodifiableListView) return _highlights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_highlights);
+  }
+
+  final List<Energy> _energyRecords;
+  @override
+  List<Energy> get energyRecords {
+    if (_energyRecords is EqualUnmodifiableListView) return _energyRecords;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_energyRecords);
+  }
+
+  final List<Mood> _moods;
+  @override
+  List<Mood> get moods {
+    if (_moods is EqualUnmodifiableListView) return _moods;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_moods);
+  }
+
+  final List<AwakeTimeAction> _awakeTimeActions;
+  @override
+  List<AwakeTimeAction> get awakeTimeActions {
+    if (_awakeTimeActions is EqualUnmodifiableListView)
+      return _awakeTimeActions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_awakeTimeActions);
+  }
+
+  @override
+  final SocialMap socialMap;
+
+  @override
+  String toString() {
+    return 'PersonalJournal(dateTime: $dateTime, summary: $summary, diaryEntries: $diaryEntries, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyRecords: $energyRecords, moods: $moods, awakeTimeActions: $awakeTimeActions, socialMap: $socialMap)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PersonalJournalImpl &&
+            (identical(other.dateTime, dateTime) ||
+                other.dateTime == dateTime) &&
+            (identical(other.summary, summary) || other.summary == summary) &&
+            const DeepCollectionEquality().equals(
+              other._diaryEntries,
+              _diaryEntries,
+            ) &&
+            const DeepCollectionEquality().equals(other._quotes, _quotes) &&
+            const DeepCollectionEquality().equals(
+              other._selfReflections,
+              _selfReflections,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._detailedInsights,
+              _detailedInsights,
+            ) &&
+            const DeepCollectionEquality().equals(other._goals, _goals) &&
+            (identical(other.moodScore, moodScore) ||
+                other.moodScore == moodScore) &&
+            (identical(other.stressLevel, stressLevel) ||
+                other.stressLevel == stressLevel) &&
+            const DeepCollectionEquality().equals(
+              other._highlights,
+              _highlights,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._energyRecords,
+              _energyRecords,
+            ) &&
+            const DeepCollectionEquality().equals(other._moods, _moods) &&
+            const DeepCollectionEquality().equals(
+              other._awakeTimeActions,
+              _awakeTimeActions,
+            ) &&
+            (identical(other.socialMap, socialMap) ||
+                other.socialMap == socialMap));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    dateTime,
+    summary,
+    const DeepCollectionEquality().hash(_diaryEntries),
+    const DeepCollectionEquality().hash(_quotes),
+    const DeepCollectionEquality().hash(_selfReflections),
+    const DeepCollectionEquality().hash(_detailedInsights),
+    const DeepCollectionEquality().hash(_goals),
+    moodScore,
+    stressLevel,
+    const DeepCollectionEquality().hash(_highlights),
+    const DeepCollectionEquality().hash(_energyRecords),
+    const DeepCollectionEquality().hash(_moods),
+    const DeepCollectionEquality().hash(_awakeTimeActions),
+    socialMap,
+  );
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PersonalJournalImplCopyWith<_$PersonalJournalImpl> get copyWith =>
+      __$$PersonalJournalImplCopyWithImpl<_$PersonalJournalImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$PersonalJournalImplToJson(this);
+  }
+}
+
+abstract class _PersonalJournal implements PersonalJournal {
+  const factory _PersonalJournal({
+    required final DateTime dateTime,
+    required final String summary,
+    required final List<Diary> diaryEntries,
+    required final List<Quote> quotes,
+    required final List<Reflection> selfReflections,
+    required final List<Reflection> detailedInsights,
+    required final List<Reflection> goals,
+    required final Score moodScore,
+    required final Score stressLevel,
+    required final List<Highlight> highlights,
+    required final List<Energy> energyRecords,
+    required final List<Mood> moods,
+    required final List<AwakeTimeAction> awakeTimeActions,
+    required final SocialMap socialMap,
+  }) = _$PersonalJournalImpl;
+
+  factory _PersonalJournal.fromJson(Map<String, dynamic> json) =
+      _$PersonalJournalImpl.fromJson;
+
+  @override
+  DateTime get dateTime;
+  @override
+  String get summary;
+  @override
+  List<Diary> get diaryEntries;
+  @override
+  List<Quote> get quotes;
+  @override
+  List<Reflection> get selfReflections;
+  @override
+  List<Reflection> get detailedInsights;
+  @override
+  List<Reflection> get goals;
+  @override
+  Score get moodScore;
+  @override
+  Score get stressLevel;
+  @override
+  List<Highlight> get highlights;
+  @override
+  List<Energy> get energyRecords;
+  @override
+  List<Mood> get moods;
+  @override
+  List<AwakeTimeAction> get awakeTimeActions;
+  @override
+  SocialMap get socialMap;
+
+  /// Create a copy of PersonalJournal
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$PersonalJournalImplCopyWith<_$PersonalJournalImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
