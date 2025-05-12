@@ -1,7 +1,8 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:json_annotation/json_annotation.dart';
 import 'package:nirva_app/utils.dart';
-//import 'dart:convert';
+import 'package:nirva_app/user.dart';
+import 'dart:convert';
 part 'data_manager.g.dart';
 
 // 引言卡片数据结构
@@ -357,6 +358,11 @@ class DataManager {
     _addTestSocialMap();
     // 添加测试数据
     _addTestTodoList();
+
+    User testUser = User(id: 1, name: 'Test User');
+    Logger.d('testUser=\n${testUser.toJson()}');
+    String testUserJson = jsonEncode(testUser.toJson());
+    Logger.d('testUserJson=\n$testUserJson');
   }
 
   // Future<void> loadTestData() async {
