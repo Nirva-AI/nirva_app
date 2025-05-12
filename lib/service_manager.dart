@@ -33,11 +33,14 @@ class ServiceManager {
       'apiEndPointResponse=\n${jsonEncode(apiEndPointResponse.toJson())}',
     );
 
-    //api_endpoints = apiEndPointResponse.api_endpoints;
     Logger.d(
       'api_endpoints=\n${jsonEncode(apiEndPointResponse.api_endpoints.toJson())}',
     );
 
     api_endpoints = apiEndPointResponse.api_endpoints;
+  }
+
+  String apiEndPointsJson() {
+    return jsonEncode(api_endpoints.toJson());
   }
 }
