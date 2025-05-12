@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/data.dart';
 
 class HighlightCard extends StatelessWidget {
   final Highlight highlight;
