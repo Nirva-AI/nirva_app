@@ -3,36 +3,6 @@ import 'dart:io'; // 用于文件操作
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:developer' as developer;
-
-class Logger {
-  static void d(String message) {
-    if (kDebugMode) {
-      developer.log(message, name: 'DEBUG');
-    }
-  }
-}
-
-class FormatString {
-  static final monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
-  static String formattedDate(DateTime dateTime) {
-    return '${monthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
-  }
-}
 
 class Utils {
   // 静态方法：加载 JSON 文件并解析为 Map
