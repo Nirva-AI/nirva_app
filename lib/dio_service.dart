@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
 class DioService {
-  static final Dio _dio =
+  final Dio _dio =
       Dio(
           BaseOptions(
             //baseUrl: 'http://127.0.0.1:8000',
@@ -40,9 +40,3 @@ class DioService {
     }
   }
 }
-
-// 最佳实践：
-// 创建 dio_interceptors 目录存放自定义拦截器
-// 使用 dio_http_cache 实现缓存
-// 配合 pretty_dio_logger 增强日志
-// 使用 CancelToken 实现请求取消
