@@ -2,15 +2,15 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'data.freezed.dart';
 part 'data.g.dart';
 
-@freezed
-class User with _$User {
-  const factory User({required int id, required String name}) = _User;
+// @freezed
+// class User with _$User {
+//   const factory User({required int id, required String name}) = _User;
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+//   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
-  @override
-  Map<String, dynamic> toJson() => (this as _User).toJson();
-}
+//   @override
+//   Map<String, dynamic> toJson() => (this as _User).toJson();
+// }
 
 @freezed
 class Quote with _$Quote {
