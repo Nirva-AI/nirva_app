@@ -32,7 +32,7 @@ class ServiceManager {
   }
 
   // 配置 API 端点
-  Future<void> configureApiEndpoint() async {
+  Future<bool> configureApiEndpoint() async {
     try {
       final response = await _dioService.safePost(API_ENDPOINTS_URL, data: {});
       final apiEndPointResponse = APIEndpointConfigurationResponse.fromJson(
@@ -43,6 +43,7 @@ class ServiceManager {
         'apiEndPointResponse=\n${jsonEncode(apiEndPointResponse.toJson())}',
       );
       api_endpoints = apiEndPointResponse.api_endpoints;
+      return true;
     } on DioException catch (e) {
       debugPrint('Caught a DioException: ${e.message}');
       debugPrint('Response data: ${e.response?.data}');
@@ -74,6 +75,8 @@ class ServiceManager {
       debugPrint('Caught an unknown error of type: ${e.runtimeType}');
       debugPrint('Error details: $e');
     }
+
+    return false;
   }
 
   String apiEndPointsJson() {

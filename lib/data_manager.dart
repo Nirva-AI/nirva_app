@@ -39,16 +39,7 @@ class DataManager {
     todoList = todoList.toggleTaskCompletion(task);
   }
 
-  // 初始化方法
-  void initialize() {
-    _fillTestData();
-    // User testUser = User(id: 1, name: 'Test User');
-    // Logger.d('testUser=\n${testUser.toJson()}');
-    // String todoListJson = jsonEncode(todoList.toJson());
-    // Logger.d('testUserJson=\n$todoListJson');
-  }
-
-  void _fillTestData() {
+  void fillTestData() {
     // 添加测试数据
     todoList = _createTestTodoList();
     currentJournalEntry = _createTestPersonalJournal();
