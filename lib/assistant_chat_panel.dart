@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/chat_manager.dart';
+import 'package:nirva_app/message.dart';
 
 class AssistantChatPanel extends StatelessWidget {
   final ValueNotifier<List<BaseMessage>> chatMessages;
   final TextEditingController textController;
-  final Function(String) onSend;
+  //final Function(String) onSend;
   final ScrollController _scrollController = ScrollController();
 
   AssistantChatPanel({
     super.key,
     required this.chatMessages,
     required this.textController,
-    required this.onSend,
+    //required this.onSend,
   });
 
   String _getContent(BaseMessage message) {
@@ -137,7 +138,9 @@ class AssistantChatPanel extends StatelessWidget {
                       onPressed: () {
                         final message = textController.text.trim();
                         if (message.isNotEmpty) {
-                          onSend(message);
+                          //(message);
+                          ChatManager().addUserMessage(message);
+                          ChatManager().addAIMessage('回复: $message');
                           textController.clear();
                           _scrollToBottom(); // 发送消息后滚动到底部
                         }

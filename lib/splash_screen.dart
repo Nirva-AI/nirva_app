@@ -39,10 +39,10 @@ class _SplashScreenState extends State<SplashScreen> {
     // 打印日志，方便调试
     debugPrint('API Endpoint Configuration Success: $success');
 
-    if (!success) {
-      DataManager().fillTestData();
-      ChatManager().fillTestData();
-    }
+    //if (!success) {
+    DataManager().fillTestData();
+    ChatManager().fillTestData();
+    //}
 
     // 跳转到下一个场景
     if (mounted) {

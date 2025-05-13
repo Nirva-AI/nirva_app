@@ -35,10 +35,7 @@ class _HomePageState extends State<HomePage> {
           child: AssistantChatPanel(
             chatMessages: ChatManager().getMessages(),
             textController: _textController,
-            onSend: (message) {
-              ChatManager().addUserMessage(message);
-              ChatManager().addAIMessage('回复: $message');
-            },
+            //onSend: (message) {},
           ),
         );
       },

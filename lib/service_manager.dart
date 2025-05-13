@@ -42,9 +42,11 @@ class ServiceManager {
       Logger().d(
         'apiEndPointResponse=\n${jsonEncode(apiEndPointResponse.toJson())}',
       );
+      // 解析 API 端点配置
       api_endpoints = apiEndPointResponse.api_endpoints;
       return true;
     } on DioException catch (e) {
+      // 处理 DioException
       debugPrint('Caught a DioException: ${e.message}');
       debugPrint('Response data: ${e.response?.data}');
 
