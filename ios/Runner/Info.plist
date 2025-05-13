@@ -57,10 +57,10 @@
     </dict>
 
     <!-- 蜂窝网络权限说明 -->
-    <key>NSAppUsesNonExemptEncryption</key>
-    <false/>
+    <!-- <key>NSAppUsesNonExemptEncryption</key>
+    <true/>
     <key>NSVoipNetworkServiceType</key>
-    <string>voip</string>
+    <string>voip</string> -->
 
     <!-- 本地网络权限说明 -->
     <key>NSLocalNetworkUsageDescription</key>
