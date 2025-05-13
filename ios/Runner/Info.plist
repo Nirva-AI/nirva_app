@@ -45,12 +45,25 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
+    <!-- 网络相关配置 -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <!-- 允许 HTTP 请求（开发阶段） -->
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <!-- 允许访问本地网络服务 -->
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+
+    <!-- 蜂窝网络权限说明 -->
+    <key>NSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>NSVoipNetworkServiceType</key>
+    <string>voip</string>
+
+    <!-- 本地网络权限说明 -->
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>需要访问本地网络以连接您的私有服务器</string>
 </dict>
 </plist>
