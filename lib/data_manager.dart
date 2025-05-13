@@ -10,6 +10,8 @@ class DataManager {
   factory DataManager() => _instance;
   DataManager._internal();
 
+  final String userName = 'Wei';
+
   // 当前的日记和仪表板数据
   PersonalJournal currentJournalEntry = PersonalJournal.createEmpty();
 

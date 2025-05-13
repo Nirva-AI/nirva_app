@@ -31,7 +31,19 @@ class ServiceManager {
     return path;
   }
 
-  // 配置 API 端点
+  String get LOGIN_URL {
+    return api_endpoints.LOGIN_URL;
+  }
+
+  String get LOGOUT_URL {
+    return api_endpoints.LOGOUT_URL;
+  }
+
+  String get CHAT_ACTION_URL {
+    return api_endpoints.CHAT_ACTION_URL;
+  }
+
+  // 配置 API 端点, 后续可以写的复杂一些。
   Future<bool> configureApiEndpoint() async {
     try {
       final response = await _dioService.safePost(API_ENDPOINTS_URL, data: {});
@@ -83,5 +95,83 @@ class ServiceManager {
 
   String apiEndPointsJson() {
     return jsonEncode(api_endpoints.toJson());
+  }
+
+  // 登录请求
+  Future<bool> login(String userName) async {
+    try {
+      final response = await _dioService.safePost(
+        LOGIN_URL,
+        data: LoginRequest(user_name: userName).toJson(),
+      );
+
+      final loginResponse = LoginResponse.fromJson(response.data!);
+
+      if (loginResponse.error == 0) {
+        Logger().d('Login successful: ${loginResponse.message}');
+        return true;
+      } else {
+        Logger().e('Login failed: ${loginResponse.message}');
+        return false;
+      }
+    } on DioException catch (e) {
+      debugPrint('Caught a DioException during login: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Caught an unknown error during login: $e');
+      return false;
+    }
+  }
+
+  // 登出请求
+  Future<bool> logout(String userName) async {
+    try {
+      final response = await _dioService.safePost(
+        LOGOUT_URL,
+        data: LogoutRequest(user_name: userName).toJson(),
+      );
+
+      final logoutResponse = LogoutResponse.fromJson(response.data!);
+
+      if (logoutResponse.error == 0) {
+        Logger().d('Logout successful: ${logoutResponse.message}');
+        return true;
+      } else {
+        Logger().e('Logout failed: ${logoutResponse.message}');
+        return false;
+      }
+    } on DioException catch (e) {
+      debugPrint('Caught a DioException during logout: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Caught an unknown error during logout: $e');
+      return false;
+    }
+  }
+
+  // 聊天请求
+  Future<bool> chatAction(String userName, String content) async {
+    try {
+      final response = await _dioService.safePost(
+        CHAT_ACTION_URL,
+        data: ChatActionRequest(user_name: userName, content: content).toJson(),
+      );
+
+      final chatActionResponse = ChatActionResponse.fromJson(response.data!);
+
+      if (chatActionResponse.error == 0) {
+        Logger().d('Chat action successful: ${chatActionResponse.message}');
+        return true;
+      } else {
+        Logger().e('Chat action failed: ${chatActionResponse.message}');
+        return false;
+      }
+    } on DioException catch (e) {
+      debugPrint('Caught a DioException during chat action: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Caught an unknown error during chat action: $e');
+      return false;
+    }
   }
 }
