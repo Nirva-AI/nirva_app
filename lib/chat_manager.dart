@@ -41,10 +41,10 @@ class ChatManager {
   }
 
   // 清空消息
-  fillTestData() {
-    // 初始化对话记录
-    addAIMessage(
-      'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
-    );
-  }
+  // fillTestData() {
+  //   // 初始化对话记录
+  //   addAIMessage(
+  //     'Hi Wei! I know you have spent some great time with Ashley and Trent today. Do you want to chat more about it?',
+  //   );
+  // }
 }

@@ -8,6 +8,13 @@ import 'package:nirva_app/api.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 
+class ChatActionResult {
+  final bool success;
+  final String message;
+
+  ChatActionResult({required this.success, required this.message});
+}
+
 // 管理全局数据的类
 class ServiceManager {
   // 单例模式
@@ -25,7 +32,7 @@ class ServiceManager {
 
   // API_ENDPOINTS_URL 是一个 getter 方法，用于获取 API 端点的 URL
   String get API_ENDPOINTS_URL {
-    final String serverIpAddress = "127.0.0.1";
+    final String serverIpAddress = "192.168.192.121";
     final int serverPort = 8000;
     final String path = "http://$serverIpAddress:$serverPort/api_endpoints/v1/";
     return path;
@@ -150,7 +157,7 @@ class ServiceManager {
   }
 
   // 聊天请求
-  Future<bool> chatAction(String userName, String content) async {
+  Future<ChatActionResult> chatAction(String userName, String content) async {
     try {
       final response = await _dioService.safePost(
         CHAT_ACTION_URL,
@@ -161,17 +168,23 @@ class ServiceManager {
 
       if (chatActionResponse.error == 0) {
         Logger().d('Chat action successful: ${chatActionResponse.message}');
-        return true;
+        return ChatActionResult(
+          success: true,
+          message: chatActionResponse.message,
+        );
       } else {
         Logger().e('Chat action failed: ${chatActionResponse.message}');
-        return false;
+        return ChatActionResult(
+          success: false,
+          message: chatActionResponse.message,
+        );
       }
     } on DioException catch (e) {
       debugPrint('Caught a DioException during chat action: ${e.message}');
-      return false;
+      return ChatActionResult(success: false, message: '网络错误，请稍后重试。');
     } catch (e) {
       debugPrint('Caught an unknown error during chat action: $e');
-      return false;
+      return ChatActionResult(success: false, message: '未知错误，请稍后重试。');
     }
   }
 }

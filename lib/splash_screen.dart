@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/home_page.dart';
 import 'package:nirva_app/service_manager.dart';
 import 'package:nirva_app/data_manager.dart';
-import 'package:nirva_app/chat_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,7 +24,19 @@ class _SplashScreenState extends State<SplashScreen> {
     final Stopwatch stopwatch = Stopwatch()..start();
 
     // 调用 configureApiEndpoint 并等待返回
-    final bool success = await _serviceManager.configureApiEndpoint();
+    final bool apiConfigurationSuccess =
+        await _serviceManager.configureApiEndpoint();
+
+    //
+    if (apiConfigurationSuccess) {
+      debugPrint('API Endpoint Configuration: $apiConfigurationSuccess');
+
+      // 如果配置成功，调用 login 方法
+      final bool loginSuccess = await _serviceManager.login(
+        DataManager().userName,
+      );
+      debugPrint('Login: $loginSuccess');
+    }
 
     // 计算剩余时间
     final int elapsed = stopwatch.elapsedMilliseconds;
@@ -36,12 +47,9 @@ class _SplashScreenState extends State<SplashScreen> {
       await Future.delayed(Duration(milliseconds: remainingTime));
     }
 
-    // 打印日志，方便调试
-    debugPrint('API Endpoint Configuration Success: $success');
-
     //if (!success) {
     DataManager().fillTestData();
-    ChatManager().fillTestData();
+    //ChatManager().fillTestData();
     //}
 
     // 跳转到下一个场景

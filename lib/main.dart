@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-//import 'package:nirva_app/main_app.dart';
-import 'package:nirva_app/test_chat_app.dart';
+import 'package:nirva_app/main_app.dart';
+//import 'package:nirva_app/test_chat_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
@@ -8,9 +8,10 @@ void main() async {
   // 执行异步操作，例如加载配置文件
   await initializeApp();
 
-  // 运行应用
-  runApp(const TestChatApp());
-  //runApp(const MainApp());
+  // 运行核心应用
+  runApp(const MainApp());
+  // 如果需要测试应用，可以取消下面的注释，下面会进入测试应用，隔离主应用进行专项测试
+  //runApp(const TestChatApp());
 }
 
 Future<void> initializeApp() async {
