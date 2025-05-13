@@ -2,12 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/assistant_chat_panel.dart';
 import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/service_manager.dart';
+import 'package:nirva_app/data_manager.dart';
 
 class TestChatApp extends StatelessWidget {
   const TestChatApp({super.key});
 
-  Future<bool> _initializeApi() async {
-    return await ServiceManager().configureApiEndpoint();
+  Future<bool> _initialize() async {
+    bool isApiConfigurationSuccessful =
+        await ServiceManager().configureApiEndpoint();
+    if (!isApiConfigurationSuccessful) {
+      return false;
+    }
+
+    bool isLoginSuccessful = await ServiceManager().login(
+      DataManager().userName,
+    );
+    if (!isLoginSuccessful) {
+      return false;
+    }
+
+    return true;
   }
 
   @override
@@ -23,7 +37,7 @@ class TestChatApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text('测试对话')),
         body: FutureBuilder<bool>(
-          future: _initializeApi(),
+          future: _initialize(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               // 显示加载指示器
