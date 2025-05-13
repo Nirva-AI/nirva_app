@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/message.dart';
+import 'package:nirva_app/service_manager.dart';
+import 'package:nirva_app/data_manager.dart';
 
-class AssistantChatPanel extends StatelessWidget {
+class AssistantChatPanel extends StatefulWidget {
   final ValueNotifier<List<BaseMessage>> chatMessages;
   final TextEditingController textController;
-  //final Function(String) onSend;
-  final ScrollController _scrollController = ScrollController();
 
-  AssistantChatPanel({
+  const AssistantChatPanel({
     super.key,
     required this.chatMessages,
     required this.textController,
-    //required this.onSend,
   });
+
+  @override
+  State<AssistantChatPanel> createState() => _AssistantChatPanelState();
+}
+
+class _AssistantChatPanelState extends State<AssistantChatPanel> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isSending = false; // 按钮状态标志
 
   String _getContent(BaseMessage message) {
     if (message.role == ChatRole.user) {
@@ -32,6 +39,39 @@ class AssistantChatPanel extends StatelessWidget {
         curve: Curves.easeOut,
       );
     }
+  }
+
+  Future<void> _handleSendMessage() async {
+    final message = widget.textController.text.trim();
+    if (message.isEmpty) return;
+
+    setState(() {
+      _isSending = true; // 禁用按钮
+    });
+
+    // 添加用户消息
+    ChatManager().addUserMessage(message);
+
+    // 调用 ServiceManager 的 chatAction 方法
+    final result = await ServiceManager().chatAction(
+      DataManager().userName,
+      message,
+    );
+
+    if (result.success) {
+      // 添加 AI 回复消息
+      ChatManager().addAIMessage('AI 回复: ${result.message}');
+    } else {
+      // 添加失败消息
+      ChatManager().addAIMessage('错误: ${result.message}');
+    }
+
+    widget.textController.clear();
+    _scrollToBottom(); // 滚动到底部
+
+    setState(() {
+      _isSending = false; // 恢复按钮状态
+    });
   }
 
   @override
@@ -72,7 +112,7 @@ class AssistantChatPanel extends StatelessWidget {
             SizedBox(height: 16),
             Expanded(
               child: ValueListenableBuilder<List<BaseMessage>>(
-                valueListenable: chatMessages,
+                valueListenable: widget.chatMessages,
                 builder: (context, chatMessagesValue, _) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     _scrollToBottom(); // 每次消息更新后滚动到底部
@@ -123,7 +163,7 @@ class AssistantChatPanel extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextField(
-                        controller: textController,
+                        controller: widget.textController,
                         decoration: InputDecoration(
                           hintText: '输入内容...',
                           border: OutlineInputBorder(
@@ -134,17 +174,11 @@ class AssistantChatPanel extends StatelessWidget {
                     ),
                     SizedBox(width: 8),
                     IconButton(
-                      icon: Icon(Icons.send, color: Colors.blue),
-                      onPressed: () {
-                        final message = textController.text.trim();
-                        if (message.isNotEmpty) {
-                          //(message);
-                          ChatManager().addUserMessage(message);
-                          ChatManager().addAIMessage('回复: $message');
-                          textController.clear();
-                          _scrollToBottom(); // 发送消息后滚动到底部
-                        }
-                      },
+                      icon: Icon(
+                        Icons.send,
+                        color: _isSending ? Colors.grey : Colors.blue,
+                      ),
+                      onPressed: _isSending ? null : _handleSendMessage,
                     ),
                   ],
                 ),
