@@ -28,8 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await checkNetworkStatus();
 
     // 调用 configureApiEndpoint 并等待返回
-    final bool apiConfigurationSuccess =
-        await _serviceManager.configureApiEndpoint();
+    final bool apiConfigurationSuccess = await _serviceManager.get_url_config();
 
     //
     if (apiConfigurationSuccess) {

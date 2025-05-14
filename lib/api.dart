@@ -4,35 +4,20 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'api.freezed.dart';
 part 'api.g.dart';
 
-//api端点配置
+// url配置
 @freezed
-class APIEndpointConfiguration with _$APIEndpointConfiguration {
-  const factory APIEndpointConfiguration({
-    required String LOGIN_URL,
-    required String LOGOUT_URL,
-    required String CHAT_ACTION_URL,
-  }) = _APIEndpointConfiguration;
+class URLConfigurationResponse with _$URLConfigurationResponse {
+  const factory URLConfigurationResponse({
+    required String api_version,
+    required Map<String, String> endpoints,
+    required bool deprecated,
+    required String notice,
+  }) = _URLConfigurationResponse;
 
-  factory APIEndpointConfiguration.fromJson(Map<String, dynamic> json) =>
-      _$APIEndpointConfigurationFromJson(json);
+  factory URLConfigurationResponse.fromJson(Map<String, dynamic> json) =>
+      _$URLConfigurationResponseFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _APIEndpointConfiguration).toJson();
-}
-
-@freezed
-class APIEndpointConfigurationResponse with _$APIEndpointConfigurationResponse {
-  const factory APIEndpointConfigurationResponse({
-    required APIEndpointConfiguration api_endpoints,
-    required int error,
-    required String message,
-  }) = _APIEndpointConfigurationResponse;
-
-  factory APIEndpointConfigurationResponse.fromJson(
-    Map<String, dynamic> json,
-  ) => _$APIEndpointConfigurationResponseFromJson(json);
-  @override
-  Map<String, dynamic> toJson() =>
-      (this as _APIEndpointConfigurationResponse).toJson();
+  Map<String, dynamic> toJson() => (this as _URLConfigurationResponse).toJson();
 }
 
 //登录请求

@@ -17,7 +17,7 @@ class _MePageState extends State<MePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'User Profile Screen = ${ServiceManager().apiEndPointsJson()}',
+              'User Profile Screen = ${ServiceManager().urlConfigJson()}',
               style: TextStyle(fontSize: 12),
             ),
           ],

@@ -5,24 +5,17 @@ import 'package:nirva_app/service_manager.dart';
 import 'package:nirva_app/data_manager.dart';
 
 class TestChatApp extends StatelessWidget {
-  const TestChatApp({super.key});
+  TestChatApp({super.key});
 
-  Future<bool> _initialize() async {
-    bool isApiConfigurationSuccessful =
-        await ServiceManager().configureApiEndpoint();
+  // 缓存初始化结果
+  final Future<bool> _initFuture = ServiceManager().get_url_config().then((
+    isApiConfigurationSuccessful,
+  ) async {
     if (!isApiConfigurationSuccessful) {
       return false;
     }
-
-    bool isLoginSuccessful = await ServiceManager().login(
-      DataManager().userName,
-    );
-    if (!isLoginSuccessful) {
-      return false;
-    }
-
-    return true;
-  }
+    return await ServiceManager().login(DataManager().userName);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +30,7 @@ class TestChatApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text('测试对话')),
         body: FutureBuilder<bool>(
-          future: _initialize(),
+          future: _initFuture, // 使用缓存的 Future
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               // 显示加载指示器
@@ -50,7 +43,6 @@ class TestChatApp extends StatelessWidget {
               return AssistantChatPanel(
                 chatMessages: chatMessages,
                 textController: textController,
-                //onSend: (message) {},
               );
             }
           },
