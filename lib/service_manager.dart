@@ -24,45 +24,37 @@ class ServiceManager {
 
   final DioService _dioService = DioService();
 
-  APIEndpointConfiguration api_endpoints = APIEndpointConfiguration(
-    LOGIN_URL: '',
-    LOGOUT_URL: '',
-    CHAT_ACTION_URL: '',
-  );
+  URLConfigurationResponse _url_configuration_response =
+      URLConfigurationResponse(
+        api_version: '',
+        endpoints: {},
+        deprecated: false,
+        notice: '',
+      );
 
-  // API_ENDPOINTS_URL 是一个 getter 方法，用于获取 API 端点的 URL
-  String get API_ENDPOINTS_URL {
-    final String serverIpAddress = "192.168.192.121";
-    final int serverPort = 8000;
-    final String path = "http://$serverIpAddress:$serverPort/api_endpoints/v1/";
-    return path;
+  String get login_url {
+    return _url_configuration_response.endpoints['login'] ?? '';
   }
 
-  String get LOGIN_URL {
-    return api_endpoints.LOGIN_URL;
+  String get logout_url {
+    return _url_configuration_response.endpoints['logout'] ?? '';
   }
 
-  String get LOGOUT_URL {
-    return api_endpoints.LOGOUT_URL;
-  }
-
-  String get CHAT_ACTION_URL {
-    return api_endpoints.CHAT_ACTION_URL;
+  String get chat_action_url {
+    return _url_configuration_response.endpoints['chat'] ?? '';
   }
 
   // 配置 API 端点, 后续可以写的复杂一些。
-  Future<bool> configureApiEndpoint() async {
+  Future<bool> get_url_config() async {
     try {
-      final response = await _dioService.safePost(API_ENDPOINTS_URL, data: {});
-      final apiEndPointResponse = APIEndpointConfigurationResponse.fromJson(
+      final response = await _dioService.safeGet("/config");
+      _url_configuration_response = URLConfigurationResponse.fromJson(
         response.data!,
       );
 
       Logger().d(
-        'apiEndPointResponse=\n${jsonEncode(apiEndPointResponse.toJson())}',
+        '_url_configuration_response=\n${jsonEncode(_url_configuration_response.toJson())}',
       );
-      // 解析 API 端点配置
-      api_endpoints = apiEndPointResponse.api_endpoints;
       return true;
     } on DioException catch (e) {
       // 处理 DioException
@@ -100,15 +92,15 @@ class ServiceManager {
     return false;
   }
 
-  String apiEndPointsJson() {
-    return jsonEncode(api_endpoints.toJson());
+  String urlConfigJson() {
+    return jsonEncode(_url_configuration_response.toJson());
   }
 
   // 登录请求
   Future<bool> login(String userName) async {
     try {
       final response = await _dioService.safePost(
-        LOGIN_URL,
+        login_url,
         data: LoginRequest(user_name: userName).toJson(),
       );
 
@@ -134,7 +126,7 @@ class ServiceManager {
   Future<bool> logout(String userName) async {
     try {
       final response = await _dioService.safePost(
-        LOGOUT_URL,
+        logout_url,
         data: LogoutRequest(user_name: userName).toJson(),
       );
 
@@ -160,7 +152,7 @@ class ServiceManager {
   Future<ChatActionResult> chatAction(String userName, String content) async {
     try {
       final response = await _dioService.safePost(
-        CHAT_ACTION_URL,
+        chat_action_url,
         data: ChatActionRequest(user_name: userName, content: content).toJson(),
       );
 

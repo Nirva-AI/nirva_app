@@ -15,76 +15,88 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-APIEndpointConfiguration _$APIEndpointConfigurationFromJson(
+URLConfigurationResponse _$URLConfigurationResponseFromJson(
   Map<String, dynamic> json,
 ) {
-  return _APIEndpointConfiguration.fromJson(json);
+  return _URLConfigurationResponse.fromJson(json);
 }
 
 /// @nodoc
-mixin _$APIEndpointConfiguration {
-  String get LOGIN_URL => throw _privateConstructorUsedError;
-  String get LOGOUT_URL => throw _privateConstructorUsedError;
-  String get CHAT_ACTION_URL => throw _privateConstructorUsedError;
+mixin _$URLConfigurationResponse {
+  String get api_version => throw _privateConstructorUsedError;
+  Map<String, String> get endpoints => throw _privateConstructorUsedError;
+  bool get deprecated => throw _privateConstructorUsedError;
+  String get notice => throw _privateConstructorUsedError;
 
-  /// Serializes this APIEndpointConfiguration to a JSON map.
+  /// Serializes this URLConfigurationResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of APIEndpointConfiguration
+  /// Create a copy of URLConfigurationResponse
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $APIEndpointConfigurationCopyWith<APIEndpointConfiguration> get copyWith =>
+  $URLConfigurationResponseCopyWith<URLConfigurationResponse> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $APIEndpointConfigurationCopyWith<$Res> {
-  factory $APIEndpointConfigurationCopyWith(
-    APIEndpointConfiguration value,
-    $Res Function(APIEndpointConfiguration) then,
-  ) = _$APIEndpointConfigurationCopyWithImpl<$Res, APIEndpointConfiguration>;
+abstract class $URLConfigurationResponseCopyWith<$Res> {
+  factory $URLConfigurationResponseCopyWith(
+    URLConfigurationResponse value,
+    $Res Function(URLConfigurationResponse) then,
+  ) = _$URLConfigurationResponseCopyWithImpl<$Res, URLConfigurationResponse>;
   @useResult
-  $Res call({String LOGIN_URL, String LOGOUT_URL, String CHAT_ACTION_URL});
+  $Res call({
+    String api_version,
+    Map<String, String> endpoints,
+    bool deprecated,
+    String notice,
+  });
 }
 
 /// @nodoc
-class _$APIEndpointConfigurationCopyWithImpl<
+class _$URLConfigurationResponseCopyWithImpl<
   $Res,
-  $Val extends APIEndpointConfiguration
+  $Val extends URLConfigurationResponse
 >
-    implements $APIEndpointConfigurationCopyWith<$Res> {
-  _$APIEndpointConfigurationCopyWithImpl(this._value, this._then);
+    implements $URLConfigurationResponseCopyWith<$Res> {
+  _$URLConfigurationResponseCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of APIEndpointConfiguration
+  /// Create a copy of URLConfigurationResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? LOGIN_URL = null,
-    Object? LOGOUT_URL = null,
-    Object? CHAT_ACTION_URL = null,
+    Object? api_version = null,
+    Object? endpoints = null,
+    Object? deprecated = null,
+    Object? notice = null,
   }) {
     return _then(
       _value.copyWith(
-            LOGIN_URL:
-                null == LOGIN_URL
-                    ? _value.LOGIN_URL
-                    : LOGIN_URL // ignore: cast_nullable_to_non_nullable
+            api_version:
+                null == api_version
+                    ? _value.api_version
+                    : api_version // ignore: cast_nullable_to_non_nullable
                         as String,
-            LOGOUT_URL:
-                null == LOGOUT_URL
-                    ? _value.LOGOUT_URL
-                    : LOGOUT_URL // ignore: cast_nullable_to_non_nullable
-                        as String,
-            CHAT_ACTION_URL:
-                null == CHAT_ACTION_URL
-                    ? _value.CHAT_ACTION_URL
-                    : CHAT_ACTION_URL // ignore: cast_nullable_to_non_nullable
+            endpoints:
+                null == endpoints
+                    ? _value.endpoints
+                    : endpoints // ignore: cast_nullable_to_non_nullable
+                        as Map<String, String>,
+            deprecated:
+                null == deprecated
+                    ? _value.deprecated
+                    : deprecated // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            notice:
+                null == notice
+                    ? _value.notice
+                    : notice // ignore: cast_nullable_to_non_nullable
                         as String,
           )
           as $Val,
@@ -93,55 +105,66 @@ class _$APIEndpointConfigurationCopyWithImpl<
 }
 
 /// @nodoc
-abstract class _$$APIEndpointConfigurationImplCopyWith<$Res>
-    implements $APIEndpointConfigurationCopyWith<$Res> {
-  factory _$$APIEndpointConfigurationImplCopyWith(
-    _$APIEndpointConfigurationImpl value,
-    $Res Function(_$APIEndpointConfigurationImpl) then,
-  ) = __$$APIEndpointConfigurationImplCopyWithImpl<$Res>;
+abstract class _$$URLConfigurationResponseImplCopyWith<$Res>
+    implements $URLConfigurationResponseCopyWith<$Res> {
+  factory _$$URLConfigurationResponseImplCopyWith(
+    _$URLConfigurationResponseImpl value,
+    $Res Function(_$URLConfigurationResponseImpl) then,
+  ) = __$$URLConfigurationResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String LOGIN_URL, String LOGOUT_URL, String CHAT_ACTION_URL});
+  $Res call({
+    String api_version,
+    Map<String, String> endpoints,
+    bool deprecated,
+    String notice,
+  });
 }
 
 /// @nodoc
-class __$$APIEndpointConfigurationImplCopyWithImpl<$Res>
+class __$$URLConfigurationResponseImplCopyWithImpl<$Res>
     extends
-        _$APIEndpointConfigurationCopyWithImpl<
+        _$URLConfigurationResponseCopyWithImpl<
           $Res,
-          _$APIEndpointConfigurationImpl
+          _$URLConfigurationResponseImpl
         >
-    implements _$$APIEndpointConfigurationImplCopyWith<$Res> {
-  __$$APIEndpointConfigurationImplCopyWithImpl(
-    _$APIEndpointConfigurationImpl _value,
-    $Res Function(_$APIEndpointConfigurationImpl) _then,
+    implements _$$URLConfigurationResponseImplCopyWith<$Res> {
+  __$$URLConfigurationResponseImplCopyWithImpl(
+    _$URLConfigurationResponseImpl _value,
+    $Res Function(_$URLConfigurationResponseImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of APIEndpointConfiguration
+  /// Create a copy of URLConfigurationResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? LOGIN_URL = null,
-    Object? LOGOUT_URL = null,
-    Object? CHAT_ACTION_URL = null,
+    Object? api_version = null,
+    Object? endpoints = null,
+    Object? deprecated = null,
+    Object? notice = null,
   }) {
     return _then(
-      _$APIEndpointConfigurationImpl(
-        LOGIN_URL:
-            null == LOGIN_URL
-                ? _value.LOGIN_URL
-                : LOGIN_URL // ignore: cast_nullable_to_non_nullable
+      _$URLConfigurationResponseImpl(
+        api_version:
+            null == api_version
+                ? _value.api_version
+                : api_version // ignore: cast_nullable_to_non_nullable
                     as String,
-        LOGOUT_URL:
-            null == LOGOUT_URL
-                ? _value.LOGOUT_URL
-                : LOGOUT_URL // ignore: cast_nullable_to_non_nullable
-                    as String,
-        CHAT_ACTION_URL:
-            null == CHAT_ACTION_URL
-                ? _value.CHAT_ACTION_URL
-                : CHAT_ACTION_URL // ignore: cast_nullable_to_non_nullable
+        endpoints:
+            null == endpoints
+                ? _value._endpoints
+                : endpoints // ignore: cast_nullable_to_non_nullable
+                    as Map<String, String>,
+        deprecated:
+            null == deprecated
+                ? _value.deprecated
+                : deprecated // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        notice:
+            null == notice
+                ? _value.notice
+                : notice // ignore: cast_nullable_to_non_nullable
                     as String,
       ),
     );
@@ -150,335 +173,104 @@ class __$$APIEndpointConfigurationImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$APIEndpointConfigurationImpl implements _APIEndpointConfiguration {
-  const _$APIEndpointConfigurationImpl({
-    required this.LOGIN_URL,
-    required this.LOGOUT_URL,
-    required this.CHAT_ACTION_URL,
-  });
+class _$URLConfigurationResponseImpl implements _URLConfigurationResponse {
+  const _$URLConfigurationResponseImpl({
+    required this.api_version,
+    required final Map<String, String> endpoints,
+    required this.deprecated,
+    required this.notice,
+  }) : _endpoints = endpoints;
 
-  factory _$APIEndpointConfigurationImpl.fromJson(Map<String, dynamic> json) =>
-      _$$APIEndpointConfigurationImplFromJson(json);
+  factory _$URLConfigurationResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$URLConfigurationResponseImplFromJson(json);
 
   @override
-  final String LOGIN_URL;
+  final String api_version;
+  final Map<String, String> _endpoints;
   @override
-  final String LOGOUT_URL;
+  Map<String, String> get endpoints {
+    if (_endpoints is EqualUnmodifiableMapView) return _endpoints;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_endpoints);
+  }
+
   @override
-  final String CHAT_ACTION_URL;
+  final bool deprecated;
+  @override
+  final String notice;
 
   @override
   String toString() {
-    return 'APIEndpointConfiguration(LOGIN_URL: $LOGIN_URL, LOGOUT_URL: $LOGOUT_URL, CHAT_ACTION_URL: $CHAT_ACTION_URL)';
+    return 'URLConfigurationResponse(api_version: $api_version, endpoints: $endpoints, deprecated: $deprecated, notice: $notice)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$APIEndpointConfigurationImpl &&
-            (identical(other.LOGIN_URL, LOGIN_URL) ||
-                other.LOGIN_URL == LOGIN_URL) &&
-            (identical(other.LOGOUT_URL, LOGOUT_URL) ||
-                other.LOGOUT_URL == LOGOUT_URL) &&
-            (identical(other.CHAT_ACTION_URL, CHAT_ACTION_URL) ||
-                other.CHAT_ACTION_URL == CHAT_ACTION_URL));
+            other is _$URLConfigurationResponseImpl &&
+            (identical(other.api_version, api_version) ||
+                other.api_version == api_version) &&
+            const DeepCollectionEquality().equals(
+              other._endpoints,
+              _endpoints,
+            ) &&
+            (identical(other.deprecated, deprecated) ||
+                other.deprecated == deprecated) &&
+            (identical(other.notice, notice) || other.notice == notice));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, LOGIN_URL, LOGOUT_URL, CHAT_ACTION_URL);
+  int get hashCode => Object.hash(
+    runtimeType,
+    api_version,
+    const DeepCollectionEquality().hash(_endpoints),
+    deprecated,
+    notice,
+  );
 
-  /// Create a copy of APIEndpointConfiguration
+  /// Create a copy of URLConfigurationResponse
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$APIEndpointConfigurationImplCopyWith<_$APIEndpointConfigurationImpl>
-  get copyWith => __$$APIEndpointConfigurationImplCopyWithImpl<
-    _$APIEndpointConfigurationImpl
+  _$$URLConfigurationResponseImplCopyWith<_$URLConfigurationResponseImpl>
+  get copyWith => __$$URLConfigurationResponseImplCopyWithImpl<
+    _$URLConfigurationResponseImpl
   >(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$APIEndpointConfigurationImplToJson(this);
+    return _$$URLConfigurationResponseImplToJson(this);
   }
 }
 
-abstract class _APIEndpointConfiguration implements APIEndpointConfiguration {
-  const factory _APIEndpointConfiguration({
-    required final String LOGIN_URL,
-    required final String LOGOUT_URL,
-    required final String CHAT_ACTION_URL,
-  }) = _$APIEndpointConfigurationImpl;
+abstract class _URLConfigurationResponse implements URLConfigurationResponse {
+  const factory _URLConfigurationResponse({
+    required final String api_version,
+    required final Map<String, String> endpoints,
+    required final bool deprecated,
+    required final String notice,
+  }) = _$URLConfigurationResponseImpl;
 
-  factory _APIEndpointConfiguration.fromJson(Map<String, dynamic> json) =
-      _$APIEndpointConfigurationImpl.fromJson;
+  factory _URLConfigurationResponse.fromJson(Map<String, dynamic> json) =
+      _$URLConfigurationResponseImpl.fromJson;
 
   @override
-  String get LOGIN_URL;
+  String get api_version;
   @override
-  String get LOGOUT_URL;
+  Map<String, String> get endpoints;
   @override
-  String get CHAT_ACTION_URL;
+  bool get deprecated;
+  @override
+  String get notice;
 
-  /// Create a copy of APIEndpointConfiguration
+  /// Create a copy of URLConfigurationResponse
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$APIEndpointConfigurationImplCopyWith<_$APIEndpointConfigurationImpl>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-APIEndpointConfigurationResponse _$APIEndpointConfigurationResponseFromJson(
-  Map<String, dynamic> json,
-) {
-  return _APIEndpointConfigurationResponse.fromJson(json);
-}
-
-/// @nodoc
-mixin _$APIEndpointConfigurationResponse {
-  APIEndpointConfiguration get api_endpoints =>
-      throw _privateConstructorUsedError;
-  int get error => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
-
-  /// Serializes this APIEndpointConfigurationResponse to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of APIEndpointConfigurationResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $APIEndpointConfigurationResponseCopyWith<APIEndpointConfigurationResponse>
-  get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $APIEndpointConfigurationResponseCopyWith<$Res> {
-  factory $APIEndpointConfigurationResponseCopyWith(
-    APIEndpointConfigurationResponse value,
-    $Res Function(APIEndpointConfigurationResponse) then,
-  ) =
-      _$APIEndpointConfigurationResponseCopyWithImpl<
-        $Res,
-        APIEndpointConfigurationResponse
-      >;
-  @useResult
-  $Res call({
-    APIEndpointConfiguration api_endpoints,
-    int error,
-    String message,
-  });
-
-  $APIEndpointConfigurationCopyWith<$Res> get api_endpoints;
-}
-
-/// @nodoc
-class _$APIEndpointConfigurationResponseCopyWithImpl<
-  $Res,
-  $Val extends APIEndpointConfigurationResponse
->
-    implements $APIEndpointConfigurationResponseCopyWith<$Res> {
-  _$APIEndpointConfigurationResponseCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of APIEndpointConfigurationResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? api_endpoints = null,
-    Object? error = null,
-    Object? message = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            api_endpoints:
-                null == api_endpoints
-                    ? _value.api_endpoints
-                    : api_endpoints // ignore: cast_nullable_to_non_nullable
-                        as APIEndpointConfiguration,
-            error:
-                null == error
-                    ? _value.error
-                    : error // ignore: cast_nullable_to_non_nullable
-                        as int,
-            message:
-                null == message
-                    ? _value.message
-                    : message // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
-  }
-
-  /// Create a copy of APIEndpointConfigurationResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $APIEndpointConfigurationCopyWith<$Res> get api_endpoints {
-    return $APIEndpointConfigurationCopyWith<$Res>(_value.api_endpoints, (
-      value,
-    ) {
-      return _then(_value.copyWith(api_endpoints: value) as $Val);
-    });
-  }
-}
-
-/// @nodoc
-abstract class _$$APIEndpointConfigurationResponseImplCopyWith<$Res>
-    implements $APIEndpointConfigurationResponseCopyWith<$Res> {
-  factory _$$APIEndpointConfigurationResponseImplCopyWith(
-    _$APIEndpointConfigurationResponseImpl value,
-    $Res Function(_$APIEndpointConfigurationResponseImpl) then,
-  ) = __$$APIEndpointConfigurationResponseImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    APIEndpointConfiguration api_endpoints,
-    int error,
-    String message,
-  });
-
-  @override
-  $APIEndpointConfigurationCopyWith<$Res> get api_endpoints;
-}
-
-/// @nodoc
-class __$$APIEndpointConfigurationResponseImplCopyWithImpl<$Res>
-    extends
-        _$APIEndpointConfigurationResponseCopyWithImpl<
-          $Res,
-          _$APIEndpointConfigurationResponseImpl
-        >
-    implements _$$APIEndpointConfigurationResponseImplCopyWith<$Res> {
-  __$$APIEndpointConfigurationResponseImplCopyWithImpl(
-    _$APIEndpointConfigurationResponseImpl _value,
-    $Res Function(_$APIEndpointConfigurationResponseImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of APIEndpointConfigurationResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? api_endpoints = null,
-    Object? error = null,
-    Object? message = null,
-  }) {
-    return _then(
-      _$APIEndpointConfigurationResponseImpl(
-        api_endpoints:
-            null == api_endpoints
-                ? _value.api_endpoints
-                : api_endpoints // ignore: cast_nullable_to_non_nullable
-                    as APIEndpointConfiguration,
-        error:
-            null == error
-                ? _value.error
-                : error // ignore: cast_nullable_to_non_nullable
-                    as int,
-        message:
-            null == message
-                ? _value.message
-                : message // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$APIEndpointConfigurationResponseImpl
-    implements _APIEndpointConfigurationResponse {
-  const _$APIEndpointConfigurationResponseImpl({
-    required this.api_endpoints,
-    required this.error,
-    required this.message,
-  });
-
-  factory _$APIEndpointConfigurationResponseImpl.fromJson(
-    Map<String, dynamic> json,
-  ) => _$$APIEndpointConfigurationResponseImplFromJson(json);
-
-  @override
-  final APIEndpointConfiguration api_endpoints;
-  @override
-  final int error;
-  @override
-  final String message;
-
-  @override
-  String toString() {
-    return 'APIEndpointConfigurationResponse(api_endpoints: $api_endpoints, error: $error, message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$APIEndpointConfigurationResponseImpl &&
-            (identical(other.api_endpoints, api_endpoints) ||
-                other.api_endpoints == api_endpoints) &&
-            (identical(other.error, error) || other.error == error) &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, api_endpoints, error, message);
-
-  /// Create a copy of APIEndpointConfigurationResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$APIEndpointConfigurationResponseImplCopyWith<
-    _$APIEndpointConfigurationResponseImpl
-  >
-  get copyWith => __$$APIEndpointConfigurationResponseImplCopyWithImpl<
-    _$APIEndpointConfigurationResponseImpl
-  >(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$APIEndpointConfigurationResponseImplToJson(this);
-  }
-}
-
-abstract class _APIEndpointConfigurationResponse
-    implements APIEndpointConfigurationResponse {
-  const factory _APIEndpointConfigurationResponse({
-    required final APIEndpointConfiguration api_endpoints,
-    required final int error,
-    required final String message,
-  }) = _$APIEndpointConfigurationResponseImpl;
-
-  factory _APIEndpointConfigurationResponse.fromJson(
-    Map<String, dynamic> json,
-  ) = _$APIEndpointConfigurationResponseImpl.fromJson;
-
-  @override
-  APIEndpointConfiguration get api_endpoints;
-  @override
-  int get error;
-  @override
-  String get message;
-
-  /// Create a copy of APIEndpointConfigurationResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$APIEndpointConfigurationResponseImplCopyWith<
-    _$APIEndpointConfigurationResponseImpl
-  >
+  _$$URLConfigurationResponseImplCopyWith<_$URLConfigurationResponseImpl>
   get copyWith => throw _privateConstructorUsedError;
 }
 
