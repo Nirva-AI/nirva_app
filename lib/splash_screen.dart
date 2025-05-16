@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/home_page.dart';
-import 'package:nirva_app/service_manager.dart';
-import 'package:nirva_app/data_manager.dart';
+//import 'package:nirva_app/service_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,7 +11,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final ServiceManager _serviceManager = ServiceManager();
+  //final ServiceManager _serviceManager = ServiceManager();
 
   @override
   void initState() {
@@ -25,21 +24,21 @@ class _SplashScreenState extends State<SplashScreen> {
     final Stopwatch stopwatch = Stopwatch()..start();
 
     // 检查网络状态，临时先这么写。
-    await checkNetworkStatus();
+    // await checkNetworkStatus();
 
-    // 调用 configureApiEndpoint 并等待返回
-    final bool apiConfigurationSuccess = await _serviceManager.get_url_config();
+    // // 调用 configureApiEndpoint 并等待返回
+    // final bool apiConfigurationSuccess = await _serviceManager.get_url_config();
 
-    //
-    if (apiConfigurationSuccess) {
-      debugPrint('API Endpoint Configuration: $apiConfigurationSuccess');
+    // //
+    // if (apiConfigurationSuccess) {
+    //   debugPrint('API Endpoint Configuration: $apiConfigurationSuccess');
 
-      // 如果配置成功，调用 login 方法
-      final bool loginSuccess = await _serviceManager.login(
-        DataManager().userName,
-      );
-      debugPrint('Login: $loginSuccess');
-    }
+    //   // 如果配置成功，调用 login 方法
+    //   final bool loginSuccess = await _serviceManager.login(
+    //     DataManager().userName,
+    //   );
+    //   debugPrint('Login: $loginSuccess');
+    // }
 
     // 计算剩余时间
     final int elapsed = stopwatch.elapsedMilliseconds;
@@ -51,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     //if (!success) {
-    DataManager().fillTestData();
+
     //ChatManager().fillTestData();
     //}
 
@@ -74,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.deepPurple, // 背景颜色
+        color: const Color.fromARGB(255, 234, 196, 103), // 背景颜色
         child: Center(
           child: Text(
             'NIRVA',
