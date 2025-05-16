@@ -163,12 +163,12 @@ abstract class _Quote implements Quote {
       throw _privateConstructorUsedError;
 }
 
-Diary _$DiaryFromJson(Map<String, dynamic> json) {
-  return _Diary.fromJson(json);
+DiaryEntry _$DiaryEntryFromJson(Map<String, dynamic> json) {
+  return _DiaryEntry.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Diary {
+mixin _$DiaryEntry {
   String get time => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get summary => throw _privateConstructorUsedError;
@@ -176,19 +176,22 @@ mixin _$Diary {
   List<String> get tags => throw _privateConstructorUsedError;
   String get location => throw _privateConstructorUsedError;
 
-  /// Serializes this Diary to a JSON map.
+  /// Serializes this DiaryEntry to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of Diary
+  /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $DiaryCopyWith<Diary> get copyWith => throw _privateConstructorUsedError;
+  $DiaryEntryCopyWith<DiaryEntry> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $DiaryCopyWith<$Res> {
-  factory $DiaryCopyWith(Diary value, $Res Function(Diary) then) =
-      _$DiaryCopyWithImpl<$Res, Diary>;
+abstract class $DiaryEntryCopyWith<$Res> {
+  factory $DiaryEntryCopyWith(
+    DiaryEntry value,
+    $Res Function(DiaryEntry) then,
+  ) = _$DiaryEntryCopyWithImpl<$Res, DiaryEntry>;
   @useResult
   $Res call({
     String time,
@@ -201,16 +204,16 @@ abstract class $DiaryCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$DiaryCopyWithImpl<$Res, $Val extends Diary>
-    implements $DiaryCopyWith<$Res> {
-  _$DiaryCopyWithImpl(this._value, this._then);
+class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
+    implements $DiaryEntryCopyWith<$Res> {
+  _$DiaryEntryCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Diary
+  /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -261,11 +264,12 @@ class _$DiaryCopyWithImpl<$Res, $Val extends Diary>
 }
 
 /// @nodoc
-abstract class _$$DiaryImplCopyWith<$Res> implements $DiaryCopyWith<$Res> {
-  factory _$$DiaryImplCopyWith(
-    _$DiaryImpl value,
-    $Res Function(_$DiaryImpl) then,
-  ) = __$$DiaryImplCopyWithImpl<$Res>;
+abstract class _$$DiaryEntryImplCopyWith<$Res>
+    implements $DiaryEntryCopyWith<$Res> {
+  factory _$$DiaryEntryImplCopyWith(
+    _$DiaryEntryImpl value,
+    $Res Function(_$DiaryEntryImpl) then,
+  ) = __$$DiaryEntryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({
@@ -279,15 +283,15 @@ abstract class _$$DiaryImplCopyWith<$Res> implements $DiaryCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$DiaryImplCopyWithImpl<$Res>
-    extends _$DiaryCopyWithImpl<$Res, _$DiaryImpl>
-    implements _$$DiaryImplCopyWith<$Res> {
-  __$$DiaryImplCopyWithImpl(
-    _$DiaryImpl _value,
-    $Res Function(_$DiaryImpl) _then,
+class __$$DiaryEntryImplCopyWithImpl<$Res>
+    extends _$DiaryEntryCopyWithImpl<$Res, _$DiaryEntryImpl>
+    implements _$$DiaryEntryImplCopyWith<$Res> {
+  __$$DiaryEntryImplCopyWithImpl(
+    _$DiaryEntryImpl _value,
+    $Res Function(_$DiaryEntryImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of Diary
+  /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -300,7 +304,7 @@ class __$$DiaryImplCopyWithImpl<$Res>
     Object? location = null,
   }) {
     return _then(
-      _$DiaryImpl(
+      _$DiaryEntryImpl(
         time:
             null == time
                 ? _value.time
@@ -338,8 +342,8 @@ class __$$DiaryImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$DiaryImpl implements _Diary {
-  const _$DiaryImpl({
+class _$DiaryEntryImpl implements _DiaryEntry {
+  const _$DiaryEntryImpl({
     required this.time,
     required this.title,
     required this.summary,
@@ -348,8 +352,8 @@ class _$DiaryImpl implements _Diary {
     required this.location,
   }) : _tags = tags;
 
-  factory _$DiaryImpl.fromJson(Map<String, dynamic> json) =>
-      _$$DiaryImplFromJson(json);
+  factory _$DiaryEntryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DiaryEntryImplFromJson(json);
 
   @override
   final String time;
@@ -372,14 +376,14 @@ class _$DiaryImpl implements _Diary {
 
   @override
   String toString() {
-    return 'Diary(time: $time, title: $title, summary: $summary, content: $content, tags: $tags, location: $location)';
+    return 'DiaryEntry(time: $time, title: $title, summary: $summary, content: $content, tags: $tags, location: $location)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DiaryImpl &&
+            other is _$DiaryEntryImpl &&
             (identical(other.time, time) || other.time == time) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.summary, summary) || other.summary == summary) &&
@@ -401,31 +405,32 @@ class _$DiaryImpl implements _Diary {
     location,
   );
 
-  /// Create a copy of Diary
+  /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$DiaryImplCopyWith<_$DiaryImpl> get copyWith =>
-      __$$DiaryImplCopyWithImpl<_$DiaryImpl>(this, _$identity);
+  _$$DiaryEntryImplCopyWith<_$DiaryEntryImpl> get copyWith =>
+      __$$DiaryEntryImplCopyWithImpl<_$DiaryEntryImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DiaryImplToJson(this);
+    return _$$DiaryEntryImplToJson(this);
   }
 }
 
-abstract class _Diary implements Diary {
-  const factory _Diary({
+abstract class _DiaryEntry implements DiaryEntry {
+  const factory _DiaryEntry({
     required final String time,
     required final String title,
     required final String summary,
     required final String content,
     required final List<String> tags,
     required final String location,
-  }) = _$DiaryImpl;
+  }) = _$DiaryEntryImpl;
 
-  factory _Diary.fromJson(Map<String, dynamic> json) = _$DiaryImpl.fromJson;
+  factory _DiaryEntry.fromJson(Map<String, dynamic> json) =
+      _$DiaryEntryImpl.fromJson;
 
   @override
   String get time;
@@ -440,11 +445,11 @@ abstract class _Diary implements Diary {
   @override
   String get location;
 
-  /// Create a copy of Diary
+  /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DiaryImplCopyWith<_$DiaryImpl> get copyWith =>
+  _$$DiaryEntryImplCopyWith<_$DiaryEntryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2556,7 +2561,7 @@ PersonalJournal _$PersonalJournalFromJson(Map<String, dynamic> json) {
 mixin _$PersonalJournal {
   DateTime get dateTime => throw _privateConstructorUsedError;
   String get summary => throw _privateConstructorUsedError;
-  List<Diary> get diaryEntries => throw _privateConstructorUsedError;
+  List<DiaryEntry> get diaryEntries => throw _privateConstructorUsedError;
   List<Quote> get quotes => throw _privateConstructorUsedError;
   List<Reflection> get selfReflections => throw _privateConstructorUsedError;
   List<Reflection> get detailedInsights => throw _privateConstructorUsedError;
@@ -2590,7 +2595,7 @@ abstract class $PersonalJournalCopyWith<$Res> {
   $Res call({
     DateTime dateTime,
     String summary,
-    List<Diary> diaryEntries,
+    List<DiaryEntry> diaryEntries,
     List<Quote> quotes,
     List<Reflection> selfReflections,
     List<Reflection> detailedInsights,
@@ -2655,7 +2660,7 @@ class _$PersonalJournalCopyWithImpl<$Res, $Val extends PersonalJournal>
                 null == diaryEntries
                     ? _value.diaryEntries
                     : diaryEntries // ignore: cast_nullable_to_non_nullable
-                        as List<Diary>,
+                        as List<DiaryEntry>,
             quotes:
                 null == quotes
                     ? _value.quotes
@@ -2759,7 +2764,7 @@ abstract class _$$PersonalJournalImplCopyWith<$Res>
   $Res call({
     DateTime dateTime,
     String summary,
-    List<Diary> diaryEntries,
+    List<DiaryEntry> diaryEntries,
     List<Quote> quotes,
     List<Reflection> selfReflections,
     List<Reflection> detailedInsights,
@@ -2826,7 +2831,7 @@ class __$$PersonalJournalImplCopyWithImpl<$Res>
             null == diaryEntries
                 ? _value._diaryEntries
                 : diaryEntries // ignore: cast_nullable_to_non_nullable
-                    as List<Diary>,
+                    as List<DiaryEntry>,
         quotes:
             null == quotes
                 ? _value._quotes
@@ -2893,7 +2898,7 @@ class _$PersonalJournalImpl implements _PersonalJournal {
   const _$PersonalJournalImpl({
     required this.dateTime,
     required this.summary,
-    required final List<Diary> diaryEntries,
+    required final List<DiaryEntry> diaryEntries,
     required final List<Quote> quotes,
     required final List<Reflection> selfReflections,
     required final List<Reflection> detailedInsights,
@@ -2922,9 +2927,9 @@ class _$PersonalJournalImpl implements _PersonalJournal {
   final DateTime dateTime;
   @override
   final String summary;
-  final List<Diary> _diaryEntries;
+  final List<DiaryEntry> _diaryEntries;
   @override
-  List<Diary> get diaryEntries {
+  List<DiaryEntry> get diaryEntries {
     if (_diaryEntries is EqualUnmodifiableListView) return _diaryEntries;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_diaryEntries);
@@ -3092,7 +3097,7 @@ abstract class _PersonalJournal implements PersonalJournal {
   const factory _PersonalJournal({
     required final DateTime dateTime,
     required final String summary,
-    required final List<Diary> diaryEntries,
+    required final List<DiaryEntry> diaryEntries,
     required final List<Quote> quotes,
     required final List<Reflection> selfReflections,
     required final List<Reflection> detailedInsights,
@@ -3114,7 +3119,7 @@ abstract class _PersonalJournal implements PersonalJournal {
   @override
   String get summary;
   @override
-  List<Diary> get diaryEntries;
+  List<DiaryEntry> get diaryEntries;
   @override
   List<Quote> get quotes;
   @override

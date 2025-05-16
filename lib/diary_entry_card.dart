@@ -3,7 +3,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/diary_details_page.dart';
 
 class DiaryEntryCard extends StatelessWidget {
-  final Diary diaryData;
+  final DiaryEntry diaryData;
 
   const DiaryEntryCard({super.key, required this.diaryData});
 

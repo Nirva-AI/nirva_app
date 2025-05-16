@@ -12,19 +12,20 @@ class Quote with _$Quote {
 }
 
 @freezed
-class Diary with _$Diary {
-  const factory Diary({
+class DiaryEntry with _$DiaryEntry {
+  const factory DiaryEntry({
     required String time,
     required String title,
     required String summary,
     required String content,
     required List<String> tags,
     required String location,
-  }) = _Diary;
+  }) = _DiaryEntry;
 
-  factory Diary.fromJson(Map<String, dynamic> json) => _$DiaryFromJson(json);
+  factory DiaryEntry.fromJson(Map<String, dynamic> json) =>
+      _$DiaryEntryFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _Diary).toJson();
+  Map<String, dynamic> toJson() => (this as _DiaryEntry).toJson();
 }
 
 @freezed
@@ -240,7 +241,7 @@ class PersonalJournal with _$PersonalJournal {
   const factory PersonalJournal({
     required DateTime dateTime,
     required String summary,
-    required List<Diary> diaryEntries,
+    required List<DiaryEntry> diaryEntries,
     required List<Quote> quotes,
     required List<Reflection> selfReflections,
     required List<Reflection> detailedInsights,
