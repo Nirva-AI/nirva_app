@@ -93,7 +93,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                       widget.diaryData.tags
                           .map(
                             (tag) => Chip(
-                              label: Text(tag),
+                              label: Text(tag.name),
                               backgroundColor: Colors.blue.shade100,
                             ),
                           )

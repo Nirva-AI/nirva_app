@@ -182,6 +182,175 @@ abstract class _Quote implements Quote {
       throw _privateConstructorUsedError;
 }
 
+EventTag _$EventTagFromJson(Map<String, dynamic> json) {
+  return _EventTag.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EventTag {
+  String get name => throw _privateConstructorUsedError;
+  String get icon => throw _privateConstructorUsedError;
+
+  /// Serializes this EventTag to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of EventTag
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EventTagCopyWith<EventTag> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EventTagCopyWith<$Res> {
+  factory $EventTagCopyWith(EventTag value, $Res Function(EventTag) then) =
+      _$EventTagCopyWithImpl<$Res, EventTag>;
+  @useResult
+  $Res call({String name, String icon});
+}
+
+/// @nodoc
+class _$EventTagCopyWithImpl<$Res, $Val extends EventTag>
+    implements $EventTagCopyWith<$Res> {
+  _$EventTagCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of EventTag
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null, Object? icon = null}) {
+    return _then(
+      _value.copyWith(
+            name:
+                null == name
+                    ? _value.name
+                    : name // ignore: cast_nullable_to_non_nullable
+                        as String,
+            icon:
+                null == icon
+                    ? _value.icon
+                    : icon // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$EventTagImplCopyWith<$Res>
+    implements $EventTagCopyWith<$Res> {
+  factory _$$EventTagImplCopyWith(
+    _$EventTagImpl value,
+    $Res Function(_$EventTagImpl) then,
+  ) = __$$EventTagImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String name, String icon});
+}
+
+/// @nodoc
+class __$$EventTagImplCopyWithImpl<$Res>
+    extends _$EventTagCopyWithImpl<$Res, _$EventTagImpl>
+    implements _$$EventTagImplCopyWith<$Res> {
+  __$$EventTagImplCopyWithImpl(
+    _$EventTagImpl _value,
+    $Res Function(_$EventTagImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EventTag
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null, Object? icon = null}) {
+    return _then(
+      _$EventTagImpl(
+        name:
+            null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                    as String,
+        icon:
+            null == icon
+                ? _value.icon
+                : icon // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EventTagImpl implements _EventTag {
+  const _$EventTagImpl({required this.name, this.icon = ""});
+
+  factory _$EventTagImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EventTagImplFromJson(json);
+
+  @override
+  final String name;
+  @override
+  @JsonKey()
+  final String icon;
+
+  @override
+  String toString() {
+    return 'EventTag(name: $name, icon: $icon)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EventTagImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.icon, icon) || other.icon == icon));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, name, icon);
+
+  /// Create a copy of EventTag
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EventTagImplCopyWith<_$EventTagImpl> get copyWith =>
+      __$$EventTagImplCopyWithImpl<_$EventTagImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EventTagImplToJson(this);
+  }
+}
+
+abstract class _EventTag implements EventTag {
+  const factory _EventTag({required final String name, final String icon}) =
+      _$EventTagImpl;
+
+  factory _EventTag.fromJson(Map<String, dynamic> json) =
+      _$EventTagImpl.fromJson;
+
+  @override
+  String get name;
+  @override
+  String get icon;
+
+  /// Create a copy of EventTag
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EventTagImplCopyWith<_$EventTagImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 DiaryEntry _$DiaryEntryFromJson(Map<String, dynamic> json) {
   return _DiaryEntry.fromJson(json);
 }
@@ -194,7 +363,7 @@ mixin _$DiaryEntry {
   String get title => throw _privateConstructorUsedError;
   String get summary => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
-  List<String> get tags => throw _privateConstructorUsedError;
+  List<EventTag> get tags => throw _privateConstructorUsedError;
   String get location => throw _privateConstructorUsedError;
 
   /// Serializes this DiaryEntry to a JSON map.
@@ -221,7 +390,7 @@ abstract class $DiaryEntryCopyWith<$Res> {
     String title,
     String summary,
     String content,
-    List<String> tags,
+    List<EventTag> tags,
     String location,
   });
 }
@@ -286,7 +455,7 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
                 null == tags
                     ? _value.tags
                     : tags // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
+                        as List<EventTag>,
             location:
                 null == location
                     ? _value.location
@@ -314,7 +483,7 @@ abstract class _$$DiaryEntryImplCopyWith<$Res>
     String title,
     String summary,
     String content,
-    List<String> tags,
+    List<EventTag> tags,
     String location,
   });
 }
@@ -378,7 +547,7 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
             null == tags
                 ? _value._tags
                 : tags // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
+                    as List<EventTag>,
         location:
             null == location
                 ? _value.location
@@ -399,7 +568,7 @@ class _$DiaryEntryImpl implements _DiaryEntry {
     required this.title,
     required this.summary,
     required this.content,
-    required final List<String> tags,
+    required final List<EventTag> tags,
     required this.location,
   }) : _tags = tags;
 
@@ -418,9 +587,9 @@ class _$DiaryEntryImpl implements _DiaryEntry {
   final String summary;
   @override
   final String content;
-  final List<String> _tags;
+  final List<EventTag> _tags;
   @override
-  List<String> get tags {
+  List<EventTag> get tags {
     if (_tags is EqualUnmodifiableListView) return _tags;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_tags);
@@ -487,7 +656,7 @@ abstract class _DiaryEntry implements DiaryEntry {
     required final String title,
     required final String summary,
     required final String content,
-    required final List<String> tags,
+    required final List<EventTag> tags,
     required final String location,
   }) = _$DiaryEntryImpl;
 
@@ -507,7 +676,7 @@ abstract class _DiaryEntry implements DiaryEntry {
   @override
   String get content;
   @override
-  List<String> get tags;
+  List<EventTag> get tags;
   @override
   String get location;
 

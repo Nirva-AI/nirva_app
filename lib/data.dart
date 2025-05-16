@@ -12,6 +12,17 @@ class Quote with _$Quote {
 }
 
 @freezed
+class EventTag with _$EventTag {
+  const factory EventTag({required String name, @Default("") String icon}) =
+      _EventTag;
+
+  factory EventTag.fromJson(Map<String, dynamic> json) =>
+      _$EventTagFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _EventTag).toJson();
+}
+
+@freezed
 class DiaryEntry with _$DiaryEntry {
   const factory DiaryEntry({
     required String id,
@@ -20,7 +31,7 @@ class DiaryEntry with _$DiaryEntry {
     required String title,
     required String summary,
     required String content,
-    required List<String> tags,
+    required List<EventTag> tags,
     required String location,
   }) = _DiaryEntry;
 

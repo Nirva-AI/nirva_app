@@ -58,7 +58,12 @@ class FillTestData {
             'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
         content:
             'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
-        tags: ['peaceful', 'outdoor', 'conversation'],
+        //tags: ['peaceful', 'outdoor', 'conversation'],
+        tags: [
+          EventTag(name: 'peaceful'),
+          EventTag(name: 'outdoor'),
+          EventTag(name: 'conversation'),
+        ],
         location: 'Park',
         //isStarred: false,
       ),
@@ -72,7 +77,12 @@ class FillTestData {
             'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
         content:
             'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
-        tags: ['calm', 'outdoor', 'transportation'],
+        //tags: ['calm', 'outdoor', 'transportation'],
+        tags: [
+          EventTag(name: 'calm'),
+          EventTag(name: 'outdoor'),
+          EventTag(name: 'transportation'),
+        ],
         location: 'Park',
         //isStarred: false,
       ),
@@ -86,7 +96,12 @@ class FillTestData {
             'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
         content:
             'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
-        tags: ['engaged', 'transportation', 'conversation'],
+        //tags: ['engaged', 'transportation', 'conversation'],
+        tags: [
+          EventTag(name: 'engaged'),
+          EventTag(name: 'transportation'),
+          EventTag(name: 'conversation'),
+        ],
         location: 'In the car',
         //isStarred: false,
       ),
@@ -100,7 +115,12 @@ class FillTestData {
         summary: 'Discussed future plans and shared some laughs over coffee.',
         content:
             'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
-        tags: ['relaxing', 'indoor', 'conversation'],
+        //tags: ['relaxing', 'indoor', 'conversation'],
+        tags: [
+          EventTag(name: 'relaxing'),
+          EventTag(name: 'indoor'),
+          EventTag(name: 'conversation'),
+        ],
         location: 'Cafe',
         //isStarred: false,
       ),
@@ -113,7 +133,12 @@ class FillTestData {
         summary: 'A peaceful walk in the park to clear my mind.',
         content:
             'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
-        tags: ['peaceful', 'outdoor', 'exercise'],
+        //tags: ['peaceful', 'outdoor', 'exercise'],
+        tags: [
+          EventTag(name: 'peaceful'),
+          EventTag(name: 'outdoor'),
+          EventTag(name: 'exercise'),
+        ],
         location: 'Park',
         //isStarred: false,
       ),
@@ -127,7 +152,12 @@ class FillTestData {
             'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
         content:
             'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
-        tags: ['peaceful', 'outdoor', 'conversation'],
+        //tags: ['peaceful', 'outdoor', 'conversation'],
+        tags: [
+          EventTag(name: 'peaceful'),
+          EventTag(name: 'outdoor'),
+          EventTag(name: 'conversation'),
+        ],
         location: 'Park',
         //isStarred: false,
       ),
@@ -141,7 +171,12 @@ class FillTestData {
             'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
         content:
             'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
-        tags: ['calm', 'outdoor', 'transportation'],
+        //tags: ['calm', 'outdoor', 'transportation'],
+        tags: [
+          EventTag(name: 'calm'),
+          EventTag(name: 'outdoor'),
+          EventTag(name: 'transportation'),
+        ],
         location: 'Park',
         //isStarred: false,
       ),
@@ -155,7 +190,12 @@ class FillTestData {
             'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
         content:
             'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
-        tags: ['engaged', 'transportation', 'conversation'],
+        //tags: ['engaged', 'transportation', 'conversation'],
+        tags: [
+          EventTag(name: 'engaged'),
+          EventTag(name: 'transportation'),
+          EventTag(name: 'conversation'),
+        ],
         location: 'In the car',
         //isStarred: false,
       ),
@@ -169,7 +209,12 @@ class FillTestData {
         summary: 'Discussed future plans and shared some laughs over coffee.',
         content:
             'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
-        tags: ['relaxing', 'indoor', 'conversation'],
+        //tags: ['relaxing', 'indoor', 'conversation'],
+        tags: [
+          EventTag(name: 'relaxing'),
+          EventTag(name: 'indoor'),
+          EventTag(name: 'conversation'),
+        ],
         location: 'Cafe',
         //isStarred: false,
       ),
@@ -182,7 +227,12 @@ class FillTestData {
         summary: 'A peaceful walk in the park to clear my mind.',
         content:
             'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
-        tags: ['peaceful', 'outdoor', 'exercise'],
+        //tags: ['peaceful', 'outdoor', 'exercise'],
+        tags: [
+          EventTag(name: 'peaceful'),
+          EventTag(name: 'outdoor'),
+          EventTag(name: 'exercise'),
+        ],
         location: 'Park',
         //isStarred: false,
       ),
