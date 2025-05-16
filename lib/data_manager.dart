@@ -18,19 +18,19 @@ class DataManager {
   List<PersonalJournal> journalEntries = [];
 
   // 当前的待办事项数据
-  TodoList todoList = TodoList.createEmpty();
+  List<Task> tasks = [];
 
   // 清空数据
   void clear() {
     userName = '';
     journalEntries = [];
-    todoList = TodoList.createEmpty();
+    tasks = [];
   }
 
   //
   Map<String, List<Task>> get groupedTasks {
     final Map<String, List<Task>> groupedTasks = {};
-    for (var task in todoList.tasks) {
+    for (var task in tasks) {
       if (!groupedTasks.containsKey(task.tag)) {
         groupedTasks[task.tag] = [];
       }
@@ -50,6 +50,10 @@ class DataManager {
 
   void toggleTaskCompletion(Task task) {
     // 切换任务的完成状态
-    todoList = todoList.toggleTaskCompletion(task);
+    final int index = tasks.indexOf(task);
+    if (index != -1) {
+      final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
+      tasks[index] = updatedTask;
+    }
   }
 }

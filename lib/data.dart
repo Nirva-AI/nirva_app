@@ -81,53 +81,6 @@ class Task with _$Task {
   Map<String, dynamic> toJson() => (this as _Task).toJson();
 }
 
-extension TaskExtensions on Task {
-  Task setCompleted(bool value) {
-    return copyWith(isCompleted: value);
-  }
-}
-
-@freezed
-class TodoList with _$TodoList {
-  const factory TodoList({required List<Task> tasks}) = _TodoList;
-
-  factory TodoList.fromJson(Map<String, dynamic> json) =>
-      _$TodoListFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _TodoList).toJson();
-
-  static TodoList createEmpty() {
-    return TodoList(tasks: []);
-  }
-}
-
-extension TodoListExtensions on TodoList {
-  TodoList addTask(Task task) {
-    return copyWith(tasks: [...tasks, task]);
-  }
-
-  TodoList removeTask(Task task) {
-    return copyWith(tasks: tasks.where((t) => t != task).toList());
-  }
-
-  TodoList updateTask(Task oldTask, Task newTask) {
-    return copyWith(
-      tasks: tasks.map((t) => t == oldTask ? newTask : t).toList(),
-    );
-  }
-
-  TodoList toggleTaskCompletion(Task task) {
-    return copyWith(
-      tasks:
-          tasks
-              .map(
-                (t) => t == task ? t.copyWith(isCompleted: !t.isCompleted) : t,
-              )
-              .toList(),
-    );
-  }
-}
-
 @freezed
 class EnergyLabel with _$EnergyLabel {
   const factory EnergyLabel({

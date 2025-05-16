@@ -9,21 +9,19 @@ class FillTestData {
     DataManager().clear();
     // 添加测试数据
     DataManager().userName = 'Wei';
-    DataManager().todoList = FillTestData.createTestTodoList();
+    DataManager().tasks = FillTestData.createTestTasks();
     DataManager().journalEntries.add(FillTestData.createTestPersonalJournal());
   }
 
   // 测试数据： 初始化待办事项数据
-  static TodoList createTestTodoList() {
-    final List<Task> testTasks = [
+  static List<Task> createTestTasks() {
+    return [
       Task(tag: 'Wellness', description: 'Morning meditation'),
       Task(tag: 'Wellness', description: 'Evening reading - 30 mins'),
       Task(tag: 'Work', description: 'Prepare presentation for meeting'),
       Task(tag: 'Personal', description: 'Call mom', isCompleted: true),
       Task(tag: 'Health', description: 'Schedule dentist appointment'),
     ];
-
-    return TodoList(tasks: testTasks);
   }
 
   // 测试数据： 初始化个人数据
