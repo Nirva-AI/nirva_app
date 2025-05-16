@@ -7,10 +7,10 @@ part of 'data.dart';
 // **************************************************************************
 
 _$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) =>
-    _$QuoteImpl(text: json['text'] as String);
+    _$QuoteImpl(text: json['text'] as String, mood: json['mood'] as String);
 
 Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
-    <String, dynamic>{'text': instance.text};
+    <String, dynamic>{'text': instance.text, 'mood': instance.mood};
 
 _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
     _$DiaryEntryImpl(
