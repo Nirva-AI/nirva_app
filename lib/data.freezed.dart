@@ -189,7 +189,6 @@ EventTag _$EventTagFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$EventTag {
   String get name => throw _privateConstructorUsedError;
-  String get icon => throw _privateConstructorUsedError;
 
   /// Serializes this EventTag to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -206,7 +205,7 @@ abstract class $EventTagCopyWith<$Res> {
   factory $EventTagCopyWith(EventTag value, $Res Function(EventTag) then) =
       _$EventTagCopyWithImpl<$Res, EventTag>;
   @useResult
-  $Res call({String name, String icon});
+  $Res call({String name});
 }
 
 /// @nodoc
@@ -223,18 +222,13 @@ class _$EventTagCopyWithImpl<$Res, $Val extends EventTag>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? icon = null}) {
+  $Res call({Object? name = null}) {
     return _then(
       _value.copyWith(
             name:
                 null == name
                     ? _value.name
                     : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            icon:
-                null == icon
-                    ? _value.icon
-                    : icon // ignore: cast_nullable_to_non_nullable
                         as String,
           )
           as $Val,
@@ -251,7 +245,7 @@ abstract class _$$EventTagImplCopyWith<$Res>
   ) = __$$EventTagImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, String icon});
+  $Res call({String name});
 }
 
 /// @nodoc
@@ -267,18 +261,13 @@ class __$$EventTagImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? icon = null}) {
+  $Res call({Object? name = null}) {
     return _then(
       _$EventTagImpl(
         name:
             null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-        icon:
-            null == icon
-                ? _value.icon
-                : icon // ignore: cast_nullable_to_non_nullable
                     as String,
       ),
     );
@@ -288,20 +277,17 @@ class __$$EventTagImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$EventTagImpl implements _EventTag {
-  const _$EventTagImpl({required this.name, this.icon = ""});
+  const _$EventTagImpl({required this.name});
 
   factory _$EventTagImpl.fromJson(Map<String, dynamic> json) =>
       _$$EventTagImplFromJson(json);
 
   @override
   final String name;
-  @override
-  @JsonKey()
-  final String icon;
 
   @override
   String toString() {
-    return 'EventTag(name: $name, icon: $icon)';
+    return 'EventTag(name: $name)';
   }
 
   @override
@@ -309,13 +295,12 @@ class _$EventTagImpl implements _EventTag {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventTagImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.icon, icon) || other.icon == icon));
+            (identical(other.name, name) || other.name == name));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, name, icon);
+  int get hashCode => Object.hash(runtimeType, name);
 
   /// Create a copy of EventTag
   /// with the given fields replaced by the non-null parameter values.
@@ -332,16 +317,13 @@ class _$EventTagImpl implements _EventTag {
 }
 
 abstract class _EventTag implements EventTag {
-  const factory _EventTag({required final String name, final String icon}) =
-      _$EventTagImpl;
+  const factory _EventTag({required final String name}) = _$EventTagImpl;
 
   factory _EventTag.fromJson(Map<String, dynamic> json) =
       _$EventTagImpl.fromJson;
 
   @override
   String get name;
-  @override
-  String get icon;
 
   /// Create a copy of EventTag
   /// with the given fields replaced by the non-null parameter values.
