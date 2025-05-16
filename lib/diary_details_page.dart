@@ -1,17 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/guided_reflection_page.dart'; // 导入新页面
+import 'package:nirva_app/guided_reflection_page.dart';
 
-class DiaryDetailsPage extends StatelessWidget {
+class DiaryDetailsPage extends StatefulWidget {
   final DiaryEntry diaryData;
 
   const DiaryDetailsPage({super.key, required this.diaryData});
 
-  //10:00 AM-1:00 PM
+  @override
+  State<DiaryDetailsPage> createState() => _DiaryDetailsPageState();
+}
+
+class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
+  bool get isFavoriteDiaryEntry {
+    return DataManager().isFavoriteDiaryEntry(widget.diaryData);
+  }
+
+  void toggleFavorite() {
+    setState(() {
+      DataManager().toggleFavoriteDiaryEntry(widget.diaryData);
+      debugPrint(
+        'Star button pressed: ${isFavoriteDiaryEntry ? "Added to favorites" : "Removed from favorites"}',
+      );
+    });
+  }
+
   String getFormattedTime() {
-    final startTime = diaryData.beginTime;
-    final endTime = diaryData.endTime;
+    final startTime = widget.diaryData.beginTime;
+    final endTime = widget.diaryData.endTime;
 
     String formattedStartTime = '${startTime.hour}:${startTime.minute}';
     String formattedEndTime = '${endTime.hour}:${endTime.minute}';
@@ -23,10 +40,10 @@ class DiaryDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56.0), // 自定义 AppBar 高度
+        preferredSize: const Size.fromHeight(56.0),
         child: AppBar(
-          backgroundColor: Colors.white, // 背景颜色
-          elevation: 0, // 去除阴影
+          backgroundColor: Colors.white,
+          elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
@@ -34,20 +51,13 @@ class DiaryDetailsPage extends StatelessWidget {
             },
           ),
           actions: [
-            // IconButton(
-            //   icon: const Icon(Icons.star_border, color: Colors.black),
-            //   onPressed: () {
-            //     // 星形按钮点击事件
-            //     debugPrint('Star button pressed');
-            //   },
-            // ),
-            // IconButton(
-            //   icon: const Icon(Icons.share, color: Colors.black),
-            //   onPressed: () {
-            //     // 分享按钮点击事件
-            //     debugPrint('Share button pressed');
-            //   },
-            // ),
+            IconButton(
+              icon: Icon(
+                isFavoriteDiaryEntry ? Icons.star : Icons.star_border,
+                color: isFavoriteDiaryEntry ? Colors.amber : Colors.black,
+              ),
+              onPressed: toggleFavorite,
+            ),
           ],
         ),
       ),
@@ -56,13 +66,11 @@ class DiaryDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 标题
             Text(
-              diaryData.title,
+              widget.diaryData.title,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            // 时间与地点
             Row(
               children: [
                 const Icon(Icons.access_time, size: 16, color: Colors.grey),
@@ -75,33 +83,29 @@ class DiaryDetailsPage extends StatelessWidget {
                 const Icon(Icons.location_on, size: 16, color: Colors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  diaryData.location,
+                  widget.diaryData.location,
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            // 日期
             Text(
-              DataManager().currentJournalEntry.formattedDate, // 示例日期，可动态替换
+              DataManager().currentJournalEntry.formattedDate,
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 16),
-            // 描述文本
             Expanded(
               child: SingleChildScrollView(
                 child: Text(
-                  diaryData.content,
+                  widget.diaryData.content,
                   style: const TextStyle(fontSize: 16, height: 1.5),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            // 底部按钮
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // 跳转到 GuidedReflectionPage
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -110,7 +114,7 @@ class DiaryDetailsPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple, // 按钮背景颜色
+                  backgroundColor: Colors.purple,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 12,
