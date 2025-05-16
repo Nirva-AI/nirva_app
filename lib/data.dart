@@ -13,8 +13,7 @@ class Quote with _$Quote {
 
 @freezed
 class EventTag with _$EventTag {
-  const factory EventTag({required String name, @Default("") String icon}) =
-      _EventTag;
+  const factory EventTag({required String name}) = _EventTag;
 
   factory EventTag.fromJson(Map<String, dynamic> json) =>
       _$EventTagFromJson(json);
