@@ -1,6 +1,8 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
+import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'dart:math';
 
 // 管理全局数据的类
 class FillTestData {
@@ -11,6 +13,21 @@ class FillTestData {
     DataManager().userName = 'Wei';
     DataManager().tasks = FillTestData.createTestTasks();
     DataManager().journalEntries.add(FillTestData.createTestPersonalJournal());
+
+    List<DiaryEntry> diaryEntries =
+        DataManager().journalEntries[0].diaryEntries;
+
+    //
+    if (diaryEntries.isNotEmpty) {
+      final random = Random();
+      DiaryEntry randomDiaryEntry =
+          diaryEntries[random.nextInt(diaryEntries.length)];
+      debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
+      DataManager().favoriteDiaries.add(randomDiaryEntry.id);
+      debugPrint('已添加到最爱: ${randomDiaryEntry.id}');
+    } else {
+      debugPrint('diaryEntries 列表为空');
+    }
   }
 
   // 测试数据： 初始化待办事项数据
@@ -32,6 +49,7 @@ class FillTestData {
     // 日记条目列表
     final List<DiaryEntry> diaryEntries = [
       DiaryEntry(
+        id: "1",
         //time: '10:00 AM - 1:00 PM',
         beginTime: DateTime(2025, 4, 19, 10, 0),
         endTime: DateTime(2025, 4, 19, 13, 0),
@@ -45,6 +63,7 @@ class FillTestData {
         //isStarred: false,
       ),
       DiaryEntry(
+        id: "2",
         //time: '1:00 PM - 1:30 PM',
         beginTime: DateTime(2025, 4, 19, 13, 0),
         endTime: DateTime(2025, 4, 19, 13, 30),
@@ -58,6 +77,7 @@ class FillTestData {
         //isStarred: false,
       ),
       DiaryEntry(
+        id: "3",
         //time: '1:30 PM - 2:50 PM',
         beginTime: DateTime(2025, 4, 19, 13, 30),
         endTime: DateTime(2025, 4, 19, 14, 50),
@@ -72,6 +92,7 @@ class FillTestData {
       ),
       // 添加更多测试数据
       DiaryEntry(
+        id: "4",
         //time: '3:00 PM - 4:00 PM',
         beginTime: DateTime(2025, 4, 19, 15, 0),
         endTime: DateTime(2025, 4, 19, 16, 0),
@@ -84,6 +105,7 @@ class FillTestData {
         //isStarred: false,
       ),
       DiaryEntry(
+        id: "5",
         //time: '4:30 PM - 6:00 PM',
         beginTime: DateTime(2025, 4, 19, 16, 30),
         endTime: DateTime(2025, 4, 19, 18, 0),
@@ -96,6 +118,7 @@ class FillTestData {
         //isStarred: false,
       ),
       DiaryEntry(
+        id: "6",
         //time: '10:00 AM - 1:00 PM',
         beginTime: DateTime(2025, 4, 19, 10, 0),
         endTime: DateTime(2025, 4, 19, 13, 0),
@@ -109,6 +132,7 @@ class FillTestData {
         //isStarred: false,
       ),
       DiaryEntry(
+        id: "7",
         //time: '1:00 PM - 1:30 PM',
         beginTime: DateTime(2025, 4, 19, 13, 0),
         endTime: DateTime(2025, 4, 19, 13, 30),
@@ -122,6 +146,7 @@ class FillTestData {
         //isStarred: false,
       ),
       DiaryEntry(
+        id: "8",
         //time: '1:30 PM - 2:50 PM',
         beginTime: DateTime(2025, 4, 19, 13, 30),
         endTime: DateTime(2025, 4, 19, 14, 50),
@@ -136,6 +161,7 @@ class FillTestData {
       ),
       // 添加更多测试数据
       DiaryEntry(
+        id: "9",
         //time: '3:00 PM - 4:00 PM',
         beginTime: DateTime(2025, 4, 19, 15, 0),
         endTime: DateTime(2025, 4, 19, 16, 0),
@@ -148,6 +174,7 @@ class FillTestData {
         //isStarred: false,
       ),
       DiaryEntry(
+        id: "10",
         //time: '4:30 PM - 6:00 PM',
         beginTime: DateTime(2025, 4, 19, 16, 30),
         endTime: DateTime(2025, 4, 19, 18, 0),
