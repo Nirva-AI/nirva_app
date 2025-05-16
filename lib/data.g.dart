@@ -12,6 +12,15 @@ _$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
     <String, dynamic>{'text': instance.text, 'mood': instance.mood};
 
+_$EventTagImpl _$$EventTagImplFromJson(Map<String, dynamic> json) =>
+    _$EventTagImpl(
+      name: json['name'] as String,
+      icon: json['icon'] as String? ?? "",
+    );
+
+Map<String, dynamic> _$$EventTagImplToJson(_$EventTagImpl instance) =>
+    <String, dynamic>{'name': instance.name, 'icon': instance.icon};
+
 _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
     _$DiaryEntryImpl(
       id: json['id'] as String,
@@ -20,7 +29,10 @@ _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       summary: json['summary'] as String,
       content: json['content'] as String,
-      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
+      tags:
+          (json['tags'] as List<dynamic>)
+              .map((e) => EventTag.fromJson(e as Map<String, dynamic>))
+              .toList(),
       location: json['location'] as String,
     );
 
