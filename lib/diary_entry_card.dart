@@ -13,13 +13,28 @@ class DiaryEntryCard extends StatefulWidget {
 }
 
 class _DiaryEntryCardState extends State<DiaryEntryCard> {
+  late ValueNotifier<List<String>> favoriteNotifier;
+
   @override
   void initState() {
     super.initState();
+    favoriteNotifier = DataManager().favoriteNotifier;
+    favoriteNotifier.addListener(_onFavoriteChanged);
+  }
+
+  @override
+  void dispose() {
+    favoriteNotifier.removeListener(_onFavoriteChanged);
+    super.dispose();
+  }
+
+  void _onFavoriteChanged() {
+    if (mounted) {
+      setState(() {}); // 刷新 UI
+    }
   }
 
   bool get isFavoriteDiaryEntry {
-    // 这里可以根据需要实现获取星标状态的逻辑
     return DataManager().isFavoriteDiaryEntry(widget.diaryData);
   }
 
@@ -69,14 +84,9 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                             isFavoriteDiaryEntry ? Colors.amber : Colors.grey,
                       ),
                       onPressed: () {
-                        setState(() {
-                          DataManager().toggleFavoriteDiaryEntry(
-                            widget.diaryData,
-                          );
-                          debugPrint(
-                            'Star button pressed: $isFavoriteDiaryEntry',
-                          );
-                        });
+                        DataManager().toggleFavoriteDiaryEntry(
+                          widget.diaryData,
+                        );
                       },
                     ),
                   ],
