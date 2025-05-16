@@ -4,7 +4,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart'; // 导入新页面
 
 class DiaryDetailsPage extends StatelessWidget {
-  final Diary diaryData;
+  final DiaryEntry diaryData;
 
   const DiaryDetailsPage({super.key, required this.diaryData});
 

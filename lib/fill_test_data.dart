@@ -32,8 +32,8 @@ class FillTestData {
         'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
     // 日记条目列表
-    final List<Diary> diaryEntries = [
-      Diary(
+    final List<DiaryEntry> diaryEntries = [
+      DiaryEntry(
         time: '10:00 AM - 1:00 PM',
         title: 'Morning in the Park with Ashley',
         summary:
@@ -43,7 +43,7 @@ class FillTestData {
         tags: ['peaceful', 'outdoor', 'conversation'],
         location: 'Park',
       ),
-      Diary(
+      DiaryEntry(
         time: '1:00 PM - 1:30 PM',
         title: 'Departure from Park',
         summary:
@@ -53,7 +53,7 @@ class FillTestData {
         tags: ['calm', 'outdoor', 'transportation'],
         location: 'Park',
       ),
-      Diary(
+      DiaryEntry(
         time: '1:30 PM - 2:50 PM',
         title: 'Drive to San Francisco with Trent',
         summary:
@@ -64,7 +64,7 @@ class FillTestData {
         location: 'In the car',
       ),
       // 添加更多测试数据
-      Diary(
+      DiaryEntry(
         time: '3:00 PM - 4:00 PM',
         title: 'Coffee Break with Sarah',
         summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -73,7 +73,7 @@ class FillTestData {
         tags: ['relaxing', 'indoor', 'conversation'],
         location: 'Cafe',
       ),
-      Diary(
+      DiaryEntry(
         time: '4:30 PM - 6:00 PM',
         title: 'Evening Walk',
         summary: 'A peaceful walk in the park to clear my mind.',
@@ -82,7 +82,7 @@ class FillTestData {
         tags: ['peaceful', 'outdoor', 'exercise'],
         location: 'Park',
       ),
-      Diary(
+      DiaryEntry(
         time: '10:00 AM - 1:00 PM',
         title: 'Morning in the Park with Ashley',
         summary:
@@ -92,7 +92,7 @@ class FillTestData {
         tags: ['peaceful', 'outdoor', 'conversation'],
         location: 'Park',
       ),
-      Diary(
+      DiaryEntry(
         time: '1:00 PM - 1:30 PM',
         title: 'Departure from Park',
         summary:
@@ -102,7 +102,7 @@ class FillTestData {
         tags: ['calm', 'outdoor', 'transportation'],
         location: 'Park',
       ),
-      Diary(
+      DiaryEntry(
         time: '1:30 PM - 2:50 PM',
         title: 'Drive to San Francisco with Trent',
         summary:
@@ -113,7 +113,7 @@ class FillTestData {
         location: 'In the car',
       ),
       // 添加更多测试数据
-      Diary(
+      DiaryEntry(
         time: '3:00 PM - 4:00 PM',
         title: 'Coffee Break with Sarah',
         summary: 'Discussed future plans and shared some laughs over coffee.',
@@ -122,7 +122,7 @@ class FillTestData {
         tags: ['relaxing', 'indoor', 'conversation'],
         location: 'Cafe',
       ),
-      Diary(
+      DiaryEntry(
         time: '4:30 PM - 6:00 PM',
         title: 'Evening Walk',
         summary: 'A peaceful walk in the park to clear my mind.',
