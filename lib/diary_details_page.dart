@@ -8,6 +8,17 @@ class DiaryDetailsPage extends StatelessWidget {
 
   const DiaryDetailsPage({super.key, required this.diaryData});
 
+  //10:00 AM-1:00 PM
+  String getFormattedTime() {
+    final startTime = diaryData.beginTime;
+    final endTime = diaryData.endTime;
+
+    String formattedStartTime = '${startTime.hour}:${startTime.minute}';
+    String formattedEndTime = '${endTime.hour}:${endTime.minute}';
+
+    return '$formattedStartTime - $formattedEndTime';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +68,7 @@ class DiaryDetailsPage extends StatelessWidget {
                 const Icon(Icons.access_time, size: 16, color: Colors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  diaryData.time,
+                  getFormattedTime(),
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(width: 16),

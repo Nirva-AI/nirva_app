@@ -32,7 +32,9 @@ class FillTestData {
     // 日记条目列表
     final List<DiaryEntry> diaryEntries = [
       DiaryEntry(
-        time: '10:00 AM - 1:00 PM',
+        //time: '10:00 AM - 1:00 PM',
+        beginTime: DateTime(2025, 4, 19, 10, 0),
+        endTime: DateTime(2025, 4, 19, 13, 0),
         title: 'Morning in the Park with Ashley',
         summary:
             'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
@@ -40,9 +42,12 @@ class FillTestData {
             'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
         tags: ['peaceful', 'outdoor', 'conversation'],
         location: 'Park',
+        //isStarred: false,
       ),
       DiaryEntry(
-        time: '1:00 PM - 1:30 PM',
+        //time: '1:00 PM - 1:30 PM',
+        beginTime: DateTime(2025, 4, 19, 13, 0),
+        endTime: DateTime(2025, 4, 19, 13, 30),
         title: 'Departure from Park',
         summary:
             'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
@@ -50,9 +55,12 @@ class FillTestData {
             'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
         tags: ['calm', 'outdoor', 'transportation'],
         location: 'Park',
+        //isStarred: false,
       ),
       DiaryEntry(
-        time: '1:30 PM - 2:50 PM',
+        //time: '1:30 PM - 2:50 PM',
+        beginTime: DateTime(2025, 4, 19, 13, 30),
+        endTime: DateTime(2025, 4, 19, 14, 50),
         title: 'Drive to San Francisco with Trent',
         summary:
             'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
@@ -60,28 +68,37 @@ class FillTestData {
             'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
         tags: ['engaged', 'transportation', 'conversation'],
         location: 'In the car',
+        //isStarred: false,
       ),
       // 添加更多测试数据
       DiaryEntry(
-        time: '3:00 PM - 4:00 PM',
+        //time: '3:00 PM - 4:00 PM',
+        beginTime: DateTime(2025, 4, 19, 15, 0),
+        endTime: DateTime(2025, 4, 19, 16, 0),
         title: 'Coffee Break with Sarah',
         summary: 'Discussed future plans and shared some laughs over coffee.',
         content:
             'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
         tags: ['relaxing', 'indoor', 'conversation'],
         location: 'Cafe',
+        //isStarred: false,
       ),
       DiaryEntry(
-        time: '4:30 PM - 6:00 PM',
+        //time: '4:30 PM - 6:00 PM',
+        beginTime: DateTime(2025, 4, 19, 16, 30),
+        endTime: DateTime(2025, 4, 19, 18, 0),
         title: 'Evening Walk',
         summary: 'A peaceful walk in the park to clear my mind.',
         content:
             'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
         tags: ['peaceful', 'outdoor', 'exercise'],
         location: 'Park',
+        //isStarred: false,
       ),
       DiaryEntry(
-        time: '10:00 AM - 1:00 PM',
+        //time: '10:00 AM - 1:00 PM',
+        beginTime: DateTime(2025, 4, 19, 10, 0),
+        endTime: DateTime(2025, 4, 19, 13, 0),
         title: 'Morning in the Park with Ashley',
         summary:
             'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
@@ -89,9 +106,12 @@ class FillTestData {
             'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
         tags: ['peaceful', 'outdoor', 'conversation'],
         location: 'Park',
+        //isStarred: false,
       ),
       DiaryEntry(
-        time: '1:00 PM - 1:30 PM',
+        //time: '1:00 PM - 1:30 PM',
+        beginTime: DateTime(2025, 4, 19, 13, 0),
+        endTime: DateTime(2025, 4, 19, 13, 30),
         title: 'Departure from Park',
         summary:
             'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
@@ -99,9 +119,12 @@ class FillTestData {
             'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
         tags: ['calm', 'outdoor', 'transportation'],
         location: 'Park',
+        //isStarred: false,
       ),
       DiaryEntry(
-        time: '1:30 PM - 2:50 PM',
+        //time: '1:30 PM - 2:50 PM',
+        beginTime: DateTime(2025, 4, 19, 13, 30),
+        endTime: DateTime(2025, 4, 19, 14, 50),
         title: 'Drive to San Francisco with Trent',
         summary:
             'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
@@ -109,25 +132,32 @@ class FillTestData {
             'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
         tags: ['engaged', 'transportation', 'conversation'],
         location: 'In the car',
+        //isStarred: false,
       ),
       // 添加更多测试数据
       DiaryEntry(
-        time: '3:00 PM - 4:00 PM',
+        //time: '3:00 PM - 4:00 PM',
+        beginTime: DateTime(2025, 4, 19, 15, 0),
+        endTime: DateTime(2025, 4, 19, 16, 0),
         title: 'Coffee Break with Sarah',
         summary: 'Discussed future plans and shared some laughs over coffee.',
         content:
             'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
         tags: ['relaxing', 'indoor', 'conversation'],
         location: 'Cafe',
+        //isStarred: false,
       ),
       DiaryEntry(
-        time: '4:30 PM - 6:00 PM',
+        //time: '4:30 PM - 6:00 PM',
+        beginTime: DateTime(2025, 4, 19, 16, 30),
+        endTime: DateTime(2025, 4, 19, 18, 0),
         title: 'Evening Walk',
         summary: 'A peaceful walk in the park to clear my mind.',
         content:
             'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
         tags: ['peaceful', 'outdoor', 'exercise'],
         location: 'Park',
+        //isStarred: false,
       ),
     ];
 

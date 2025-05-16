@@ -14,7 +14,8 @@ Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
 
 _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
     _$DiaryEntryImpl(
-      time: json['time'] as String,
+      beginTime: DateTime.parse(json['beginTime'] as String),
+      endTime: DateTime.parse(json['endTime'] as String),
       title: json['title'] as String,
       summary: json['summary'] as String,
       content: json['content'] as String,
@@ -24,7 +25,8 @@ _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$DiaryEntryImplToJson(_$DiaryEntryImpl instance) =>
     <String, dynamic>{
-      'time': instance.time,
+      'beginTime': instance.beginTime.toIso8601String(),
+      'endTime': instance.endTime.toIso8601String(),
       'title': instance.title,
       'summary': instance.summary,
       'content': instance.content,
