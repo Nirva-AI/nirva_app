@@ -73,14 +73,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: const Color.fromARGB(255, 234, 196, 103), // 背景颜色
+        color: Colors.white, // 背景颜色const Color.fromARGB(255, 234, 196, 103)
         child: Center(
           child: Text(
             'NIRVA',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
         ),

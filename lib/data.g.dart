@@ -81,17 +81,6 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'isCompleted': instance.isCompleted,
     };
 
-_$TodoListImpl _$$TodoListImplFromJson(Map<String, dynamic> json) =>
-    _$TodoListImpl(
-      tasks:
-          (json['tasks'] as List<dynamic>)
-              .map((e) => Task.fromJson(e as Map<String, dynamic>))
-              .toList(),
-    );
-
-Map<String, dynamic> _$$TodoListImplToJson(_$TodoListImpl instance) =>
-    <String, dynamic>{'tasks': instance.tasks};
-
 _$EnergyLabelImpl _$$EnergyLabelImplFromJson(Map<String, dynamic> json) =>
     _$EnergyLabelImpl(
       label: json['label'] as String,
