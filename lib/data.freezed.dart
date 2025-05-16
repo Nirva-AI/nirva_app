@@ -188,7 +188,8 @@ DiaryEntry _$DiaryEntryFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$DiaryEntry {
-  String get time => throw _privateConstructorUsedError;
+  DateTime get beginTime => throw _privateConstructorUsedError;
+  DateTime get endTime => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get summary => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
@@ -213,7 +214,8 @@ abstract class $DiaryEntryCopyWith<$Res> {
   ) = _$DiaryEntryCopyWithImpl<$Res, DiaryEntry>;
   @useResult
   $Res call({
-    String time,
+    DateTime beginTime,
+    DateTime endTime,
     String title,
     String summary,
     String content,
@@ -237,7 +239,8 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? time = null,
+    Object? beginTime = null,
+    Object? endTime = null,
     Object? title = null,
     Object? summary = null,
     Object? content = null,
@@ -246,11 +249,16 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
   }) {
     return _then(
       _value.copyWith(
-            time:
-                null == time
-                    ? _value.time
-                    : time // ignore: cast_nullable_to_non_nullable
-                        as String,
+            beginTime:
+                null == beginTime
+                    ? _value.beginTime
+                    : beginTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            endTime:
+                null == endTime
+                    ? _value.endTime
+                    : endTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
             title:
                 null == title
                     ? _value.title
@@ -292,7 +300,8 @@ abstract class _$$DiaryEntryImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String time,
+    DateTime beginTime,
+    DateTime endTime,
     String title,
     String summary,
     String content,
@@ -315,7 +324,8 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? time = null,
+    Object? beginTime = null,
+    Object? endTime = null,
     Object? title = null,
     Object? summary = null,
     Object? content = null,
@@ -324,11 +334,16 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$DiaryEntryImpl(
-        time:
-            null == time
-                ? _value.time
-                : time // ignore: cast_nullable_to_non_nullable
-                    as String,
+        beginTime:
+            null == beginTime
+                ? _value.beginTime
+                : beginTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        endTime:
+            null == endTime
+                ? _value.endTime
+                : endTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
         title:
             null == title
                 ? _value.title
@@ -363,7 +378,8 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DiaryEntryImpl implements _DiaryEntry {
   const _$DiaryEntryImpl({
-    required this.time,
+    required this.beginTime,
+    required this.endTime,
     required this.title,
     required this.summary,
     required this.content,
@@ -375,7 +391,9 @@ class _$DiaryEntryImpl implements _DiaryEntry {
       _$$DiaryEntryImplFromJson(json);
 
   @override
-  final String time;
+  final DateTime beginTime;
+  @override
+  final DateTime endTime;
   @override
   final String title;
   @override
@@ -395,7 +413,7 @@ class _$DiaryEntryImpl implements _DiaryEntry {
 
   @override
   String toString() {
-    return 'DiaryEntry(time: $time, title: $title, summary: $summary, content: $content, tags: $tags, location: $location)';
+    return 'DiaryEntry(beginTime: $beginTime, endTime: $endTime, title: $title, summary: $summary, content: $content, tags: $tags, location: $location)';
   }
 
   @override
@@ -403,7 +421,9 @@ class _$DiaryEntryImpl implements _DiaryEntry {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DiaryEntryImpl &&
-            (identical(other.time, time) || other.time == time) &&
+            (identical(other.beginTime, beginTime) ||
+                other.beginTime == beginTime) &&
+            (identical(other.endTime, endTime) || other.endTime == endTime) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.summary, summary) || other.summary == summary) &&
             (identical(other.content, content) || other.content == content) &&
@@ -416,7 +436,8 @@ class _$DiaryEntryImpl implements _DiaryEntry {
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    time,
+    beginTime,
+    endTime,
     title,
     summary,
     content,
@@ -440,7 +461,8 @@ class _$DiaryEntryImpl implements _DiaryEntry {
 
 abstract class _DiaryEntry implements DiaryEntry {
   const factory _DiaryEntry({
-    required final String time,
+    required final DateTime beginTime,
+    required final DateTime endTime,
     required final String title,
     required final String summary,
     required final String content,
@@ -452,7 +474,9 @@ abstract class _DiaryEntry implements DiaryEntry {
       _$DiaryEntryImpl.fromJson;
 
   @override
-  String get time;
+  DateTime get beginTime;
+  @override
+  DateTime get endTime;
   @override
   String get title;
   @override

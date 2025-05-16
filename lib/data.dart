@@ -14,7 +14,8 @@ class Quote with _$Quote {
 @freezed
 class DiaryEntry with _$DiaryEntry {
   const factory DiaryEntry({
-    required String time,
+    required DateTime beginTime,
+    required DateTime endTime,
     required String title,
     required String summary,
     required String content,
