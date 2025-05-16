@@ -188,6 +188,7 @@ DiaryEntry _$DiaryEntryFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$DiaryEntry {
+  String get id => throw _privateConstructorUsedError;
   DateTime get beginTime => throw _privateConstructorUsedError;
   DateTime get endTime => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
@@ -214,6 +215,7 @@ abstract class $DiaryEntryCopyWith<$Res> {
   ) = _$DiaryEntryCopyWithImpl<$Res, DiaryEntry>;
   @useResult
   $Res call({
+    String id,
     DateTime beginTime,
     DateTime endTime,
     String title,
@@ -239,6 +241,7 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? beginTime = null,
     Object? endTime = null,
     Object? title = null,
@@ -249,6 +252,11 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
   }) {
     return _then(
       _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
             beginTime:
                 null == beginTime
                     ? _value.beginTime
@@ -300,6 +308,7 @@ abstract class _$$DiaryEntryImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
+    String id,
     DateTime beginTime,
     DateTime endTime,
     String title,
@@ -324,6 +333,7 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? beginTime = null,
     Object? endTime = null,
     Object? title = null,
@@ -334,6 +344,11 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$DiaryEntryImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
         beginTime:
             null == beginTime
                 ? _value.beginTime
@@ -378,6 +393,7 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DiaryEntryImpl implements _DiaryEntry {
   const _$DiaryEntryImpl({
+    required this.id,
     required this.beginTime,
     required this.endTime,
     required this.title,
@@ -390,6 +406,8 @@ class _$DiaryEntryImpl implements _DiaryEntry {
   factory _$DiaryEntryImpl.fromJson(Map<String, dynamic> json) =>
       _$$DiaryEntryImplFromJson(json);
 
+  @override
+  final String id;
   @override
   final DateTime beginTime;
   @override
@@ -413,7 +431,7 @@ class _$DiaryEntryImpl implements _DiaryEntry {
 
   @override
   String toString() {
-    return 'DiaryEntry(beginTime: $beginTime, endTime: $endTime, title: $title, summary: $summary, content: $content, tags: $tags, location: $location)';
+    return 'DiaryEntry(id: $id, beginTime: $beginTime, endTime: $endTime, title: $title, summary: $summary, content: $content, tags: $tags, location: $location)';
   }
 
   @override
@@ -421,6 +439,7 @@ class _$DiaryEntryImpl implements _DiaryEntry {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DiaryEntryImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.beginTime, beginTime) ||
                 other.beginTime == beginTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
@@ -436,6 +455,7 @@ class _$DiaryEntryImpl implements _DiaryEntry {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    id,
     beginTime,
     endTime,
     title,
@@ -461,6 +481,7 @@ class _$DiaryEntryImpl implements _DiaryEntry {
 
 abstract class _DiaryEntry implements DiaryEntry {
   const factory _DiaryEntry({
+    required final String id,
     required final DateTime beginTime,
     required final DateTime endTime,
     required final String title,
@@ -473,6 +494,8 @@ abstract class _DiaryEntry implements DiaryEntry {
   factory _DiaryEntry.fromJson(Map<String, dynamic> json) =
       _$DiaryEntryImpl.fromJson;
 
+  @override
+  String get id;
   @override
   DateTime get beginTime;
   @override

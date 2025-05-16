@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/diary_details_page.dart';
-//import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/data_manager.dart';
 
 class DiaryEntryCard extends StatefulWidget {
   final DiaryEntry diaryData;
@@ -13,13 +13,14 @@ class DiaryEntryCard extends StatefulWidget {
 }
 
 class _DiaryEntryCardState extends State<DiaryEntryCard> {
-  late bool isFavorite = false;
-
   @override
   void initState() {
     super.initState();
-    // 初始化 isStarred，假设 DiaryEntry 中有一个字段表示星标状态
-    isFavorite = false; // 或者从 widget.diaryData 中获取初始值
+  }
+
+  bool get isFavoriteDiaryEntry {
+    // 这里可以根据需要实现获取星标状态的逻辑
+    return DataManager().isFavoriteDiaryEntry(widget.diaryData);
   }
 
   @override
@@ -63,13 +64,18 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                     ),
                     IconButton(
                       icon: Icon(
-                        isFavorite ? Icons.star : Icons.star_border,
-                        color: isFavorite ? Colors.amber : Colors.grey,
+                        isFavoriteDiaryEntry ? Icons.star : Icons.star_border,
+                        color:
+                            isFavoriteDiaryEntry ? Colors.amber : Colors.grey,
                       ),
                       onPressed: () {
                         setState(() {
-                          isFavorite = !isFavorite;
-                          debugPrint('Star button pressed: $isFavorite');
+                          DataManager().toggleFavoriteDiaryEntry(
+                            widget.diaryData,
+                          );
+                          debugPrint(
+                            'Star button pressed: $isFavoriteDiaryEntry',
+                          );
                         });
                       },
                     ),
