@@ -4,7 +4,7 @@ part 'data.g.dart';
 
 @freezed
 class Quote with _$Quote {
-  const factory Quote({required String text}) = _Quote;
+  const factory Quote({required String text, required String mood}) = _Quote;
 
   factory Quote.fromJson(Map<String, dynamic> json) => _$QuoteFromJson(json);
   @override

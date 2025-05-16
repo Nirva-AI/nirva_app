@@ -22,6 +22,7 @@ Quote _$QuoteFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Quote {
   String get text => throw _privateConstructorUsedError;
+  String get mood => throw _privateConstructorUsedError;
 
   /// Serializes this Quote to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -37,7 +38,7 @@ abstract class $QuoteCopyWith<$Res> {
   factory $QuoteCopyWith(Quote value, $Res Function(Quote) then) =
       _$QuoteCopyWithImpl<$Res, Quote>;
   @useResult
-  $Res call({String text});
+  $Res call({String text, String mood});
 }
 
 /// @nodoc
@@ -54,13 +55,18 @@ class _$QuoteCopyWithImpl<$Res, $Val extends Quote>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? text = null}) {
+  $Res call({Object? text = null, Object? mood = null}) {
     return _then(
       _value.copyWith(
             text:
                 null == text
                     ? _value.text
                     : text // ignore: cast_nullable_to_non_nullable
+                        as String,
+            mood:
+                null == mood
+                    ? _value.mood
+                    : mood // ignore: cast_nullable_to_non_nullable
                         as String,
           )
           as $Val,
@@ -76,7 +82,7 @@ abstract class _$$QuoteImplCopyWith<$Res> implements $QuoteCopyWith<$Res> {
   ) = __$$QuoteImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String text});
+  $Res call({String text, String mood});
 }
 
 /// @nodoc
@@ -92,13 +98,18 @@ class __$$QuoteImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? text = null}) {
+  $Res call({Object? text = null, Object? mood = null}) {
     return _then(
       _$QuoteImpl(
         text:
             null == text
                 ? _value.text
                 : text // ignore: cast_nullable_to_non_nullable
+                    as String,
+        mood:
+            null == mood
+                ? _value.mood
+                : mood // ignore: cast_nullable_to_non_nullable
                     as String,
       ),
     );
@@ -108,17 +119,19 @@ class __$$QuoteImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$QuoteImpl implements _Quote {
-  const _$QuoteImpl({required this.text});
+  const _$QuoteImpl({required this.text, required this.mood});
 
   factory _$QuoteImpl.fromJson(Map<String, dynamic> json) =>
       _$$QuoteImplFromJson(json);
 
   @override
   final String text;
+  @override
+  final String mood;
 
   @override
   String toString() {
-    return 'Quote(text: $text)';
+    return 'Quote(text: $text, mood: $mood)';
   }
 
   @override
@@ -126,12 +139,13 @@ class _$QuoteImpl implements _Quote {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$QuoteImpl &&
-            (identical(other.text, text) || other.text == text));
+            (identical(other.text, text) || other.text == text) &&
+            (identical(other.mood, mood) || other.mood == mood));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, text);
+  int get hashCode => Object.hash(runtimeType, text, mood);
 
   /// Create a copy of Quote
   /// with the given fields replaced by the non-null parameter values.
@@ -148,12 +162,17 @@ class _$QuoteImpl implements _Quote {
 }
 
 abstract class _Quote implements Quote {
-  const factory _Quote({required final String text}) = _$QuoteImpl;
+  const factory _Quote({
+    required final String text,
+    required final String mood,
+  }) = _$QuoteImpl;
 
   factory _Quote.fromJson(Map<String, dynamic> json) = _$QuoteImpl.fromJson;
 
   @override
   String get text;
+  @override
+  String get mood;
 
   /// Create a copy of Quote
   /// with the given fields replaced by the non-null parameter values.

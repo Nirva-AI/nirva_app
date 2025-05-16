@@ -138,14 +138,17 @@ class FillTestData {
       Quote(
         text:
             '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
+        mood: 'reflective',
       ),
       Quote(
         text:
             '"Meaningful connections with others help me understand myself better and grow as a person."',
+        mood: 'calm',
       ),
       Quote(
         text:
             '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
+        mood: 'focused',
       ),
     ];
 
