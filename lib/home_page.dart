@@ -100,20 +100,30 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        backgroundColor: const Color.fromARGB(255, 250, 249, 244),
-        title: Text(_getTitle()),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.checklist),
-            onPressed: () {
-              debugPrint('to-do list');
-              _showToDoList(context);
-            },
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppBar(
+          backgroundColor: const Color.fromARGB(255, 250, 249, 244),
+          title: Text(_getTitle()),
+          centerTitle: false,
+          elevation: 0, // 移除默认阴影
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.checklist),
+              onPressed: () {
+                debugPrint('to-do list');
+                _showToDoList(context);
+              },
+            ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1.0),
+            child: Container(
+              color: Colors.grey.shade300, // 自定义下边框颜色
+              height: 1.0, // 下边框高度
+            ),
           ),
-        ],
+        ),
       ),
       body: _getBodyContent(),
       floatingActionButton: FloatingActionButton(
