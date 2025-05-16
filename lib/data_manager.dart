@@ -1,5 +1,6 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:nirva_app/data.dart';
+import 'package:flutter/foundation.dart';
 
 // 管理全局数据的类
 class DataManager {
@@ -19,6 +20,7 @@ class DataManager {
 
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
   List<String> favoriteDiaries = [];
+  ValueNotifier<List<String>> favoriteNotifier = ValueNotifier([]);
 
   // 清空数据
   void clear() {
@@ -26,6 +28,7 @@ class DataManager {
     journalEntries = [];
     tasks = [];
     favoriteDiaries = [];
+    favoriteNotifier = ValueNotifier([]);
   }
 
   //
@@ -65,6 +68,7 @@ class DataManager {
     } else {
       favoriteDiaries.add(diaryEntry.id);
     }
+    favoriteNotifier.value = List.from(favoriteDiaries); // 通知监听者
   }
 
   // 检查日记条目是否被标记为最爱
