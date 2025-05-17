@@ -3,7 +3,7 @@ import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
-import 'package:nirva_app/assistant_chat_panel.dart';
+import 'package:nirva_app/assistant_chat_page.dart';
 import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/me_page.dart';
 
@@ -22,23 +22,15 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _textController = TextEditingController();
 
   void _floatingActionButtonPressed() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // 保持内容可滚动
-      enableDrag: false,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => AssistantChatPage(
+              chatMessages: ChatManager().getMessages(),
+              textController: _textController,
+            ),
       ),
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.9, // 设置 ModalBottomSheet 占屏幕高度的 90%
-          child: AssistantChatPanel(
-            chatMessages: ChatManager().getMessages(),
-            textController: _textController,
-            //onSend: (message) {},
-          ),
-        );
-      },
     );
   }
 

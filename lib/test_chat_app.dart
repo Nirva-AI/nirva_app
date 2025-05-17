@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/assistant_chat_panel.dart';
+import 'package:nirva_app/assistant_chat_page.dart';
 import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/service_manager.dart';
 import 'package:nirva_app/data_manager.dart';
@@ -28,23 +28,23 @@ class TestChatApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       home: Scaffold(
-        appBar: AppBar(title: const Text('测试对话')),
+        //appBar: AppBar(title: const Text('测试对话')),
         body: FutureBuilder<bool>(
           future: _initFuture, // 使用缓存的 Future
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // 显示加载指示器
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError || !(snapshot.data ?? false)) {
-              // 显示错误信息
-              return const Center(child: Text('API 初始化失败'));
-            } else {
-              // API 初始化成功，显示 AssistantChatPanel
-              return AssistantChatPanel(
-                chatMessages: chatMessages,
-                textController: textController,
-              );
-            }
+            // if (snapshot.connectionState == ConnectionState.waiting) {
+            //   // 显示加载指示器
+            //   return const Center(child: CircularProgressIndicator());
+            // } else if (snapshot.hasError || !(snapshot.data ?? false)) {
+            //   // 显示错误信息
+            //   return const Center(child: Text('API 初始化失败'));
+            // } else {
+            // API 初始化成功，显示 AssistantChatPage
+            return AssistantChatPage(
+              chatMessages: chatMessages,
+              textController: textController,
+            );
+            //}
           },
         ),
       ),
