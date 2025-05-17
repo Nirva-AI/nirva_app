@@ -83,7 +83,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                 const Icon(Icons.location_on, size: 16, color: Colors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  widget.diaryData.location,
+                  widget.diaryData.location.name,
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],

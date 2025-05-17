@@ -69,7 +69,8 @@ class FillTestData {
           EventTag(name: 'outdoor'),
           EventTag(name: 'conversation'),
         ],
-        location: 'Park',
+        //location: 'Park',
+        location: EventLocation(name: 'Park'),
       ),
       DiaryEntry(
         id: "2",
@@ -86,7 +87,8 @@ class FillTestData {
           EventTag(name: 'outdoor'),
           EventTag(name: 'transportation'),
         ],
-        location: 'Park',
+        //location: 'Park',
+        location: EventLocation(name: 'Park'),
       ),
       DiaryEntry(
         id: "3",
@@ -103,7 +105,8 @@ class FillTestData {
           EventTag(name: 'transportation'),
           EventTag(name: 'conversation'),
         ],
-        location: 'In the car',
+        //location: 'In the car',
+        location: EventLocation(name: 'In the car'),
       ),
       // 添加更多测试数据
       DiaryEntry(
@@ -120,7 +123,8 @@ class FillTestData {
           EventTag(name: 'indoor'),
           EventTag(name: 'conversation'),
         ],
-        location: 'Cafe',
+        //location: 'Cafe',
+        location: EventLocation(name: 'Cafe'),
       ),
       DiaryEntry(
         id: "5",
@@ -136,7 +140,8 @@ class FillTestData {
           EventTag(name: 'outdoor'),
           EventTag(name: 'exercise'),
         ],
-        location: 'Park',
+        //location: 'Park',
+        location: EventLocation(name: 'Park'),
       ),
       DiaryEntry(
         id: "6",
@@ -153,7 +158,8 @@ class FillTestData {
           EventTag(name: 'outdoor'),
           EventTag(name: 'conversation'),
         ],
-        location: 'Park',
+        //location: 'Park',
+        location: EventLocation(name: 'Park'),
       ),
       DiaryEntry(
         id: "7",
@@ -170,7 +176,8 @@ class FillTestData {
           EventTag(name: 'outdoor'),
           EventTag(name: 'transportation'),
         ],
-        location: 'Park',
+        //location: 'Park',
+        location: EventLocation(name: 'Park'),
       ),
       DiaryEntry(
         id: "8",
@@ -187,7 +194,8 @@ class FillTestData {
           EventTag(name: 'transportation'),
           EventTag(name: 'conversation'),
         ],
-        location: 'In the car',
+        //location: 'In the car',
+        location: EventLocation(name: 'In the car'),
       ),
       // 添加更多测试数据
       DiaryEntry(
@@ -204,7 +212,8 @@ class FillTestData {
           EventTag(name: 'indoor'),
           EventTag(name: 'conversation'),
         ],
-        location: 'Cafe',
+        //location: 'Cafe',
+        location: EventLocation(name: 'Cafe'),
       ),
       DiaryEntry(
         id: "10",
@@ -220,7 +229,8 @@ class FillTestData {
           EventTag(name: 'outdoor'),
           EventTag(name: 'exercise'),
         ],
-        location: 'Park',
+        //location: 'Park',
+        location: EventLocation(name: 'Park'),
       ),
     ];
 
