@@ -111,10 +111,11 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                 ),
                 const SizedBox(height: 8),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Icon(Icons.location_on, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
                     Text(
-                      widget.diaryData.location,
+                      widget.diaryData.location.name,
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],

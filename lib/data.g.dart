@@ -18,6 +18,12 @@ _$EventTagImpl _$$EventTagImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$EventTagImplToJson(_$EventTagImpl instance) =>
     <String, dynamic>{'name': instance.name};
 
+_$EventLocationImpl _$$EventLocationImplFromJson(Map<String, dynamic> json) =>
+    _$EventLocationImpl(name: json['name'] as String);
+
+Map<String, dynamic> _$$EventLocationImplToJson(_$EventLocationImpl instance) =>
+    <String, dynamic>{'name': instance.name};
+
 _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
     _$DiaryEntryImpl(
       id: json['id'] as String,
@@ -30,7 +36,9 @@ _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
           (json['tags'] as List<dynamic>)
               .map((e) => EventTag.fromJson(e as Map<String, dynamic>))
               .toList(),
-      location: json['location'] as String,
+      location: EventLocation.fromJson(
+        json['location'] as Map<String, dynamic>,
+      ),
     );
 
 Map<String, dynamic> _$$DiaryEntryImplToJson(_$DiaryEntryImpl instance) =>

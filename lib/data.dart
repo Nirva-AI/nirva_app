@@ -22,6 +22,16 @@ class EventTag with _$EventTag {
 }
 
 @freezed
+class EventLocation with _$EventLocation {
+  const factory EventLocation({required String name}) = _EventLocation;
+
+  factory EventLocation.fromJson(Map<String, dynamic> json) =>
+      _$EventLocationFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _EventLocation).toJson();
+}
+
+@freezed
 class DiaryEntry with _$DiaryEntry {
   const factory DiaryEntry({
     required String id,
@@ -31,7 +41,7 @@ class DiaryEntry with _$DiaryEntry {
     required String summary,
     required String content,
     required List<EventTag> tags,
-    required String location,
+    required EventLocation location,
   }) = _DiaryEntry;
 
   factory DiaryEntry.fromJson(Map<String, dynamic> json) =>

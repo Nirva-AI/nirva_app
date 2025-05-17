@@ -333,6 +333,160 @@ abstract class _EventTag implements EventTag {
       throw _privateConstructorUsedError;
 }
 
+EventLocation _$EventLocationFromJson(Map<String, dynamic> json) {
+  return _EventLocation.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EventLocation {
+  String get name => throw _privateConstructorUsedError;
+
+  /// Serializes this EventLocation to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of EventLocation
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EventLocationCopyWith<EventLocation> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EventLocationCopyWith<$Res> {
+  factory $EventLocationCopyWith(
+    EventLocation value,
+    $Res Function(EventLocation) then,
+  ) = _$EventLocationCopyWithImpl<$Res, EventLocation>;
+  @useResult
+  $Res call({String name});
+}
+
+/// @nodoc
+class _$EventLocationCopyWithImpl<$Res, $Val extends EventLocation>
+    implements $EventLocationCopyWith<$Res> {
+  _$EventLocationCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of EventLocation
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null}) {
+    return _then(
+      _value.copyWith(
+            name:
+                null == name
+                    ? _value.name
+                    : name // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$EventLocationImplCopyWith<$Res>
+    implements $EventLocationCopyWith<$Res> {
+  factory _$$EventLocationImplCopyWith(
+    _$EventLocationImpl value,
+    $Res Function(_$EventLocationImpl) then,
+  ) = __$$EventLocationImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String name});
+}
+
+/// @nodoc
+class __$$EventLocationImplCopyWithImpl<$Res>
+    extends _$EventLocationCopyWithImpl<$Res, _$EventLocationImpl>
+    implements _$$EventLocationImplCopyWith<$Res> {
+  __$$EventLocationImplCopyWithImpl(
+    _$EventLocationImpl _value,
+    $Res Function(_$EventLocationImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EventLocation
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null}) {
+    return _then(
+      _$EventLocationImpl(
+        name:
+            null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EventLocationImpl implements _EventLocation {
+  const _$EventLocationImpl({required this.name});
+
+  factory _$EventLocationImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EventLocationImplFromJson(json);
+
+  @override
+  final String name;
+
+  @override
+  String toString() {
+    return 'EventLocation(name: $name)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EventLocationImpl &&
+            (identical(other.name, name) || other.name == name));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, name);
+
+  /// Create a copy of EventLocation
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EventLocationImplCopyWith<_$EventLocationImpl> get copyWith =>
+      __$$EventLocationImplCopyWithImpl<_$EventLocationImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EventLocationImplToJson(this);
+  }
+}
+
+abstract class _EventLocation implements EventLocation {
+  const factory _EventLocation({required final String name}) =
+      _$EventLocationImpl;
+
+  factory _EventLocation.fromJson(Map<String, dynamic> json) =
+      _$EventLocationImpl.fromJson;
+
+  @override
+  String get name;
+
+  /// Create a copy of EventLocation
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EventLocationImplCopyWith<_$EventLocationImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 DiaryEntry _$DiaryEntryFromJson(Map<String, dynamic> json) {
   return _DiaryEntry.fromJson(json);
 }
@@ -346,7 +500,7 @@ mixin _$DiaryEntry {
   String get summary => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   List<EventTag> get tags => throw _privateConstructorUsedError;
-  String get location => throw _privateConstructorUsedError;
+  EventLocation get location => throw _privateConstructorUsedError;
 
   /// Serializes this DiaryEntry to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -373,8 +527,10 @@ abstract class $DiaryEntryCopyWith<$Res> {
     String summary,
     String content,
     List<EventTag> tags,
-    String location,
+    EventLocation location,
   });
+
+  $EventLocationCopyWith<$Res> get location;
 }
 
 /// @nodoc
@@ -442,10 +598,20 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
                 null == location
                     ? _value.location
                     : location // ignore: cast_nullable_to_non_nullable
-                        as String,
+                        as EventLocation,
           )
           as $Val,
     );
+  }
+
+  /// Create a copy of DiaryEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $EventLocationCopyWith<$Res> get location {
+    return $EventLocationCopyWith<$Res>(_value.location, (value) {
+      return _then(_value.copyWith(location: value) as $Val);
+    });
   }
 }
 
@@ -466,8 +632,11 @@ abstract class _$$DiaryEntryImplCopyWith<$Res>
     String summary,
     String content,
     List<EventTag> tags,
-    String location,
+    EventLocation location,
   });
+
+  @override
+  $EventLocationCopyWith<$Res> get location;
 }
 
 /// @nodoc
@@ -534,7 +703,7 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
             null == location
                 ? _value.location
                 : location // ignore: cast_nullable_to_non_nullable
-                    as String,
+                    as EventLocation,
       ),
     );
   }
@@ -578,7 +747,7 @@ class _$DiaryEntryImpl implements _DiaryEntry {
   }
 
   @override
-  final String location;
+  final EventLocation location;
 
   @override
   String toString() {
@@ -639,7 +808,7 @@ abstract class _DiaryEntry implements DiaryEntry {
     required final String summary,
     required final String content,
     required final List<EventTag> tags,
-    required final String location,
+    required final EventLocation location,
   }) = _$DiaryEntryImpl;
 
   factory _DiaryEntry.fromJson(Map<String, dynamic> json) =
@@ -660,7 +829,7 @@ abstract class _DiaryEntry implements DiaryEntry {
   @override
   List<EventTag> get tags;
   @override
-  String get location;
+  EventLocation get location;
 
   /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
