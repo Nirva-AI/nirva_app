@@ -73,8 +73,10 @@ class DiaryEntryyNote with _$DiaryEntryyNote {
 @freezed
 class Reflection with _$Reflection {
   const factory Reflection({
+    required String id,
     required String title,
     required List<String> items,
+    required String content,
   }) = _Reflection;
 
   factory Reflection.fromJson(Map<String, dynamic> json) =>
