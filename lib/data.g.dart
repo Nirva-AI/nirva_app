@@ -6,17 +6,17 @@ part of 'data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) =>
-    _$QuoteImpl(text: json['text'] as String, mood: json['mood'] as String);
-
-Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
-    <String, dynamic>{'text': instance.text, 'mood': instance.mood};
-
 _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) =>
     _$UserImpl(name: json['name'] as String);
 
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
     <String, dynamic>{'name': instance.name};
+
+_$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) =>
+    _$QuoteImpl(text: json['text'] as String, mood: json['mood'] as String);
+
+Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
+    <String, dynamic>{'text': instance.text, 'mood': instance.mood};
 
 _$EventTagImpl _$$EventTagImplFromJson(Map<String, dynamic> json) =>
     _$EventTagImpl(name: json['name'] as String);
@@ -72,12 +72,19 @@ Map<String, dynamic> _$$DiaryEntryyNoteImplToJson(
 
 _$ReflectionImpl _$$ReflectionImplFromJson(Map<String, dynamic> json) =>
     _$ReflectionImpl(
+      id: json['id'] as String,
       title: json['title'] as String,
       items: (json['items'] as List<dynamic>).map((e) => e as String).toList(),
+      content: json['content'] as String,
     );
 
 Map<String, dynamic> _$$ReflectionImplToJson(_$ReflectionImpl instance) =>
-    <String, dynamic>{'title': instance.title, 'items': instance.items};
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'items': instance.items,
+      'content': instance.content,
+    };
 
 _$ScoreImpl _$$ScoreImplFromJson(Map<String, dynamic> json) => _$ScoreImpl(
   title: json['title'] as String,

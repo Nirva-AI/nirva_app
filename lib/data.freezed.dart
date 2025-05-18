@@ -15,6 +15,152 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
+User _$UserFromJson(Map<String, dynamic> json) {
+  return _User.fromJson(json);
+}
+
+/// @nodoc
+mixin _$User {
+  String get name => throw _privateConstructorUsedError;
+
+  /// Serializes this User to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UserCopyWith<User> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UserCopyWith<$Res> {
+  factory $UserCopyWith(User value, $Res Function(User) then) =
+      _$UserCopyWithImpl<$Res, User>;
+  @useResult
+  $Res call({String name});
+}
+
+/// @nodoc
+class _$UserCopyWithImpl<$Res, $Val extends User>
+    implements $UserCopyWith<$Res> {
+  _$UserCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null}) {
+    return _then(
+      _value.copyWith(
+            name:
+                null == name
+                    ? _value.name
+                    : name // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
+  factory _$$UserImplCopyWith(
+    _$UserImpl value,
+    $Res Function(_$UserImpl) then,
+  ) = __$$UserImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String name});
+}
+
+/// @nodoc
+class __$$UserImplCopyWithImpl<$Res>
+    extends _$UserCopyWithImpl<$Res, _$UserImpl>
+    implements _$$UserImplCopyWith<$Res> {
+  __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then)
+    : super(_value, _then);
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? name = null}) {
+    return _then(
+      _$UserImpl(
+        name:
+            null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UserImpl implements _User {
+  const _$UserImpl({required this.name});
+
+  factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserImplFromJson(json);
+
+  @override
+  final String name;
+
+  @override
+  String toString() {
+    return 'User(name: $name)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UserImpl &&
+            (identical(other.name, name) || other.name == name));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, name);
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
+      __$$UserImplCopyWithImpl<_$UserImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UserImplToJson(this);
+  }
+}
+
+abstract class _User implements User {
+  const factory _User({required final String name}) = _$UserImpl;
+
+  factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
+
+  @override
+  String get name;
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 Quote _$QuoteFromJson(Map<String, dynamic> json) {
   return _Quote.fromJson(json);
 }
@@ -179,152 +325,6 @@ abstract class _Quote implements Quote {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$QuoteImplCopyWith<_$QuoteImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-User _$UserFromJson(Map<String, dynamic> json) {
-  return _User.fromJson(json);
-}
-
-/// @nodoc
-mixin _$User {
-  String get name => throw _privateConstructorUsedError;
-
-  /// Serializes this User to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $UserCopyWith<User> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $UserCopyWith<$Res> {
-  factory $UserCopyWith(User value, $Res Function(User) then) =
-      _$UserCopyWithImpl<$Res, User>;
-  @useResult
-  $Res call({String name});
-}
-
-/// @nodoc
-class _$UserCopyWithImpl<$Res, $Val extends User>
-    implements $UserCopyWith<$Res> {
-  _$UserCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? name = null}) {
-    return _then(
-      _value.copyWith(
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
-  }
-}
-
-/// @nodoc
-abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
-  factory _$$UserImplCopyWith(
-    _$UserImpl value,
-    $Res Function(_$UserImpl) then,
-  ) = __$$UserImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String name});
-}
-
-/// @nodoc
-class __$$UserImplCopyWithImpl<$Res>
-    extends _$UserCopyWithImpl<$Res, _$UserImpl>
-    implements _$$UserImplCopyWith<$Res> {
-  __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then)
-    : super(_value, _then);
-
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? name = null}) {
-    return _then(
-      _$UserImpl(
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$UserImpl implements _User {
-  const _$UserImpl({required this.name});
-
-  factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
-      _$$UserImplFromJson(json);
-
-  @override
-  final String name;
-
-  @override
-  String toString() {
-    return 'User(name: $name)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UserImpl &&
-            (identical(other.name, name) || other.name == name));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, name);
-
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
-      __$$UserImplCopyWithImpl<_$UserImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$UserImplToJson(this);
-  }
-}
-
-abstract class _User implements User {
-  const factory _User({required final String name}) = _$UserImpl;
-
-  factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
-
-  @override
-  String get name;
-
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1166,8 +1166,10 @@ Reflection _$ReflectionFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Reflection {
+  String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   List<String> get items => throw _privateConstructorUsedError;
+  String get content => throw _privateConstructorUsedError;
 
   /// Serializes this Reflection to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1186,7 +1188,7 @@ abstract class $ReflectionCopyWith<$Res> {
     $Res Function(Reflection) then,
   ) = _$ReflectionCopyWithImpl<$Res, Reflection>;
   @useResult
-  $Res call({String title, List<String> items});
+  $Res call({String id, String title, List<String> items, String content});
 }
 
 /// @nodoc
@@ -1203,9 +1205,19 @@ class _$ReflectionCopyWithImpl<$Res, $Val extends Reflection>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? title = null, Object? items = null}) {
+  $Res call({
+    Object? id = null,
+    Object? title = null,
+    Object? items = null,
+    Object? content = null,
+  }) {
     return _then(
       _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
             title:
                 null == title
                     ? _value.title
@@ -1216,6 +1228,11 @@ class _$ReflectionCopyWithImpl<$Res, $Val extends Reflection>
                     ? _value.items
                     : items // ignore: cast_nullable_to_non_nullable
                         as List<String>,
+            content:
+                null == content
+                    ? _value.content
+                    : content // ignore: cast_nullable_to_non_nullable
+                        as String,
           )
           as $Val,
     );
@@ -1231,7 +1248,7 @@ abstract class _$$ReflectionImplCopyWith<$Res>
   ) = __$$ReflectionImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String title, List<String> items});
+  $Res call({String id, String title, List<String> items, String content});
 }
 
 /// @nodoc
@@ -1247,9 +1264,19 @@ class __$$ReflectionImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? title = null, Object? items = null}) {
+  $Res call({
+    Object? id = null,
+    Object? title = null,
+    Object? items = null,
+    Object? content = null,
+  }) {
     return _then(
       _$ReflectionImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
         title:
             null == title
                 ? _value.title
@@ -1260,6 +1287,11 @@ class __$$ReflectionImplCopyWithImpl<$Res>
                 ? _value._items
                 : items // ignore: cast_nullable_to_non_nullable
                     as List<String>,
+        content:
+            null == content
+                ? _value.content
+                : content // ignore: cast_nullable_to_non_nullable
+                    as String,
       ),
     );
   }
@@ -1269,13 +1301,17 @@ class __$$ReflectionImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ReflectionImpl implements _Reflection {
   const _$ReflectionImpl({
+    required this.id,
     required this.title,
     required final List<String> items,
+    required this.content,
   }) : _items = items;
 
   factory _$ReflectionImpl.fromJson(Map<String, dynamic> json) =>
       _$$ReflectionImplFromJson(json);
 
+  @override
+  final String id;
   @override
   final String title;
   final List<String> _items;
@@ -1287,8 +1323,11 @@ class _$ReflectionImpl implements _Reflection {
   }
 
   @override
+  final String content;
+
+  @override
   String toString() {
-    return 'Reflection(title: $title, items: $items)';
+    return 'Reflection(id: $id, title: $title, items: $items, content: $content)';
   }
 
   @override
@@ -1296,16 +1335,20 @@ class _$ReflectionImpl implements _Reflection {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ReflectionImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
-            const DeepCollectionEquality().equals(other._items, _items));
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.content, content) || other.content == content));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    id,
     title,
     const DeepCollectionEquality().hash(_items),
+    content,
   );
 
   /// Create a copy of Reflection
@@ -1324,17 +1367,23 @@ class _$ReflectionImpl implements _Reflection {
 
 abstract class _Reflection implements Reflection {
   const factory _Reflection({
+    required final String id,
     required final String title,
     required final List<String> items,
+    required final String content,
   }) = _$ReflectionImpl;
 
   factory _Reflection.fromJson(Map<String, dynamic> json) =
       _$ReflectionImpl.fromJson;
 
   @override
+  String get id;
+  @override
   String get title;
   @override
   List<String> get items;
+  @override
+  String get content;
 
   /// Create a copy of Reflection
   /// with the given fields replaced by the non-null parameter values.
