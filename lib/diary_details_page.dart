@@ -61,121 +61,140 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.diaryData.title,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(Icons.access_time, size: 16, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(
-                    _getFormattedTime(),
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(
-                    widget.diaryData.location.name,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                DataManager().currentJournalEntry.formattedDate,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                widget.diaryData.content,
-                style: const TextStyle(fontSize: 16, height: 1.5),
-              ),
-              const SizedBox(height: 16),
-              const Divider(color: Colors.grey, thickness: 1.0, height: 16.0),
-              const SizedBox(height: 16),
-              Text(
-                'My Notes',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 8),
-              // 使用 ValueListenableBuilder 监听 diaryEntryyNotesNotifier 的变化
-              ValueListenableBuilder(
-                valueListenable: DataManager().diaryEntryyNotesNotifier,
-                builder: (context, List<DiaryEntryyNote> notes, _) {
-                  // 查找当前日记条目的笔记内容
-                  final note = notes.firstWhere(
-                    (element) => element.id == widget.diaryData.id,
-                    orElse: () => DiaryEntryyNote(id: '', content: ''),
-                  );
-                  return Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.shade50,
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Text(
-                      note.content.isNotEmpty ? note.content : '',
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.diaryData.title,
                       style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: Align(
-        alignment: Alignment.bottomCenter,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) =>
-                          GuidedReflectionPage(diaryData: widget.diaryData),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _getFormattedTime(),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        const Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.diaryData.location.name,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      DataManager().currentJournalEntry.formattedDate,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      widget.diaryData.content,
+                      style: const TextStyle(fontSize: 16, height: 1.5),
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1.0,
+                      height: 16.0,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'My Notes',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ValueListenableBuilder(
+                      valueListenable: DataManager().diaryEntryyNotesNotifier,
+                      builder: (context, List<DiaryEntryyNote> notes, _) {
+                        final note = notes.firstWhere(
+                          (element) => element.id == widget.diaryData.id,
+                          orElse: () => DiaryEntryyNote(id: '', content: ''),
+                        );
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.shade50,
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Text(
+                            note.content.isNotEmpty ? note.content : '',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purple,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
               ),
             ),
-            child: const Text(
-              'Edit notes',
-              style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(bottom: 32.0),
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) =>
+                        GuidedReflectionPage(diaryData: widget.diaryData),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
             ),
+          ),
+          child: const Text(
+            'Edit notes',
+            style: TextStyle(fontSize: 16, color: Colors.white),
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
