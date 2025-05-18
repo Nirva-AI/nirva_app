@@ -19,16 +19,14 @@ class DataManager {
   List<Task> tasks = [];
 
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
-  List<String> favoriteDiaries = [];
-  ValueNotifier<List<String>> favoriteNotifier = ValueNotifier([]);
+  ValueNotifier<List<String>> diaryFavoritesNotifier = ValueNotifier([]);
 
   // 清空数据
   void clear() {
     userName = '';
     journalEntries = [];
     tasks = [];
-    favoriteDiaries = [];
-    favoriteNotifier = ValueNotifier([]);
+    diaryFavoritesNotifier = ValueNotifier([]);
   }
 
   //
@@ -63,16 +61,18 @@ class DataManager {
 
   // 切换日记条目的收藏状态
   void toggleFavoriteDiaryEntry(DiaryEntry diaryEntry) {
-    if (favoriteDiaries.contains(diaryEntry.id)) {
-      favoriteDiaries.remove(diaryEntry.id);
+    if (diaryFavoritesNotifier.value.contains(diaryEntry.id)) {
+      diaryFavoritesNotifier.value.remove(diaryEntry.id);
     } else {
-      favoriteDiaries.add(diaryEntry.id);
+      diaryFavoritesNotifier.value.add(diaryEntry.id);
     }
-    favoriteNotifier.value = List.from(favoriteDiaries); // 通知监听者
+    diaryFavoritesNotifier.value = List.from(
+      diaryFavoritesNotifier.value,
+    ); // 通知监听者
   }
 
   // 检查日记条目是否被标记为最爱
   bool isFavoriteDiaryEntry(DiaryEntry diaryEntry) {
-    return favoriteDiaries.contains(diaryEntry.id);
+    return diaryFavoritesNotifier.value.contains(diaryEntry.id);
   }
 }

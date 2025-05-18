@@ -26,10 +26,7 @@ class FillTestData {
       DiaryEntry randomDiaryEntry =
           diaryEntries[random.nextInt(diaryEntries.length)];
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
-      DataManager().favoriteDiaries.add(randomDiaryEntry.id);
-      DataManager().favoriteNotifier.value = List.from(
-        DataManager().favoriteDiaries,
-      );
+      DataManager().diaryFavoritesNotifier.value = [randomDiaryEntry.id];
       debugPrint('已添加到最爱: ${randomDiaryEntry.id}');
     } else {
       debugPrint('diaryEntries 列表为空');
