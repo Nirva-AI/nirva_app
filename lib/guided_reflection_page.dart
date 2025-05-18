@@ -65,7 +65,7 @@ class GuidedReflectionPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const Spacer(), // 添加 Spacer 将按钮向上推
             // 保存按钮
             Center(
               child: ElevatedButton(
@@ -81,12 +81,18 @@ class GuidedReflectionPage extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple, // 按钮背景颜色
+                  minimumSize: const Size(
+                    double.infinity,
+                    42,
+                  ), // 设置按钮宽度为最大，固定高度
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 12,
+                    horizontal: 32, // 与 'Edit notes' 按钮一致
+                    vertical: 12, // 与 'Edit notes' 按钮一致
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(
+                      24,
+                    ), // 与 'Edit notes' 按钮一致
                   ),
                 ),
                 child: const Text(
@@ -95,6 +101,7 @@ class GuidedReflectionPage extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 36), // 调整按钮与底部的间距
           ],
         ),
       ),
