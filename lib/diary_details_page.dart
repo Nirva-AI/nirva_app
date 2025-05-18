@@ -36,10 +36,6 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
     return '$formattedStartTime - $formattedEndTime';
   }
 
-  String _getNotesContent() {
-    return "Today I spent a wonderful morning at the park with Ashley, whom I met at the intensive outpatient program (IOP). I explained my recording experiment project to her, discussing how it helps with objective memory review. We had an in-depth conversation about dating experiences and my recent frustrations with being 'ghosted' after what seemed like promising connections. We reflected on solitude and socializing. I realized that on weekdays, I barely interact with people, and long periods of solitude (like the past five days) don't feel very healthy, though I do enjoy alone time. When I have free time, I tend to become lazy, sleep too much, and feel like I'm wasting time. Ashley shared her struggles with similar feelings. I also mentioned visiting a friend who just had a baby, finding the baby cute, and feeling somewhat envious of her stable life situation. The most relaxing part was when Ashley demonstrated a Nepalese singing bowl and showed her crystal collection. She explained the meanings of various crystals (moonstone, carnelian, amethyst, etc.) and did a tarot reading for me about my 'fertility journey.' We also had an in-depth discussion about my fertility plans - waiting until 40 to decide about having children, the financial costs, and my mother's supportive attitude.";
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,18 +114,32 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Text(
-                  _getNotesContent(),
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
-                ),
+              // 使用 ValueListenableBuilder 监听 diaryEntryyNotesNotifier 的变化
+              ValueListenableBuilder(
+                valueListenable: DataManager().diaryEntryyNotesNotifier,
+                builder: (context, List<DiaryEntryyNote> notes, _) {
+                  // 查找当前日记条目的笔记内容
+                  final note = notes.firstWhere(
+                    (element) => element.id == widget.diaryData.id,
+                    orElse: () => DiaryEntryyNote(id: '', content: ''),
+                  );
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade50,
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Text(
+                      note.content.isNotEmpty ? note.content : '',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 16),
             ],
@@ -145,7 +155,9 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const GuidedReflectionPage(),
+                  builder:
+                      (context) =>
+                          GuidedReflectionPage(diaryData: widget.diaryData),
                 ),
               );
             },
