@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
-import 'package:nirva_app/chat_manager.dart';
+//import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/service_manager.dart';
 import 'package:nirva_app/data_manager.dart';
 
@@ -19,7 +19,7 @@ class TestChatApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatMessages = ChatManager().getMessages();
+    //final chatMessages = ChatManager().getChatMessageNotifier();
     final textController = TextEditingController();
 
     return MaterialApp(
@@ -41,7 +41,7 @@ class TestChatApp extends StatelessWidget {
             // } else {
             // API 初始化成功，显示 AssistantChatPage
             return AssistantChatPage(
-              chatMessages: chatMessages,
+              //chatMessages: chatMessages,
               textController: textController,
             );
             //}
