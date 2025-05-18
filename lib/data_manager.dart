@@ -9,8 +9,8 @@ class DataManager {
   factory DataManager() => _instance;
   DataManager._internal();
 
-  // 用户名
-  String userName = '';
+  // 用户信息
+  User user = User(name: '');
 
   // 当前的日记和仪表板数据
   List<PersonalJournal> journalEntries = [];
@@ -28,7 +28,7 @@ class DataManager {
 
   // 清空数据
   void clear() {
-    userName = '';
+    user = User(name: '');
     journalEntries = [];
     tasks = [];
     diaryFavoritesNotifier = ValueNotifier([]);
@@ -55,6 +55,7 @@ class DataManager {
     }
   }
 
+  // 切换任务的完成状态
   void toggleTaskCompletion(Task task) {
     // 切换任务的完成状态
     final int index = tasks.indexOf(task);
@@ -81,7 +82,7 @@ class DataManager {
     return diaryFavoritesNotifier.value.contains(diaryEntry.id);
   }
 
-  //
+  // 修改日记条目笔记
   void modifyDiaryEntryNote(DiaryEntry diaryEntry, String content) {
     // 保存日记条目笔记
     final note = DiaryEntryyNote(id: diaryEntry.id, content: content);
@@ -101,6 +102,7 @@ class DataManager {
     diaryEntryyNotesNotifier.value = List.from(diaryEntryyNotesNotifier.value);
   }
 
+  // 获取日记条目笔记
   String getDiaryEntryNote(DiaryEntry diaryEntry) {
     // 获取日记条目笔记
     final note = diaryEntryyNotesNotifier.value.firstWhere(

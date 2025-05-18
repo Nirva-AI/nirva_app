@@ -14,7 +14,7 @@ class TestChatApp extends StatelessWidget {
     if (!isApiConfigurationSuccessful) {
       return false;
     }
-    return await ServiceManager().login(DataManager().userName);
+    return await ServiceManager().login(DataManager().user.name);
   });
 
   @override
