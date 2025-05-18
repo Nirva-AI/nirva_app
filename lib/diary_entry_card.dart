@@ -18,7 +18,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
   @override
   void initState() {
     super.initState();
-    favoriteNotifier = DataManager().favoriteNotifier;
+    favoriteNotifier = DataManager().diaryFavoritesNotifier;
     favoriteNotifier.addListener(_onFavoriteChanged);
   }
 
