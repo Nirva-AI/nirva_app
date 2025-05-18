@@ -12,6 +12,12 @@ _$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
     <String, dynamic>{'text': instance.text, 'mood': instance.mood};
 
+_$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) =>
+    _$UserImpl(name: json['name'] as String);
+
+Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
+    <String, dynamic>{'name': instance.name};
+
 _$EventTagImpl _$$EventTagImplFromJson(Map<String, dynamic> json) =>
     _$EventTagImpl(name: json['name'] as String);
 

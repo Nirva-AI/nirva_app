@@ -52,7 +52,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     ChatManager().addUserMessage(message);
 
     final result = await ServiceManager().chatAction(
-      DataManager().userName,
+      DataManager().user.name,
       message,
     );
 
