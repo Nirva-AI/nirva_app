@@ -3,10 +3,17 @@ import 'package:nirva_app/date_and_summary.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
 
-class ReflectionCard extends StatelessWidget {
-  final Reflection data;
+class ReflectionCard extends StatefulWidget {
+  final Reflection reflection;
 
-  const ReflectionCard({super.key, required this.data});
+  const ReflectionCard({super.key, required this.reflection});
+
+  @override
+  State<ReflectionCard> createState() => _ReflectionCardState();
+}
+
+class _ReflectionCardState extends State<ReflectionCard> {
+  bool _isExpanded = false; // 控制卡片是否展开
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +26,45 @@ class ReflectionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              data.title,
+              widget.reflection.title,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            ...data.items.map(
+            ...widget.reflection.items.map(
               (item) => Row(
                 children: [
                   const Icon(Icons.circle, size: 8, color: Colors.grey),
                   const SizedBox(width: 8),
                   Expanded(child: Text(item)),
                 ],
+              ),
+            ),
+            if (_isExpanded) ...[
+              const SizedBox(height: 16),
+              Text(
+                widget.reflection.content,
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+            ],
+            const SizedBox(height: 16),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    _isExpanded = !_isExpanded; // 切换展开/收起状态
+                  });
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24.0),
+                  ),
+                  backgroundColor: Colors.grey.shade200,
+                ),
+                child: Text(
+                  _isExpanded ? 'Less' : 'Read More',
+                  style: const TextStyle(color: Colors.black),
+                ),
               ),
             ),
           ],
@@ -40,9 +75,9 @@ class ReflectionCard extends StatelessWidget {
 }
 
 class GoalReflectionCard extends StatelessWidget {
-  final Reflection data;
+  final Reflection reflection;
 
-  const GoalReflectionCard({super.key, required this.data});
+  const GoalReflectionCard({super.key, required this.reflection});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +94,7 @@ class GoalReflectionCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    data.title,
+                    reflection.title,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -69,13 +104,13 @@ class GoalReflectionCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.checklist, color: Colors.purple),
                   onPressed: () {
-                    _showTopOverlay(context, data);
+                    _showTopOverlay(context, reflection);
                   },
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            ...data.items.map(
+            ...reflection.items.map(
               (item) => Row(
                 children: [
                   const Icon(Icons.circle, size: 8, color: Colors.grey),
@@ -178,14 +213,14 @@ class ReflectionsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '🌟 Personal Reflections',
+          'Personal Reflections',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         ...personalReflections.map(
           (reflection) => Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
-            child: ReflectionCard(data: reflection),
+            child: ReflectionCard(reflection: reflection),
           ),
         ),
       ],
@@ -199,14 +234,14 @@ class ReflectionsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '📖 Detailed Insights',
+          'Detailed Insights',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         ...detailedInsights.map(
           (insight) => Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
-            child: ReflectionCard(data: insight),
+            child: ReflectionCard(reflection: insight),
           ),
         ),
       ],
@@ -220,14 +255,14 @@ class ReflectionsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '🎯 I can consider pursuing the following goals:',
+          'I can consider pursuing the following goals:',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         ...goals.map(
           (goal) => Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
-            child: GoalReflectionCard(data: goal),
+            child: GoalReflectionCard(reflection: goal),
           ),
         ),
       ],
