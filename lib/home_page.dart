@@ -4,7 +4,7 @@ import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
-import 'package:nirva_app/chat_manager.dart';
+//import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/me_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
         builder:
             (context) => AssistantChatPage(
-              chatMessages: ChatManager().getMessages(),
+              //chatMessages: ChatManager().getChatMessageNotifier(),
               textController: _textController,
             ),
       ),

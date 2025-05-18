@@ -5,12 +5,12 @@ import 'package:nirva_app/service_manager.dart';
 import 'package:nirva_app/data_manager.dart';
 
 class AssistantChatPage extends StatefulWidget {
-  final ValueNotifier<List<BaseMessage>> chatMessages;
+  //final ValueNotifier<List<BaseMessage>> chatMessages;
   final TextEditingController textController;
 
   const AssistantChatPage({
     super.key,
-    required this.chatMessages,
+    //required this.chatMessages,
     required this.textController,
   });
 
@@ -86,7 +86,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
         children: [
           Expanded(
             child: ValueListenableBuilder<List<BaseMessage>>(
-              valueListenable: widget.chatMessages,
+              valueListenable: ChatManager().getChatMessageNotifier(),
               builder: (context, chatMessagesValue, _) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();

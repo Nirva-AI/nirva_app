@@ -12,11 +12,13 @@ class ChatManager {
   factory ChatManager() => _instance;
 
   // 存储对话记录
-  final ValueNotifier<List<BaseMessage>> _chatMessages = ValueNotifier([]);
+  final ValueNotifier<List<BaseMessage>> _chatMessageNotifier = ValueNotifier(
+    [],
+  );
 
   // 添加消息
   void _addMessage(BaseMessage message) {
-    _chatMessages.value = [..._chatMessages.value, message];
+    _chatMessageNotifier.value = [..._chatMessageNotifier.value, message];
   }
 
   // 添加AI消息
@@ -30,15 +32,15 @@ class ChatManager {
   }
 
   // 获取所有消息
-  ValueNotifier<List<BaseMessage>> getMessages() {
-    return _chatMessages;
+  ValueNotifier<List<BaseMessage>> getChatMessageNotifier() {
+    return _chatMessageNotifier;
   }
 
   // 清空消息
-  clear() {
-    // 清空消息
-    _chatMessages.value = [];
-  }
+  // clear() {
+  //   // 清空消息
+  //   _chatMessageNotifier.value = [];
+  // }
 
   // 清空消息
   // fillTestData() {
