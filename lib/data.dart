@@ -51,6 +51,17 @@ class DiaryEntry with _$DiaryEntry {
 }
 
 @freezed
+class DiaryEntryyNote with _$DiaryEntryyNote {
+  const factory DiaryEntryyNote({required String id, required String content}) =
+      _DiaryEntryyNote;
+
+  factory DiaryEntryyNote.fromJson(Map<String, dynamic> json) =>
+      _$DiaryEntryyNoteFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _DiaryEntryyNote).toJson();
+}
+
+@freezed
 class Reflection with _$Reflection {
   const factory Reflection({
     required String title,

@@ -839,6 +839,181 @@ abstract class _DiaryEntry implements DiaryEntry {
       throw _privateConstructorUsedError;
 }
 
+DiaryEntryyNote _$DiaryEntryyNoteFromJson(Map<String, dynamic> json) {
+  return _DiaryEntryyNote.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DiaryEntryyNote {
+  String get id => throw _privateConstructorUsedError;
+  String get content => throw _privateConstructorUsedError;
+
+  /// Serializes this DiaryEntryyNote to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DiaryEntryyNote
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DiaryEntryyNoteCopyWith<DiaryEntryyNote> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DiaryEntryyNoteCopyWith<$Res> {
+  factory $DiaryEntryyNoteCopyWith(
+    DiaryEntryyNote value,
+    $Res Function(DiaryEntryyNote) then,
+  ) = _$DiaryEntryyNoteCopyWithImpl<$Res, DiaryEntryyNote>;
+  @useResult
+  $Res call({String id, String content});
+}
+
+/// @nodoc
+class _$DiaryEntryyNoteCopyWithImpl<$Res, $Val extends DiaryEntryyNote>
+    implements $DiaryEntryyNoteCopyWith<$Res> {
+  _$DiaryEntryyNoteCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DiaryEntryyNote
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? id = null, Object? content = null}) {
+    return _then(
+      _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
+            content:
+                null == content
+                    ? _value.content
+                    : content // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DiaryEntryyNoteImplCopyWith<$Res>
+    implements $DiaryEntryyNoteCopyWith<$Res> {
+  factory _$$DiaryEntryyNoteImplCopyWith(
+    _$DiaryEntryyNoteImpl value,
+    $Res Function(_$DiaryEntryyNoteImpl) then,
+  ) = __$$DiaryEntryyNoteImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String id, String content});
+}
+
+/// @nodoc
+class __$$DiaryEntryyNoteImplCopyWithImpl<$Res>
+    extends _$DiaryEntryyNoteCopyWithImpl<$Res, _$DiaryEntryyNoteImpl>
+    implements _$$DiaryEntryyNoteImplCopyWith<$Res> {
+  __$$DiaryEntryyNoteImplCopyWithImpl(
+    _$DiaryEntryyNoteImpl _value,
+    $Res Function(_$DiaryEntryyNoteImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DiaryEntryyNote
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? id = null, Object? content = null}) {
+    return _then(
+      _$DiaryEntryyNoteImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
+        content:
+            null == content
+                ? _value.content
+                : content // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DiaryEntryyNoteImpl implements _DiaryEntryyNote {
+  const _$DiaryEntryyNoteImpl({required this.id, required this.content});
+
+  factory _$DiaryEntryyNoteImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DiaryEntryyNoteImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String content;
+
+  @override
+  String toString() {
+    return 'DiaryEntryyNote(id: $id, content: $content)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DiaryEntryyNoteImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.content, content) || other.content == content));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, content);
+
+  /// Create a copy of DiaryEntryyNote
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DiaryEntryyNoteImplCopyWith<_$DiaryEntryyNoteImpl> get copyWith =>
+      __$$DiaryEntryyNoteImplCopyWithImpl<_$DiaryEntryyNoteImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DiaryEntryyNoteImplToJson(this);
+  }
+}
+
+abstract class _DiaryEntryyNote implements DiaryEntryyNote {
+  const factory _DiaryEntryyNote({
+    required final String id,
+    required final String content,
+  }) = _$DiaryEntryyNoteImpl;
+
+  factory _DiaryEntryyNote.fromJson(Map<String, dynamic> json) =
+      _$DiaryEntryyNoteImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get content;
+
+  /// Create a copy of DiaryEntryyNote
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DiaryEntryyNoteImplCopyWith<_$DiaryEntryyNoteImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 Reflection _$ReflectionFromJson(Map<String, dynamic> json) {
   return _Reflection.fromJson(json);
 }

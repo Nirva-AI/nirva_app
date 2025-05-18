@@ -53,6 +53,17 @@ Map<String, dynamic> _$$DiaryEntryImplToJson(_$DiaryEntryImpl instance) =>
       'location': instance.location,
     };
 
+_$DiaryEntryyNoteImpl _$$DiaryEntryyNoteImplFromJson(
+  Map<String, dynamic> json,
+) => _$DiaryEntryyNoteImpl(
+  id: json['id'] as String,
+  content: json['content'] as String,
+);
+
+Map<String, dynamic> _$$DiaryEntryyNoteImplToJson(
+  _$DiaryEntryyNoteImpl instance,
+) => <String, dynamic>{'id': instance.id, 'content': instance.content};
+
 _$ReflectionImpl _$$ReflectionImplFromJson(Map<String, dynamic> json) =>
     _$ReflectionImpl(
       title: json['title'] as String,

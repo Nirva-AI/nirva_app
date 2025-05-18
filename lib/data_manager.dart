@@ -21,6 +21,11 @@ class DataManager {
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
   ValueNotifier<List<String>> diaryFavoritesNotifier = ValueNotifier([]);
 
+  // 日记条目笔记
+  ValueNotifier<List<DiaryEntryyNote>> diaryEntryyNotesNotifier = ValueNotifier(
+    [],
+  ); // 用于存储日记条目笔记的通知器
+
   // 清空数据
   void clear() {
     userName = '';
@@ -74,5 +79,34 @@ class DataManager {
   // 检查日记条目是否被标记为最爱
   bool isFavoriteDiaryEntry(DiaryEntry diaryEntry) {
     return diaryFavoritesNotifier.value.contains(diaryEntry.id);
+  }
+
+  //
+  void modifyDiaryEntryNote(DiaryEntry diaryEntry, String content) {
+    // 保存日记条目笔记
+    final note = DiaryEntryyNote(id: diaryEntry.id, content: content);
+    if (diaryEntryyNotesNotifier.value.any(
+      (element) => element.id == diaryEntry.id,
+    )) {
+      // 如果已经存在，则更新
+      final index = diaryEntryyNotesNotifier.value.indexWhere(
+        (element) => element.id == diaryEntry.id,
+      );
+      diaryEntryyNotesNotifier.value[index] = note;
+    } else {
+      // 如果不存在，则添加
+      diaryEntryyNotesNotifier.value.add(note);
+    }
+    // 通知监听者
+    diaryEntryyNotesNotifier.value = List.from(diaryEntryyNotesNotifier.value);
+  }
+
+  String getDiaryEntryNote(DiaryEntry diaryEntry) {
+    // 获取日记条目笔记
+    final note = diaryEntryyNotesNotifier.value.firstWhere(
+      (element) => element.id == diaryEntry.id,
+      orElse: () => DiaryEntryyNote(id: '', content: ''),
+    );
+    return note.content;
   }
 }

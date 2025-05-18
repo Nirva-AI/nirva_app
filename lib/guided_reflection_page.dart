@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/data.dart';
+import 'package:nirva_app/data_manager.dart'; // 确保导入 DataManager
 
 class GuidedReflectionPage extends StatelessWidget {
-  const GuidedReflectionPage({super.key});
+  final DiaryEntry diaryData; // 新增参数
+  final TextEditingController _textController =
+      TextEditingController(); // 添加控制器
+
+  GuidedReflectionPage({super.key, required this.diaryData}); // 修改构造函数
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +48,7 @@ class GuidedReflectionPage extends StatelessWidget {
             // 输入框
             Expanded(
               child: TextField(
+                controller: _textController, // 绑定控制器
                 maxLines: null, // 支持多行输入
                 decoration: InputDecoration(
                   hintText: 'Write your reflection...',
@@ -64,7 +71,12 @@ class GuidedReflectionPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   // 保存按钮点击事件
-                  debugPrint('Save button pressed');
+                  final content = _textController.text; // 获取输入框内容
+                  DataManager().modifyDiaryEntryNote(
+                    diaryData,
+                    content,
+                  ); // 保存到 DataManager
+                  debugPrint('Save button pressed: $content'); // 打印保存内容
                   Navigator.pop(context); // 返回到 DiaryDetailsPage
                 },
                 style: ElevatedButton.styleFrom(
