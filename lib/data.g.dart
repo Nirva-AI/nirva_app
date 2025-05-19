@@ -106,17 +106,35 @@ Map<String, dynamic> _$$StressLevelImplToJson(_$StressLevelImpl instance) =>
 
 _$HighlightImpl _$$HighlightImplFromJson(Map<String, dynamic> json) =>
     _$HighlightImpl(
-      title: json['title'] as String,
+      category: json['category'] as String,
       content: json['content'] as String,
       color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
     );
 
 Map<String, dynamic> _$$HighlightImplToJson(_$HighlightImpl instance) =>
     <String, dynamic>{
-      'title': instance.title,
+      'category': instance.category,
       'content': instance.content,
       'color': instance.color,
     };
+
+_$HighlightGroupImpl _$$HighlightGroupImplFromJson(Map<String, dynamic> json) =>
+    _$HighlightGroupImpl(
+      beginTime: DateTime.parse(json['beginTime'] as String),
+      endTime: DateTime.parse(json['endTime'] as String),
+      highlights:
+          (json['highlights'] as List<dynamic>)
+              .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
+              .toList(),
+    );
+
+Map<String, dynamic> _$$HighlightGroupImplToJson(
+  _$HighlightGroupImpl instance,
+) => <String, dynamic>{
+  'beginTime': instance.beginTime.toIso8601String(),
+  'endTime': instance.endTime.toIso8601String(),
+  'highlights': instance.highlights,
+};
 
 _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
   tag: json['tag'] as String,

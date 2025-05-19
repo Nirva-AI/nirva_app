@@ -110,7 +110,7 @@ class StressLevel with _$StressLevel {
 @freezed
 class Highlight with _$Highlight {
   const factory Highlight({
-    required String title,
+    required String category,
     required String content,
     @Default(0xFF00FF00) int color, // 默认颜色为绿色
   }) = _Highlight;
@@ -119,6 +119,20 @@ class Highlight with _$Highlight {
       _$HighlightFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _Highlight).toJson();
+}
+
+@freezed
+class HighlightGroup with _$HighlightGroup {
+  const factory HighlightGroup({
+    required DateTime beginTime,
+    required DateTime endTime,
+    required List<Highlight> highlights,
+  }) = _HighlightGroup;
+
+  factory HighlightGroup.fromJson(Map<String, dynamic> json) =>
+      _$HighlightGroupFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _HighlightGroup).toJson();
 }
 
 @freezed
