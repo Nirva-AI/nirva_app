@@ -31,7 +31,7 @@ class TodayHighlightsDetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    highlight.title.toUpperCase(),
+                    highlight.category.toUpperCase(),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,

@@ -25,7 +25,7 @@ class TodayHighlightsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            highlight.title.toUpperCase(), // 标题大写
+            highlight.category.toUpperCase(), // 标题大写
             style: const TextStyle(
               color: Colors.black54, // 标题颜色较浅
               fontWeight: FontWeight.bold,

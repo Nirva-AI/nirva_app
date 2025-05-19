@@ -374,15 +374,15 @@ class FillTestData {
 
     final List<Highlight> highlights = [
       Highlight(
-        title: 'ACHIEVEMENT',
+        category: 'ACHIEVEMENT',
         content: 'Completed your morning meditation streak - 7 days!',
       ),
       Highlight(
-        title: 'INSIGHT',
+        category: 'INSIGHT',
         content: 'You\'re most productive between 9-11 AM.',
       ),
       Highlight(
-        title: 'SOCIAL',
+        category: 'SOCIAL',
         content: 'You\'ve connected with 3 friends this week.',
       ),
     ];
