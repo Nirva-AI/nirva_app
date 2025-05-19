@@ -26,18 +26,17 @@ class TestGraphView extends StatelessWidget {
     final Node node1 = Node.Id('节点1');
     final Node node2 = Node.Id('节点2');
     final Node node3 = Node.Id('节点3');
+    final Node node4 = Node.Id('节点4');
 
     // 添加边
-    graph.addEdge(node1, node2);
-    graph.addEdge(node1, node3);
+    graph.addEdge(node1, node2); // 节点1 -> 节点2
+    graph.addEdge(node1, node3); // 节点1 -> 节点3
+    graph.addEdge(node1, node4); // 节点1 -> 节点4
+    graph.addEdge(node2, node3); // 节点2 -> 节点3
 
-    // 配置布局算法
-    final BuchheimWalkerConfiguration builder =
-        BuchheimWalkerConfiguration()
-          ..siblingSeparation = 100
-          ..levelSeparation = 150
-          ..subtreeSeparation = 150
-          ..orientation = BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM;
+    // 使用 FruchtermanReingoldAlgorithm 布局算法
+    final FruchtermanReingoldAlgorithm algorithm =
+        FruchtermanReingoldAlgorithm();
 
     return Scaffold(
       appBar: AppBar(title: const Text('测试图形视图')),
@@ -49,17 +48,18 @@ class TestGraphView extends StatelessWidget {
           maxScale: 5.0,
           child: GraphView(
             graph: graph,
-            algorithm: BuchheimWalkerAlgorithm(
-              builder,
-              TreeEdgeRenderer(builder),
-            ),
+            algorithm: algorithm,
             builder: (Node node) {
-              // 自定义节点外观，添加空值检查
+              // 自定义节点外观
               final nodeValue = node.key?.value?.toString() ?? '未知节点';
               return Card(
+                color: Colors.deepPurple,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(nodeValue),
+                  child: Text(
+                    nodeValue,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               );
             },
