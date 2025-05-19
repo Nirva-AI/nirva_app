@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/stress_level_card.dart';
 import 'package:nirva_app/energy_level_chart.dart';
-import 'package:nirva_app/mood_tracking.dart';
+import 'package:nirva_app/mood_tracking_chart.dart';
 import 'package:nirva_app/social_map_view.dart';
 import 'package:nirva_app/awake_time_allocation_chart.dart';
 import 'package:nirva_app/today_high_lights.dart';
@@ -56,7 +56,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildMoodTracking() {
-    return const MoodTracking();
+    return const MoodTrackingChart();
   }
 
   Widget _buildAwakeTimeAllocation() {
