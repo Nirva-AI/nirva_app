@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
-import 'package:nirva_app/score_card.dart';
+import 'package:nirva_app/stress_level_card.dart';
 import 'package:nirva_app/energy_level_chart.dart';
 import 'package:nirva_app/mood_tracking.dart';
 import 'package:nirva_app/social_map_view.dart';
 import 'package:nirva_app/awake_time_allocation_chart.dart';
 import 'package:nirva_app/today_high_lights.dart';
+import 'package:nirva_app/mood_score_card.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -19,7 +20,7 @@ class DashboardPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildScoreCards(),
+              _buildMoodScoreCardAndStressLevelCard(),
               const SizedBox(height: 16),
               _buildEnergyLevelChart(),
               const SizedBox(height: 16),
@@ -37,14 +38,14 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildScoreCards() {
+  Widget _buildMoodScoreCardAndStressLevelCard() {
     final currentDiary = DataManager().currentJournalEntry;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        ScoreCard(data: currentDiary.moodScore),
-        ScoreCard(data: currentDiary.stressLevel),
+        MoodScoreCard(data: currentDiary.moodScore),
+        StressLevelCard(data: currentDiary.stressLevel),
       ],
     );
   }

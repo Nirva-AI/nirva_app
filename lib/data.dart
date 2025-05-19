@@ -86,16 +86,25 @@ class Reflection with _$Reflection {
 }
 
 @freezed
-class Score with _$Score {
-  const factory Score({
-    required String title,
-    required double value,
-    required double change,
-  }) = _Score;
+class MoodScore with _$MoodScore {
+  const factory MoodScore({required double value, required double change}) =
+      _MoodScore;
 
-  factory Score.fromJson(Map<String, dynamic> json) => _$ScoreFromJson(json);
+  factory MoodScore.fromJson(Map<String, dynamic> json) =>
+      _$MoodScoreFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _Score).toJson();
+  Map<String, dynamic> toJson() => (this as _MoodScore).toJson();
+}
+
+@freezed
+class StressLevel with _$StressLevel {
+  const factory StressLevel({required double value, required double change}) =
+      _StressLevel;
+
+  factory StressLevel.fromJson(Map<String, dynamic> json) =>
+      _$StressLevelFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _StressLevel).toJson();
 }
 
 @freezed
@@ -243,8 +252,8 @@ class PersonalJournal with _$PersonalJournal {
     required List<Reflection> selfReflections,
     required List<Reflection> detailedInsights,
     required List<Reflection> goals,
-    required Score moodScore,
-    required Score stressLevel,
+    required MoodScore moodScore,
+    required StressLevel stressLevel,
     required List<Highlight> highlights,
     required List<Energy> energyRecords,
     required List<Mood> moods,
@@ -266,8 +275,8 @@ class PersonalJournal with _$PersonalJournal {
       selfReflections: [],
       detailedInsights: [],
       goals: [],
-      moodScore: Score(title: 'Mood Score', value: 0.0, change: 0.0),
-      stressLevel: Score(title: 'Stress Level', value: 0.0, change: -1.3),
+      moodScore: MoodScore(value: 0.0, change: 0.0),
+      stressLevel: StressLevel(value: 0.0, change: -1.3),
       highlights: [],
       energyRecords: [],
       moods: [],
