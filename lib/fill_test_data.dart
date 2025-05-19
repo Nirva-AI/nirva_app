@@ -10,7 +10,7 @@ class FillTestData {
   static void fillTestData() {
     DataManager().clear();
     // 添加测试数据
-    DataManager().user = User(name: 'Wei');
+    DataManager().user = User(name: 'Weiwei');
     DataManager().tasks = FillTestData.createTestTasks();
     DataManager().journalEntries.add(FillTestData.createTestPersonalJournal());
     initializeTestFavorites(DataManager().currentJournalEntry);
