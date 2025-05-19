@@ -41,28 +41,39 @@ class TestGraphView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('测试图形视图')),
       body: Center(
-        child: InteractiveViewer(
-          constrained: false,
-          boundaryMargin: const EdgeInsets.all(8),
-          minScale: 0.01,
-          maxScale: 5.0,
-          child: GraphView(
-            graph: graph,
-            algorithm: algorithm,
-            builder: (Node node) {
-              // 自定义节点外观
-              final nodeValue = node.key?.value?.toString() ?? '未知节点';
-              return Card(
-                color: Colors.deepPurple,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    nodeValue,
-                    style: const TextStyle(color: Colors.white),
-                  ),
+        child: SizedBox(
+          height: 600, // 可调整的高度
+          child: Card(
+            color: Colors.grey[200], // 设置背景颜色
+            elevation: 4, // 卡片阴影
+            margin: const EdgeInsets.all(16), // 外边距
+            child: Padding(
+              padding: const EdgeInsets.all(16), // 内边距
+              child: InteractiveViewer(
+                constrained: false,
+                boundaryMargin: const EdgeInsets.all(8),
+                minScale: 0.01,
+                maxScale: 5.0,
+                child: GraphView(
+                  graph: graph,
+                  algorithm: algorithm,
+                  builder: (Node node) {
+                    // 自定义节点外观
+                    final nodeValue = node.key?.value?.toString() ?? '未知节点';
+                    return Card(
+                      color: Colors.deepPurple,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          nodeValue,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       ),
