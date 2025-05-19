@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/user_profile_page.dart';
+import 'package:nirva_app/update_data_page.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -35,6 +37,12 @@ class _MePageState extends State<MePage> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     debugPrint('User profile tapped');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const UserProfilePage(),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -48,7 +56,11 @@ class _MePageState extends State<MePage> {
                 ),
                 elevation: 2,
                 child: ListTile(
-                  leading: const Icon(Icons.water_drop, size: 40, color: Colors.amber),
+                  leading: const Icon(
+                    Icons.water_drop,
+                    size: 40,
+                    color: Colors.amber,
+                  ),
                   title: const Text(
                     'Nirva Necklace',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -63,7 +75,10 @@ class _MePageState extends State<MePage> {
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Text('88%', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        '88%',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       SizedBox(height: 4),
                       Icon(Icons.arrow_forward_ios, size: 16),
                     ],
@@ -117,6 +132,12 @@ class _MePageState extends State<MePage> {
                       subtitle: 'Upload your recorded audio',
                       onTap: () {
                         debugPrint('Update Data tapped');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UpdateDataPage(),
+                          ),
+                        );
                       },
                     ),
                     const Divider(height: 1),
