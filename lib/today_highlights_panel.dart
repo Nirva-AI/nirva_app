@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/today_highlights_details_page.dart'; // 导入新页面
+import 'package:nirva_app/archived_highlights_page.dart'; // 导入新页面
 
 class TodayHighlightsCard extends StatelessWidget {
   final Highlight highlight;
@@ -95,10 +95,7 @@ class TodayHighlightsPanel extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => TodayHighlightsDetailsPage(
-                            //highlights: highlights,
-                          ),
+                      builder: (context) => ArchivedHighlightsPage(),
                     ),
                   );
                 },
