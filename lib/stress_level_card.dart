@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/stress_details_page.dart'; // 导入新页面
 
 class StressLevelCard extends StatelessWidget {
   final StressLevel data;
@@ -11,7 +12,7 @@ class StressLevelCard extends StatelessWidget {
     return change >= 0 ? Colors.green : Colors.red;
   }
 
-  // 写一个函数 根据change 返回一个string. 可以使用.toStringAsFixed(1),的方法，注意如果是正数要加上+号
+  // 根据变化值返回格式化字符串
   String _formatChange(double change) {
     return change >= 0
         ? '+${change.toStringAsFixed(1)}'
@@ -27,33 +28,52 @@ class StressLevelCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Text('Stress Level', style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 8),
-              Text(
-                data.value.toStringAsFixed(1),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    changeColor == Colors.green
-                        ? Icons.arrow_upward
-                        : Icons.arrow_downward,
-                    color: changeColor,
-                    size: 16,
-                  ),
+                  Text('Stress Level', style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 8),
                   Text(
-                    _formatChange(data.change),
-                    style: TextStyle(color: changeColor),
+                    data.value.toStringAsFixed(1),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        changeColor == Colors.green
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                        color: changeColor,
+                        size: 16,
+                      ),
+                      Text(
+                        _formatChange(data.change),
+                        style: TextStyle(color: changeColor),
+                      ),
+                    ],
                   ),
                 ],
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const StressDetailsPage(),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/mood_details_page.dart';
 
 class MoodScoreCard extends StatelessWidget {
   final MoodScore data;
@@ -27,33 +28,52 @@ class MoodScoreCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Text('Mood Score', style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 8),
-              Text(
-                data.value.toStringAsFixed(1),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    changeColor == Colors.green
-                        ? Icons.arrow_upward
-                        : Icons.arrow_downward,
-                    color: changeColor,
-                    size: 16,
-                  ),
+                  Text('Mood Score', style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 8),
                   Text(
-                    _formatChange(data.change),
-                    style: TextStyle(color: changeColor),
+                    data.value.toStringAsFixed(1),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        changeColor == Colors.green
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                        color: changeColor,
+                        size: 16,
+                      ),
+                      Text(
+                        _formatChange(data.change),
+                        style: TextStyle(color: changeColor),
+                      ),
+                    ],
                   ),
                 ],
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MoodDetailsPage(),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
