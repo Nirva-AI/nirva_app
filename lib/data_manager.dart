@@ -18,6 +18,9 @@ class DataManager {
   // 当前的待办事项数据
   List<Task> tasks = [];
 
+  // 当前的高亮数据
+  List<HighlightGroup> highlightGroups = [];
+
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
   ValueNotifier<List<String>> diaryFavoritesNotifier = ValueNotifier([]);
 
@@ -31,7 +34,9 @@ class DataManager {
     user = User(name: '');
     journalEntries = [];
     tasks = [];
+    highlightGroups = [];
     diaryFavoritesNotifier = ValueNotifier([]);
+    diaryEntryyNotesNotifier = ValueNotifier([]);
   }
 
   //
