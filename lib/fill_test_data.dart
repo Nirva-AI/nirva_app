@@ -14,6 +14,7 @@ class FillTestData {
     DataManager().tasks = FillTestData.createTestTasks();
     DataManager().journalEntries.add(FillTestData.createTestPersonalJournal());
     initializeTestFavorites(DataManager().currentJournalEntry);
+    DataManager().highlightGroups = FillTestData.createTestHighlightGroup();
   }
 
   static void initializeTestFavorites(PersonalJournal journal) {
@@ -41,6 +42,49 @@ class FillTestData {
       Task(tag: 'Work', description: 'Prepare presentation for meeting'),
       Task(tag: 'Personal', description: 'Call mom', isCompleted: true),
       Task(tag: 'Health', description: 'Schedule dentist appointment'),
+    ];
+  }
+
+  static List<HighlightGroup> createTestHighlightGroup() {
+    return [
+      HighlightGroup(
+        beginTime: DateTime(2025, 5, 9),
+        endTime: DateTime(2025, 5, 15),
+        highlights: [
+          Highlight(
+            category: 'Achievement',
+            content: 'Completed 5 meditation sessions',
+          ),
+          Highlight(
+            category: 'Insight',
+            content:
+                'Your stress levels were 20% lower when you exercised in the morning',
+          ),
+          Highlight(
+            category: 'Social',
+            content: 'Connected with 4 friends this week',
+          ),
+        ],
+      ),
+      HighlightGroup(
+        beginTime: DateTime(2025, 5, 2),
+        endTime: DateTime(2025, 5, 8),
+        highlights: [
+          Highlight(
+            category: 'Achievement',
+            content: 'Completed 3 meditation sessions',
+          ),
+          Highlight(
+            category: 'Insight',
+            content:
+                'Your stress levels were 15% lower when you exercised in the morning',
+          ),
+          Highlight(
+            category: 'Social',
+            content: 'Connected with 2 friends this week',
+          ),
+        ],
+      ),
     ];
   }
 
