@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
 
-class MoodTracking extends StatelessWidget {
-  const MoodTracking({super.key});
+class MoodTrackingChart extends StatelessWidget {
+  const MoodTrackingChart({super.key});
 
   // 因为情绪是线性能规划的，负面～正面，所以就用一个数值来在几个色块里挑选。
   Color _getMoodColor(double moodValue) {
@@ -50,19 +51,38 @@ class MoodTracking extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            const Text('Mood Tracking', style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 200,
-              child: PieChart(
-                PieChartData(
-                  sections: sections,
-                  sectionsSpace: 2, // 扇形之间的间距
-                  centerSpaceRadius: 50, // 增大中心空白半径，缩小饼图面积
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Mood Tracking', style: TextStyle(fontSize: 16)),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 200,
+                  child: PieChart(
+                    PieChartData(
+                      sections: sections,
+                      sectionsSpace: 2, // 扇形之间的间距
+                      centerSpaceRadius: 50, // 增大中心空白半径，缩小饼图面积
+                    ),
+                  ),
                 ),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MoodTrackingDetailsPage(),
+                    ),
+                  );
+                },
               ),
             ),
           ],
