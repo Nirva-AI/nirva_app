@@ -97,7 +97,7 @@ class TodayHighlightsPanel extends StatelessWidget {
                     MaterialPageRoute(
                       builder:
                           (context) => TodayHighlightsDetailsPage(
-                            highlights: highlights,
+                            //highlights: highlights,
                           ),
                     ),
                   );
