@@ -42,6 +42,7 @@ dependencies:
   json_annotation: ^4.8.1
   dio: ^5.3.3
   connectivity_plus: ^3.0.3 # 添加这个依赖，版本号可以根据需要调整
+  graphview: ^1.2.0 # 修改为兼容版本
 
 dev_dependencies:
   flutter_test:
