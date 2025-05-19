@@ -368,13 +368,9 @@ class FillTestData {
       ),
     ];
 
-    final Score moodScore = Score(title: 'Mood Score', value: 7.8, change: 0.5);
+    final MoodScore moodScore = MoodScore(value: 7.8, change: 0.5);
 
-    final Score stressLevel = Score(
-      title: 'Stress Level',
-      value: 3.2,
-      change: -1.3,
-    );
+    final StressLevel stressLevel = StressLevel(value: 3.2, change: -1.3);
 
     final List<Highlight> highlights = [
       Highlight(

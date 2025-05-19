@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-//import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
 
-class ScoreCard extends StatelessWidget {
-  final Score data;
+class StressLevelCard extends StatelessWidget {
+  final StressLevel data;
 
-  const ScoreCard({super.key, required this.data});
+  const StressLevelCard({super.key, required this.data});
 
   // 根据变化值获取颜色
   Color _getChangeColor(double change) {
@@ -31,7 +30,7 @@ class ScoreCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(data.title, style: const TextStyle(fontSize: 16)),
+              Text('Stress Level', style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 8),
               Text(
                 data.value.toStringAsFixed(1),
