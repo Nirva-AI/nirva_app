@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/data_manager.dart';
 
-class TodayHighlightsDetailsPage extends StatelessWidget {
+class ArchivedHighlightsPage extends StatelessWidget {
   final highlightGroups = DataManager().archivedHighlights;
 
-  TodayHighlightsDetailsPage({super.key});
+  ArchivedHighlightsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
