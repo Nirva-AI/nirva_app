@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/today_highlights_details_page.dart'; // 导入新页面
 
-class HighlightCard extends StatelessWidget {
+class TodayHighlightsCard extends StatelessWidget {
   final Highlight highlight;
   final Color backgroundColor;
 
-  const HighlightCard({
+  const TodayHighlightsCard({
     super.key,
     required this.highlight,
     required this.backgroundColor,
@@ -45,10 +46,10 @@ class HighlightCard extends StatelessWidget {
   }
 }
 
-class TodayHighlights extends StatelessWidget {
+class TodayHighlightsPanel extends StatelessWidget {
   final List<Highlight> highlights;
 
-  const TodayHighlights({super.key, required this.highlights});
+  const TodayHighlightsPanel({super.key, required this.highlights});
 
   @override
   Widget build(BuildContext context) {
@@ -64,23 +65,45 @@ class TodayHighlights extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            const Text(
-              'Today\'s Highlights',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Today\'s Highlights',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                ...highlights.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final highlight = entry.value;
+                  return TodayHighlightsCard(
+                    highlight: highlight,
+                    backgroundColor:
+                        backgroundColors[index % backgroundColors.length],
+                  );
+                }),
+              ],
             ),
-            const SizedBox(height: 16),
-            ...highlights.asMap().entries.map((entry) {
-              final index = entry.key;
-              final highlight = entry.value;
-              return HighlightCard(
-                highlight: highlight,
-                backgroundColor:
-                    backgroundColors[index % backgroundColors.length],
-              );
-            }),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => TodayHighlightsDetailsPage(
+                            highlights: highlights,
+                          ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
