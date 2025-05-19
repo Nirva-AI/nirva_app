@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class MoodDetailsPage extends StatelessWidget {
-  const MoodDetailsPage({super.key});
+class MoodScoreDetailsPage extends StatelessWidget {
+  const MoodScoreDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +56,30 @@ class MoodDetailsPage extends StatelessWidget {
                         getTitlesWidget: (value, meta) {
                           switch (value.toInt()) {
                             case 0:
-                              return const Text('Jan', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Jan',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 1:
-                              return const Text('Feb', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Feb',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 2:
-                              return const Text('Mar', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Mar',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 3:
-                              return const Text('Apr', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Apr',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 4:
-                              return const Text('May', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'May',
+                                style: TextStyle(fontSize: 12),
+                              );
                             default:
                               return const Text('');
                           }
