@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/mood_details_page.dart';
+import 'package:nirva_app/mood_score_details_page.dart';
 
 class MoodScoreCard extends StatelessWidget {
   final MoodScore data;
@@ -69,7 +69,7 @@ class MoodScoreCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const MoodDetailsPage(),
+                        builder: (context) => const MoodScoreDetailsPage(),
                       ),
                     );
                   },
