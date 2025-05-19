@@ -7,6 +7,7 @@ import 'package:nirva_app/social_map_view.dart';
 import 'package:nirva_app/awake_time_allocation_chart.dart';
 import 'package:nirva_app/today_high_lights.dart';
 import 'package:nirva_app/mood_score_card.dart';
+//import 'package:nirva_app/mood_details_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
