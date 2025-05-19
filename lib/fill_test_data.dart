@@ -14,7 +14,7 @@ class FillTestData {
     DataManager().tasks = FillTestData.createTestTasks();
     DataManager().journalEntries.add(FillTestData.createTestPersonalJournal());
     initializeTestFavorites(DataManager().currentJournalEntry);
-    DataManager().highlightGroups = FillTestData.createTestHighlightGroup();
+    DataManager().archivedHighlights = FillTestData.createTestHighlightGroup();
   }
 
   static void initializeTestFavorites(PersonalJournal journal) {

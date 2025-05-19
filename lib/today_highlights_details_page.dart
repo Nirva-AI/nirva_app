@@ -3,7 +3,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/data_manager.dart';
 
 class TodayHighlightsDetailsPage extends StatelessWidget {
-  final highlightGroups = DataManager().highlightGroups;
+  final highlightGroups = DataManager().archivedHighlights;
 
   TodayHighlightsDetailsPage({super.key});
 
