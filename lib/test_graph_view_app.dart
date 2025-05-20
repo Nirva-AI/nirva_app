@@ -87,13 +87,19 @@ class _TestGraphViewState extends State<TestGraphView> {
                 algorithm: algorithm,
                 builder: (Node node) {
                   final nodeValue = node.key?.value?.toString() ?? '未知节点';
-                  return Card(
-                    color: Colors.deepPurple,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        nodeValue,
-                        style: const TextStyle(color: Colors.white),
+                  return SizedBox(
+                    width: 100, // 设置宽度
+                    height: 40, // 设置高度
+                    child: Card(
+                      color: Colors.deepPurple,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            nodeValue,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
                     ),
                   );
