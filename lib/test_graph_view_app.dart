@@ -127,15 +127,17 @@ class _TestGraphViewState extends State<TestGraphView> {
 
 class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
   late Node node; // 用来存储 node1
-  late double width; // 用来记录 SizedBox 的宽度
-  late double height; // 用来记录 SizedBox 的高度
 
   // 构造函数，用于初始化成员变量
   CustomFruchtermanReingoldAlgorithm({
     required this.node,
-    required this.width,
-    required this.height,
-  });
+    required double width,
+    required double height,
+  }) {
+    // 直接设置父类的 graphWidth 和 graphHeight
+    graphWidth = width;
+    graphHeight = height;
+  }
 
-  // 你可以在这里扩展算法逻辑，利用 width 和 height 控制区域
+  // 你可以在这里扩展算法逻辑，利用 graphWidth 和 graphHeight 控制区域
 }
