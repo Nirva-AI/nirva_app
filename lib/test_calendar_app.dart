@@ -33,32 +33,73 @@ class _TestCalendarViewState extends State<TestCalendarView> {
       appBar: AppBar(title: const Text('测试日历!')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: TableCalendar(
-          firstDay: DateTime.utc(2000, 1, 1),
-          lastDay: DateTime.utc(2100, 12, 31),
-          focusedDay: _focusedDay,
-          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-          onDaySelected: (selectedDay, focusedDay) {
-            setState(() {
-              _selectedDay = selectedDay;
-              _focusedDay = focusedDay;
-            });
-          },
-          calendarStyle: const CalendarStyle(
-            todayDecoration: BoxDecoration(
-              color: Colors.blue,
-              shape: BoxShape.circle,
-            ),
-            selectedDecoration: BoxDecoration(
-              color: Colors.orange,
-              shape: BoxShape.circle,
-            ),
-          ),
-          headerStyle: const HeaderStyle(
-            formatButtonVisible: false,
-            titleCentered: true,
-          ),
+        child: Column(
+          children: [
+            _buildFirstCalendar(),
+            const SizedBox(height: 16.0), // 添加间距
+            _buildSecondCalendar(),
+          ],
         ),
+      ),
+    );
+  }
+
+  // 封装第一个 TableCalendar
+  Widget _buildFirstCalendar() {
+    return TableCalendar(
+      firstDay: DateTime.utc(2000, 1, 1),
+      lastDay: DateTime.utc(2100, 12, 31),
+      focusedDay: _focusedDay,
+      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+      },
+      calendarStyle: const CalendarStyle(
+        todayDecoration: BoxDecoration(
+          color: Colors.blue,
+          shape: BoxShape.circle,
+        ),
+        selectedDecoration: BoxDecoration(
+          color: Colors.orange,
+          shape: BoxShape.circle,
+        ),
+      ),
+      headerStyle: const HeaderStyle(
+        formatButtonVisible: false,
+        titleCentered: true,
+      ),
+    );
+  }
+
+  // 封装第二个 TableCalendar
+  Widget _buildSecondCalendar() {
+    return TableCalendar(
+      firstDay: DateTime.utc(2000, 1, 1),
+      lastDay: DateTime.utc(2100, 12, 31),
+      focusedDay: _focusedDay,
+      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+      },
+      calendarStyle: const CalendarStyle(
+        todayDecoration: BoxDecoration(
+          color: Colors.green,
+          shape: BoxShape.circle,
+        ),
+        selectedDecoration: BoxDecoration(
+          color: Colors.red,
+          shape: BoxShape.circle,
+        ),
+      ),
+      headerStyle: const HeaderStyle(
+        formatButtonVisible: false,
+        titleCentered: true,
       ),
     );
   }
