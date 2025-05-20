@@ -4,8 +4,9 @@ import 'dart:math';
 
 double globalScreenWidth = 0.0; // 全局变量，用于存储屏幕宽度
 final double globalGraphBackgroundHeight = 600.0; // 全局变量，用于存储卡片高度
-final double globalNodeWidth = 100.0; // 全局变量，用于存储节点宽度
+final double globalNodeWidth = 80.0; // 全局变量，用于存储节点宽度
 final double globalNodeHeight = 40.0; // 全局变量，用于存储节点高度
+final int testNodeCount = 3;
 
 class TestGraphViewApp extends StatelessWidget {
   const TestGraphViewApp({super.key});
@@ -43,10 +44,8 @@ class _TestGraphViewState extends State<TestGraphView> {
   }
 
   void _initializeGraph() {
-    const int nodeCount = 10; // 指定节点数量
-
     // 创建图
-    final newGraph = createGraph(nodeCount);
+    final newGraph = createGraph(testNodeCount);
 
     setState(() {
       graph = newGraph; // 替换 graph 的引用
@@ -137,17 +136,29 @@ class _TestGraphViewState extends State<TestGraphView> {
                   algorithm: algorithm,
                   builder: (Node node) {
                     final nodeValue = node.key?.value?.toString() ?? '未知节点';
-                    return SizedBox(
-                      width: globalNodeWidth, // 设置宽度
-                      height: globalNodeHeight, // 设置高度
-                      child: Card(
-                        color: Colors.deepPurple,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Text(
-                              nodeValue,
-                              style: const TextStyle(color: Colors.white),
+                    return GestureDetector(
+                      onPanStart: (details) {
+                        algorithm.setFocusedNode(node); // 设置拖动的节点为 focusedNode
+                      },
+                      onPanUpdate: (details) {
+                        node.position += details.delta; // 更新节点位置
+                        setState(() {}); // 重新渲染
+                      },
+                      onPanEnd: (details) {
+                        algorithm.setFocusedNode(null); // 清除 focusedNode
+                      },
+                      child: SizedBox(
+                        width: globalNodeWidth, // 设置宽度
+                        height: globalNodeHeight, // 设置高度
+                        child: Card(
+                          color: Colors.deepPurple,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Text(
+                                nodeValue,
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                         ),
@@ -177,21 +188,18 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     required this.nodeWidth,
     required this.nodeHeight,
   }) {
-    repulsionRate = 1.0; // 增大排斥力
+    repulsionRate = 1.2; // 增大排斥力
     attractionRate = 0.05; // 减小吸引力
-    repulsionPercentage = 0.6; // 增大排斥力作用范围
+    repulsionPercentage = 0.8; // 增大排斥力作用范围
     attractionPercentage = 0.1; // 减小吸引力作用范围
-  }
-
-  // 你可以在这里扩展算法逻辑，利用 graphWidth 和 graphHeight 控制区域
-  @override
-  Size run(Graph? graph, double shiftX, double shiftY) {
-    final offsetToCenter = getOffsetToCenter(graph!);
-    return super.run(graph, offsetToCenter.dx, offsetToCenter.dy);
   }
 
   @override
   void step(Graph? graph) {
+    if (focusedNode != null) {
+      return;
+    }
+
     super.step(graph);
     // 使用 shiftCoordinates 方法将整个图形平移到中心区域
     if (graph != null) {
@@ -238,5 +246,11 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
 
     // 计算当前节点与目标中心的偏移量
     return targetCenter - getGraphCenter(graph);
+  }
+
+  @override
+  void setFocusedNode(Node? node) {
+    // 这里可以设置当前聚焦的节点
+    focusedNode = node;
   }
 }
