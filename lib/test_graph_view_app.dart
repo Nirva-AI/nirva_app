@@ -16,62 +16,88 @@ class TestGraphViewApp extends StatelessWidget {
   }
 }
 
-class TestGraphView extends StatelessWidget {
+class TestGraphView extends StatefulWidget {
   const TestGraphView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // 创建图和节点
-    final Graph graph = Graph();
+  State<TestGraphView> createState() => _TestGraphViewState();
+}
+
+class _TestGraphViewState extends State<TestGraphView> {
+  late Graph graph;
+  late CustomFruchtermanReingoldAlgorithm algorithm;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeGraph();
+  }
+
+  void _initializeGraph() {
+    final newGraph = Graph(); // 创建新的 Graph 对象
     final Node node1 = Node.Id('节点1');
     final Node node2 = Node.Id('节点2');
     final Node node3 = Node.Id('节点3');
     final Node node4 = Node.Id('节点4');
 
-    // 添加边
-    graph.addEdge(node1, node2); // 节点1 -> 节点2
-    graph.addEdge(node1, node3); // 节点1 -> 节点3
-    graph.addEdge(node1, node4); // 节点1 -> 节点4
-    graph.addEdge(node2, node3); // 节点2 -> 节点3
+    newGraph.addEdge(node1, node2);
+    newGraph.addEdge(node1, node3);
+    newGraph.addEdge(node1, node4);
+    newGraph.addEdge(node2, node3);
 
-    // 使用 FruchtermanReingoldAlgorithm 布局算法
-    final FruchtermanReingoldAlgorithm algorithm =
-        FruchtermanReingoldAlgorithm();
+    setState(() {
+      graph = newGraph; // 替换 graph 的引用
+      algorithm = CustomFruchtermanReingoldAlgorithm(); // 替换 algorithm 的引用
+    });
+  }
 
+  void _resetGraph() {
+    setState(() {
+      _initializeGraph(); // 重新初始化图
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('测试图形视图')),
+      appBar: AppBar(
+        title: const Text('测试图形视图'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _resetGraph, // 点击按钮时重置图
+          ),
+        ],
+      ),
       body: Center(
-        child: SizedBox(
-          height: 600, // 可调整的高度
-          child: Card(
-            color: Colors.grey[200], // 设置背景颜色
-            elevation: 4, // 卡片阴影
-            margin: const EdgeInsets.all(16), // 外边距
-            child: Padding(
-              padding: const EdgeInsets.all(16), // 内边距
-              child: InteractiveViewer(
-                constrained: false,
-                boundaryMargin: const EdgeInsets.all(8),
-                minScale: 0.01,
-                maxScale: 5.0,
-                child: GraphView(
-                  graph: graph,
-                  algorithm: algorithm,
-                  builder: (Node node) {
-                    // 自定义节点外观
-                    final nodeValue = node.key?.value?.toString() ?? '未知节点';
-                    return Card(
-                      color: Colors.deepPurple,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          nodeValue,
-                          style: const TextStyle(color: Colors.white),
-                        ),
+        child: Card(
+          color: Colors.grey[200],
+          elevation: 4,
+          margin: const EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: InteractiveViewer(
+              constrained: false,
+              boundaryMargin: const EdgeInsets.all(100),
+              minScale: 0.01,
+              maxScale: 5.0,
+              child: GraphView(
+                key: ValueKey(graph), // 强制重新构建 GraphView
+                graph: graph,
+                algorithm: algorithm,
+                builder: (Node node) {
+                  final nodeValue = node.key?.value?.toString() ?? '未知节点';
+                  return Card(
+                    color: Colors.deepPurple,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        nodeValue,
+                        style: const TextStyle(color: Colors.white),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -79,4 +105,8 @@ class TestGraphView extends StatelessWidget {
       ),
     );
   }
+}
+
+class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
+  // 暂时不覆盖或扩展任何方法
 }
