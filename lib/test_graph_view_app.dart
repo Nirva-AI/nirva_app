@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 
+double screenWidth = 0.0; // 全局变量，用于存储屏幕宽度
+final double cardHeight = 600.0; // 全局变量，用于存储卡片高度
+
 class TestGraphViewApp extends StatelessWidget {
   const TestGraphViewApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
     return MaterialApp(
       title: 'Test Graph View App',
       theme: ThemeData(
@@ -47,7 +51,11 @@ class _TestGraphViewState extends State<TestGraphView> {
 
     setState(() {
       graph = newGraph; // 替换 graph 的引用
-      algorithm = CustomFruchtermanReingoldAlgorithm(); // 替换 algorithm 的引用
+      algorithm = CustomFruchtermanReingoldAlgorithm(
+        node: node1, // 传入 node1
+        width: screenWidth, // 传入宽度
+        height: cardHeight, // 传入高度
+      );
     });
   }
 
@@ -70,40 +78,44 @@ class _TestGraphViewState extends State<TestGraphView> {
         ],
       ),
       body: Center(
-        child: Card(
-          color: Colors.grey[200],
-          elevation: 4,
-          margin: const EdgeInsets.all(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: InteractiveViewer(
-              constrained: false,
-              boundaryMargin: const EdgeInsets.all(100),
-              minScale: 0.01,
-              maxScale: 5.0,
-              child: GraphView(
-                key: ValueKey(graph), // 强制重新构建 GraphView
-                graph: graph,
-                algorithm: algorithm,
-                builder: (Node node) {
-                  final nodeValue = node.key?.value?.toString() ?? '未知节点';
-                  return SizedBox(
-                    width: 100, // 设置宽度
-                    height: 40, // 设置高度
-                    child: Card(
-                      color: Colors.deepPurple,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Text(
-                            nodeValue,
-                            style: const TextStyle(color: Colors.white),
+        child: SizedBox(
+          width: screenWidth, // 设置宽度为屏幕宽度的 80%
+          height: cardHeight, // 固定高度为 600
+          child: Card(
+            color: Colors.grey[200],
+            elevation: 4,
+            margin: const EdgeInsets.all(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: InteractiveViewer(
+                constrained: false,
+                boundaryMargin: const EdgeInsets.all(100),
+                minScale: 0.01,
+                maxScale: 5.0,
+                child: GraphView(
+                  key: ValueKey(graph), // 强制重新构建 GraphView
+                  graph: graph,
+                  algorithm: algorithm,
+                  builder: (Node node) {
+                    final nodeValue = node.key?.value?.toString() ?? '未知节点';
+                    return SizedBox(
+                      width: 100, // 设置宽度
+                      height: 40, // 设置高度
+                      child: Card(
+                        color: Colors.deepPurple,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                              nodeValue,
+                              style: const TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -114,5 +126,16 @@ class _TestGraphViewState extends State<TestGraphView> {
 }
 
 class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
-  // 暂时不覆盖或扩展任何方法
+  late Node node; // 用来存储 node1
+  late double width; // 用来记录 SizedBox 的宽度
+  late double height; // 用来记录 SizedBox 的高度
+
+  // 构造函数，用于初始化成员变量
+  CustomFruchtermanReingoldAlgorithm({
+    required this.node,
+    required this.width,
+    required this.height,
+  });
+
+  // 你可以在这里扩展算法逻辑，利用 width 和 height 控制区域
 }
