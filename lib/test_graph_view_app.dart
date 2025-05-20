@@ -34,6 +34,7 @@ class TestGraphView extends StatefulWidget {
 class _TestGraphViewState extends State<TestGraphView> {
   late Graph graph;
   late CustomFruchtermanReingoldAlgorithm algorithm;
+  Key cardKey = UniqueKey(); // 用于强制重新构建 Card
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _TestGraphViewState extends State<TestGraphView> {
   void _resetGraph() {
     setState(() {
       _initializeGraph(); // 重新初始化图
+      cardKey = UniqueKey(); // 更新 key，强制重新构建 Card
     });
   }
 
@@ -85,9 +87,10 @@ class _TestGraphViewState extends State<TestGraphView> {
       ),
       body: Center(
         child: SizedBox(
-          width: globalScreenWidth, // 设置宽度为屏幕宽度的 80%
+          width: globalScreenWidth, // 设置宽度为屏幕宽度
           height: globalGraphBackgroundHeight, // 固定高度为 600
           child: Card(
+            key: cardKey, // 使用动态 key 强制重新构建 Card
             color: Colors.grey[200],
             elevation: 4,
             margin: const EdgeInsets.all(16),
@@ -95,7 +98,7 @@ class _TestGraphViewState extends State<TestGraphView> {
               padding: const EdgeInsets.all(16),
               child: InteractiveViewer(
                 constrained: false,
-                boundaryMargin: const EdgeInsets.all(100),
+                boundaryMargin: const EdgeInsets.all(1000),
                 minScale: 0.01,
                 maxScale: 5.0,
                 child: GraphView(
