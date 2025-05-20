@@ -43,16 +43,10 @@ class _TestGraphViewState extends State<TestGraphView> {
   }
 
   void _initializeGraph() {
-    final newGraph = Graph(); // 创建新的 Graph 对象
-    final Node node1 = Node.Id('节点1');
-    final Node node2 = Node.Id('节点2');
-    final Node node3 = Node.Id('节点3');
-    final Node node4 = Node.Id('节点4');
+    const int nodeCount = 10; // 指定节点数量
 
-    newGraph.addEdge(node1, node2);
-    newGraph.addEdge(node1, node3);
-    newGraph.addEdge(node1, node4);
-    newGraph.addEdge(node2, node3);
+    // 创建图
+    final newGraph = createGraph(nodeCount);
 
     setState(() {
       graph = newGraph; // 替换 graph 的引用
@@ -63,6 +57,43 @@ class _TestGraphViewState extends State<TestGraphView> {
         nodeHeight: globalNodeHeight, // 传入节点高度
       );
     });
+  }
+
+  Graph createGraph(int nodeCount) {
+    final newGraph = Graph();
+    final random = Random();
+
+    // 创建指定数量的节点
+    final nodes = List.generate(
+      nodeCount,
+      (index) => Node.Id('节点${index + 1}'),
+    );
+
+    // 添加节点到图中
+    for (var node in nodes) {
+      newGraph.addNode(node);
+    }
+
+    // 确保每个节点都与节点[0]有一条边
+    for (int i = 1; i < nodeCount; i++) {
+      newGraph.addEdge(nodes[0], nodes[i]);
+    }
+
+    // 随机生成节点之间的连接关系
+    for (int i = 0; i < nodeCount; i++) {
+      //break;
+      // 每个节点随机连接 1 到 nodeCount/2 个其他节点
+      final connections = random.nextInt(nodeCount ~/ 2) + 1;
+      for (int j = 0; j < connections; j++) {
+        final targetIndex = random.nextInt(nodeCount);
+        if (targetIndex != i && targetIndex != 0) {
+          // 避免重复连接到[0]
+          newGraph.addEdge(nodes[i], nodes[targetIndex]);
+        }
+      }
+    }
+
+    return newGraph;
   }
 
   void _resetGraph() {
@@ -145,7 +176,12 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     required this.myHeight,
     required this.nodeWidth,
     required this.nodeHeight,
-  });
+  }) {
+    repulsionRate = 1.0; // 增大排斥力
+    attractionRate = 0.05; // 减小吸引力
+    repulsionPercentage = 0.6; // 增大排斥力作用范围
+    attractionPercentage = 0.1; // 减小吸引力作用范围
+  }
 
   // 你可以在这里扩展算法逻辑，利用 graphWidth 和 graphHeight 控制区域
   @override
@@ -169,28 +205,7 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     // 这里可以使用 graphWidth 和 graphHeight 来控制区域
     // 例如，你可以在这里设置节点的初始位
     setDimensions(myWidth / 2, myHeight / 2);
-    _initializeGraph(graph, min(nodeWidth, nodeHeight));
-  }
-
-  void _initializeGraph(Graph? graph, double radius) {
-    if (graph == null || graph.nodes.isEmpty) return;
-
-    // 设置圆心位置（[0] 节点）
-    final centerNode = graph.nodes.first; // 假设 [0] 是第一个节点
-    final centerX = myWidth / 2;
-    final centerY = myHeight / 2;
-    centerNode.position = Offset(centerX, centerY);
-    // 获取其余节点
-    final otherNodes = graph.nodes.skip(1).toList();
-    final int nodeCount = otherNodes.length;
-
-    // 按环形分布其余节点
-    for (int i = 0; i < nodeCount; i++) {
-      final angle = (2 * pi / nodeCount) * i; // 计算每个节点的角度
-      final x = centerX + radius * cos(angle); // 计算 x 坐标
-      final y = centerY + radius * sin(angle); // 计算 y 坐标
-      otherNodes[i].position = Offset(x, y);
-    }
+    super.init(graph);
   }
 
   Offset getGraphCenter(Graph graph) {
