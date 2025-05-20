@@ -6,7 +6,8 @@ double globalScreenWidth = 0.0; // 全局变量，用于存储屏幕宽度
 final double globalGraphBackgroundHeight = 600.0; // 全局变量，用于存储卡片高度
 final double globalNodeWidth = 80.0; // 全局变量，用于存储节点宽度
 final double globalNodeHeight = 40.0; // 全局变量，用于存储节点高度
-final int testNodeCount = 3;
+final int testNodeCount = 8;
+bool shouldRandomLinkNodes = false;
 
 class TestGraphViewApp extends StatelessWidget {
   const TestGraphViewApp({super.key});
@@ -79,15 +80,17 @@ class _TestGraphViewState extends State<TestGraphView> {
     }
 
     // 随机生成节点之间的连接关系
-    for (int i = 0; i < nodeCount; i++) {
-      //break;
-      // 每个节点随机连接 1 到 nodeCount/2 个其他节点
-      final connections = random.nextInt(nodeCount ~/ 2) + 1;
-      for (int j = 0; j < connections; j++) {
-        final targetIndex = random.nextInt(nodeCount);
-        if (targetIndex != i && targetIndex != 0) {
-          // 避免重复连接到[0]
-          newGraph.addEdge(nodes[i], nodes[targetIndex]);
+    if (shouldRandomLinkNodes) {
+      for (int i = 0; i < nodeCount; i++) {
+        //break;
+        // 每个节点随机连接 1 到 nodeCount/2 个其他节点
+        final connections = random.nextInt(nodeCount ~/ 2) + 1;
+        for (int j = 0; j < connections; j++) {
+          final targetIndex = random.nextInt(nodeCount);
+          if (targetIndex != i && targetIndex != 0) {
+            // 避免重复连接到[0]
+            newGraph.addEdge(nodes[i], nodes[targetIndex]);
+          }
         }
       }
     }
@@ -111,6 +114,20 @@ class _TestGraphViewState extends State<TestGraphView> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _resetGraph, // 点击按钮时重置图
+          ),
+          Row(
+            children: [
+              const Text('随机连接'),
+              Switch(
+                value: shouldRandomLinkNodes, // 绑定全局变量 shouldLinkNodes
+                onChanged: (value) {
+                  setState(() {
+                    shouldRandomLinkNodes = value; // 更新 shouldLinkNodes 的状态
+                    _resetGraph(); // 切换后重新生成图
+                  });
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -188,9 +205,9 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     required this.nodeWidth,
     required this.nodeHeight,
   }) {
-    repulsionRate = 1.2; // 增大排斥力
+    repulsionRate = 1.0; // 增大排斥力
     attractionRate = 0.05; // 减小吸引力
-    repulsionPercentage = 0.8; // 增大排斥力作用范围
+    repulsionPercentage = 0.5; // 增大排斥力作用范围
     attractionPercentage = 0.1; // 减小吸引力作用范围
   }
 
@@ -202,10 +219,10 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
 
     super.step(graph);
     // 使用 shiftCoordinates 方法将整个图形平移到中心区域
-    if (graph != null) {
-      final offsetToCenter = getOffsetToCenter(graph);
-      shiftCoordinates(graph, offsetToCenter.dx, offsetToCenter.dy);
-    }
+    // if (graph != null) {
+    //   final offsetToCenter = getOffsetToCenter(graph);
+    //   shiftCoordinates(graph, offsetToCenter.dx, offsetToCenter.dy);
+    // }
   }
 
   @override
@@ -214,6 +231,9 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     // 例如，你可以在这里设置节点的初始位
     setDimensions(myWidth / 2, myHeight / 2);
     super.init(graph);
+
+    final offsetToCenter = getOffsetToCenter(graph!);
+    shiftCoordinates(graph, offsetToCenter.dx, offsetToCenter.dy);
   }
 
   Offset getGraphCenter(Graph graph) {
