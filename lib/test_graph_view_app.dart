@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
+import 'dart:math';
 
 double globalScreenWidth = 0.0; // 全局变量，用于存储屏幕宽度
 final double globalGraphBackgroundHeight = 600.0; // 全局变量，用于存储卡片高度
@@ -13,7 +14,6 @@ class TestGraphViewApp extends StatelessWidget {
   Widget build(BuildContext context) {
     globalScreenWidth = MediaQuery.of(context).size.width;
     debugPrint('Screen Width: $globalScreenWidth'); // 打印屏幕宽度
-    //flutter: Screen Width: 402.0
     return MaterialApp(
       title: 'Test Graph View App',
       theme: ThemeData(
@@ -57,7 +57,6 @@ class _TestGraphViewState extends State<TestGraphView> {
     setState(() {
       graph = newGraph; // 替换 graph 的引用
       algorithm = CustomFruchtermanReingoldAlgorithm(
-        rootNode: node1, // 传入 node1
         myWidth: globalScreenWidth, // 传入宽度
         myHeight: globalGraphBackgroundHeight, // 传入高度
         nodeWidth: globalNodeWidth, // 传入节点宽度
@@ -135,7 +134,6 @@ class _TestGraphViewState extends State<TestGraphView> {
 }
 
 class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
-  late Node rootNode; // 用来存储 node1
   late double myWidth; // 用来存储宽度
   late double myHeight; // 用来存储高度
   late double nodeWidth; // 用来存储节点宽度
@@ -143,7 +141,6 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
 
   // 构造函数，用于初始化成员变量
   CustomFruchtermanReingoldAlgorithm({
-    required this.rootNode,
     required this.myWidth,
     required this.myHeight,
     required this.nodeWidth,
@@ -153,6 +150,7 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
   // 你可以在这里扩展算法逻辑，利用 graphWidth 和 graphHeight 控制区域
   @override
   Size run(Graph? graph, double shiftX, double shiftY) {
+    final offsetToCenter = getOffsetToCenter(graph!);
     return super.run(graph, offsetToCenter.dx, offsetToCenter.dy);
   }
 
@@ -161,6 +159,7 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     super.step(graph);
     // 使用 shiftCoordinates 方法将整个图形平移到中心区域
     if (graph != null) {
+      final offsetToCenter = getOffsetToCenter(graph);
       shiftCoordinates(graph, offsetToCenter.dx, offsetToCenter.dy);
     }
   }
@@ -169,11 +168,53 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
   void init(Graph? graph) {
     // 这里可以使用 graphWidth 和 graphHeight 来控制区域
     // 例如，你可以在这里设置节点的初始位
-    super.init(graph);
+    setDimensions(myWidth / 2, myHeight / 2);
+    _initializeGraph(graph, min(nodeWidth, nodeHeight));
   }
 
-  //
-  Offset get offsetToCenter {
+  void _initializeGraph(Graph? graph, double radius) {
+    if (graph == null || graph.nodes.isEmpty) return;
+
+    // 设置圆心位置（[0] 节点）
+    final centerNode = graph.nodes.first; // 假设 [0] 是第一个节点
+    final centerX = myWidth / 2;
+    final centerY = myHeight / 2;
+    centerNode.position = Offset(centerX, centerY);
+    // 获取其余节点
+    final otherNodes = graph.nodes.skip(1).toList();
+    final int nodeCount = otherNodes.length;
+
+    // 按环形分布其余节点
+    for (int i = 0; i < nodeCount; i++) {
+      final angle = (2 * pi / nodeCount) * i; // 计算每个节点的角度
+      final x = centerX + radius * cos(angle); // 计算 x 坐标
+      final y = centerY + radius * sin(angle); // 计算 y 坐标
+      otherNodes[i].position = Offset(x, y);
+    }
+  }
+
+  Offset getGraphCenter(Graph graph) {
+    double left = double.infinity;
+    double top = double.infinity;
+    double right = double.negativeInfinity;
+    double bottom = double.negativeInfinity;
+
+    // 遍历所有节点，计算边界
+    for (var node in graph.nodes) {
+      left = min(left, node.x);
+      top = min(top, node.y);
+      right = max(right, node.x + node.width);
+      bottom = max(bottom, node.y + node.height);
+    }
+
+    // 计算中心点
+    double centerX = (left + right) / 2;
+    double centerY = (top + bottom) / 2;
+
+    return Offset(centerX, centerY);
+  }
+
+  Offset getOffsetToCenter(Graph graph) {
     // 计算目标中心位置（例如屏幕中心）
     final targetCenter = Offset(
       myWidth / 2 - nodeWidth,
@@ -181,6 +222,6 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     );
 
     // 计算当前节点与目标中心的偏移量
-    return targetCenter - rootNode.position;
+    return targetCenter - getGraphCenter(graph);
   }
 }
