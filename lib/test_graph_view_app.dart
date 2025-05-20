@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 
-double screenWidth = 0.0; // 全局变量，用于存储屏幕宽度
-final double cardHeight = 600.0; // 全局变量，用于存储卡片高度
+double globalScreenWidth = 0.0; // 全局变量，用于存储屏幕宽度
+final double globalGraphBackgroundHeight = 600.0; // 全局变量，用于存储卡片高度
+final double globalNodeWidth = 100.0; // 全局变量，用于存储节点宽度
+final double globalNodeHeight = 40.0; // 全局变量，用于存储节点高度
 
 class TestGraphViewApp extends StatelessWidget {
   const TestGraphViewApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery.of(context).size.width;
+    globalScreenWidth = MediaQuery.of(context).size.width;
+    debugPrint('Screen Width: $globalScreenWidth'); // 打印屏幕宽度
+    //flutter: Screen Width: 402.0
     return MaterialApp(
       title: 'Test Graph View App',
       theme: ThemeData(
@@ -52,9 +56,11 @@ class _TestGraphViewState extends State<TestGraphView> {
     setState(() {
       graph = newGraph; // 替换 graph 的引用
       algorithm = CustomFruchtermanReingoldAlgorithm(
-        node: node1, // 传入 node1
-        width: screenWidth, // 传入宽度
-        height: cardHeight, // 传入高度
+        rootNode: node1, // 传入 node1
+        myWidth: globalScreenWidth, // 传入宽度
+        myHeight: globalGraphBackgroundHeight, // 传入高度
+        nodeWidth: globalNodeWidth, // 传入节点宽度
+        nodeHeight: globalNodeHeight, // 传入节点高度
       );
     });
   }
@@ -79,8 +85,8 @@ class _TestGraphViewState extends State<TestGraphView> {
       ),
       body: Center(
         child: SizedBox(
-          width: screenWidth, // 设置宽度为屏幕宽度的 80%
-          height: cardHeight, // 固定高度为 600
+          width: globalScreenWidth, // 设置宽度为屏幕宽度的 80%
+          height: globalGraphBackgroundHeight, // 固定高度为 600
           child: Card(
             color: Colors.grey[200],
             elevation: 4,
@@ -99,8 +105,8 @@ class _TestGraphViewState extends State<TestGraphView> {
                   builder: (Node node) {
                     final nodeValue = node.key?.value?.toString() ?? '未知节点';
                     return SizedBox(
-                      width: 100, // 设置宽度
-                      height: 40, // 设置高度
+                      width: globalNodeWidth, // 设置宽度
+                      height: globalNodeHeight, // 设置高度
                       child: Card(
                         color: Colors.deepPurple,
                         child: Padding(
@@ -126,18 +132,52 @@ class _TestGraphViewState extends State<TestGraphView> {
 }
 
 class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
-  late Node node; // 用来存储 node1
+  late Node rootNode; // 用来存储 node1
+  late double myWidth; // 用来存储宽度
+  late double myHeight; // 用来存储高度
+  late double nodeWidth; // 用来存储节点宽度
+  late double nodeHeight; // 用来存储节点高度
 
   // 构造函数，用于初始化成员变量
   CustomFruchtermanReingoldAlgorithm({
-    required this.node,
-    required double width,
-    required double height,
-  }) {
-    // 直接设置父类的 graphWidth 和 graphHeight
-    graphWidth = width;
-    graphHeight = height;
-  }
+    required this.rootNode,
+    required this.myWidth,
+    required this.myHeight,
+    required this.nodeWidth,
+    required this.nodeHeight,
+  });
 
   // 你可以在这里扩展算法逻辑，利用 graphWidth 和 graphHeight 控制区域
+  @override
+  Size run(Graph? graph, double shiftX, double shiftY) {
+    return super.run(graph, offsetToCenter.dx, offsetToCenter.dy);
+  }
+
+  @override
+  void step(Graph? graph) {
+    super.step(graph);
+    // 使用 shiftCoordinates 方法将整个图形平移到中心区域
+    if (graph != null) {
+      shiftCoordinates(graph, offsetToCenter.dx, offsetToCenter.dy);
+    }
+  }
+
+  @override
+  void init(Graph? graph) {
+    // 这里可以使用 graphWidth 和 graphHeight 来控制区域
+    // 例如，你可以在这里设置节点的初始位
+    super.init(graph);
+  }
+
+  //
+  Offset get offsetToCenter {
+    // 计算目标中心位置（例如屏幕中心）
+    final targetCenter = Offset(
+      myWidth / 2 - nodeWidth,
+      myHeight / 2 - nodeHeight,
+    );
+
+    // 计算当前节点与目标中心的偏移量
+    return targetCenter - rootNode.position;
+  }
 }
