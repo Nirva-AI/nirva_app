@@ -12,7 +12,7 @@ class FillTestData {
     // 添加测试数据
     DataManager().user = User(name: 'Weiwei');
     DataManager().tasks = FillTestData.createTestTasks();
-    DataManager().journalEntries.add(FillTestData.createTestPersonalJournal());
+    DataManager().journals.add(FillTestData.createTestPersonalJournal());
     DataManager().archivedHighlights = FillTestData.createTestHighlightGroup();
     initializeTestFavorites(DataManager().currentJournal);
     initializeTestMyNotes(DataManager().currentJournal);
