@@ -35,7 +35,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
   }
 
   bool get isFavoriteDiaryEntry {
-    return DataManager().isFavoriteDiaryEntry(widget.diaryData);
+    return DataManager().isFavoriteDiary(widget.diaryData);
   }
 
   @override
@@ -84,9 +84,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                             isFavoriteDiaryEntry ? Colors.amber : Colors.grey,
                       ),
                       onPressed: () {
-                        DataManager().toggleFavoriteDiaryEntry(
-                          widget.diaryData,
-                        );
+                        DataManager().toggleFavoriteDiary(widget.diaryData);
                       },
                     ),
                   ],

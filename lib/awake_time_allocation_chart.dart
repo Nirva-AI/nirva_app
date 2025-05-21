@@ -24,7 +24,7 @@ class AwakeTimeAllocationChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final awakeTimeAllocationDataList =
-        DataManager().currentJournalEntry.awakeTimeActions;
+        DataManager().currentJournal.awakeTimeActions;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -35,7 +35,10 @@ class AwakeTimeAllocationChart extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Awake Time Allocation', style: TextStyle(fontSize: 16)),
+                const Text(
+                  'Awake Time Allocation',
+                  style: TextStyle(fontSize: 16),
+                ),
                 const SizedBox(height: 16),
                 SizedBox(
                   height: 200,
@@ -68,7 +71,8 @@ class AwakeTimeAllocationChart extends StatelessWidget {
                                   value.toInt() <
                                       awakeTimeAllocationDataList.length) {
                                 return Text(
-                                  awakeTimeAllocationDataList[value.toInt()].label,
+                                  awakeTimeAllocationDataList[value.toInt()]
+                                      .label,
                                   style: const TextStyle(fontSize: 10),
                                 );
                               }
@@ -83,22 +87,23 @@ class AwakeTimeAllocationChart extends StatelessWidget {
                           sideTitles: SideTitles(showTitles: false),
                         ),
                       ),
-                      barGroups: awakeTimeAllocationDataList
-                          .asMap()
-                          .entries
-                          .map(
-                            (entry) => BarChartGroupData(
-                              x: entry.key,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: entry.value.value,
-                                  color: _getColor(entry.value.label),
-                                  width: 15,
+                      barGroups:
+                          awakeTimeAllocationDataList
+                              .asMap()
+                              .entries
+                              .map(
+                                (entry) => BarChartGroupData(
+                                  x: entry.key,
+                                  barRods: [
+                                    BarChartRodData(
+                                      toY: entry.value.value,
+                                      color: _getColor(entry.value.label),
+                                      width: 15,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          )
-                          .toList(),
+                              )
+                              .toList(),
                       gridData: FlGridData(show: false),
                       borderData: FlBorderData(show: false),
                     ),
@@ -115,7 +120,8 @@ class AwakeTimeAllocationChart extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AwakeTimeAllocationDetailsPage(),
+                      builder:
+                          (context) => const AwakeTimeAllocationDetailsPage(),
                     ),
                   );
                 },

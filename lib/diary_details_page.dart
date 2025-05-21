@@ -14,12 +14,12 @@ class DiaryDetailsPage extends StatefulWidget {
 
 class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
   bool get isFavoriteDiaryEntry {
-    return DataManager().isFavoriteDiaryEntry(widget.diaryData);
+    return DataManager().isFavoriteDiary(widget.diaryData);
   }
 
   void _toggleFavorite() {
     setState(() {
-      DataManager().toggleFavoriteDiaryEntry(widget.diaryData);
+      DataManager().toggleFavoriteDiary(widget.diaryData);
       debugPrint(
         'Star button pressed: ${isFavoriteDiaryEntry ? "Added to favorites" : "Removed from favorites"}',
       );
@@ -111,7 +111,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      DataManager().currentJournalEntry.formattedDate,
+                      DataManager().currentJournal.formattedDate,
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
@@ -136,11 +136,11 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     ValueListenableBuilder(
-                      valueListenable: DataManager().diaryEntryyNotesNotifier,
-                      builder: (context, List<DiaryEntryyNote> notes, _) {
+                      valueListenable: DataManager().diaryNotesNotifier,
+                      builder: (context, List<DiaryEntryNote> notes, _) {
                         final note = notes.firstWhere(
                           (element) => element.id == widget.diaryData.id,
-                          orElse: () => DiaryEntryyNote(id: '', content: ''),
+                          orElse: () => DiaryEntryNote(id: '', content: ''),
                         );
                         return Container(
                           width: double.infinity,

@@ -40,7 +40,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildMoodScoreCardAndStressLevelCard() {
-    final currentDiary = DataManager().currentJournalEntry;
+    final currentDiary = DataManager().currentJournal;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,7 +68,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildHighlights() {
-    final highlights = DataManager().currentJournalEntry.highlights;
+    final highlights = DataManager().currentJournal.highlights;
     return TodayHighlightsPanel(highlights: highlights);
   }
 }

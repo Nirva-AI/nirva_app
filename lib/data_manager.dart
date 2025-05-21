@@ -13,7 +13,7 @@ class DataManager {
   User user = User(name: '');
 
   // 当前的日记和仪表板数据
-  List<PersonalJournal> journalEntries = [];
+  List<Journal> journalEntries = [];
 
   // 当前的待办事项数据
   List<Task> tasks = [];
@@ -25,7 +25,7 @@ class DataManager {
   ValueNotifier<List<String>> diaryFavoritesNotifier = ValueNotifier([]);
 
   // 日记条目笔记
-  ValueNotifier<List<DiaryEntryyNote>> diaryEntryyNotesNotifier = ValueNotifier(
+  ValueNotifier<List<DiaryEntryNote>> diaryNotesNotifier = ValueNotifier(
     [],
   ); // 用于存储日记条目笔记的通知器
 
@@ -36,7 +36,7 @@ class DataManager {
     tasks = [];
     archivedHighlights = [];
     diaryFavoritesNotifier = ValueNotifier([]);
-    diaryEntryyNotesNotifier = ValueNotifier([]);
+    diaryNotesNotifier = ValueNotifier([]);
   }
 
   //
@@ -51,12 +51,12 @@ class DataManager {
     return groupedTasks;
   }
 
-  PersonalJournal get currentJournalEntry {
+  Journal get currentJournal {
     // 获取当前的日记条目
     if (journalEntries.isNotEmpty) {
       return journalEntries.last;
     } else {
-      return PersonalJournal.createEmpty();
+      return Journal.createEmpty();
     }
   }
 
@@ -71,7 +71,7 @@ class DataManager {
   }
 
   // 切换日记条目的收藏状态
-  void toggleFavoriteDiaryEntry(DiaryEntry diaryEntry) {
+  void toggleFavoriteDiary(DiaryEntry diaryEntry) {
     if (diaryFavoritesNotifier.value.contains(diaryEntry.id)) {
       diaryFavoritesNotifier.value.remove(diaryEntry.id);
     } else {
@@ -83,36 +83,36 @@ class DataManager {
   }
 
   // 检查日记条目是否被标记为最爱
-  bool isFavoriteDiaryEntry(DiaryEntry diaryEntry) {
+  bool isFavoriteDiary(DiaryEntry diaryEntry) {
     return diaryFavoritesNotifier.value.contains(diaryEntry.id);
   }
 
   // 修改日记条目笔记
-  void modifyDiaryEntryNote(DiaryEntry diaryEntry, String content) {
+  void modifyDiaryNote(DiaryEntry diaryEntry, String content) {
     // 保存日记条目笔记
-    final note = DiaryEntryyNote(id: diaryEntry.id, content: content);
-    if (diaryEntryyNotesNotifier.value.any(
+    final note = DiaryEntryNote(id: diaryEntry.id, content: content);
+    if (diaryNotesNotifier.value.any(
       (element) => element.id == diaryEntry.id,
     )) {
       // 如果已经存在，则更新
-      final index = diaryEntryyNotesNotifier.value.indexWhere(
+      final index = diaryNotesNotifier.value.indexWhere(
         (element) => element.id == diaryEntry.id,
       );
-      diaryEntryyNotesNotifier.value[index] = note;
+      diaryNotesNotifier.value[index] = note;
     } else {
       // 如果不存在，则添加
-      diaryEntryyNotesNotifier.value.add(note);
+      diaryNotesNotifier.value.add(note);
     }
     // 通知监听者
-    diaryEntryyNotesNotifier.value = List.from(diaryEntryyNotesNotifier.value);
+    diaryNotesNotifier.value = List.from(diaryNotesNotifier.value);
   }
 
   // 获取日记条目笔记
-  String getDiaryEntryNote(DiaryEntry diaryEntry) {
+  String getDiaryNote(DiaryEntry diaryEntry) {
     // 获取日记条目笔记
-    final note = diaryEntryyNotesNotifier.value.firstWhere(
+    final note = diaryNotesNotifier.value.firstWhere(
       (element) => element.id == diaryEntry.id,
-      orElse: () => DiaryEntryyNote(id: '', content: ''),
+      orElse: () => DiaryEntryNote(id: '', content: ''),
     );
     return note.content;
   }

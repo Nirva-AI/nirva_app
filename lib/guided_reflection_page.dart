@@ -72,7 +72,7 @@ class GuidedReflectionPage extends StatelessWidget {
                 onPressed: () {
                   // 保存按钮点击事件
                   final content = _textController.text; // 获取输入框内容
-                  DataManager().modifyDiaryEntryNote(
+                  DataManager().modifyDiaryNote(
                     diaryData,
                     content,
                   ); // 保存到 DataManager

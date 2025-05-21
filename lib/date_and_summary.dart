@@ -17,11 +17,11 @@ class DateAndSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '''${DataManager().currentJournalEntry.formattedDate} Reflections''',
+            '''${DataManager().currentJournal.formattedDate} Reflections''',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
-          Text(DataManager().currentJournalEntry.summary),
+          Text(DataManager().currentJournal.summary),
         ],
       ),
     );

@@ -59,15 +59,14 @@ Map<String, dynamic> _$$DiaryEntryImplToJson(_$DiaryEntryImpl instance) =>
       'location': instance.location,
     };
 
-_$DiaryEntryyNoteImpl _$$DiaryEntryyNoteImplFromJson(
-  Map<String, dynamic> json,
-) => _$DiaryEntryyNoteImpl(
-  id: json['id'] as String,
-  content: json['content'] as String,
-);
+_$DiaryEntryNoteImpl _$$DiaryEntryNoteImplFromJson(Map<String, dynamic> json) =>
+    _$DiaryEntryNoteImpl(
+      id: json['id'] as String,
+      content: json['content'] as String,
+    );
 
-Map<String, dynamic> _$$DiaryEntryyNoteImplToJson(
-  _$DiaryEntryyNoteImpl instance,
+Map<String, dynamic> _$$DiaryEntryNoteImplToJson(
+  _$DiaryEntryNoteImpl instance,
 ) => <String, dynamic>{'id': instance.id, 'content': instance.content};
 
 _$ReflectionImpl _$$ReflectionImplFromJson(Map<String, dynamic> json) =>
@@ -230,69 +229,67 @@ _$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$SocialMapImplToJson(_$SocialMapImpl instance) =>
     <String, dynamic>{'socialEntities': instance.socialEntities};
 
-_$PersonalJournalImpl _$$PersonalJournalImplFromJson(
-  Map<String, dynamic> json,
-) => _$PersonalJournalImpl(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  summary: json['summary'] as String,
-  diaryEntries:
-      (json['diaryEntries'] as List<dynamic>)
-          .map((e) => DiaryEntry.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  quotes:
-      (json['quotes'] as List<dynamic>)
-          .map((e) => Quote.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  selfReflections:
-      (json['selfReflections'] as List<dynamic>)
-          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  detailedInsights:
-      (json['detailedInsights'] as List<dynamic>)
-          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  goals:
-      (json['goals'] as List<dynamic>)
-          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  moodScore: MoodScore.fromJson(json['moodScore'] as Map<String, dynamic>),
-  stressLevel: StressLevel.fromJson(
-    json['stressLevel'] as Map<String, dynamic>,
-  ),
-  highlights:
-      (json['highlights'] as List<dynamic>)
-          .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  energyRecords:
-      (json['energyRecords'] as List<dynamic>)
-          .map((e) => Energy.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  moods:
-      (json['moods'] as List<dynamic>)
-          .map((e) => Mood.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  awakeTimeActions:
-      (json['awakeTimeActions'] as List<dynamic>)
-          .map((e) => AwakeTimeAction.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  socialMap: SocialMap.fromJson(json['socialMap'] as Map<String, dynamic>),
-);
+_$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
+    _$JournalImpl(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      summary: json['summary'] as String,
+      diaryEntries:
+          (json['diaryEntries'] as List<dynamic>)
+              .map((e) => DiaryEntry.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      quotes:
+          (json['quotes'] as List<dynamic>)
+              .map((e) => Quote.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      selfReflections:
+          (json['selfReflections'] as List<dynamic>)
+              .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      detailedInsights:
+          (json['detailedInsights'] as List<dynamic>)
+              .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      goals:
+          (json['goals'] as List<dynamic>)
+              .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      moodScore: MoodScore.fromJson(json['moodScore'] as Map<String, dynamic>),
+      stressLevel: StressLevel.fromJson(
+        json['stressLevel'] as Map<String, dynamic>,
+      ),
+      highlights:
+          (json['highlights'] as List<dynamic>)
+              .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      energyRecords:
+          (json['energyRecords'] as List<dynamic>)
+              .map((e) => Energy.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      moods:
+          (json['moods'] as List<dynamic>)
+              .map((e) => Mood.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      awakeTimeActions:
+          (json['awakeTimeActions'] as List<dynamic>)
+              .map((e) => AwakeTimeAction.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      socialMap: SocialMap.fromJson(json['socialMap'] as Map<String, dynamic>),
+    );
 
-Map<String, dynamic> _$$PersonalJournalImplToJson(
-  _$PersonalJournalImpl instance,
-) => <String, dynamic>{
-  'dateTime': instance.dateTime.toIso8601String(),
-  'summary': instance.summary,
-  'diaryEntries': instance.diaryEntries,
-  'quotes': instance.quotes,
-  'selfReflections': instance.selfReflections,
-  'detailedInsights': instance.detailedInsights,
-  'goals': instance.goals,
-  'moodScore': instance.moodScore,
-  'stressLevel': instance.stressLevel,
-  'highlights': instance.highlights,
-  'energyRecords': instance.energyRecords,
-  'moods': instance.moods,
-  'awakeTimeActions': instance.awakeTimeActions,
-  'socialMap': instance.socialMap,
-};
+Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'summary': instance.summary,
+      'diaryEntries': instance.diaryEntries,
+      'quotes': instance.quotes,
+      'selfReflections': instance.selfReflections,
+      'detailedInsights': instance.detailedInsights,
+      'goals': instance.goals,
+      'moodScore': instance.moodScore,
+      'stressLevel': instance.stressLevel,
+      'highlights': instance.highlights,
+      'energyRecords': instance.energyRecords,
+      'moods': instance.moods,
+      'awakeTimeActions': instance.awakeTimeActions,
+      'socialMap': instance.socialMap,
+    };

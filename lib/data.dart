@@ -60,14 +60,14 @@ class DiaryEntry with _$DiaryEntry {
 }
 
 @freezed
-class DiaryEntryyNote with _$DiaryEntryyNote {
-  const factory DiaryEntryyNote({required String id, required String content}) =
-      _DiaryEntryyNote;
+class DiaryEntryNote with _$DiaryEntryNote {
+  const factory DiaryEntryNote({required String id, required String content}) =
+      _DiaryEntryNote;
 
-  factory DiaryEntryyNote.fromJson(Map<String, dynamic> json) =>
-      _$DiaryEntryyNoteFromJson(json);
+  factory DiaryEntryNote.fromJson(Map<String, dynamic> json) =>
+      _$DiaryEntryNoteFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _DiaryEntryyNote).toJson();
+  Map<String, dynamic> toJson() => (this as _DiaryEntryNote).toJson();
 }
 
 @freezed
@@ -257,8 +257,8 @@ class SocialMap with _$SocialMap {
 }
 
 @freezed
-class PersonalJournal with _$PersonalJournal {
-  const factory PersonalJournal({
+class Journal with _$Journal {
+  const factory Journal({
     required DateTime dateTime,
     required String summary,
     required List<DiaryEntry> diaryEntries,
@@ -273,15 +273,15 @@ class PersonalJournal with _$PersonalJournal {
     required List<Mood> moods,
     required List<AwakeTimeAction> awakeTimeActions,
     required SocialMap socialMap,
-  }) = _PersonalJournal;
+  }) = _Journal;
 
-  factory PersonalJournal.fromJson(Map<String, dynamic> json) =>
-      _$PersonalJournalFromJson(json);
+  factory Journal.fromJson(Map<String, dynamic> json) =>
+      _$JournalFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _PersonalJournal).toJson();
+  Map<String, dynamic> toJson() => (this as _Journal).toJson();
 
-  static PersonalJournal createEmpty() {
-    return PersonalJournal(
+  static Journal createEmpty() {
+    return Journal(
       dateTime: DateTime.now(),
       summary: '',
       diaryEntries: [],
@@ -300,7 +300,7 @@ class PersonalJournal with _$PersonalJournal {
   }
 }
 
-extension PersonalJournalExtensions on PersonalJournal {
+extension JournalExtensions on Journal {
   Map<String, double> get moodMap {
     final Map<String, double> moodMap = {};
     for (var mood in moods) {
