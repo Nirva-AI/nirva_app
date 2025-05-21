@@ -13,11 +13,12 @@ class FillTestData {
     DataManager().user = User(name: 'Weiwei');
     DataManager().tasks = FillTestData.createTestTasks();
     DataManager().journalEntries.add(FillTestData.createTestPersonalJournal());
-    initializeTestFavorites(DataManager().currentJournalEntry);
     DataManager().archivedHighlights = FillTestData.createTestHighlightGroup();
+    initializeTestFavorites(DataManager().currentJournal);
+    initializeTestMyNotes(DataManager().currentJournal);
   }
 
-  static void initializeTestFavorites(PersonalJournal journal) {
+  static void initializeTestFavorites(Journal journal) {
     // 设置测试数据
     List<DiaryEntry> diaryEntries = journal.diaryEntries;
 
@@ -29,6 +30,29 @@ class FillTestData {
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
       DataManager().diaryFavoritesNotifier.value = [randomDiaryEntry.id];
       debugPrint('已添加到最爱: ${randomDiaryEntry.id}');
+    } else {
+      debugPrint('diaryEntries 列表为空');
+    }
+  }
+
+  static void initializeTestMyNotes(Journal journal) {
+    // 设置测试数据
+    List<DiaryEntry> diaryEntries = journal.diaryEntries;
+
+    //
+    if (diaryEntries.isNotEmpty) {
+      final random = Random();
+      DiaryEntry randomDiaryEntry =
+          diaryEntries[random.nextInt(diaryEntries.length)];
+      debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
+      DataManager().diaryNotesNotifier.value = [
+        DiaryEntryNote(
+          id: randomDiaryEntry.id,
+          content:
+              'This is a test note for diary entry ${randomDiaryEntry.id}.',
+        ),
+      ];
+      debugPrint('已添加到笔记: ${randomDiaryEntry.id}');
     } else {
       debugPrint('diaryEntries 列表为空');
     }
@@ -89,7 +113,7 @@ class FillTestData {
   }
 
   // 测试数据： 初始化个人数据
-  static PersonalJournal createTestPersonalJournal() {
+  static Journal createTestPersonalJournal() {
     final String summary =
         'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
@@ -507,7 +531,7 @@ class FillTestData {
       ),
     ];
 
-    return PersonalJournal(
+    return Journal(
       dateTime: DateTime(2025, 4, 19),
       summary: summary,
       diaryEntries: diaryEntries,

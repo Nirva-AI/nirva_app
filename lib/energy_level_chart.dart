@@ -28,8 +28,7 @@ class EnergyLevelChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Energy> energyRecords =
-        DataManager().currentJournalEntry.energyRecords;
+    List<Energy> energyRecords = DataManager().currentJournal.energyRecords;
     final spots = _generateSpots(energyRecords);
 
     return Card(
@@ -64,14 +63,16 @@ class EnergyLevelChart extends StatelessWidget {
                         drawVerticalLine: true,
                         horizontalInterval: 1,
                         verticalInterval: 1,
-                        getDrawingHorizontalLine: (value) => FlLine(
-                          color: Colors.grey.withAlpha(51),
-                          strokeWidth: 1,
-                        ),
-                        getDrawingVerticalLine: (value) => FlLine(
-                          color: Colors.grey.withAlpha(51),
-                          strokeWidth: 1,
-                        ),
+                        getDrawingHorizontalLine:
+                            (value) => FlLine(
+                              color: Colors.grey.withAlpha(51),
+                              strokeWidth: 1,
+                            ),
+                        getDrawingVerticalLine:
+                            (value) => FlLine(
+                              color: Colors.grey.withAlpha(51),
+                              strokeWidth: 1,
+                            ),
                       ),
                       titlesData: FlTitlesData(
                         leftTitles: AxisTitles(
@@ -101,12 +102,12 @@ class EnergyLevelChart extends StatelessWidget {
                             showTitles: true,
                             reservedSize: 30,
                             interval: 1,
-                            getTitlesWidget: (value, meta) =>
-                                _generateBottomTitle(
-                              value,
-                              meta,
-                              energyRecords,
-                            ),
+                            getTitlesWidget:
+                                (value, meta) => _generateBottomTitle(
+                                  value,
+                                  meta,
+                                  energyRecords,
+                                ),
                           ),
                         ),
                         topTitles: AxisTitles(
@@ -133,12 +134,13 @@ class EnergyLevelChart extends StatelessWidget {
                           belowBarData: BarAreaData(show: false),
                           dotData: FlDotData(
                             show: true,
-                            getDotPainter: (spot, percent, barData, index) =>
-                                FlDotCirclePainter(
-                              radius: 4,
-                              color: Colors.purple,
-                              strokeWidth: 0,
-                            ),
+                            getDotPainter:
+                                (spot, percent, barData, index) =>
+                                    FlDotCirclePainter(
+                                      radius: 4,
+                                      color: Colors.purple,
+                                      strokeWidth: 0,
+                                    ),
                           ),
                         ),
                       ],
