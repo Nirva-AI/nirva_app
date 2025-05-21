@@ -13,7 +13,7 @@ class DataManager {
   User user = User(name: '');
 
   // 当前的日记和仪表板数据
-  List<Journal> journalEntries = [];
+  List<Journal> journals = [];
 
   // 当前的待办事项数据
   List<Task> tasks = [];
@@ -32,7 +32,7 @@ class DataManager {
   // 清空数据
   void clear() {
     user = User(name: '');
-    journalEntries = [];
+    journals = [];
     tasks = [];
     archivedHighlights = [];
     diaryFavoritesNotifier = ValueNotifier([]);
@@ -53,8 +53,8 @@ class DataManager {
 
   Journal get currentJournal {
     // 获取当前的日记条目
-    if (journalEntries.isNotEmpty) {
-      return journalEntries.last;
+    if (journals.isNotEmpty) {
+      return journals.last;
     } else {
       return Journal.createEmpty();
     }
