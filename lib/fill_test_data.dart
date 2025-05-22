@@ -37,6 +37,12 @@ class FillTestData {
         .stressLevelDashboard = FillTestData.createStressLevelDashboard(
       DataManager().currentJournal.dateTime,
     );
+
+    //添加能量水平
+    DataManager()
+        .energyLevelDashboard = FillTestData.createEnergyLevelDashboard(
+      DataManager().currentJournal.dateTime,
+    );
   }
 
   static void initializeTestFavorites(Journal journal) {
@@ -588,6 +594,17 @@ class FillTestData {
         //'Your stress levels have decreased over this week.',
         'Meditation sessions appear to reduce stress levels significantly.',
         'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
+      ],
+    );
+  }
+
+  static EnergyLevelDashborad createEnergyLevelDashboard(DateTime dateTime) {
+    return EnergyLevelDashborad(
+      dateTime: dateTime,
+      insights: [
+        //'Your energy levels peak in the late morning and early afternoon.',
+        'Social interactions appear to boost your energy significantly.',
+        'Consider scheduling important tasks during your high-energy periods.',
       ],
     );
   }

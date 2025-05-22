@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class EnergyDetailsPage extends StatelessWidget {
-  const EnergyDetailsPage({super.key});
+class EnergyLevelDetailsPage extends StatelessWidget {
+  const EnergyLevelDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,19 +56,40 @@ class EnergyDetailsPage extends StatelessWidget {
                         getTitlesWidget: (value, meta) {
                           switch (value.toInt()) {
                             case 0:
-                              return const Text('Sat', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Sat',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 1:
-                              return const Text('Sun', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Sun',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 2:
-                              return const Text('Mon', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Mon',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 3:
-                              return const Text('Tue', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Tue',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 4:
-                              return const Text('Wed', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Wed',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 5:
-                              return const Text('Thu', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Thu',
+                                style: TextStyle(fontSize: 12),
+                              );
                             case 6:
-                              return const Text('Fri', style: TextStyle(fontSize: 12));
+                              return const Text(
+                                'Fri',
+                                style: TextStyle(fontSize: 12),
+                              );
                             default:
                               return const Text('');
                           }

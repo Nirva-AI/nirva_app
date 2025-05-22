@@ -354,3 +354,16 @@ class StressLevelDashborad with _$StressLevelDashborad {
   @override
   Map<String, dynamic> toJson() => (this as _StressLevelDashborad).toJson();
 }
+
+@freezed
+class EnergyLevelDashborad with _$EnergyLevelDashborad {
+  const factory EnergyLevelDashborad({
+    required DateTime dateTime,
+    required List<String> insights,
+  }) = _EnergyLevelDashborad;
+
+  factory EnergyLevelDashborad.fromJson(Map<String, dynamic> json) =>
+      _$EnergyLevelDashboradFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _EnergyLevelDashborad).toJson();
+}

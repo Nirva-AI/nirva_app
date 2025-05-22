@@ -323,3 +323,18 @@ Map<String, dynamic> _$$StressLevelDashboradImplToJson(
   'dateTime': instance.dateTime.toIso8601String(),
   'insights': instance.insights,
 };
+
+_$EnergyLevelDashboradImpl _$$EnergyLevelDashboradImplFromJson(
+  Map<String, dynamic> json,
+) => _$EnergyLevelDashboradImpl(
+  dateTime: DateTime.parse(json['dateTime'] as String),
+  insights:
+      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+);
+
+Map<String, dynamic> _$$EnergyLevelDashboradImplToJson(
+  _$EnergyLevelDashboradImpl instance,
+) => <String, dynamic>{
+  'dateTime': instance.dateTime.toIso8601String(),
+  'insights': instance.insights,
+};
