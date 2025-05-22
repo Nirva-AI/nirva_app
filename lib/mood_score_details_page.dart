@@ -3,8 +3,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/utils.dart';
 
-class MoodScoreDetailsPage extends StatelessWidget {
+class MoodScoreDetailsPage extends StatefulWidget {
   const MoodScoreDetailsPage({super.key});
+
+  @override
+  State<MoodScoreDetailsPage> createState() => _MoodScoreDetailsPageState();
+}
+
+class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
+  MoodScoreChartType _selectedType = MoodScoreChartType.day; // 默认选中类型
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +45,9 @@ class MoodScoreDetailsPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildTab('Day', false),
-                        _buildTab('Week', true),
-                        _buildTab('Month', false),
+                        _buildTab('Day', MoodScoreChartType.day),
+                        _buildTab('Week', MoodScoreChartType.week),
+                        _buildTab('Month', MoodScoreChartType.month),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -61,7 +68,7 @@ class MoodScoreDetailsPage extends StatelessWidget {
                     SizedBox(
                       height: 200, // 为图表提供明确的高度
                       child: MoodScoreChart(
-                        type: MoodScoreChartType.week,
+                        type: _selectedType,
                         dayData: MoodScoreChartData.createDaySamples(),
                         weekData: MoodScoreChartData.createWeekSamples(),
                         monthData: MoodScoreChartData.createMonthSamples(),
@@ -83,20 +90,23 @@ class MoodScoreDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(String title, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.grey[200] : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
+  /// 构建按钮
+  Widget _buildTab(String title, MoodScoreChartType type) {
+    final bool isSelected = _selectedType == type;
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _selectedType = type; // 更新选中的类型
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isSelected ? Colors.blue : Colors.grey[200],
+        foregroundColor: isSelected ? Colors.white : Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: isSelected ? Colors.black : Colors.grey,
-        ),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -146,10 +156,7 @@ enum MoodScoreChartType { day, week, month }
 class MoodScoreChartData {
   final MoodScoreChartType type;
   final int value;
-  MoodScoreChartData({
-    this.type = MoodScoreChartType.month,
-    required this.value,
-  });
+  MoodScoreChartData({required this.type, required this.value});
 
   //要求出最近的7天
   static List<MoodScoreChartData> createDaySamples() {
