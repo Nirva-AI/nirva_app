@@ -4294,3 +4294,195 @@ abstract class _MoodScoreDashborad implements MoodScoreDashborad {
   _$$MoodScoreDashboradImplCopyWith<_$MoodScoreDashboradImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+StressLevelDashborad _$StressLevelDashboradFromJson(Map<String, dynamic> json) {
+  return _StressLevelDashborad.fromJson(json);
+}
+
+/// @nodoc
+mixin _$StressLevelDashborad {
+  DateTime get dateTime => throw _privateConstructorUsedError;
+  List<String> get insights => throw _privateConstructorUsedError;
+
+  /// Serializes this StressLevelDashborad to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of StressLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $StressLevelDashboradCopyWith<StressLevelDashborad> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $StressLevelDashboradCopyWith<$Res> {
+  factory $StressLevelDashboradCopyWith(
+    StressLevelDashborad value,
+    $Res Function(StressLevelDashborad) then,
+  ) = _$StressLevelDashboradCopyWithImpl<$Res, StressLevelDashborad>;
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class _$StressLevelDashboradCopyWithImpl<
+  $Res,
+  $Val extends StressLevelDashborad
+>
+    implements $StressLevelDashboradCopyWith<$Res> {
+  _$StressLevelDashboradCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of StressLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _value.copyWith(
+            dateTime:
+                null == dateTime
+                    ? _value.dateTime
+                    : dateTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            insights:
+                null == insights
+                    ? _value.insights
+                    : insights // ignore: cast_nullable_to_non_nullable
+                        as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$StressLevelDashboradImplCopyWith<$Res>
+    implements $StressLevelDashboradCopyWith<$Res> {
+  factory _$$StressLevelDashboradImplCopyWith(
+    _$StressLevelDashboradImpl value,
+    $Res Function(_$StressLevelDashboradImpl) then,
+  ) = __$$StressLevelDashboradImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class __$$StressLevelDashboradImplCopyWithImpl<$Res>
+    extends _$StressLevelDashboradCopyWithImpl<$Res, _$StressLevelDashboradImpl>
+    implements _$$StressLevelDashboradImplCopyWith<$Res> {
+  __$$StressLevelDashboradImplCopyWithImpl(
+    _$StressLevelDashboradImpl _value,
+    $Res Function(_$StressLevelDashboradImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of StressLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _$StressLevelDashboradImpl(
+        dateTime:
+            null == dateTime
+                ? _value.dateTime
+                : dateTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        insights:
+            null == insights
+                ? _value._insights
+                : insights // ignore: cast_nullable_to_non_nullable
+                    as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$StressLevelDashboradImpl implements _StressLevelDashborad {
+  const _$StressLevelDashboradImpl({
+    required this.dateTime,
+    required final List<String> insights,
+  }) : _insights = insights;
+
+  factory _$StressLevelDashboradImpl.fromJson(Map<String, dynamic> json) =>
+      _$$StressLevelDashboradImplFromJson(json);
+
+  @override
+  final DateTime dateTime;
+  final List<String> _insights;
+  @override
+  List<String> get insights {
+    if (_insights is EqualUnmodifiableListView) return _insights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_insights);
+  }
+
+  @override
+  String toString() {
+    return 'StressLevelDashborad(dateTime: $dateTime, insights: $insights)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$StressLevelDashboradImpl &&
+            (identical(other.dateTime, dateTime) ||
+                other.dateTime == dateTime) &&
+            const DeepCollectionEquality().equals(other._insights, _insights));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    dateTime,
+    const DeepCollectionEquality().hash(_insights),
+  );
+
+  /// Create a copy of StressLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$StressLevelDashboradImplCopyWith<_$StressLevelDashboradImpl>
+  get copyWith =>
+      __$$StressLevelDashboradImplCopyWithImpl<_$StressLevelDashboradImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$StressLevelDashboradImplToJson(this);
+  }
+}
+
+abstract class _StressLevelDashborad implements StressLevelDashborad {
+  const factory _StressLevelDashborad({
+    required final DateTime dateTime,
+    required final List<String> insights,
+  }) = _$StressLevelDashboradImpl;
+
+  factory _StressLevelDashborad.fromJson(Map<String, dynamic> json) =
+      _$StressLevelDashboradImpl.fromJson;
+
+  @override
+  DateTime get dateTime;
+  @override
+  List<String> get insights;
+
+  /// Create a copy of StressLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$StressLevelDashboradImplCopyWith<_$StressLevelDashboradImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}

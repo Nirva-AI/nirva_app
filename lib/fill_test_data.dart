@@ -9,14 +9,32 @@ class FillTestData {
   //
   static void fillTestData() {
     DataManager().clear();
-    // 添加测试数据
+    // 添加用户信息
     DataManager().user = User(name: 'Weiwei');
+
+    // 添加todo数据
     DataManager().tasks = FillTestData.createTestTasks();
-    DataManager().journals.add(FillTestData.createTestPersonalJournal());
+
+    // 添加日记数据
+    DataManager().journals.add(FillTestData.createTestJournal());
+
+    // 添加高亮数据
     DataManager().archivedHighlights = FillTestData.createTestHighlightGroup();
+
+    // 添加日记的最爱数据
     initializeTestFavorites(DataManager().currentJournal);
+
+    // 添加日记的笔记数据
     initializeTestMyNotes(DataManager().currentJournal);
+
+    // 添加情绪分数
     DataManager().moodScoreDashboard = FillTestData.createMoodScoreDashboard(
+      DataManager().currentJournal.dateTime,
+    );
+
+    // 添加压力水平
+    DataManager()
+        .stressLevelDashboard = FillTestData.createStressLevelDashboard(
       DataManager().currentJournal.dateTime,
     );
   }
@@ -116,7 +134,7 @@ class FillTestData {
   }
 
   // 测试数据： 初始化个人数据
-  static Journal createTestPersonalJournal() {
+  static Journal createTestJournal() {
     final String summary =
         'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
@@ -559,6 +577,17 @@ class FillTestData {
         // 'Your mood has been generally trending upward this week.',
         'Morning periods seem to have higher scores than evenings.',
         'Consider activities that boost your mood during lower periods.',
+      ],
+    );
+  }
+
+  static StressLevelDashborad createStressLevelDashboard(DateTime dateTime) {
+    return StressLevelDashborad(
+      dateTime: dateTime,
+      insights: [
+        //'Your stress levels have decreased over this week.',
+        'Meditation sessions appear to reduce stress levels significantly.',
+        'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
       ],
     );
   }
