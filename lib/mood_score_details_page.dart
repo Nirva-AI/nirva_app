@@ -60,7 +60,11 @@ class MoodScoreDetailsPage extends StatelessWidget {
                     // 折线图
                     SizedBox(
                       height: 200, // 为图表提供明确的高度
-                      child: _buildLineChart(),
+                      child: MoodScoreChart(
+                        type: MoodScoreChartType.month,
+                        monthlyData:
+                            MoodScoreChartData.createMonthlyMoodScoreSamples(),
+                      ),
                     ),
                   ],
                 ),
@@ -94,104 +98,6 @@ class MoodScoreDetailsPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // 提取图表部分为独立函数
-  Widget _buildLineChart() {
-    return Center(
-      // 确保图表居中
-      child: FractionallySizedBox(
-        widthFactor: 0.90, // 宽度为原来的 85%
-        heightFactor: 0.8, // 高度为原来的 60%
-        child: LineChart(
-          LineChartData(
-            minY: 0, // 设置最小值为 0
-            maxY: 100, // 设置最大值为 100
-            gridData: FlGridData(show: false),
-            titlesData: FlTitlesData(
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true, // 确保左侧标题显示
-                  interval: 25, // 设置刻度间隔为 25
-                  reservedSize: 40, // 增加刻度区域的宽度
-                  getTitlesWidget: (value, meta) {
-                    if (value == 0 ||
-                        value == 25 ||
-                        value == 50 ||
-                        value == 75 ||
-                        value == 100) {
-                      return Text(
-                        value.toInt().toString(),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 32, // 为底部标题预留空间
-                  interval: 1, // 设置刻度间隔为 1，与 FlSpot 的 x 值一致
-                  getTitlesWidget: (value, meta) {
-                    // 返回对应的月份标签
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0), // 添加顶部间距
-                      child: Text(
-                        _formatMonthTitle(value.toInt()),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-            ),
-            borderData: FlBorderData(show: false),
-            lineBarsData: [
-              LineChartBarData(
-                spots: const [
-                  FlSpot(0, 70),
-                  FlSpot(1, 78),
-                  FlSpot(2, 80),
-                  FlSpot(3, 82),
-                  FlSpot(4, 85),
-                ],
-                isCurved: true,
-                color: Colors.purple,
-                barWidth: 3,
-                isStrokeCapRound: true,
-                belowBarData: BarAreaData(show: false),
-                dotData: FlDotData(show: true),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _formatMonthTitle(int widgetIndexValue) {
-    // 获取当前月份
-    DateTime dateTime = DataManager().moodScoreInsights.dateTime;
-    final int currentMonth = dateTime.month;
-
-    // 计算从当前月份开始的正序排列
-    int startMonth = (currentMonth - 5) % 12; // 计算起始月份索引
-    if (startMonth < 0) startMonth += 12; // 确保索引为正数
-    int targetMonth = (startMonth + widgetIndexValue) % 12; // 计算目标月份索引
-    return Utils.monthNames[targetMonth];
   }
 
   // 提取 Insights 卡片部分为独立函数
@@ -231,5 +137,165 @@ class MoodScoreDetailsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+enum MoodScoreChartType { day, week, month }
+
+class MoodScoreChartData {
+  final MoodScoreChartType type;
+  final int value;
+  MoodScoreChartData({
+    this.type = MoodScoreChartType.month,
+    required this.value,
+  });
+
+  static List<MoodScoreChartData> createMonthlyMoodScoreSamples() {
+    return [
+      MoodScoreChartData(type: MoodScoreChartType.month, value: 70),
+      MoodScoreChartData(type: MoodScoreChartType.month, value: 78),
+      MoodScoreChartData(type: MoodScoreChartType.month, value: 80),
+      MoodScoreChartData(type: MoodScoreChartType.month, value: 82),
+      MoodScoreChartData(type: MoodScoreChartType.month, value: 85),
+    ];
+  }
+}
+
+class MoodScoreChart extends StatelessWidget {
+  final MoodScoreChartType type;
+  final List<MoodScoreChartData> monthlyData;
+
+  const MoodScoreChart({
+    super.key,
+    required this.type,
+    required this.monthlyData,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      // 确保图表居中
+      child: FractionallySizedBox(
+        widthFactor: 0.9,
+        heightFactor: 1.0,
+        child: LineChart(
+          LineChartData(
+            minY: 0, // 设置最小值为 0
+            maxY: 100, // 设置最大值为 100
+            gridData: FlGridData(show: false),
+            titlesData: FlTitlesData(
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true, // 确保左侧标题显示
+                  interval: 25, // 设置刻度间隔为 25
+                  reservedSize: 40, // 增加刻度区域的宽度
+                  getTitlesWidget: (value, meta) {
+                    if (value == 0 ||
+                        value == 25 ||
+                        value == 50 ||
+                        value == 75 ||
+                        value == 100) {
+                      return Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+              bottomTitles: AxisTitles(sideTitles: _buildBottomTitles(type)),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+            ),
+            borderData: FlBorderData(show: false),
+            lineBarsData: _buildLineBarsData(type),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 构建底部标题的逻辑
+  SideTitles _buildBottomTitles(MoodScoreChartType type) {
+    switch (type) {
+      case MoodScoreChartType.month:
+        return SideTitles(
+          showTitles: true,
+          reservedSize: 32, // 为底部标题预留空间
+          interval: 1, // 设置刻度间隔为 1，与 FlSpot 的 x 值一致
+          getTitlesWidget: (value, meta) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0), // 添加顶部间距
+              child: Text(
+                _formatMonthTitle(value.toInt(), monthlyData.length),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          },
+        );
+      case MoodScoreChartType.day:
+        // 暂时留空
+        return SideTitles(showTitles: false);
+      case MoodScoreChartType.week:
+        // 暂时留空
+        return SideTitles(showTitles: false);
+    }
+  }
+
+  /// 构建 lineBarsData 的逻辑
+  List<LineChartBarData> _buildLineBarsData(MoodScoreChartType type) {
+    switch (type) {
+      case MoodScoreChartType.month:
+        return [
+          LineChartBarData(
+            spots:
+                monthlyData
+                    .asMap()
+                    .entries
+                    .map(
+                      (entry) => FlSpot(
+                        entry.key.toDouble(),
+                        entry.value.value.toDouble(),
+                      ),
+                    )
+                    .toList(),
+            isCurved: true,
+            color: Colors.purple,
+            barWidth: 3,
+            isStrokeCapRound: true,
+            belowBarData: BarAreaData(show: false),
+            dotData: FlDotData(show: true),
+          ),
+        ];
+      case MoodScoreChartType.day:
+        // 暂时留空
+        return [];
+      case MoodScoreChartType.week:
+        // 暂时留空
+        return [];
+    }
+  }
+
+  /// 格式化月份标题
+  String _formatMonthTitle(int widgetIndexValue, int monthsCount) {
+    // 获取当前月份
+    DateTime dateTime = DataManager().moodScoreInsights.dateTime;
+    final int currentMonth = dateTime.month;
+
+    // 计算从当前月份开始的正序排列
+    int startMonth = (currentMonth - monthsCount) % 12; // 计算起始月份索引
+    if (startMonth < 0) startMonth += 12; // 确保索引为正数
+    int targetMonth = (startMonth + widgetIndexValue) % 12; // 计算目标月份索引
+    return Utils.monthNames[targetMonth];
   }
 }
