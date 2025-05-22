@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/energy_details_page.dart'; // 导入新页面
+import 'package:nirva_app/energy_level_details_page.dart'; // 导入新页面
 
 class EnergyLevelChart extends StatelessWidget {
   const EnergyLevelChart({super.key});
@@ -158,7 +158,7 @@ class EnergyLevelChart extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const EnergyDetailsPage(),
+                      builder: (context) => const EnergyLevelDetailsPage(),
                     ),
                   );
                 },

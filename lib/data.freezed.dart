@@ -4486,3 +4486,195 @@ abstract class _StressLevelDashborad implements StressLevelDashborad {
   _$$StressLevelDashboradImplCopyWith<_$StressLevelDashboradImpl>
   get copyWith => throw _privateConstructorUsedError;
 }
+
+EnergyLevelDashborad _$EnergyLevelDashboradFromJson(Map<String, dynamic> json) {
+  return _EnergyLevelDashborad.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EnergyLevelDashborad {
+  DateTime get dateTime => throw _privateConstructorUsedError;
+  List<String> get insights => throw _privateConstructorUsedError;
+
+  /// Serializes this EnergyLevelDashborad to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of EnergyLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EnergyLevelDashboradCopyWith<EnergyLevelDashborad> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EnergyLevelDashboradCopyWith<$Res> {
+  factory $EnergyLevelDashboradCopyWith(
+    EnergyLevelDashborad value,
+    $Res Function(EnergyLevelDashborad) then,
+  ) = _$EnergyLevelDashboradCopyWithImpl<$Res, EnergyLevelDashborad>;
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class _$EnergyLevelDashboradCopyWithImpl<
+  $Res,
+  $Val extends EnergyLevelDashborad
+>
+    implements $EnergyLevelDashboradCopyWith<$Res> {
+  _$EnergyLevelDashboradCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of EnergyLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _value.copyWith(
+            dateTime:
+                null == dateTime
+                    ? _value.dateTime
+                    : dateTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            insights:
+                null == insights
+                    ? _value.insights
+                    : insights // ignore: cast_nullable_to_non_nullable
+                        as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$EnergyLevelDashboradImplCopyWith<$Res>
+    implements $EnergyLevelDashboradCopyWith<$Res> {
+  factory _$$EnergyLevelDashboradImplCopyWith(
+    _$EnergyLevelDashboradImpl value,
+    $Res Function(_$EnergyLevelDashboradImpl) then,
+  ) = __$$EnergyLevelDashboradImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class __$$EnergyLevelDashboradImplCopyWithImpl<$Res>
+    extends _$EnergyLevelDashboradCopyWithImpl<$Res, _$EnergyLevelDashboradImpl>
+    implements _$$EnergyLevelDashboradImplCopyWith<$Res> {
+  __$$EnergyLevelDashboradImplCopyWithImpl(
+    _$EnergyLevelDashboradImpl _value,
+    $Res Function(_$EnergyLevelDashboradImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EnergyLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _$EnergyLevelDashboradImpl(
+        dateTime:
+            null == dateTime
+                ? _value.dateTime
+                : dateTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        insights:
+            null == insights
+                ? _value._insights
+                : insights // ignore: cast_nullable_to_non_nullable
+                    as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EnergyLevelDashboradImpl implements _EnergyLevelDashborad {
+  const _$EnergyLevelDashboradImpl({
+    required this.dateTime,
+    required final List<String> insights,
+  }) : _insights = insights;
+
+  factory _$EnergyLevelDashboradImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EnergyLevelDashboradImplFromJson(json);
+
+  @override
+  final DateTime dateTime;
+  final List<String> _insights;
+  @override
+  List<String> get insights {
+    if (_insights is EqualUnmodifiableListView) return _insights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_insights);
+  }
+
+  @override
+  String toString() {
+    return 'EnergyLevelDashborad(dateTime: $dateTime, insights: $insights)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EnergyLevelDashboradImpl &&
+            (identical(other.dateTime, dateTime) ||
+                other.dateTime == dateTime) &&
+            const DeepCollectionEquality().equals(other._insights, _insights));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    dateTime,
+    const DeepCollectionEquality().hash(_insights),
+  );
+
+  /// Create a copy of EnergyLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EnergyLevelDashboradImplCopyWith<_$EnergyLevelDashboradImpl>
+  get copyWith =>
+      __$$EnergyLevelDashboradImplCopyWithImpl<_$EnergyLevelDashboradImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EnergyLevelDashboradImplToJson(this);
+  }
+}
+
+abstract class _EnergyLevelDashborad implements EnergyLevelDashborad {
+  const factory _EnergyLevelDashborad({
+    required final DateTime dateTime,
+    required final List<String> insights,
+  }) = _$EnergyLevelDashboradImpl;
+
+  factory _EnergyLevelDashborad.fromJson(Map<String, dynamic> json) =
+      _$EnergyLevelDashboradImpl.fromJson;
+
+  @override
+  DateTime get dateTime;
+  @override
+  List<String> get insights;
+
+  /// Create a copy of EnergyLevelDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$EnergyLevelDashboradImplCopyWith<_$EnergyLevelDashboradImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}

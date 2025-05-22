@@ -38,6 +38,11 @@ class DataManager {
     insights: [],
   );
 
+  EnergyLevelDashborad energyLevelDashboard = EnergyLevelDashborad(
+    dateTime: DateTime.now(),
+    insights: [],
+  );
+
   // 清空数据
   void clear() {
     user = User(name: '');
