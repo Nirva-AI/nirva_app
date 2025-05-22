@@ -171,13 +171,14 @@ Map<String, dynamic> _$$EnergyImplToJson(_$EnergyImpl instance) =>
       'energyLevel': instance.energyLevel,
     };
 
-_$MoodImpl _$$MoodImplFromJson(Map<String, dynamic> json) => _$MoodImpl(
-  name: json['name'] as String,
-  percentage: (json['percentage'] as num).toDouble(),
-  color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
-);
+_$MoodTrackingImpl _$$MoodTrackingImplFromJson(Map<String, dynamic> json) =>
+    _$MoodTrackingImpl(
+      name: json['name'] as String,
+      percentage: (json['percentage'] as num).toDouble(),
+      color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
+    );
 
-Map<String, dynamic> _$$MoodImplToJson(_$MoodImpl instance) =>
+Map<String, dynamic> _$$MoodTrackingImplToJson(_$MoodTrackingImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
       'percentage': instance.percentage,
@@ -265,7 +266,7 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
               .toList(),
       moods:
           (json['moods'] as List<dynamic>)
-              .map((e) => Mood.fromJson(e as Map<String, dynamic>))
+              .map((e) => MoodTracking.fromJson(e as Map<String, dynamic>))
               .toList(),
       awakeTimeActions:
           (json['awakeTimeActions'] as List<dynamic>)
@@ -332,6 +333,21 @@ _$EnergyLevelDashboradImpl _$$EnergyLevelDashboradImplFromJson(
 
 Map<String, dynamic> _$$EnergyLevelDashboradImplToJson(
   _$EnergyLevelDashboradImpl instance,
+) => <String, dynamic>{
+  'dateTime': instance.dateTime.toIso8601String(),
+  'insights': instance.insights,
+};
+
+_$MoodTrackingDashboradImpl _$$MoodTrackingDashboradImplFromJson(
+  Map<String, dynamic> json,
+) => _$MoodTrackingDashboradImpl(
+  dateTime: DateTime.parse(json['dateTime'] as String),
+  insights:
+      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+);
+
+Map<String, dynamic> _$$MoodTrackingDashboradImplToJson(
+  _$MoodTrackingDashboradImpl instance,
 ) => <String, dynamic>{
   'dateTime': instance.dateTime.toIso8601String(),
   'insights': instance.insights,

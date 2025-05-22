@@ -27,18 +27,26 @@ class DataManager {
   // 日记条目笔记
   ValueNotifier<List<DiaryEntryNote>> diaryNotesNotifier = ValueNotifier([]);
 
-  //
+  // 情绪评分仪表板
   MoodScoreDashborad moodScoreDashboard = MoodScoreDashborad(
     dateTime: DateTime.now(),
     insights: [],
   );
 
+  // 压力水平仪表板
   StressLevelDashborad stressLevelDashboard = StressLevelDashborad(
     dateTime: DateTime.now(),
     insights: [],
   );
 
+  // 能量水平仪表板
   EnergyLevelDashborad energyLevelDashboard = EnergyLevelDashborad(
+    dateTime: DateTime.now(),
+    insights: [],
+  );
+
+  // 情绪追踪仪表板
+  MoodTrackingDashborad moodTrackingDashboard = MoodTrackingDashborad(
     dateTime: DateTime.now(),
     insights: [],
   );
@@ -56,6 +64,14 @@ class DataManager {
       insights: [],
     );
     stressLevelDashboard = StressLevelDashborad(
+      dateTime: DateTime.now(),
+      insights: [],
+    );
+    energyLevelDashboard = EnergyLevelDashborad(
+      dateTime: DateTime.now(),
+      insights: [],
+    );
+    moodTrackingDashboard = MoodTrackingDashborad(
       dateTime: DateTime.now(),
       insights: [],
     );

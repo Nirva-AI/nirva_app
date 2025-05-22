@@ -2696,44 +2696,47 @@ abstract class _Energy implements Energy {
       throw _privateConstructorUsedError;
 }
 
-Mood _$MoodFromJson(Map<String, dynamic> json) {
-  return _Mood.fromJson(json);
+MoodTracking _$MoodTrackingFromJson(Map<String, dynamic> json) {
+  return _MoodTracking.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Mood {
+mixin _$MoodTracking {
   String get name => throw _privateConstructorUsedError;
   double get percentage => throw _privateConstructorUsedError;
   int get color => throw _privateConstructorUsedError;
 
-  /// Serializes this Mood to a JSON map.
+  /// Serializes this MoodTracking to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of Mood
+  /// Create a copy of MoodTracking
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $MoodCopyWith<Mood> get copyWith => throw _privateConstructorUsedError;
+  $MoodTrackingCopyWith<MoodTracking> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $MoodCopyWith<$Res> {
-  factory $MoodCopyWith(Mood value, $Res Function(Mood) then) =
-      _$MoodCopyWithImpl<$Res, Mood>;
+abstract class $MoodTrackingCopyWith<$Res> {
+  factory $MoodTrackingCopyWith(
+    MoodTracking value,
+    $Res Function(MoodTracking) then,
+  ) = _$MoodTrackingCopyWithImpl<$Res, MoodTracking>;
   @useResult
   $Res call({String name, double percentage, int color});
 }
 
 /// @nodoc
-class _$MoodCopyWithImpl<$Res, $Val extends Mood>
-    implements $MoodCopyWith<$Res> {
-  _$MoodCopyWithImpl(this._value, this._then);
+class _$MoodTrackingCopyWithImpl<$Res, $Val extends MoodTracking>
+    implements $MoodTrackingCopyWith<$Res> {
+  _$MoodTrackingCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Mood
+  /// Create a copy of MoodTracking
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -2766,24 +2769,27 @@ class _$MoodCopyWithImpl<$Res, $Val extends Mood>
 }
 
 /// @nodoc
-abstract class _$$MoodImplCopyWith<$Res> implements $MoodCopyWith<$Res> {
-  factory _$$MoodImplCopyWith(
-    _$MoodImpl value,
-    $Res Function(_$MoodImpl) then,
-  ) = __$$MoodImplCopyWithImpl<$Res>;
+abstract class _$$MoodTrackingImplCopyWith<$Res>
+    implements $MoodTrackingCopyWith<$Res> {
+  factory _$$MoodTrackingImplCopyWith(
+    _$MoodTrackingImpl value,
+    $Res Function(_$MoodTrackingImpl) then,
+  ) = __$$MoodTrackingImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, double percentage, int color});
 }
 
 /// @nodoc
-class __$$MoodImplCopyWithImpl<$Res>
-    extends _$MoodCopyWithImpl<$Res, _$MoodImpl>
-    implements _$$MoodImplCopyWith<$Res> {
-  __$$MoodImplCopyWithImpl(_$MoodImpl _value, $Res Function(_$MoodImpl) _then)
-    : super(_value, _then);
+class __$$MoodTrackingImplCopyWithImpl<$Res>
+    extends _$MoodTrackingCopyWithImpl<$Res, _$MoodTrackingImpl>
+    implements _$$MoodTrackingImplCopyWith<$Res> {
+  __$$MoodTrackingImplCopyWithImpl(
+    _$MoodTrackingImpl _value,
+    $Res Function(_$MoodTrackingImpl) _then,
+  ) : super(_value, _then);
 
-  /// Create a copy of Mood
+  /// Create a copy of MoodTracking
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -2793,7 +2799,7 @@ class __$$MoodImplCopyWithImpl<$Res>
     Object? color = null,
   }) {
     return _then(
-      _$MoodImpl(
+      _$MoodTrackingImpl(
         name:
             null == name
                 ? _value.name
@@ -2816,15 +2822,15 @@ class __$$MoodImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$MoodImpl implements _Mood {
-  const _$MoodImpl({
+class _$MoodTrackingImpl implements _MoodTracking {
+  const _$MoodTrackingImpl({
     required this.name,
     required this.percentage,
     this.color = 0xFF00FF00,
   });
 
-  factory _$MoodImpl.fromJson(Map<String, dynamic> json) =>
-      _$$MoodImplFromJson(json);
+  factory _$MoodTrackingImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MoodTrackingImplFromJson(json);
 
   @override
   final String name;
@@ -2836,14 +2842,14 @@ class _$MoodImpl implements _Mood {
 
   @override
   String toString() {
-    return 'Mood(name: $name, percentage: $percentage, color: $color)';
+    return 'MoodTracking(name: $name, percentage: $percentage, color: $color)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$MoodImpl &&
+            other is _$MoodTrackingImpl &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.percentage, percentage) ||
                 other.percentage == percentage) &&
@@ -2854,28 +2860,29 @@ class _$MoodImpl implements _Mood {
   @override
   int get hashCode => Object.hash(runtimeType, name, percentage, color);
 
-  /// Create a copy of Mood
+  /// Create a copy of MoodTracking
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$MoodImplCopyWith<_$MoodImpl> get copyWith =>
-      __$$MoodImplCopyWithImpl<_$MoodImpl>(this, _$identity);
+  _$$MoodTrackingImplCopyWith<_$MoodTrackingImpl> get copyWith =>
+      __$$MoodTrackingImplCopyWithImpl<_$MoodTrackingImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MoodImplToJson(this);
+    return _$$MoodTrackingImplToJson(this);
   }
 }
 
-abstract class _Mood implements Mood {
-  const factory _Mood({
+abstract class _MoodTracking implements MoodTracking {
+  const factory _MoodTracking({
     required final String name,
     required final double percentage,
     final int color,
-  }) = _$MoodImpl;
+  }) = _$MoodTrackingImpl;
 
-  factory _Mood.fromJson(Map<String, dynamic> json) = _$MoodImpl.fromJson;
+  factory _MoodTracking.fromJson(Map<String, dynamic> json) =
+      _$MoodTrackingImpl.fromJson;
 
   @override
   String get name;
@@ -2884,11 +2891,11 @@ abstract class _Mood implements Mood {
   @override
   int get color;
 
-  /// Create a copy of Mood
+  /// Create a copy of MoodTracking
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$MoodImplCopyWith<_$MoodImpl> get copyWith =>
+  _$$MoodTrackingImplCopyWith<_$MoodTrackingImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -3512,7 +3519,7 @@ mixin _$Journal {
   StressLevel get stressLevel => throw _privateConstructorUsedError;
   List<Highlight> get highlights => throw _privateConstructorUsedError;
   List<Energy> get energyRecords => throw _privateConstructorUsedError;
-  List<Mood> get moods => throw _privateConstructorUsedError;
+  List<MoodTracking> get moods => throw _privateConstructorUsedError;
   List<AwakeTimeAction> get awakeTimeActions =>
       throw _privateConstructorUsedError;
   SocialMap get socialMap => throw _privateConstructorUsedError;
@@ -3543,7 +3550,7 @@ abstract class $JournalCopyWith<$Res> {
     StressLevel stressLevel,
     List<Highlight> highlights,
     List<Energy> energyRecords,
-    List<Mood> moods,
+    List<MoodTracking> moods,
     List<AwakeTimeAction> awakeTimeActions,
     SocialMap socialMap,
   });
@@ -3644,7 +3651,7 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
                 null == moods
                     ? _value.moods
                     : moods // ignore: cast_nullable_to_non_nullable
-                        as List<Mood>,
+                        as List<MoodTracking>,
             awakeTimeActions:
                 null == awakeTimeActions
                     ? _value.awakeTimeActions
@@ -3711,7 +3718,7 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
     StressLevel stressLevel,
     List<Highlight> highlights,
     List<Energy> energyRecords,
-    List<Mood> moods,
+    List<MoodTracking> moods,
     List<AwakeTimeAction> awakeTimeActions,
     SocialMap socialMap,
   });
@@ -3814,7 +3821,7 @@ class __$$JournalImplCopyWithImpl<$Res>
             null == moods
                 ? _value._moods
                 : moods // ignore: cast_nullable_to_non_nullable
-                    as List<Mood>,
+                    as List<MoodTracking>,
         awakeTimeActions:
             null == awakeTimeActions
                 ? _value._awakeTimeActions
@@ -3845,7 +3852,7 @@ class _$JournalImpl implements _Journal {
     required this.stressLevel,
     required final List<Highlight> highlights,
     required final List<Energy> energyRecords,
-    required final List<Mood> moods,
+    required final List<MoodTracking> moods,
     required final List<AwakeTimeAction> awakeTimeActions,
     required this.socialMap,
   }) : _diaryEntries = diaryEntries,
@@ -3926,9 +3933,9 @@ class _$JournalImpl implements _Journal {
     return EqualUnmodifiableListView(_energyRecords);
   }
 
-  final List<Mood> _moods;
+  final List<MoodTracking> _moods;
   @override
-  List<Mood> get moods {
+  List<MoodTracking> get moods {
     if (_moods is EqualUnmodifiableListView) return _moods;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_moods);
@@ -4041,7 +4048,7 @@ abstract class _Journal implements Journal {
     required final StressLevel stressLevel,
     required final List<Highlight> highlights,
     required final List<Energy> energyRecords,
-    required final List<Mood> moods,
+    required final List<MoodTracking> moods,
     required final List<AwakeTimeAction> awakeTimeActions,
     required final SocialMap socialMap,
   }) = _$JournalImpl;
@@ -4071,7 +4078,7 @@ abstract class _Journal implements Journal {
   @override
   List<Energy> get energyRecords;
   @override
-  List<Mood> get moods;
+  List<MoodTracking> get moods;
   @override
   List<AwakeTimeAction> get awakeTimeActions;
   @override
@@ -4654,5 +4661,200 @@ abstract class _EnergyLevelDashborad implements EnergyLevelDashborad {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EnergyLevelDashboradImplCopyWith<_$EnergyLevelDashboradImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+MoodTrackingDashborad _$MoodTrackingDashboradFromJson(
+  Map<String, dynamic> json,
+) {
+  return _MoodTrackingDashborad.fromJson(json);
+}
+
+/// @nodoc
+mixin _$MoodTrackingDashborad {
+  DateTime get dateTime => throw _privateConstructorUsedError;
+  List<String> get insights => throw _privateConstructorUsedError;
+
+  /// Serializes this MoodTrackingDashborad to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of MoodTrackingDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MoodTrackingDashboradCopyWith<MoodTrackingDashborad> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MoodTrackingDashboradCopyWith<$Res> {
+  factory $MoodTrackingDashboradCopyWith(
+    MoodTrackingDashborad value,
+    $Res Function(MoodTrackingDashborad) then,
+  ) = _$MoodTrackingDashboradCopyWithImpl<$Res, MoodTrackingDashborad>;
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class _$MoodTrackingDashboradCopyWithImpl<
+  $Res,
+  $Val extends MoodTrackingDashborad
+>
+    implements $MoodTrackingDashboradCopyWith<$Res> {
+  _$MoodTrackingDashboradCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of MoodTrackingDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _value.copyWith(
+            dateTime:
+                null == dateTime
+                    ? _value.dateTime
+                    : dateTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            insights:
+                null == insights
+                    ? _value.insights
+                    : insights // ignore: cast_nullable_to_non_nullable
+                        as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$MoodTrackingDashboradImplCopyWith<$Res>
+    implements $MoodTrackingDashboradCopyWith<$Res> {
+  factory _$$MoodTrackingDashboradImplCopyWith(
+    _$MoodTrackingDashboradImpl value,
+    $Res Function(_$MoodTrackingDashboradImpl) then,
+  ) = __$$MoodTrackingDashboradImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class __$$MoodTrackingDashboradImplCopyWithImpl<$Res>
+    extends
+        _$MoodTrackingDashboradCopyWithImpl<$Res, _$MoodTrackingDashboradImpl>
+    implements _$$MoodTrackingDashboradImplCopyWith<$Res> {
+  __$$MoodTrackingDashboradImplCopyWithImpl(
+    _$MoodTrackingDashboradImpl _value,
+    $Res Function(_$MoodTrackingDashboradImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of MoodTrackingDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _$MoodTrackingDashboradImpl(
+        dateTime:
+            null == dateTime
+                ? _value.dateTime
+                : dateTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        insights:
+            null == insights
+                ? _value._insights
+                : insights // ignore: cast_nullable_to_non_nullable
+                    as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MoodTrackingDashboradImpl implements _MoodTrackingDashborad {
+  const _$MoodTrackingDashboradImpl({
+    required this.dateTime,
+    required final List<String> insights,
+  }) : _insights = insights;
+
+  factory _$MoodTrackingDashboradImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MoodTrackingDashboradImplFromJson(json);
+
+  @override
+  final DateTime dateTime;
+  final List<String> _insights;
+  @override
+  List<String> get insights {
+    if (_insights is EqualUnmodifiableListView) return _insights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_insights);
+  }
+
+  @override
+  String toString() {
+    return 'MoodTrackingDashborad(dateTime: $dateTime, insights: $insights)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MoodTrackingDashboradImpl &&
+            (identical(other.dateTime, dateTime) ||
+                other.dateTime == dateTime) &&
+            const DeepCollectionEquality().equals(other._insights, _insights));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    dateTime,
+    const DeepCollectionEquality().hash(_insights),
+  );
+
+  /// Create a copy of MoodTrackingDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MoodTrackingDashboradImplCopyWith<_$MoodTrackingDashboradImpl>
+  get copyWith =>
+      __$$MoodTrackingDashboradImplCopyWithImpl<_$MoodTrackingDashboradImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MoodTrackingDashboradImplToJson(this);
+  }
+}
+
+abstract class _MoodTrackingDashborad implements MoodTrackingDashborad {
+  const factory _MoodTrackingDashborad({
+    required final DateTime dateTime,
+    required final List<String> insights,
+  }) = _$MoodTrackingDashboradImpl;
+
+  factory _MoodTrackingDashborad.fromJson(Map<String, dynamic> json) =
+      _$MoodTrackingDashboradImpl.fromJson;
+
+  @override
+  DateTime get dateTime;
+  @override
+  List<String> get insights;
+
+  /// Create a copy of MoodTrackingDashborad
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MoodTrackingDashboradImplCopyWith<_$MoodTrackingDashboradImpl>
   get copyWith => throw _privateConstructorUsedError;
 }
