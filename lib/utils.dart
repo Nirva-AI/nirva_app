@@ -21,6 +21,16 @@ class Utils {
     'Dec',
   ];
 
+  static List<String> weekDayNames = [
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
+  ];
+
   // 静态方法：加载 JSON 文件并解析为 Map
   static Future<Map<String, dynamic>> loadJsonAsset(String path) async {
     // 加载 JSON 文件内容
