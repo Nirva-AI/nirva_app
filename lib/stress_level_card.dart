@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/stress_details_page.dart'; // 导入新页面
+import 'package:nirva_app/stress_level_details_page.dart'; // 导入新页面
 
 class StressLevelCard extends StatelessWidget {
   final StressLevel data;
@@ -41,7 +41,7 @@ class StressLevelCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const StressDetailsPage(),
+                          builder: (context) => const StressLevelDetailsPage(),
                         ),
                       );
                     },

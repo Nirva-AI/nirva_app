@@ -53,9 +53,9 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
                     const SizedBox(height: 16),
 
                     // Mood Score
-                    const Center(
+                    Center(
                       child: Text(
-                        '85',
+                        _parseMoodScoreString(_selectedType),
                         style: TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -88,6 +88,18 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
         ),
       ),
     );
+  }
+
+  String _parseMoodScoreString(MoodScoreChartType type) {
+    // 解析分数的逻辑
+    if (type == MoodScoreChartType.day) {
+      return '83'; // 示例分数
+    } else if (type == MoodScoreChartType.week) {
+      return '85'; // 示例分数
+    } else if (type == MoodScoreChartType.month) {
+      return '85'; // 示例分数
+    }
+    return '0'; // 默认值
   }
 
   /// 构建按钮

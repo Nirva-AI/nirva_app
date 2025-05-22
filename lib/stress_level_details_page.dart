@@ -3,15 +3,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/utils.dart';
 
-class StressDetailsPage extends StatefulWidget {
-  const StressDetailsPage({super.key});
+class StressLevelDetailsPage extends StatefulWidget {
+  const StressLevelDetailsPage({super.key});
 
   @override
-  State<StressDetailsPage> createState() => _StressDetailsPageState();
+  State<StressLevelDetailsPage> createState() => _StressLevelDetailsPageState();
 }
 
-class _StressDetailsPageState extends State<StressDetailsPage> {
-  StressChartType _selectedType = StressChartType.day; // 默认选中类型
+class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
+  StressLevelChartType _selectedType = StressLevelChartType.day; // 默认选中类型
 
   @override
   Widget build(BuildContext context) {
@@ -45,17 +45,17 @@ class _StressDetailsPageState extends State<StressDetailsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildTab('Day', StressChartType.day),
-                        _buildTab('Week', StressChartType.week),
-                        _buildTab('Month', StressChartType.month),
+                        _buildTab('Day', StressLevelChartType.day),
+                        _buildTab('Week', StressLevelChartType.week),
+                        _buildTab('Month', StressLevelChartType.month),
                       ],
                     ),
                     const SizedBox(height: 16),
 
                     // Stress Level
-                    const Center(
+                    Center(
                       child: Text(
-                        '3.3',
+                        _parseStressLevelString(_selectedType),
                         style: TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -67,11 +67,11 @@ class _StressDetailsPageState extends State<StressDetailsPage> {
                     // 折线图
                     SizedBox(
                       height: 200, // 为图表提供明确的高度
-                      child: StressChart(
+                      child: StressLevelChart(
                         type: _selectedType,
-                        dayData: StressChartData.createDaySamples(),
-                        weekData: StressChartData.createWeekSamples(),
-                        monthData: StressChartData.createMonthSamples(),
+                        dayData: StressLevelChartData.createDaySamples(),
+                        weekData: StressLevelChartData.createWeekSamples(),
+                        monthData: StressLevelChartData.createMonthSamples(),
                       ),
                     ),
                   ],
@@ -90,8 +90,19 @@ class _StressDetailsPageState extends State<StressDetailsPage> {
     );
   }
 
+  String _parseStressLevelString(StressLevelChartType type) {
+    if (type == StressLevelChartType.day) {
+      return "3.3";
+    } else if (type == StressLevelChartType.week) {
+      return "2.9";
+    } else if (type == StressLevelChartType.month) {
+      return "3.2";
+    }
+    return "0.0"; // 默认值
+  }
+
   /// 构建按钮
-  Widget _buildTab(String title, StressChartType type) {
+  Widget _buildTab(String title, StressLevelChartType type) {
     final bool isSelected = _selectedType == type;
     return ElevatedButton(
       onPressed: () {
@@ -114,13 +125,14 @@ class _StressDetailsPageState extends State<StressDetailsPage> {
   // 提取 Insights 卡片部分为独立函数
   Widget _buildInsightsCard(List<String> insights) {
     // 如果insights为空，提供一些默认值
-    final List<String> displayInsights = insights.isNotEmpty
-        ? insights
-        : [
-            'Your stress levels have decreased over this day.',
-            'Meditation sessions appear to reduce stress levels significantly.',
-            'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
-          ];
+    final List<String> displayInsights =
+        insights.isNotEmpty
+            ? insights
+            : [
+              'Your stress levels have decreased over this day.',
+              'Meditation sessions appear to reduce stress levels significantly.',
+              'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
+            ];
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -146,7 +158,7 @@ class _StressDetailsPageState extends State<StressDetailsPage> {
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: Text(insight, style: const TextStyle(fontSize: 14)),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -154,53 +166,53 @@ class _StressDetailsPageState extends State<StressDetailsPage> {
   }
 }
 
-enum StressChartType { day, week, month }
+enum StressLevelChartType { day, week, month }
 
-class StressChartData {
-  final StressChartType type;
+class StressLevelChartData {
+  final StressLevelChartType type;
   final double value;
-  StressChartData({required this.type, required this.value});
+  StressLevelChartData({required this.type, required this.value});
 
   // 生成最近的7天数据
-  static List<StressChartData> createDaySamples() {
+  static List<StressLevelChartData> createDaySamples() {
     return [
-      StressChartData(type: StressChartType.day, value: 6.0),
-      StressChartData(type: StressChartType.day, value: 3.0),
-      StressChartData(type: StressChartType.day, value: 7.0),
-      StressChartData(type: StressChartType.day, value: 5.0),
-      StressChartData(type: StressChartType.day, value: 4.0),
-      StressChartData(type: StressChartType.day, value: 3.0),
-      StressChartData(type: StressChartType.day, value: 4.0),
+      StressLevelChartData(type: StressLevelChartType.day, value: 4.2),
+      StressLevelChartData(type: StressLevelChartType.day, value: 3.5),
+      StressLevelChartData(type: StressLevelChartType.day, value: 5.3),
+      StressLevelChartData(type: StressLevelChartType.day, value: 4.1),
+      StressLevelChartData(type: StressLevelChartType.day, value: 3.2),
+      StressLevelChartData(type: StressLevelChartType.day, value: 2.9),
+      StressLevelChartData(type: StressLevelChartType.day, value: 3.3),
     ];
   }
 
   // 生成最近的4周数据
-  static List<StressChartData> createWeekSamples() {
+  static List<StressLevelChartData> createWeekSamples() {
     return [
-      StressChartData(type: StressChartType.week, value: 5.5),
-      StressChartData(type: StressChartType.week, value: 4.8),
-      StressChartData(type: StressChartType.week, value: 4.0),
-      StressChartData(type: StressChartType.week, value: 3.3),
+      StressLevelChartData(type: StressLevelChartType.week, value: 4.5),
+      StressLevelChartData(type: StressLevelChartType.week, value: 3.8),
+      StressLevelChartData(type: StressLevelChartType.week, value: 3.2),
+      StressLevelChartData(type: StressLevelChartType.week, value: 2.9),
     ];
   }
 
   // 生成最近的5个月数据
-  static List<StressChartData> createMonthSamples() {
+  static List<StressLevelChartData> createMonthSamples() {
     return [
-      StressChartData(type: StressChartType.month, value: 7.0),
-      StressChartData(type: StressChartType.month, value: 5.5),
-      StressChartData(type: StressChartType.month, value: 4.8),
-      StressChartData(type: StressChartType.month, value: 4.0),
-      StressChartData(type: StressChartType.month, value: 3.3),
+      StressLevelChartData(type: StressLevelChartType.month, value: 5.2),
+      StressLevelChartData(type: StressLevelChartType.month, value: 4.8),
+      StressLevelChartData(type: StressLevelChartType.month, value: 4.3),
+      StressLevelChartData(type: StressLevelChartType.month, value: 3.7),
+      StressLevelChartData(type: StressLevelChartType.month, value: 3.2),
     ];
   }
 }
 
-class StressChart extends StatelessWidget {
-  final StressChartType type;
-  final List<StressChartData> dayData;
-  final List<StressChartData> weekData;
-  final List<StressChartData> monthData;
+class StressLevelChart extends StatelessWidget {
+  final StressLevelChartType type;
+  final List<StressLevelChartData> dayData;
+  final List<StressLevelChartData> weekData;
+  final List<StressLevelChartData> monthData;
 
   final double _minY = 0; // 最小值
   final double _maxY = 10; // 最大值
@@ -220,7 +232,7 @@ class StressChart extends StatelessWidget {
     return '';
   }
 
-  const StressChart({
+  const StressLevelChart({
     super.key,
     required this.type,
     required this.dayData,
@@ -277,9 +289,9 @@ class StressChart extends StatelessWidget {
   }
 
   /// 构建底部标题的逻辑
-  SideTitles _buildBottomTitles(StressChartType type) {
+  SideTitles _buildBottomTitles(StressLevelChartType type) {
     switch (type) {
-      case StressChartType.day:
+      case StressLevelChartType.day:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -301,7 +313,7 @@ class StressChart extends StatelessWidget {
             );
           },
         );
-      case StressChartType.week:
+      case StressLevelChartType.week:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -319,7 +331,7 @@ class StressChart extends StatelessWidget {
             );
           },
         );
-      case StressChartType.month:
+      case StressLevelChartType.month:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -345,9 +357,9 @@ class StressChart extends StatelessWidget {
   }
 
   /// 构建 lineBarsData 的逻辑
-  List<LineChartBarData> _buildLineBarsData(StressChartType type) {
+  List<LineChartBarData> _buildLineBarsData(StressLevelChartType type) {
     switch (type) {
-      case StressChartType.day:
+      case StressLevelChartType.day:
         return [
           LineChartBarData(
             spots:
@@ -369,7 +381,7 @@ class StressChart extends StatelessWidget {
             dotData: FlDotData(show: true),
           ),
         ];
-      case StressChartType.week:
+      case StressLevelChartType.week:
         return [
           LineChartBarData(
             spots:
@@ -391,7 +403,7 @@ class StressChart extends StatelessWidget {
             dotData: FlDotData(show: true),
           ),
         ];
-      case StressChartType.month:
+      case StressLevelChartType.month:
         return [
           LineChartBarData(
             spots:
