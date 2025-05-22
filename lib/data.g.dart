@@ -173,16 +173,14 @@ Map<String, dynamic> _$$EnergyImplToJson(_$EnergyImpl instance) =>
 
 _$MoodImpl _$$MoodImplFromJson(Map<String, dynamic> json) => _$MoodImpl(
   name: json['name'] as String,
-  moodValue: (json['moodValue'] as num).toDouble(),
-  moodPercentage: (json['moodPercentage'] as num).toDouble(),
+  percentage: (json['percentage'] as num).toDouble(),
   color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
 );
 
 Map<String, dynamic> _$$MoodImplToJson(_$MoodImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'moodValue': instance.moodValue,
-      'moodPercentage': instance.moodPercentage,
+      'percentage': instance.percentage,
       'color': instance.color,
     };
 

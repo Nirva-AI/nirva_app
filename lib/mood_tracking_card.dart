@@ -8,27 +8,25 @@ class MoodTrackingCard extends StatelessWidget {
   const MoodTrackingCard({super.key});
 
   // 因为情绪是线性能规划的，负面～正面，所以就用一个数值来在几个色块里挑选。
-  Color _getMoodColor(double moodValue) {
-    if (moodValue <= -0.8) {
-      return Colors.red;
-    } else if (moodValue <= -0.4) {
-      return Colors.orange;
-    } else if (moodValue <= 0.0) {
-      return Colors.yellow;
-    } else if (moodValue <= 0.4) {
-      return Colors.green;
-    } else {
+  Color _getMoodColor(String moodName) {
+    if (moodName == 'Happy') {
       return Colors.blue;
+    } else if (moodName == 'Calm') {
+      return Colors.green;
+    } else if (moodName == 'Stressed') {
+      return Colors.red;
+    } else if (moodName == 'Focused') {
+      return Colors.orange;
     }
+
+    return Colors.grey; // 默认颜色
   }
 
   @override
   Widget build(BuildContext context) {
-    //final moodTracker = DataManager().activePersonal.moodMap;
-
     final Map<String, Color> moodColors = {
       for (var mood in DataManager().currentJournal.moods)
-        mood.name: _getMoodColor(mood.moodValue),
+        mood.name: _getMoodColor(mood.name),
     };
 
     final sections =

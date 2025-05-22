@@ -2703,8 +2703,7 @@ Mood _$MoodFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Mood {
   String get name => throw _privateConstructorUsedError;
-  double get moodValue => throw _privateConstructorUsedError;
-  double get moodPercentage => throw _privateConstructorUsedError;
+  double get percentage => throw _privateConstructorUsedError;
   int get color => throw _privateConstructorUsedError;
 
   /// Serializes this Mood to a JSON map.
@@ -2721,7 +2720,7 @@ abstract class $MoodCopyWith<$Res> {
   factory $MoodCopyWith(Mood value, $Res Function(Mood) then) =
       _$MoodCopyWithImpl<$Res, Mood>;
   @useResult
-  $Res call({String name, double moodValue, double moodPercentage, int color});
+  $Res call({String name, double percentage, int color});
 }
 
 /// @nodoc
@@ -2740,8 +2739,7 @@ class _$MoodCopyWithImpl<$Res, $Val extends Mood>
   @override
   $Res call({
     Object? name = null,
-    Object? moodValue = null,
-    Object? moodPercentage = null,
+    Object? percentage = null,
     Object? color = null,
   }) {
     return _then(
@@ -2751,15 +2749,10 @@ class _$MoodCopyWithImpl<$Res, $Val extends Mood>
                     ? _value.name
                     : name // ignore: cast_nullable_to_non_nullable
                         as String,
-            moodValue:
-                null == moodValue
-                    ? _value.moodValue
-                    : moodValue // ignore: cast_nullable_to_non_nullable
-                        as double,
-            moodPercentage:
-                null == moodPercentage
-                    ? _value.moodPercentage
-                    : moodPercentage // ignore: cast_nullable_to_non_nullable
+            percentage:
+                null == percentage
+                    ? _value.percentage
+                    : percentage // ignore: cast_nullable_to_non_nullable
                         as double,
             color:
                 null == color
@@ -2780,7 +2773,7 @@ abstract class _$$MoodImplCopyWith<$Res> implements $MoodCopyWith<$Res> {
   ) = __$$MoodImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, double moodValue, double moodPercentage, int color});
+  $Res call({String name, double percentage, int color});
 }
 
 /// @nodoc
@@ -2796,8 +2789,7 @@ class __$$MoodImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? name = null,
-    Object? moodValue = null,
-    Object? moodPercentage = null,
+    Object? percentage = null,
     Object? color = null,
   }) {
     return _then(
@@ -2807,15 +2799,10 @@ class __$$MoodImplCopyWithImpl<$Res>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                     as String,
-        moodValue:
-            null == moodValue
-                ? _value.moodValue
-                : moodValue // ignore: cast_nullable_to_non_nullable
-                    as double,
-        moodPercentage:
-            null == moodPercentage
-                ? _value.moodPercentage
-                : moodPercentage // ignore: cast_nullable_to_non_nullable
+        percentage:
+            null == percentage
+                ? _value.percentage
+                : percentage // ignore: cast_nullable_to_non_nullable
                     as double,
         color:
             null == color
@@ -2832,8 +2819,7 @@ class __$$MoodImplCopyWithImpl<$Res>
 class _$MoodImpl implements _Mood {
   const _$MoodImpl({
     required this.name,
-    required this.moodValue,
-    required this.moodPercentage,
+    required this.percentage,
     this.color = 0xFF00FF00,
   });
 
@@ -2843,16 +2829,14 @@ class _$MoodImpl implements _Mood {
   @override
   final String name;
   @override
-  final double moodValue;
-  @override
-  final double moodPercentage;
+  final double percentage;
   @override
   @JsonKey()
   final int color;
 
   @override
   String toString() {
-    return 'Mood(name: $name, moodValue: $moodValue, moodPercentage: $moodPercentage, color: $color)';
+    return 'Mood(name: $name, percentage: $percentage, color: $color)';
   }
 
   @override
@@ -2861,17 +2845,14 @@ class _$MoodImpl implements _Mood {
         (other.runtimeType == runtimeType &&
             other is _$MoodImpl &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.moodValue, moodValue) ||
-                other.moodValue == moodValue) &&
-            (identical(other.moodPercentage, moodPercentage) ||
-                other.moodPercentage == moodPercentage) &&
+            (identical(other.percentage, percentage) ||
+                other.percentage == percentage) &&
             (identical(other.color, color) || other.color == color));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, name, moodValue, moodPercentage, color);
+  int get hashCode => Object.hash(runtimeType, name, percentage, color);
 
   /// Create a copy of Mood
   /// with the given fields replaced by the non-null parameter values.
@@ -2890,8 +2871,7 @@ class _$MoodImpl implements _Mood {
 abstract class _Mood implements Mood {
   const factory _Mood({
     required final String name,
-    required final double moodValue,
-    required final double moodPercentage,
+    required final double percentage,
     final int color,
   }) = _$MoodImpl;
 
@@ -2900,9 +2880,7 @@ abstract class _Mood implements Mood {
   @override
   String get name;
   @override
-  double get moodValue;
-  @override
-  double get moodPercentage;
+  double get percentage;
   @override
   int get color;
 

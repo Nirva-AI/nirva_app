@@ -206,8 +206,7 @@ extension EnergyExtensions on Energy {
 class Mood with _$Mood {
   const factory Mood({
     required String name,
-    required double moodValue,
-    required double moodPercentage,
+    required double percentage,
     @Default(0xFF00FF00) int color, // 默认颜色为绿色
   }) = _Mood;
 
@@ -304,7 +303,7 @@ extension JournalExtensions on Journal {
   Map<String, double> get moodMap {
     final Map<String, double> moodMap = {};
     for (var mood in moods) {
-      moodMap[mood.name] = mood.moodPercentage;
+      moodMap[mood.name] = mood.percentage;
     }
     return moodMap;
   }
