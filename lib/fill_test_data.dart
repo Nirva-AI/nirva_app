@@ -16,6 +16,9 @@ class FillTestData {
     DataManager().archivedHighlights = FillTestData.createTestHighlightGroup();
     initializeTestFavorites(DataManager().currentJournal);
     initializeTestMyNotes(DataManager().currentJournal);
+    DataManager().moodScoreInsights = FillTestData.createMoodScoreInsights(
+      DataManager().currentJournal,
+    );
   }
 
   static void initializeTestFavorites(Journal journal) {
@@ -546,6 +549,17 @@ class FillTestData {
       moods: moods,
       awakeTimeActions: awakeTimeActions,
       socialMap: SocialMap(socialEntities: socialEntities),
+    );
+  }
+
+  static MoodScoreInsights createMoodScoreInsights(Journal journal) {
+    return MoodScoreInsights(
+      dateTime: journal.dateTime,
+      insights: [
+        'Your mood has been generally trending upward this week.',
+        'Morning periods seem to have higher scores than evenings.',
+        'Consider activities that boost your mood during lower periods.',
+      ],
     );
   }
 }

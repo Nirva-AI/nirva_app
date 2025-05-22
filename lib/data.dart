@@ -328,3 +328,16 @@ extension JournalExtensions on Journal {
     return '${monthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
   }
 }
+
+@freezed
+class MoodScoreInsights with _$MoodScoreInsights {
+  const factory MoodScoreInsights({
+    required DateTime dateTime,
+    required List<String> insights,
+  }) = _MoodScoreInsights;
+
+  factory MoodScoreInsights.fromJson(Map<String, dynamic> json) =>
+      _$MoodScoreInsightsFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _MoodScoreInsights).toJson();
+}
