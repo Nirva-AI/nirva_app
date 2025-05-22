@@ -129,9 +129,9 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
         insights.isNotEmpty
             ? insights
             : [
-              'Your stress levels have decreased over this day.',
-              'Meditation sessions appear to reduce stress levels significantly.',
-              'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
+              // 'Your stress levels have decreased over this day.',
+              // 'Meditation sessions appear to reduce stress levels significantly.',
+              // 'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
             ];
 
     return Card(
