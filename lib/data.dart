@@ -203,16 +203,17 @@ extension EnergyExtensions on Energy {
 }
 
 @freezed
-class Mood with _$Mood {
-  const factory Mood({
+class MoodTracking with _$MoodTracking {
+  const factory MoodTracking({
     required String name,
     required double percentage,
     @Default(0xFF00FF00) int color, // 默认颜色为绿色
-  }) = _Mood;
+  }) = _MoodTracking;
 
-  factory Mood.fromJson(Map<String, dynamic> json) => _$MoodFromJson(json);
+  factory MoodTracking.fromJson(Map<String, dynamic> json) =>
+      _$MoodTrackingFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _Mood).toJson();
+  Map<String, dynamic> toJson() => (this as _MoodTracking).toJson();
 }
 
 @freezed
@@ -269,7 +270,7 @@ class Journal with _$Journal {
     required StressLevel stressLevel,
     required List<Highlight> highlights,
     required List<Energy> energyRecords,
-    required List<Mood> moods,
+    required List<MoodTracking> moods,
     required List<AwakeTimeAction> awakeTimeActions,
     required SocialMap socialMap,
   }) = _Journal;
@@ -365,4 +366,17 @@ class EnergyLevelDashborad with _$EnergyLevelDashborad {
       _$EnergyLevelDashboradFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _EnergyLevelDashborad).toJson();
+}
+
+@freezed
+class MoodTrackingDashborad with _$MoodTrackingDashborad {
+  const factory MoodTrackingDashborad({
+    required DateTime dateTime,
+    required List<String> insights,
+  }) = _MoodTrackingDashborad;
+
+  factory MoodTrackingDashborad.fromJson(Map<String, dynamic> json) =>
+      _$MoodTrackingDashboradFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _MoodTrackingDashborad).toJson();
 }

@@ -43,6 +43,12 @@ class FillTestData {
         .energyLevelDashboard = FillTestData.createEnergyLevelDashboard(
       DataManager().currentJournal.dateTime,
     );
+
+    // 添加情绪追踪
+    DataManager()
+        .moodTrackingDashboard = FillTestData.createMoodTrackingDashboard(
+      DataManager().currentJournal.dateTime,
+    );
   }
 
   static void initializeTestFavorites(Journal journal) {
@@ -495,11 +501,11 @@ class FillTestData {
       Energy(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
     ];
 
-    final List<Mood> moods = [
-      Mood(name: 'Happy', percentage: 50),
-      Mood(name: 'Calm', percentage: 30),
-      Mood(name: 'Stressed', percentage: 10),
-      Mood(name: 'Focused', percentage: 10),
+    final List<MoodTracking> moods = [
+      MoodTracking(name: 'Happy', percentage: 50),
+      MoodTracking(name: 'Calm', percentage: 30),
+      MoodTracking(name: 'Stressed', percentage: 10),
+      MoodTracking(name: 'Focused', percentage: 10),
     ];
 
     final List<AwakeTimeAction> awakeTimeActions = [
@@ -605,6 +611,17 @@ class FillTestData {
         //'Your energy levels peak in the late morning and early afternoon.',
         'Social interactions appear to boost your energy significantly.',
         'Consider scheduling important tasks during your high-energy periods.',
+      ],
+    );
+  }
+
+  static MoodTrackingDashborad createMoodTrackingDashboard(DateTime dateTime) {
+    return MoodTrackingDashborad(
+      dateTime: dateTime,
+      insights: [
+        //'Happiness and calmness are your dominant emotions this week.',
+        'Stress levels peak during midweek but decrease on weekends.',
+        'Focus appears to be strongest in the mornings - consider scheduling important tasks then.',
       ],
     );
   }
