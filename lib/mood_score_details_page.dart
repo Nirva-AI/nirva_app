@@ -45,14 +45,37 @@ class MoodScoreDetailsPage extends StatelessWidget {
             Expanded(
               child: LineChart(
                 LineChartData(
+                  minY: 0, // 设置最小值为 0
+                  maxY: 100, // 设置最大值为 100
                   gridData: FlGridData(show: false),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true),
+                      sideTitles: SideTitles(
+                        showTitles: true, // 确保左侧标题显示
+                        interval: 25, // 设置刻度间隔为 25
+                        getTitlesWidget: (value, meta) {
+                          // 确保只显示 0, 25, 50, 75, 100
+                          if (value == 0 ||
+                              value == 25 ||
+                              value == 50 ||
+                              value == 75 ||
+                              value == 100) {
+                            return Text(
+                              value.toInt().toString(), // 显示刻度值
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink(); // 隐藏其他刻度
+                        },
+                      ),
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: true,
+                        showTitles: true, // 保留底部标题
                         getTitlesWidget: (value, meta) {
                           switch (value.toInt()) {
                             case 0:
@@ -85,6 +108,12 @@ class MoodScoreDetailsPage extends StatelessWidget {
                           }
                         },
                       ),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false), // 隐藏顶部标题
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false), // 隐藏右侧标题
                     ),
                   ),
                   borderData: FlBorderData(show: false),
