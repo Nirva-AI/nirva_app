@@ -556,7 +556,7 @@ class FillTestData {
     return MoodScoreInsights(
       dateTime: journal.dateTime,
       insights: [
-        'Your mood has been generally trending upward this week.',
+        // 'Your mood has been generally trending upward this week.',
         'Morning periods seem to have higher scores than evenings.',
         'Consider activities that boost your mood during lower periods.',
       ],

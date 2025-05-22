@@ -199,6 +199,24 @@ class MoodScoreChart extends StatelessWidget {
   final List<MoodScoreChartData> weekData;
   final List<MoodScoreChartData> monthData;
 
+  final double _minY = 40; // 最小值
+  final double _maxY = 100; // 最大值
+  final double _interval = 20; // 刻度间隔
+
+  List<double> get yAxisValues {
+    return List.generate(
+      ((_maxY - _minY) / _interval).toInt() + 1,
+      (index) => _minY + index * _interval,
+    );
+  }
+
+  String _convertYValueToString(double value) {
+    if (yAxisValues.contains(value)) {
+      return value.toInt().toString();
+    }
+    return '';
+  }
+
   const MoodScoreChart({
     super.key,
     required this.type,
@@ -216,23 +234,20 @@ class MoodScoreChart extends StatelessWidget {
         heightFactor: 1.0,
         child: LineChart(
           LineChartData(
-            minY: 0, // 设置最小值为 0
-            maxY: 100, // 设置最大值为 100
+            minY: _minY, // 修改最小值为 40
+            maxY: _maxY, // 最大值保持为 100
             gridData: FlGridData(show: false),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true, // 确保左侧标题显示
-                  interval: 25, // 设置刻度间隔为 25
+                  interval: _interval, // 设置刻度间隔为 20
                   reservedSize: 40, // 增加刻度区域的宽度
                   getTitlesWidget: (value, meta) {
-                    if (value == 0 ||
-                        value == 25 ||
-                        value == 50 ||
-                        value == 75 ||
-                        value == 100) {
+                    var valueToString = _convertYValueToString(value);
+                    if (valueToString.isNotEmpty) {
                       return Text(
-                        value.toInt().toString(),
+                        valueToString,
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.black,
@@ -405,6 +420,7 @@ class MoodScoreChart extends StatelessWidget {
     return Utils.monthNames[targetMonth];
   }
 
+  // 格式化每天的标题
   String _formatDayTitle(int widgetIndexValue, int dayCount) {
     // 获取当前月份
     DateTime dateTime = DataManager().moodScoreInsights.dateTime;
@@ -417,6 +433,7 @@ class MoodScoreChart extends StatelessWidget {
     return Utils.weekDayNames[targetWeekDay];
   }
 
+  /// 写死，就显示最近的4个周
   String _formatWeekTitle(int widgetIndexValue) {
     List<String> weekNames = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
     return weekNames[widgetIndexValue];
