@@ -176,17 +176,17 @@ class MoodTracking with _$MoodTracking {
 }
 
 @freezed
-class AwakeTimeAction with _$AwakeTimeAction {
-  const factory AwakeTimeAction({
+class AwakeTimeAllocation with _$AwakeTimeAllocation {
+  const factory AwakeTimeAllocation({
     required String label,
     required double value,
     @Default(0xFF00FF00) int color, // 默认颜色为绿色
-  }) = _AwakeTimeAction;
+  }) = _AwakeTimeAllocation;
 
-  factory AwakeTimeAction.fromJson(Map<String, dynamic> json) =>
-      _$AwakeTimeActionFromJson(json);
+  factory AwakeTimeAllocation.fromJson(Map<String, dynamic> json) =>
+      _$AwakeTimeAllocationFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _AwakeTimeAction).toJson();
+  Map<String, dynamic> toJson() => (this as _AwakeTimeAllocation).toJson();
 }
 
 @freezed
@@ -230,7 +230,7 @@ class Journal with _$Journal {
     required List<Highlight> highlights,
     required List<EnergyLevel> energyLevels,
     required List<MoodTracking> moodTrackings,
-    required List<AwakeTimeAction> awakeTimeActions,
+    required List<AwakeTimeAllocation> awakeTimeActions,
     required SocialMap socialMap,
   }) = _Journal;
 

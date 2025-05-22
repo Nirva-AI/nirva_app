@@ -488,7 +488,7 @@ class FillTestData {
       ),
     ];
 
-    final List<EnergyLevel> energyRecords = [
+    final List<EnergyLevel> energyLevels = [
       EnergyLevel(dateTime: DateTime(2025, 5, 6, 10, 0), value: 1.0),
       EnergyLevel(dateTime: DateTime(2025, 5, 6, 10, 30), value: 2.0),
       EnergyLevel(dateTime: DateTime(2025, 5, 6, 11, 30), value: 1.5),
@@ -508,13 +508,13 @@ class FillTestData {
       MoodTracking(name: 'Focused', value: 10, color: 0xFFFF9800),
     ];
 
-    final List<AwakeTimeAction> awakeTimeActions = [
-      AwakeTimeAction(label: 'Work', value: 8),
-      AwakeTimeAction(label: 'Exercise', value: 2),
-      AwakeTimeAction(label: 'Social', value: 3),
-      AwakeTimeAction(label: 'Learning', value: 3),
-      AwakeTimeAction(label: 'Self-care', value: 1),
-      AwakeTimeAction(label: 'Other', value: 4),
+    final List<AwakeTimeAllocation> awakeTimeAllocations = [
+      AwakeTimeAllocation(label: 'Work', value: 8, color: 0xFF2196F3),
+      AwakeTimeAllocation(label: 'Exercise', value: 2, color: 0xFF4CAF50),
+      AwakeTimeAllocation(label: 'Social', value: 3, color: 0xFFF44336),
+      AwakeTimeAllocation(label: 'Learning', value: 3, color: 0xFFFF9800),
+      AwakeTimeAllocation(label: 'Self-care', value: 1, color: 0xFF9C27B0),
+      AwakeTimeAllocation(label: 'Other', value: 4, color: 0xFF9E9E9E),
     ];
 
     List<SocialEntity> socialEntities = [
@@ -575,9 +575,9 @@ class FillTestData {
       moodScore: moodScore,
       stressLevel: stressLevel,
       highlights: highlights,
-      energyLevels: energyRecords,
+      energyLevels: energyLevels,
       moodTrackings: moodTrackings,
-      awakeTimeActions: awakeTimeActions,
+      awakeTimeActions: awakeTimeAllocations,
       socialMap: SocialMap(socialEntities: socialEntities),
     );
   }

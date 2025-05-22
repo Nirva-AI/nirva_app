@@ -1,24 +1,20 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
-import 'package:nirva_app/awake_time_allocation_details_page.dart'; // 导入新页面
+import 'package:nirva_app/awake_time_allocation_details_page.dart';
 
-final Map<String, Color> awakeTimeColors = {};
+class AwakeTimeAllocationCard extends StatelessWidget {
+  const AwakeTimeAllocationCard({super.key});
 
-class AwakeTimeAllocationChart extends StatelessWidget {
-  const AwakeTimeAllocationChart({super.key});
+  final double _minY = 0;
+  final double _maxY = 8;
+  final double _interval = 2;
 
-  Color _getColor(String label) {
-    if (awakeTimeColors.containsKey(label)) {
-      return awakeTimeColors[label]!;
-    } else {
-      final color = Color(
-        (math.Random().nextDouble() * 0xFFFFFF).toInt(),
-      ).withAlpha(255);
-      awakeTimeColors[label] = color;
-      return color;
+  String _formatLeftTitle(double value) {
+    if (value >= 0 && value <= 8 && value % 2 == 0) {
+      return '${value.toInt()}h';
     }
+    return '';
   }
 
   @override
@@ -45,20 +41,23 @@ class AwakeTimeAllocationChart extends StatelessWidget {
                   child: BarChart(
                     BarChartData(
                       alignment: BarChartAlignment.spaceAround,
-                      maxY: 8,
+                      minY: _minY,
+                      maxY: _maxY,
                       titlesData: FlTitlesData(
                         leftTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
                             reservedSize: 28,
-                            interval: 2,
+                            interval: _interval,
                             getTitlesWidget: (value, meta) {
-                              if (value >= 0 && value <= 8 && value % 2 == 0) {
+                              String title = _formatLeftTitle(value);
+                              if (title.isNotEmpty) {
                                 return Text(
-                                  '${value.toInt()}h',
+                                  title,
                                   style: const TextStyle(fontSize: 12),
                                 );
                               }
+
                               return const SizedBox.shrink();
                             },
                           ),
@@ -97,8 +96,11 @@ class AwakeTimeAllocationChart extends StatelessWidget {
                                   barRods: [
                                     BarChartRodData(
                                       toY: entry.value.value,
-                                      color: _getColor(entry.value.label),
+                                      //color: _getColor(entry.value.label),
+                                      color: Color(entry.value.color),
                                       width: 15,
+                                      borderRadius:
+                                          BorderRadius.zero, // 添加此行将圆角改为直角
                                     ),
                                   ],
                                 ),
