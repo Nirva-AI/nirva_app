@@ -82,7 +82,7 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().moodScoreInsights.insights,
+              DataManager().moodScoreDashboard.insights,
             ), // 传入数据
           ],
         ),
@@ -285,7 +285,11 @@ class MoodScoreChart extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(top: 8.0), // 添加顶部间距
               child: Text(
-                _formatDayTitle(value.toInt(), dayData.length),
+                _formatDayTitle(
+                  value.toInt(),
+                  DataManager().moodScoreDashboard.dateTime.weekday,
+                  dayData.length,
+                ),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -322,7 +326,11 @@ class MoodScoreChart extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(top: 8.0), // 添加顶部间距
               child: Text(
-                _formatMonthTitle(value.toInt(), monthData.length),
+                _formatMonthTitle(
+                  value.toInt(),
+                  DataManager().moodScoreDashboard.dateTime.month,
+                  monthData.length,
+                ),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -408,28 +416,27 @@ class MoodScoreChart extends StatelessWidget {
   }
 
   /// 格式化月份标题
-  String _formatMonthTitle(int widgetIndexValue, int monthsCount) {
-    // 获取当前月份
-    DateTime dateTime = DataManager().moodScoreInsights.dateTime;
-    final int currentMonth = dateTime.month;
-
-    // 计算从当前月份开始的正序排列
-    int startMonth = (currentMonth - monthsCount) % 12; // 计算起始月份索引
-    if (startMonth < 0) startMonth += 12; // 确保索引为正数
-    int targetMonth = (startMonth + widgetIndexValue) % 12; // 计算目标月份索引
+  String _formatMonthTitle(
+    int widgetIndexValue,
+    int currentMonth,
+    int monthsCount,
+  ) {
+    int startMonth = (currentMonth - monthsCount) % 12;
+    if (startMonth < 0) startMonth += 12;
+    int targetMonth = (startMonth + widgetIndexValue) % 12;
     return Utils.monthNames[targetMonth];
   }
 
   // 格式化每天的标题
-  String _formatDayTitle(int widgetIndexValue, int dayCount) {
-    // 获取当前月份
-    DateTime dateTime = DataManager().moodScoreInsights.dateTime;
-    final int currentWeekDay = dateTime.weekday;
-
+  String _formatDayTitle(
+    int widgetIndexValue,
+    int currentWeekDay,
+    int dayCount,
+  ) {
     // 计算从当前月份开始的正序排列
-    int startWeekDay = (currentWeekDay - dayCount) % 7; // 计算起始月份索引
-    if (startWeekDay < 0) startWeekDay += 7; // 确保索引为正数
-    int targetWeekDay = (startWeekDay + widgetIndexValue) % 7; // 计算目标月份索引
+    int startWeekDay = (currentWeekDay - dayCount) % 7;
+    if (startWeekDay < 0) startWeekDay += 7;
+    int targetWeekDay = (startWeekDay + widgetIndexValue) % 7;
     return Utils.weekDayNames[targetWeekDay];
   }
 

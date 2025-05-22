@@ -294,16 +294,16 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
       'socialMap': instance.socialMap,
     };
 
-_$MoodScoreInsightsImpl _$$MoodScoreInsightsImplFromJson(
+_$MoodScoreDashboradImpl _$$MoodScoreDashboradImplFromJson(
   Map<String, dynamic> json,
-) => _$MoodScoreInsightsImpl(
+) => _$MoodScoreDashboradImpl(
   dateTime: DateTime.parse(json['dateTime'] as String),
   insights:
       (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
 );
 
-Map<String, dynamic> _$$MoodScoreInsightsImplToJson(
-  _$MoodScoreInsightsImpl instance,
+Map<String, dynamic> _$$MoodScoreDashboradImplToJson(
+  _$MoodScoreDashboradImpl instance,
 ) => <String, dynamic>{
   'dateTime': instance.dateTime.toIso8601String(),
   'insights': instance.insights,

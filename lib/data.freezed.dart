@@ -4107,46 +4107,46 @@ abstract class _Journal implements Journal {
       throw _privateConstructorUsedError;
 }
 
-MoodScoreInsights _$MoodScoreInsightsFromJson(Map<String, dynamic> json) {
-  return _MoodScoreInsights.fromJson(json);
+MoodScoreDashborad _$MoodScoreDashboradFromJson(Map<String, dynamic> json) {
+  return _MoodScoreDashborad.fromJson(json);
 }
 
 /// @nodoc
-mixin _$MoodScoreInsights {
+mixin _$MoodScoreDashborad {
   DateTime get dateTime => throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
 
-  /// Serializes this MoodScoreInsights to a JSON map.
+  /// Serializes this MoodScoreDashborad to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of MoodScoreInsights
+  /// Create a copy of MoodScoreDashborad
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $MoodScoreInsightsCopyWith<MoodScoreInsights> get copyWith =>
+  $MoodScoreDashboradCopyWith<MoodScoreDashborad> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $MoodScoreInsightsCopyWith<$Res> {
-  factory $MoodScoreInsightsCopyWith(
-    MoodScoreInsights value,
-    $Res Function(MoodScoreInsights) then,
-  ) = _$MoodScoreInsightsCopyWithImpl<$Res, MoodScoreInsights>;
+abstract class $MoodScoreDashboradCopyWith<$Res> {
+  factory $MoodScoreDashboradCopyWith(
+    MoodScoreDashborad value,
+    $Res Function(MoodScoreDashborad) then,
+  ) = _$MoodScoreDashboradCopyWithImpl<$Res, MoodScoreDashborad>;
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
 }
 
 /// @nodoc
-class _$MoodScoreInsightsCopyWithImpl<$Res, $Val extends MoodScoreInsights>
-    implements $MoodScoreInsightsCopyWith<$Res> {
-  _$MoodScoreInsightsCopyWithImpl(this._value, this._then);
+class _$MoodScoreDashboradCopyWithImpl<$Res, $Val extends MoodScoreDashborad>
+    implements $MoodScoreDashboradCopyWith<$Res> {
+  _$MoodScoreDashboradCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of MoodScoreInsights
+  /// Create a copy of MoodScoreDashborad
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -4170,33 +4170,33 @@ class _$MoodScoreInsightsCopyWithImpl<$Res, $Val extends MoodScoreInsights>
 }
 
 /// @nodoc
-abstract class _$$MoodScoreInsightsImplCopyWith<$Res>
-    implements $MoodScoreInsightsCopyWith<$Res> {
-  factory _$$MoodScoreInsightsImplCopyWith(
-    _$MoodScoreInsightsImpl value,
-    $Res Function(_$MoodScoreInsightsImpl) then,
-  ) = __$$MoodScoreInsightsImplCopyWithImpl<$Res>;
+abstract class _$$MoodScoreDashboradImplCopyWith<$Res>
+    implements $MoodScoreDashboradCopyWith<$Res> {
+  factory _$$MoodScoreDashboradImplCopyWith(
+    _$MoodScoreDashboradImpl value,
+    $Res Function(_$MoodScoreDashboradImpl) then,
+  ) = __$$MoodScoreDashboradImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
 }
 
 /// @nodoc
-class __$$MoodScoreInsightsImplCopyWithImpl<$Res>
-    extends _$MoodScoreInsightsCopyWithImpl<$Res, _$MoodScoreInsightsImpl>
-    implements _$$MoodScoreInsightsImplCopyWith<$Res> {
-  __$$MoodScoreInsightsImplCopyWithImpl(
-    _$MoodScoreInsightsImpl _value,
-    $Res Function(_$MoodScoreInsightsImpl) _then,
+class __$$MoodScoreDashboradImplCopyWithImpl<$Res>
+    extends _$MoodScoreDashboradCopyWithImpl<$Res, _$MoodScoreDashboradImpl>
+    implements _$$MoodScoreDashboradImplCopyWith<$Res> {
+  __$$MoodScoreDashboradImplCopyWithImpl(
+    _$MoodScoreDashboradImpl _value,
+    $Res Function(_$MoodScoreDashboradImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of MoodScoreInsights
+  /// Create a copy of MoodScoreDashborad
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({Object? dateTime = null, Object? insights = null}) {
     return _then(
-      _$MoodScoreInsightsImpl(
+      _$MoodScoreDashboradImpl(
         dateTime:
             null == dateTime
                 ? _value.dateTime
@@ -4214,14 +4214,14 @@ class __$$MoodScoreInsightsImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$MoodScoreInsightsImpl implements _MoodScoreInsights {
-  const _$MoodScoreInsightsImpl({
+class _$MoodScoreDashboradImpl implements _MoodScoreDashborad {
+  const _$MoodScoreDashboradImpl({
     required this.dateTime,
     required final List<String> insights,
   }) : _insights = insights;
 
-  factory _$MoodScoreInsightsImpl.fromJson(Map<String, dynamic> json) =>
-      _$$MoodScoreInsightsImplFromJson(json);
+  factory _$MoodScoreDashboradImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MoodScoreDashboradImplFromJson(json);
 
   @override
   final DateTime dateTime;
@@ -4235,14 +4235,14 @@ class _$MoodScoreInsightsImpl implements _MoodScoreInsights {
 
   @override
   String toString() {
-    return 'MoodScoreInsights(dateTime: $dateTime, insights: $insights)';
+    return 'MoodScoreDashborad(dateTime: $dateTime, insights: $insights)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$MoodScoreInsightsImpl &&
+            other is _$MoodScoreDashboradImpl &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
             const DeepCollectionEquality().equals(other._insights, _insights));
@@ -4256,41 +4256,41 @@ class _$MoodScoreInsightsImpl implements _MoodScoreInsights {
     const DeepCollectionEquality().hash(_insights),
   );
 
-  /// Create a copy of MoodScoreInsights
+  /// Create a copy of MoodScoreDashborad
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$MoodScoreInsightsImplCopyWith<_$MoodScoreInsightsImpl> get copyWith =>
-      __$$MoodScoreInsightsImplCopyWithImpl<_$MoodScoreInsightsImpl>(
+  _$$MoodScoreDashboradImplCopyWith<_$MoodScoreDashboradImpl> get copyWith =>
+      __$$MoodScoreDashboradImplCopyWithImpl<_$MoodScoreDashboradImpl>(
         this,
         _$identity,
       );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MoodScoreInsightsImplToJson(this);
+    return _$$MoodScoreDashboradImplToJson(this);
   }
 }
 
-abstract class _MoodScoreInsights implements MoodScoreInsights {
-  const factory _MoodScoreInsights({
+abstract class _MoodScoreDashborad implements MoodScoreDashborad {
+  const factory _MoodScoreDashborad({
     required final DateTime dateTime,
     required final List<String> insights,
-  }) = _$MoodScoreInsightsImpl;
+  }) = _$MoodScoreDashboradImpl;
 
-  factory _MoodScoreInsights.fromJson(Map<String, dynamic> json) =
-      _$MoodScoreInsightsImpl.fromJson;
+  factory _MoodScoreDashborad.fromJson(Map<String, dynamic> json) =
+      _$MoodScoreDashboradImpl.fromJson;
 
   @override
   DateTime get dateTime;
   @override
   List<String> get insights;
 
-  /// Create a copy of MoodScoreInsights
+  /// Create a copy of MoodScoreDashborad
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$MoodScoreInsightsImplCopyWith<_$MoodScoreInsightsImpl> get copyWith =>
+  _$$MoodScoreDashboradImplCopyWith<_$MoodScoreDashboradImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
