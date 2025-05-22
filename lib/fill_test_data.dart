@@ -496,10 +496,10 @@ class FillTestData {
     ];
 
     final List<Mood> moods = [
-      Mood(name: 'Happy', moodValue: 0.5, moodPercentage: 50),
-      Mood(name: 'Calm', moodValue: 0.3, moodPercentage: 30),
-      Mood(name: 'Stressed', moodValue: -0.9, moodPercentage: 10),
-      Mood(name: 'Focused', moodValue: -0.5, moodPercentage: 10),
+      Mood(name: 'Happy', percentage: 50),
+      Mood(name: 'Calm', percentage: 30),
+      Mood(name: 'Stressed', percentage: 10),
+      Mood(name: 'Focused', percentage: 10),
     ];
 
     final List<AwakeTimeAction> awakeTimeActions = [
