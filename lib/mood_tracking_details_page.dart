@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/utils.dart';
+import 'dart:math';
+import 'package:nirva_app/data.dart';
 
 class MoodTrackingDetailsPage extends StatefulWidget {
   const MoodTrackingDetailsPage({super.key});
@@ -16,6 +18,16 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<MoodTracking> moodTrackings =
+        DataManager().currentJournal.moodTrackings;
+
+    Map<String, MoodTrackingChartDataGroup> dataMap = {};
+    for (var moodTracking in moodTrackings) {
+      dataMap[moodTracking.name] = MoodTrackingChartDataGroup.createGroupSample(
+        moodTracking,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mood Tracking'),
@@ -58,9 +70,7 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
                       height: 200, // 为图表提供明确的高度
                       child: MoodTrackingChart(
                         type: _selectedType,
-                        dayData: MoodTrackingChartData.createDaySamples(),
-                        weekData: MoodTrackingChartData.createWeekSamples(),
-                        monthData: MoodTrackingChartData.createMonthSamples(),
+                        moodChartDataGroups: dataMap, // 这里可以传入实际的数据
                       ),
                     ),
                   ],
@@ -140,51 +150,45 @@ enum MoodTrackingChartType { day, week, month }
 class MoodTrackingChartData {
   final MoodTrackingChartType type;
   final double value;
-  final String mood;
 
-  MoodTrackingChartData({
-    required this.type,
-    required this.value,
-    required this.mood,
-  });
+  MoodTrackingChartData({required this.type, required this.value});
+
+  static double randomValue() {
+    //用math.Random() , 随机返回一个0～100之间的值
+    final random = Random();
+    return random.nextDouble() * 100;
+  }
 
   // 生成最近的7天数据
   static List<MoodTrackingChartData> createDaySamples() {
     return [
       MoodTrackingChartData(
         type: MoodTrackingChartType.day,
-        value: 7.0,
-        mood: 'Happy',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.day,
-        value: 6.0,
-        mood: 'Calm',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.day,
-        value: 8.0,
-        mood: 'Happy',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.day,
-        value: 7.0,
-        mood: 'Happy',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.day,
-        value: 5.0,
-        mood: 'Stressed',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.day,
-        value: 6.0,
-        mood: 'Calm',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.day,
-        value: 7.8,
-        mood: 'Happy',
+        value: randomValue(),
       ),
     ];
   }
@@ -194,23 +198,19 @@ class MoodTrackingChartData {
     return [
       MoodTrackingChartData(
         type: MoodTrackingChartType.week,
-        value: 6.8,
-        mood: 'Calm',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.week,
-        value: 7.2,
-        mood: 'Happy',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.week,
-        value: 6.5,
-        mood: 'Focused',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.week,
-        value: 7.5,
-        mood: 'Happy',
+        value: randomValue(),
       ),
     ];
   }
@@ -220,38 +220,55 @@ class MoodTrackingChartData {
     return [
       MoodTrackingChartData(
         type: MoodTrackingChartType.month,
-        value: 6.2,
-        mood: 'Calm',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.month,
-        value: 6.7,
-        mood: 'Happy',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.month,
-        value: 7.3,
-        mood: 'Happy',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.month,
-        value: 6.8,
-        mood: 'Focused',
+        value: randomValue(),
       ),
       MoodTrackingChartData(
         type: MoodTrackingChartType.month,
-        value: 7.2,
-        mood: 'Happy',
+        value: randomValue(),
       ),
     ];
   }
 }
 
-class MoodTrackingChart extends StatelessWidget {
-  final MoodTrackingChartType type;
+class MoodTrackingChartDataGroup {
+  final String label;
   final List<MoodTrackingChartData> dayData;
   final List<MoodTrackingChartData> weekData;
   final List<MoodTrackingChartData> monthData;
+
+  MoodTrackingChartDataGroup({
+    required this.label,
+    required this.dayData,
+    required this.weekData,
+    required this.monthData,
+  });
+
+  static createGroupSample(MoodTracking moodTracking) {
+    return MoodTrackingChartDataGroup(
+      label: moodTracking.name,
+      dayData: MoodTrackingChartData.createDaySamples(),
+      weekData: MoodTrackingChartData.createWeekSamples(),
+      monthData: MoodTrackingChartData.createMonthSamples(),
+    );
+  }
+}
+
+class MoodTrackingChart extends StatelessWidget {
+  final MoodTrackingChartType type;
+
+  final Map<String, MoodTrackingChartDataGroup> moodChartDataGroups;
 
   final double _minY = 0; // 最小值
   final double _maxY = 100; // 最大值
@@ -265,18 +282,16 @@ class MoodTrackingChart extends StatelessWidget {
   }
 
   String _convertYValueToString(double value) {
-    if (yAxisValues.contains(value)) {
-      return value.toInt().toString();
-    }
+    // if (yAxisValues.contains(value)) {
+    //   return value.toInt().toString();
+    // }
     return '';
   }
 
   const MoodTrackingChart({
     super.key,
     required this.type,
-    required this.dayData,
-    required this.weekData,
-    required this.monthData,
+    required this.moodChartDataGroups,
   });
 
   @override
@@ -296,7 +311,7 @@ class MoodTrackingChart extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   interval: _interval,
-                  reservedSize: 40,
+                  //reservedSize: 40,
                   getTitlesWidget: (value, meta) {
                     var valueToString = _convertYValueToString(value);
                     if (valueToString.isNotEmpty) {
@@ -329,6 +344,12 @@ class MoodTrackingChart extends StatelessWidget {
 
   /// 构建底部标题的逻辑
   SideTitles _buildBottomTitles(MoodTrackingChartType type) {
+    //获得dataMap第一个元素的dayData、weekData、monthData
+    List<MoodTrackingChartData> dayData1 =
+        moodChartDataGroups.values.first.dayData;
+    List<MoodTrackingChartData> monthData1 =
+        moodChartDataGroups.values.first.monthData;
+
     switch (type) {
       case MoodTrackingChartType.day:
         return SideTitles(
@@ -342,7 +363,7 @@ class MoodTrackingChart extends StatelessWidget {
                 _formatDayTitle(
                   value.toInt(),
                   DataManager().moodTrackingDashboard.dateTime.weekday,
-                  dayData.length,
+                  dayData1.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -382,7 +403,7 @@ class MoodTrackingChart extends StatelessWidget {
                 _formatMonthTitle(
                   value.toInt(),
                   DataManager().moodTrackingDashboard.dateTime.month,
-                  monthData.length,
+                  monthData1.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -395,76 +416,78 @@ class MoodTrackingChart extends StatelessWidget {
     }
   }
 
+  LineChartBarData _buildLineBarData(
+    List<MoodTrackingChartData> data,
+    Color color,
+  ) {
+    return LineChartBarData(
+      spots:
+          data
+              .asMap()
+              .entries
+              .map(
+                (entry) =>
+                    FlSpot(entry.key.toDouble(), entry.value.value.toDouble()),
+              )
+              .toList(),
+      isCurved: true,
+      color: color,
+      barWidth: 3,
+      isStrokeCapRound: true,
+      belowBarData: BarAreaData(show: false),
+      dotData: FlDotData(show: true),
+    );
+  }
+
+  //
+  Color _getLineBarColor(String label) {
+    return Color(
+      DataManager().currentJournal.moodTrackings
+          .firstWhere((moodTracking) => moodTracking.name == label)
+          .color,
+    );
+  }
+
   /// 构建 lineBarsData 的逻辑
   List<LineChartBarData> _buildLineBarsData(MoodTrackingChartType type) {
+    List<LineChartBarData> ret = [];
+
     switch (type) {
       case MoodTrackingChartType.day:
-        return [
-          LineChartBarData(
-            spots:
-                dayData
-                    .asMap()
-                    .entries
-                    .map(
-                      (entry) => FlSpot(
-                        entry.key.toDouble(),
-                        entry.value.value.toDouble(),
-                      ),
-                    )
-                    .toList(),
-            isCurved: true,
-            color: Colors.blue,
-            barWidth: 3,
-            isStrokeCapRound: true,
-            belowBarData: BarAreaData(show: false),
-            dotData: FlDotData(show: true),
-          ),
-        ];
+        for (var dataGroup in moodChartDataGroups.values) {
+          ret.add(
+            _buildLineBarData(
+              dataGroup.dayData,
+              _getLineBarColor(dataGroup.label),
+            ),
+          );
+        }
+        break;
+
       case MoodTrackingChartType.week:
-        return [
-          LineChartBarData(
-            spots:
-                weekData
-                    .asMap()
-                    .entries
-                    .map(
-                      (entry) => FlSpot(
-                        entry.key.toDouble(),
-                        entry.value.value.toDouble(),
-                      ),
-                    )
-                    .toList(),
-            isCurved: true,
-            color: Colors.blue,
-            barWidth: 3,
-            isStrokeCapRound: true,
-            belowBarData: BarAreaData(show: false),
-            dotData: FlDotData(show: true),
-          ),
-        ];
+        for (var dataGroup in moodChartDataGroups.values) {
+          ret.add(
+            _buildLineBarData(
+              dataGroup.weekData,
+              _getLineBarColor(dataGroup.label),
+            ),
+          );
+        }
+
+        break;
+
       case MoodTrackingChartType.month:
-        return [
-          LineChartBarData(
-            spots:
-                monthData
-                    .asMap()
-                    .entries
-                    .map(
-                      (entry) => FlSpot(
-                        entry.key.toDouble(),
-                        entry.value.value.toDouble(),
-                      ),
-                    )
-                    .toList(),
-            isCurved: true,
-            color: Colors.blue,
-            barWidth: 3,
-            isStrokeCapRound: true,
-            belowBarData: BarAreaData(show: false),
-            dotData: FlDotData(show: true),
-          ),
-        ];
+        for (var dataGroup in moodChartDataGroups.values) {
+          ret.add(
+            _buildLineBarData(
+              dataGroup.monthData,
+              _getLineBarColor(dataGroup.label),
+            ),
+          );
+        }
+        break;
     }
+    return ret;
   }
 
   /// 格式化月份标题
