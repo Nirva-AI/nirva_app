@@ -28,28 +28,32 @@ class DataManager {
   ValueNotifier<List<DiaryEntryNote>> diaryNotesNotifier = ValueNotifier([]);
 
   // 情绪评分仪表板
-  MoodScoreDashborad moodScoreDashboard = MoodScoreDashborad(
+  MoodScoreDashboard moodScoreDashboard = MoodScoreDashboard(
     dateTime: DateTime.now(),
     insights: [],
   );
 
   // 压力水平仪表板
-  StressLevelDashborad stressLevelDashboard = StressLevelDashborad(
+  StressLevelDashboard stressLevelDashboard = StressLevelDashboard(
     dateTime: DateTime.now(),
     insights: [],
   );
 
   // 能量水平仪表板
-  EnergyLevelDashborad energyLevelDashboard = EnergyLevelDashborad(
+  EnergyLevelDashboard energyLevelDashboard = EnergyLevelDashboard(
     dateTime: DateTime.now(),
     insights: [],
   );
 
   // 情绪追踪仪表板
-  MoodTrackingDashborad moodTrackingDashboard = MoodTrackingDashborad(
+  MoodTrackingDashboard moodTrackingDashboard = MoodTrackingDashboard(
     dateTime: DateTime.now(),
     insights: [],
   );
+
+  // 醒着的时间分配仪表板
+  AwakeTimeAllocationDashboard awakeTimeAllocationDashboard =
+      AwakeTimeAllocationDashboard(dateTime: DateTime.now(), insights: []);
 
   // 清空数据
   void clear() {
@@ -59,19 +63,23 @@ class DataManager {
     archivedHighlights = [];
     diaryFavoritesNotifier = ValueNotifier([]);
     diaryNotesNotifier = ValueNotifier([]);
-    moodScoreDashboard = MoodScoreDashborad(
+    moodScoreDashboard = MoodScoreDashboard(
       dateTime: DateTime.now(),
       insights: [],
     );
-    stressLevelDashboard = StressLevelDashborad(
+    stressLevelDashboard = StressLevelDashboard(
       dateTime: DateTime.now(),
       insights: [],
     );
-    energyLevelDashboard = EnergyLevelDashborad(
+    energyLevelDashboard = EnergyLevelDashboard(
       dateTime: DateTime.now(),
       insights: [],
     );
-    moodTrackingDashboard = MoodTrackingDashborad(
+    moodTrackingDashboard = MoodTrackingDashboard(
+      dateTime: DateTime.now(),
+      insights: [],
+    );
+    awakeTimeAllocationDashboard = AwakeTimeAllocationDashboard(
       dateTime: DateTime.now(),
       insights: [],
     );
