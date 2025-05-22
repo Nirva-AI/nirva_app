@@ -2718,47 +2718,47 @@ abstract class _MoodTracking implements MoodTracking {
       throw _privateConstructorUsedError;
 }
 
-AwakeTimeAction _$AwakeTimeActionFromJson(Map<String, dynamic> json) {
-  return _AwakeTimeAction.fromJson(json);
+AwakeTimeAllocation _$AwakeTimeAllocationFromJson(Map<String, dynamic> json) {
+  return _AwakeTimeAllocation.fromJson(json);
 }
 
 /// @nodoc
-mixin _$AwakeTimeAction {
+mixin _$AwakeTimeAllocation {
   String get label => throw _privateConstructorUsedError;
   double get value => throw _privateConstructorUsedError;
   int get color => throw _privateConstructorUsedError;
 
-  /// Serializes this AwakeTimeAction to a JSON map.
+  /// Serializes this AwakeTimeAllocation to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of AwakeTimeAction
+  /// Create a copy of AwakeTimeAllocation
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $AwakeTimeActionCopyWith<AwakeTimeAction> get copyWith =>
+  $AwakeTimeAllocationCopyWith<AwakeTimeAllocation> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $AwakeTimeActionCopyWith<$Res> {
-  factory $AwakeTimeActionCopyWith(
-    AwakeTimeAction value,
-    $Res Function(AwakeTimeAction) then,
-  ) = _$AwakeTimeActionCopyWithImpl<$Res, AwakeTimeAction>;
+abstract class $AwakeTimeAllocationCopyWith<$Res> {
+  factory $AwakeTimeAllocationCopyWith(
+    AwakeTimeAllocation value,
+    $Res Function(AwakeTimeAllocation) then,
+  ) = _$AwakeTimeAllocationCopyWithImpl<$Res, AwakeTimeAllocation>;
   @useResult
   $Res call({String label, double value, int color});
 }
 
 /// @nodoc
-class _$AwakeTimeActionCopyWithImpl<$Res, $Val extends AwakeTimeAction>
-    implements $AwakeTimeActionCopyWith<$Res> {
-  _$AwakeTimeActionCopyWithImpl(this._value, this._then);
+class _$AwakeTimeAllocationCopyWithImpl<$Res, $Val extends AwakeTimeAllocation>
+    implements $AwakeTimeAllocationCopyWith<$Res> {
+  _$AwakeTimeAllocationCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AwakeTimeAction
+  /// Create a copy of AwakeTimeAllocation
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -2791,27 +2791,27 @@ class _$AwakeTimeActionCopyWithImpl<$Res, $Val extends AwakeTimeAction>
 }
 
 /// @nodoc
-abstract class _$$AwakeTimeActionImplCopyWith<$Res>
-    implements $AwakeTimeActionCopyWith<$Res> {
-  factory _$$AwakeTimeActionImplCopyWith(
-    _$AwakeTimeActionImpl value,
-    $Res Function(_$AwakeTimeActionImpl) then,
-  ) = __$$AwakeTimeActionImplCopyWithImpl<$Res>;
+abstract class _$$AwakeTimeAllocationImplCopyWith<$Res>
+    implements $AwakeTimeAllocationCopyWith<$Res> {
+  factory _$$AwakeTimeAllocationImplCopyWith(
+    _$AwakeTimeAllocationImpl value,
+    $Res Function(_$AwakeTimeAllocationImpl) then,
+  ) = __$$AwakeTimeAllocationImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String label, double value, int color});
 }
 
 /// @nodoc
-class __$$AwakeTimeActionImplCopyWithImpl<$Res>
-    extends _$AwakeTimeActionCopyWithImpl<$Res, _$AwakeTimeActionImpl>
-    implements _$$AwakeTimeActionImplCopyWith<$Res> {
-  __$$AwakeTimeActionImplCopyWithImpl(
-    _$AwakeTimeActionImpl _value,
-    $Res Function(_$AwakeTimeActionImpl) _then,
+class __$$AwakeTimeAllocationImplCopyWithImpl<$Res>
+    extends _$AwakeTimeAllocationCopyWithImpl<$Res, _$AwakeTimeAllocationImpl>
+    implements _$$AwakeTimeAllocationImplCopyWith<$Res> {
+  __$$AwakeTimeAllocationImplCopyWithImpl(
+    _$AwakeTimeAllocationImpl _value,
+    $Res Function(_$AwakeTimeAllocationImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of AwakeTimeAction
+  /// Create a copy of AwakeTimeAllocation
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -2821,7 +2821,7 @@ class __$$AwakeTimeActionImplCopyWithImpl<$Res>
     Object? color = null,
   }) {
     return _then(
-      _$AwakeTimeActionImpl(
+      _$AwakeTimeAllocationImpl(
         label:
             null == label
                 ? _value.label
@@ -2844,15 +2844,15 @@ class __$$AwakeTimeActionImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$AwakeTimeActionImpl implements _AwakeTimeAction {
-  const _$AwakeTimeActionImpl({
+class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
+  const _$AwakeTimeAllocationImpl({
     required this.label,
     required this.value,
     this.color = 0xFF00FF00,
   });
 
-  factory _$AwakeTimeActionImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AwakeTimeActionImplFromJson(json);
+  factory _$AwakeTimeAllocationImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AwakeTimeAllocationImplFromJson(json);
 
   @override
   final String label;
@@ -2864,14 +2864,14 @@ class _$AwakeTimeActionImpl implements _AwakeTimeAction {
 
   @override
   String toString() {
-    return 'AwakeTimeAction(label: $label, value: $value, color: $color)';
+    return 'AwakeTimeAllocation(label: $label, value: $value, color: $color)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AwakeTimeActionImpl &&
+            other is _$AwakeTimeAllocationImpl &&
             (identical(other.label, label) || other.label == label) &&
             (identical(other.value, value) || other.value == value) &&
             (identical(other.color, color) || other.color == color));
@@ -2881,32 +2881,32 @@ class _$AwakeTimeActionImpl implements _AwakeTimeAction {
   @override
   int get hashCode => Object.hash(runtimeType, label, value, color);
 
-  /// Create a copy of AwakeTimeAction
+  /// Create a copy of AwakeTimeAllocation
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$AwakeTimeActionImplCopyWith<_$AwakeTimeActionImpl> get copyWith =>
-      __$$AwakeTimeActionImplCopyWithImpl<_$AwakeTimeActionImpl>(
+  _$$AwakeTimeAllocationImplCopyWith<_$AwakeTimeAllocationImpl> get copyWith =>
+      __$$AwakeTimeAllocationImplCopyWithImpl<_$AwakeTimeAllocationImpl>(
         this,
         _$identity,
       );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AwakeTimeActionImplToJson(this);
+    return _$$AwakeTimeAllocationImplToJson(this);
   }
 }
 
-abstract class _AwakeTimeAction implements AwakeTimeAction {
-  const factory _AwakeTimeAction({
+abstract class _AwakeTimeAllocation implements AwakeTimeAllocation {
+  const factory _AwakeTimeAllocation({
     required final String label,
     required final double value,
     final int color,
-  }) = _$AwakeTimeActionImpl;
+  }) = _$AwakeTimeAllocationImpl;
 
-  factory _AwakeTimeAction.fromJson(Map<String, dynamic> json) =
-      _$AwakeTimeActionImpl.fromJson;
+  factory _AwakeTimeAllocation.fromJson(Map<String, dynamic> json) =
+      _$AwakeTimeAllocationImpl.fromJson;
 
   @override
   String get label;
@@ -2915,11 +2915,11 @@ abstract class _AwakeTimeAction implements AwakeTimeAction {
   @override
   int get color;
 
-  /// Create a copy of AwakeTimeAction
+  /// Create a copy of AwakeTimeAllocation
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AwakeTimeActionImplCopyWith<_$AwakeTimeActionImpl> get copyWith =>
+  _$$AwakeTimeAllocationImplCopyWith<_$AwakeTimeAllocationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -3339,7 +3339,7 @@ mixin _$Journal {
   List<Highlight> get highlights => throw _privateConstructorUsedError;
   List<EnergyLevel> get energyLevels => throw _privateConstructorUsedError;
   List<MoodTracking> get moodTrackings => throw _privateConstructorUsedError;
-  List<AwakeTimeAction> get awakeTimeActions =>
+  List<AwakeTimeAllocation> get awakeTimeActions =>
       throw _privateConstructorUsedError;
   SocialMap get socialMap => throw _privateConstructorUsedError;
 
@@ -3370,7 +3370,7 @@ abstract class $JournalCopyWith<$Res> {
     List<Highlight> highlights,
     List<EnergyLevel> energyLevels,
     List<MoodTracking> moodTrackings,
-    List<AwakeTimeAction> awakeTimeActions,
+    List<AwakeTimeAllocation> awakeTimeActions,
     SocialMap socialMap,
   });
 
@@ -3475,7 +3475,7 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
                 null == awakeTimeActions
                     ? _value.awakeTimeActions
                     : awakeTimeActions // ignore: cast_nullable_to_non_nullable
-                        as List<AwakeTimeAction>,
+                        as List<AwakeTimeAllocation>,
             socialMap:
                 null == socialMap
                     ? _value.socialMap
@@ -3538,7 +3538,7 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
     List<Highlight> highlights,
     List<EnergyLevel> energyLevels,
     List<MoodTracking> moodTrackings,
-    List<AwakeTimeAction> awakeTimeActions,
+    List<AwakeTimeAllocation> awakeTimeActions,
     SocialMap socialMap,
   });
 
@@ -3645,7 +3645,7 @@ class __$$JournalImplCopyWithImpl<$Res>
             null == awakeTimeActions
                 ? _value._awakeTimeActions
                 : awakeTimeActions // ignore: cast_nullable_to_non_nullable
-                    as List<AwakeTimeAction>,
+                    as List<AwakeTimeAllocation>,
         socialMap:
             null == socialMap
                 ? _value.socialMap
@@ -3672,7 +3672,7 @@ class _$JournalImpl implements _Journal {
     required final List<Highlight> highlights,
     required final List<EnergyLevel> energyLevels,
     required final List<MoodTracking> moodTrackings,
-    required final List<AwakeTimeAction> awakeTimeActions,
+    required final List<AwakeTimeAllocation> awakeTimeActions,
     required this.socialMap,
   }) : _diaryEntries = diaryEntries,
        _quotes = quotes,
@@ -3760,9 +3760,9 @@ class _$JournalImpl implements _Journal {
     return EqualUnmodifiableListView(_moodTrackings);
   }
 
-  final List<AwakeTimeAction> _awakeTimeActions;
+  final List<AwakeTimeAllocation> _awakeTimeActions;
   @override
-  List<AwakeTimeAction> get awakeTimeActions {
+  List<AwakeTimeAllocation> get awakeTimeActions {
     if (_awakeTimeActions is EqualUnmodifiableListView)
       return _awakeTimeActions;
     // ignore: implicit_dynamic_type
@@ -3871,7 +3871,7 @@ abstract class _Journal implements Journal {
     required final List<Highlight> highlights,
     required final List<EnergyLevel> energyLevels,
     required final List<MoodTracking> moodTrackings,
-    required final List<AwakeTimeAction> awakeTimeActions,
+    required final List<AwakeTimeAllocation> awakeTimeActions,
     required final SocialMap socialMap,
   }) = _$JournalImpl;
 
@@ -3902,7 +3902,7 @@ abstract class _Journal implements Journal {
   @override
   List<MoodTracking> get moodTrackings;
   @override
-  List<AwakeTimeAction> get awakeTimeActions;
+  List<AwakeTimeAllocation> get awakeTimeActions;
   @override
   SocialMap get socialMap;
 

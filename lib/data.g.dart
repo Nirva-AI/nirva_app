@@ -174,16 +174,16 @@ Map<String, dynamic> _$$MoodTrackingImplToJson(_$MoodTrackingImpl instance) =>
       'color': instance.color,
     };
 
-_$AwakeTimeActionImpl _$$AwakeTimeActionImplFromJson(
+_$AwakeTimeAllocationImpl _$$AwakeTimeAllocationImplFromJson(
   Map<String, dynamic> json,
-) => _$AwakeTimeActionImpl(
+) => _$AwakeTimeAllocationImpl(
   label: json['label'] as String,
   value: (json['value'] as num).toDouble(),
   color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
 );
 
-Map<String, dynamic> _$$AwakeTimeActionImplToJson(
-  _$AwakeTimeActionImpl instance,
+Map<String, dynamic> _$$AwakeTimeAllocationImplToJson(
+  _$AwakeTimeAllocationImpl instance,
 ) => <String, dynamic>{
   'label': instance.label,
   'value': instance.value,
@@ -259,7 +259,9 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
               .toList(),
       awakeTimeActions:
           (json['awakeTimeActions'] as List<dynamic>)
-              .map((e) => AwakeTimeAction.fromJson(e as Map<String, dynamic>))
+              .map(
+                (e) => AwakeTimeAllocation.fromJson(e as Map<String, dynamic>),
+              )
               .toList(),
       socialMap: SocialMap.fromJson(json['socialMap'] as Map<String, dynamic>),
     );
