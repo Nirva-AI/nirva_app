@@ -33,6 +33,11 @@ class DataManager {
     insights: [],
   );
 
+  StressLevelDashborad stressLevelDashboard = StressLevelDashborad(
+    dateTime: DateTime.now(),
+    insights: [],
+  );
+
   // 清空数据
   void clear() {
     user = User(name: '');
@@ -42,6 +47,10 @@ class DataManager {
     diaryFavoritesNotifier = ValueNotifier([]);
     diaryNotesNotifier = ValueNotifier([]);
     moodScoreDashboard = MoodScoreDashborad(
+      dateTime: DateTime.now(),
+      insights: [],
+    );
+    stressLevelDashboard = StressLevelDashborad(
       dateTime: DateTime.now(),
       insights: [],
     );

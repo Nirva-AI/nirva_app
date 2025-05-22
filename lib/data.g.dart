@@ -308,3 +308,18 @@ Map<String, dynamic> _$$MoodScoreDashboradImplToJson(
   'dateTime': instance.dateTime.toIso8601String(),
   'insights': instance.insights,
 };
+
+_$StressLevelDashboradImpl _$$StressLevelDashboradImplFromJson(
+  Map<String, dynamic> json,
+) => _$StressLevelDashboradImpl(
+  dateTime: DateTime.parse(json['dateTime'] as String),
+  insights:
+      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+);
+
+Map<String, dynamic> _$$StressLevelDashboradImplToJson(
+  _$StressLevelDashboradImpl instance,
+) => <String, dynamic>{
+  'dateTime': instance.dateTime.toIso8601String(),
+  'insights': instance.insights,
+};
