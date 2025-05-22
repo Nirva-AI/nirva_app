@@ -438,7 +438,7 @@ class EnergyLevelChart extends StatelessWidget {
     if (startMonth <= 0) startMonth += 12;
     int targetMonth = (startMonth + widgetIndexValue) % 12;
     if (targetMonth == 0) targetMonth = 12;
-    return Utils.monthNames[targetMonth - 1];
+    return Utils.shortMonthNames[targetMonth - 1];
   }
 
   // 格式化每天的标题

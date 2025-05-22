@@ -436,7 +436,7 @@ class MoodScoreChart extends StatelessWidget {
     int startMonth = (currentMonth - monthsCount) % 12;
     if (startMonth < 0) startMonth += 12;
     int targetMonth = (startMonth + widgetIndexValue) % 12;
-    return Utils.monthNames[targetMonth];
+    return Utils.shortMonthNames[targetMonth];
   }
 
   // 格式化每天的标题

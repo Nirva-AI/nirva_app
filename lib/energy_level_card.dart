@@ -4,32 +4,71 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/energy_level_details_page.dart'; // 导入新页面
 
+class EnergyLabel {
+  final String label;
+  final double measurementValue;
+
+  const EnergyLabel({required this.label, required this.measurementValue});
+}
+
 class EnergyLevelCard extends StatelessWidget {
   const EnergyLevelCard({super.key});
 
-  List<FlSpot> _generateSpots(List<Energy> data) {
+  static const lowMinus = EnergyLabel(label: '', measurementValue: 0.0);
+  static const low = EnergyLabel(label: 'Low', measurementValue: 1.0);
+  static const neutral = EnergyLabel(label: 'Neutral', measurementValue: 2.0);
+  static const high = EnergyLabel(label: 'High', measurementValue: 3.0);
+  static const highPlus = EnergyLabel(label: '', measurementValue: 4.0);
+  static const double energyLabelTitlesInterval = 1;
+
+  List<FlSpot> _generateSpots(List<EnergyLevel> data) {
     return data.asMap().entries.map((entry) {
       int index = entry.key;
-      Energy energy = entry.value;
-      return FlSpot(index.toDouble(), energy.energyLevel);
+      EnergyLevel energy = entry.value;
+      return FlSpot(index.toDouble(), energy.value);
     }).toList();
   }
 
-  Widget _generateBottomTitle(double value, TitleMeta meta, List<Energy> data) {
+  Widget _generateBottomTitle(
+    double value,
+    TitleMeta meta,
+    List<EnergyLevel> data,
+  ) {
     int index = value.toInt();
     if (index >= 0 && index < data.length) {
       return Text(
-        data[index].time,
+        //data[index].time,
+        _timeToString(data[index].dateTime),
         style: const TextStyle(color: Colors.grey, fontSize: 10),
       );
     }
     return const SizedBox.shrink();
   }
 
+  String _timeToString(DateTime dateTime) {
+    return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+  }
+
+  String _formatEnergyLevelString(double value) {
+    if (value <= EnergyLevelCard.lowMinus.measurementValue) {
+      return EnergyLevelCard.lowMinus.label;
+    }
+    if (value <= EnergyLevelCard.low.measurementValue) {
+      return EnergyLevelCard.low.label;
+    }
+    if (value <= EnergyLevelCard.neutral.measurementValue) {
+      return EnergyLevelCard.neutral.label;
+    }
+    if (value <= EnergyLevelCard.high.measurementValue) {
+      return EnergyLevelCard.high.label;
+    }
+    return EnergyLevelCard.highPlus.label;
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Energy> energyRecords = DataManager().currentJournal.energyRecords;
-    final spots = _generateSpots(energyRecords);
+    List<EnergyLevel> energyLevels = DataManager().currentJournal.energyLevels;
+    final spots = _generateSpots(energyLevels);
 
     return Card(
       elevation: 2,
@@ -69,41 +108,35 @@ class EnergyLevelCard extends StatelessWidget {
               height: 200,
               child: LineChart(
                 LineChartData(
-                  minY: Energy.lowMinus.measurementValue,
-                  maxY: Energy.highPlus.measurementValue,
+                  minY: EnergyLevelCard.lowMinus.measurementValue,
+                  maxY: EnergyLevelCard.highPlus.measurementValue,
                   minX: 0,
-                  maxX: (energyRecords.length - 1).toDouble(),
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: true,
-                    horizontalInterval: 1,
-                    verticalInterval: 1,
-                    getDrawingHorizontalLine:
-                        (value) => FlLine(
-                          color: Colors.grey.withAlpha(51),
-                          strokeWidth: 1,
-                        ),
-                    getDrawingVerticalLine:
-                        (value) => FlLine(
-                          color: Colors.grey.withAlpha(51),
-                          strokeWidth: 1,
-                        ),
-                  ),
+                  maxX: (energyLevels.length - 1).toDouble(),
+                  // gridData: FlGridData(
+                  //   show: true,
+                  //   drawVerticalLine: true,
+                  //   horizontalInterval: 1,
+                  //   verticalInterval: 1,
+                  //   getDrawingHorizontalLine:
+                  //       (value) => FlLine(
+                  //         color: Colors.grey.withAlpha(51),
+                  //         strokeWidth: 1,
+                  //       ),
+                  //   getDrawingVerticalLine:
+                  //       (value) => FlLine(
+                  //         color: Colors.grey.withAlpha(51),
+                  //         strokeWidth: 1,
+                  //       ),
+                  // ),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 40,
-                        interval: 1,
+                        interval: EnergyLevelCard.energyLabelTitlesInterval,
                         getTitlesWidget: (value, meta) {
-                          final energyData = Energy(
-                            dateTime: DateTime.now(),
-                            energyLevel: value,
-                          );
-                          final label = energyData.energyLabelString;
-
                           return Text(
-                            label,
+                            _formatEnergyLevelString(value),
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 10,
@@ -118,11 +151,8 @@ class EnergyLevelCard extends StatelessWidget {
                         reservedSize: 30,
                         interval: 1,
                         getTitlesWidget:
-                            (value, meta) => _generateBottomTitle(
-                              value,
-                              meta,
-                              energyRecords,
-                            ),
+                            (value, meta) =>
+                                _generateBottomTitle(value, meta, energyLevels),
                       ),
                     ),
                     topTitles: AxisTitles(

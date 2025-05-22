@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class Utils {
   // 计算对应的月份标签
-  static List<String> monthNames = [
+  static List<String> shortMonthNames = [
     'Jan',
     'Feb',
     'Mar',
@@ -19,6 +19,21 @@ class Utils {
     'Oct',
     'Nov',
     'Dec',
+  ];
+
+  static final fullMonthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   static List<String> weekDayNames = [
@@ -57,5 +72,9 @@ class Utils {
     } catch (e) {
       debugPrint('写入 JSON 文件时出错: $e');
     }
+  }
+
+  static String fullDateTime(DateTime dateTime) {
+    return '${fullMonthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
   }
 }
