@@ -5,21 +5,21 @@ import 'package:nirva_app/data_manager.dart';
 import 'dart:math';
 
 // 管理全局数据的类
-class FillTestData {
+class TestData {
   //
-  static void fillTestData() {
+  static void initializeTestData() {
     DataManager().clear();
     // 添加用户信息
     DataManager().user = User(name: 'Weiwei');
 
     // 添加todo数据
-    DataManager().tasks = FillTestData.createTestTasks();
+    DataManager().tasks = TestData.createTestTasks();
 
     // 添加日记数据
-    DataManager().journals.add(FillTestData.createTestJournal());
+    DataManager().journals.add(TestData.createTestJournal());
 
     // 添加高亮数据
-    DataManager().archivedHighlights = FillTestData.createTestHighlightGroup();
+    DataManager().archivedHighlights = TestData.createTestHighlightGroup();
 
     // 添加日记的最爱数据
     initializeTestFavorites(DataManager().currentJournal);
@@ -28,25 +28,22 @@ class FillTestData {
     initializeTestMyNotes(DataManager().currentJournal);
 
     // 添加情绪分数
-    DataManager().moodScoreDashboard = FillTestData.createMoodScoreDashboard(
+    DataManager().moodScoreDashboard = TestData.createMoodScoreDashboard(
       DataManager().currentJournal.dateTime,
     );
 
     // 添加压力水平
-    DataManager()
-        .stressLevelDashboard = FillTestData.createStressLevelDashboard(
+    DataManager().stressLevelDashboard = TestData.createStressLevelDashboard(
       DataManager().currentJournal.dateTime,
     );
 
     //添加能量水平
-    DataManager()
-        .energyLevelDashboard = FillTestData.createEnergyLevelDashboard(
+    DataManager().energyLevelDashboard = TestData.createEnergyLevelDashboard(
       DataManager().currentJournal.dateTime,
     );
 
     // 添加情绪追踪
-    DataManager()
-        .moodTrackingDashboard = FillTestData.createMoodTrackingDashboard(
+    DataManager().moodTrackingDashboard = TestData.createMoodTrackingDashboard(
       DataManager().currentJournal.dateTime,
     );
   }
@@ -582,8 +579,8 @@ class FillTestData {
     );
   }
 
-  static MoodScoreDashborad createMoodScoreDashboard(DateTime dateTime) {
-    return MoodScoreDashborad(
+  static MoodScoreDashboard createMoodScoreDashboard(DateTime dateTime) {
+    return MoodScoreDashboard(
       dateTime: dateTime,
       insights: [
         // 'Your mood has been generally trending upward this week.',
@@ -593,8 +590,8 @@ class FillTestData {
     );
   }
 
-  static StressLevelDashborad createStressLevelDashboard(DateTime dateTime) {
-    return StressLevelDashborad(
+  static StressLevelDashboard createStressLevelDashboard(DateTime dateTime) {
+    return StressLevelDashboard(
       dateTime: dateTime,
       insights: [
         //'Your stress levels have decreased over this week.',
@@ -604,8 +601,8 @@ class FillTestData {
     );
   }
 
-  static EnergyLevelDashborad createEnergyLevelDashboard(DateTime dateTime) {
-    return EnergyLevelDashborad(
+  static EnergyLevelDashboard createEnergyLevelDashboard(DateTime dateTime) {
+    return EnergyLevelDashboard(
       dateTime: dateTime,
       insights: [
         //'Your energy levels peak in the late morning and early afternoon.',
@@ -615,13 +612,26 @@ class FillTestData {
     );
   }
 
-  static MoodTrackingDashborad createMoodTrackingDashboard(DateTime dateTime) {
-    return MoodTrackingDashborad(
+  static MoodTrackingDashboard createMoodTrackingDashboard(DateTime dateTime) {
+    return MoodTrackingDashboard(
       dateTime: dateTime,
       insights: [
         //'Happiness and calmness are your dominant emotions this week.',
         'Stress levels peak during midweek but decrease on weekends.',
         'Focus appears to be strongest in the mornings - consider scheduling important tasks then.',
+      ],
+    );
+  }
+
+  static AwakeTimeAllocationDashboard createAwakeTimeAllocationDashboard(
+    DateTime dateTime,
+  ) {
+    return AwakeTimeAllocationDashboard(
+      dateTime: dateTime,
+      insights: [
+        //'Work takes up the majority of your awake hours this week.',
+        'Self-care and exercise time has increased compared to previous periods.',
+        'Consider increasing learning activities to meet your personal growth goals.',
       ],
     );
   }

@@ -277,53 +277,67 @@ extension JournalExtensions on Journal {
 }
 
 @freezed
-class MoodScoreDashborad with _$MoodScoreDashborad {
-  const factory MoodScoreDashborad({
+class MoodScoreDashboard with _$MoodScoreDashboard {
+  const factory MoodScoreDashboard({
     required DateTime dateTime,
     required List<String> insights,
-  }) = _MoodScoreDashborad;
+  }) = _MoodScoreDashboard;
 
-  factory MoodScoreDashborad.fromJson(Map<String, dynamic> json) =>
-      _$MoodScoreDashboradFromJson(json);
+  factory MoodScoreDashboard.fromJson(Map<String, dynamic> json) =>
+      _$MoodScoreDashboardFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _MoodScoreDashborad).toJson();
+  Map<String, dynamic> toJson() => (this as _MoodScoreDashboard).toJson();
 }
 
 @freezed
-class StressLevelDashborad with _$StressLevelDashborad {
-  const factory StressLevelDashborad({
+class StressLevelDashboard with _$StressLevelDashboard {
+  const factory StressLevelDashboard({
     required DateTime dateTime,
     required List<String> insights,
-  }) = _StressLevelDashborad;
+  }) = _StressLevelDashboard;
 
-  factory StressLevelDashborad.fromJson(Map<String, dynamic> json) =>
-      _$StressLevelDashboradFromJson(json);
+  factory StressLevelDashboard.fromJson(Map<String, dynamic> json) =>
+      _$StressLevelDashboardFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _StressLevelDashborad).toJson();
+  Map<String, dynamic> toJson() => (this as _StressLevelDashboard).toJson();
 }
 
 @freezed
-class EnergyLevelDashborad with _$EnergyLevelDashborad {
-  const factory EnergyLevelDashborad({
+class EnergyLevelDashboard with _$EnergyLevelDashboard {
+  const factory EnergyLevelDashboard({
     required DateTime dateTime,
     required List<String> insights,
-  }) = _EnergyLevelDashborad;
+  }) = _EnergyLevelDashboard;
 
-  factory EnergyLevelDashborad.fromJson(Map<String, dynamic> json) =>
-      _$EnergyLevelDashboradFromJson(json);
+  factory EnergyLevelDashboard.fromJson(Map<String, dynamic> json) =>
+      _$EnergyLevelDashboardFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _EnergyLevelDashborad).toJson();
+  Map<String, dynamic> toJson() => (this as _EnergyLevelDashboard).toJson();
 }
 
 @freezed
-class MoodTrackingDashborad with _$MoodTrackingDashborad {
-  const factory MoodTrackingDashborad({
+class MoodTrackingDashboard with _$MoodTrackingDashboard {
+  const factory MoodTrackingDashboard({
     required DateTime dateTime,
     required List<String> insights,
-  }) = _MoodTrackingDashborad;
+  }) = _MoodTrackingDashboard;
 
-  factory MoodTrackingDashborad.fromJson(Map<String, dynamic> json) =>
-      _$MoodTrackingDashboradFromJson(json);
+  factory MoodTrackingDashboard.fromJson(Map<String, dynamic> json) =>
+      _$MoodTrackingDashboardFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _MoodTrackingDashborad).toJson();
+  Map<String, dynamic> toJson() => (this as _MoodTrackingDashboard).toJson();
+}
+
+@freezed
+class AwakeTimeAllocationDashboard with _$AwakeTimeAllocationDashboard {
+  const factory AwakeTimeAllocationDashboard({
+    required DateTime dateTime,
+    required List<String> insights,
+  }) = _AwakeTimeAllocationDashboard;
+
+  factory AwakeTimeAllocationDashboard.fromJson(Map<String, dynamic> json) =>
+      _$AwakeTimeAllocationDashboardFromJson(json);
+  @override
+  Map<String, dynamic> toJson() =>
+      (this as _AwakeTimeAllocationDashboard).toJson();
 }

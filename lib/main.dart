@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/main_app.dart';
-import 'package:nirva_app/fill_test_data.dart';
+import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
 //import 'package:nirva_app/test_calendar_app.dart';
@@ -25,5 +25,5 @@ Future<void> initializeApp() async {
   // 在这里执行任何需要的初始化操作，例如加载配置文件
   // 例如：await loadConfig();
   // 或者其他异步操作
-  FillTestData.fillTestData();
+  TestData.initializeTestData();
 }
