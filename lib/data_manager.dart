@@ -28,7 +28,7 @@ class DataManager {
   ValueNotifier<List<DiaryEntryNote>> diaryNotesNotifier = ValueNotifier([]);
 
   //
-  MoodScoreInsights moodScoreInsights = MoodScoreInsights(
+  MoodScoreDashborad moodScoreDashboard = MoodScoreDashborad(
     dateTime: DateTime.now(),
     insights: [],
   );
@@ -41,7 +41,7 @@ class DataManager {
     archivedHighlights = [];
     diaryFavoritesNotifier = ValueNotifier([]);
     diaryNotesNotifier = ValueNotifier([]);
-    moodScoreInsights = MoodScoreInsights(
+    moodScoreDashboard = MoodScoreDashborad(
       dateTime: DateTime.now(),
       insights: [],
     );

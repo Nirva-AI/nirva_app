@@ -330,14 +330,14 @@ extension JournalExtensions on Journal {
 }
 
 @freezed
-class MoodScoreInsights with _$MoodScoreInsights {
-  const factory MoodScoreInsights({
+class MoodScoreDashborad with _$MoodScoreDashborad {
+  const factory MoodScoreDashborad({
     required DateTime dateTime,
     required List<String> insights,
-  }) = _MoodScoreInsights;
+  }) = _MoodScoreDashborad;
 
-  factory MoodScoreInsights.fromJson(Map<String, dynamic> json) =>
-      _$MoodScoreInsightsFromJson(json);
+  factory MoodScoreDashborad.fromJson(Map<String, dynamic> json) =>
+      _$MoodScoreDashboradFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _MoodScoreInsights).toJson();
+  Map<String, dynamic> toJson() => (this as _MoodScoreDashborad).toJson();
 }
