@@ -46,7 +46,7 @@ class EnergyLevelCard extends StatelessWidget {
                   'Energy Level',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    //fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),

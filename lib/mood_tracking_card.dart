@@ -4,8 +4,8 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
 
-class MoodTrackingChart extends StatelessWidget {
-  const MoodTrackingChart({super.key});
+class MoodTrackingCard extends StatelessWidget {
+  const MoodTrackingCard({super.key});
 
   // 因为情绪是线性能规划的，负面～正面，所以就用一个数值来在几个色块里挑选。
   Color _getMoodColor(double moodValue) {
@@ -36,13 +36,15 @@ class MoodTrackingChart extends StatelessWidget {
           return PieChartSectionData(
             value: entry.value.toDouble(),
             color: moodColors[entry.key] ?? Colors.grey,
-            radius: 25, // 缩小扇形半径
+            radius: 30, // 保持合适的扇形半径
+            title: '', // 移除内部标题
             badgeWidget: _buildBadge(
               entry.key,
               entry.value,
               moodColors[entry.key]!,
             ),
-            badgePositionPercentageOffset: 2.0, // 调整文字位置稍远离饼图
+            badgePositionPercentageOffset: 2.5, // 调整标签位置，远离圆环
+            showTitle: false, // 不显示内部标题
           );
         }).toList();
 
@@ -51,38 +53,40 @@ class MoodTrackingChart extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // 修改部分：将标题和按钮放在同一行
+            Row(
               children: [
                 const Text('Mood Tracking', style: TextStyle(fontSize: 16)),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 200,
-                  child: PieChart(
-                    PieChartData(
-                      sections: sections,
-                      sectionsSpace: 2, // 扇形之间的间距
-                      centerSpaceRadius: 50, // 增大中心空白半径，缩小饼图面积
-                    ),
-                  ),
+                const Spacer(), // 添加Spacer将按钮推到最右侧
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MoodTrackingDetailsPage(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
-            Positioned(
-              top: 0,
-              right: 0,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MoodTrackingDetailsPage(),
-                    ),
-                  );
-                },
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 240, // 增加高度以容纳标签和图表
+              child: Padding(
+                padding: const EdgeInsets.all(20.0), // 添加内边距，给标签留出空间
+                child: PieChart(
+                  PieChartData(
+                    sections: sections,
+                    sectionsSpace: 2, // 扇形之间的间距
+                    centerSpaceRadius: 40, // 增大中心空白半径
+                    pieTouchData: PieTouchData(enabled: false), // 禁用触摸交互
+                  ),
+                ),
               ),
             ),
           ],
@@ -95,9 +99,7 @@ class MoodTrackingChart extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withAlpha(
-          (0.2 * 255).toInt(),
-        ), // 使用 withAlpha 替代 withOpacity
+        color: color.withAlpha((0.2 * 255).toInt()),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color, width: 1),
       ),
@@ -105,7 +107,7 @@ class MoodTrackingChart extends StatelessWidget {
         '$mood ${percentage.toInt()}%',
         style: TextStyle(
           color: color,
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.bold,
         ),
       ),
