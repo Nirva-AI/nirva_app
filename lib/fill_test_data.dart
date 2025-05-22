@@ -488,24 +488,24 @@ class FillTestData {
       ),
     ];
 
-    final List<Energy> energyRecords = [
-      Energy(dateTime: DateTime(2025, 5, 6, 10, 0), energyLevel: 1.0),
-      Energy(dateTime: DateTime(2025, 5, 6, 10, 30), energyLevel: 2.0),
-      Energy(dateTime: DateTime(2025, 5, 6, 11, 30), energyLevel: 1.5),
-      Energy(dateTime: DateTime(2025, 5, 6, 13, 0), energyLevel: 2.8),
-      Energy(dateTime: DateTime(2025, 5, 6, 13, 30), energyLevel: 2.0),
-      Energy(dateTime: DateTime(2025, 5, 6, 14, 30), energyLevel: 3.0),
-      Energy(dateTime: DateTime(2025, 5, 6, 15, 10), energyLevel: 1.5),
-      Energy(dateTime: DateTime(2025, 5, 6, 16, 30), energyLevel: 2.5),
-      Energy(dateTime: DateTime(2025, 5, 6, 18, 30), energyLevel: 3.2),
-      Energy(dateTime: DateTime(2025, 5, 6, 19, 0), energyLevel: 2.8),
+    final List<EnergyLevel> energyRecords = [
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 10, 0), value: 1.0),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 10, 30), value: 2.0),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 11, 30), value: 1.5),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 13, 0), value: 2.8),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 13, 30), value: 2.0),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 14, 30), value: 3.0),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 15, 10), value: 1.5),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 16, 30), value: 2.5),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 18, 30), value: 3.2),
+      EnergyLevel(dateTime: DateTime(2025, 5, 6, 19, 0), value: 2.8),
     ];
 
-    final List<MoodTracking> moods = [
-      MoodTracking(name: 'Happy', percentage: 50),
-      MoodTracking(name: 'Calm', percentage: 30),
-      MoodTracking(name: 'Stressed', percentage: 10),
-      MoodTracking(name: 'Focused', percentage: 10),
+    final List<MoodTracking> moodTrackings = [
+      MoodTracking(name: 'Happy', value: 50, color: 0xFF2196F3),
+      MoodTracking(name: 'Calm', value: 30, color: 0xFF4CAF50),
+      MoodTracking(name: 'Stressed', value: 10, color: 0xFFF44336),
+      MoodTracking(name: 'Focused', value: 10, color: 0xFFFF9800),
     ];
 
     final List<AwakeTimeAction> awakeTimeActions = [
@@ -575,8 +575,8 @@ class FillTestData {
       moodScore: moodScore,
       stressLevel: stressLevel,
       highlights: highlights,
-      energyRecords: energyRecords,
-      moods: moods,
+      energyLevels: energyRecords,
+      moodTrackings: moodTrackings,
       awakeTimeActions: awakeTimeActions,
       socialMap: SocialMap(socialEntities: socialEntities),
     );

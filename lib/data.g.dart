@@ -148,40 +148,29 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'isCompleted': instance.isCompleted,
     };
 
-_$EnergyLabelImpl _$$EnergyLabelImplFromJson(Map<String, dynamic> json) =>
-    _$EnergyLabelImpl(
-      label: json['label'] as String,
-      measurementValue: (json['measurementValue'] as num).toDouble(),
+_$EnergyLevelImpl _$$EnergyLevelImplFromJson(Map<String, dynamic> json) =>
+    _$EnergyLevelImpl(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      value: (json['value'] as num).toDouble(),
     );
 
-Map<String, dynamic> _$$EnergyLabelImplToJson(_$EnergyLabelImpl instance) =>
-    <String, dynamic>{
-      'label': instance.label,
-      'measurementValue': instance.measurementValue,
-    };
-
-_$EnergyImpl _$$EnergyImplFromJson(Map<String, dynamic> json) => _$EnergyImpl(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  energyLevel: (json['energyLevel'] as num).toDouble(),
-);
-
-Map<String, dynamic> _$$EnergyImplToJson(_$EnergyImpl instance) =>
+Map<String, dynamic> _$$EnergyLevelImplToJson(_$EnergyLevelImpl instance) =>
     <String, dynamic>{
       'dateTime': instance.dateTime.toIso8601String(),
-      'energyLevel': instance.energyLevel,
+      'value': instance.value,
     };
 
 _$MoodTrackingImpl _$$MoodTrackingImplFromJson(Map<String, dynamic> json) =>
     _$MoodTrackingImpl(
       name: json['name'] as String,
-      percentage: (json['percentage'] as num).toDouble(),
-      color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
+      value: (json['value'] as num).toDouble(),
+      color: (json['color'] as num?)?.toInt() ?? 0xFF000000,
     );
 
 Map<String, dynamic> _$$MoodTrackingImplToJson(_$MoodTrackingImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'percentage': instance.percentage,
+      'value': instance.value,
       'color': instance.color,
     };
 
@@ -260,12 +249,12 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
           (json['highlights'] as List<dynamic>)
               .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
               .toList(),
-      energyRecords:
-          (json['energyRecords'] as List<dynamic>)
-              .map((e) => Energy.fromJson(e as Map<String, dynamic>))
+      energyLevels:
+          (json['energyLevels'] as List<dynamic>)
+              .map((e) => EnergyLevel.fromJson(e as Map<String, dynamic>))
               .toList(),
-      moods:
-          (json['moods'] as List<dynamic>)
+      moodTrackings:
+          (json['moodTrackings'] as List<dynamic>)
               .map((e) => MoodTracking.fromJson(e as Map<String, dynamic>))
               .toList(),
       awakeTimeActions:
@@ -287,8 +276,8 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
       'moodScore': instance.moodScore,
       'stressLevel': instance.stressLevel,
       'highlights': instance.highlights,
-      'energyRecords': instance.energyRecords,
-      'moods': instance.moods,
+      'energyLevels': instance.energyLevels,
+      'moodTrackings': instance.moodTrackings,
       'awakeTimeActions': instance.awakeTimeActions,
       'socialMap': instance.socialMap,
     };

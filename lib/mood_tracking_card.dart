@@ -7,39 +7,20 @@ import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
 class MoodTrackingCard extends StatelessWidget {
   const MoodTrackingCard({super.key});
 
-  // 因为情绪是线性能规划的，负面～正面，所以就用一个数值来在几个色块里挑选。
-  Color _getMoodColor(String moodName) {
-    if (moodName == 'Happy') {
-      return Colors.blue;
-    } else if (moodName == 'Calm') {
-      return Colors.green;
-    } else if (moodName == 'Stressed') {
-      return Colors.red;
-    } else if (moodName == 'Focused') {
-      return Colors.orange;
-    }
-
-    return Colors.grey; // 默认颜色
-  }
-
   @override
   Widget build(BuildContext context) {
-    final Map<String, Color> moodColors = {
-      for (var mood in DataManager().currentJournal.moods)
-        mood.name: _getMoodColor(mood.name),
-    };
-
     final sections =
-        DataManager().currentJournal.moodMap.entries.map((entry) {
+        DataManager().currentJournal.moodTrackingData.entries.map((entry) {
           return PieChartSectionData(
             value: entry.value.toDouble(),
-            color: moodColors[entry.key] ?? Colors.grey,
+            color: Color(entry.key.color),
             radius: 30, // 保持合适的扇形半径
             title: '', // 移除内部标题
             badgeWidget: _buildBadge(
-              entry.key,
+              entry.key.name,
               entry.value,
-              moodColors[entry.key]!,
+              //moodColors[entry.key.name]!,
+              Color(entry.key.color), // 使用颜色值
             ),
             badgePositionPercentageOffset: 2.5, // 调整标签位置，远离圆环
             showTitle: false, // 不显示内部标题
@@ -102,7 +83,7 @@ class MoodTrackingCard extends StatelessWidget {
         border: Border.all(color: color, width: 1),
       ),
       child: Text(
-        '$mood ${percentage.toInt()}%',
+        '$mood ${(percentage * 100).toInt()}%',
         style: TextStyle(
           color: color,
           fontSize: 10,

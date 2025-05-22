@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/diary_entry_card.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/quote_carousel.dart';
-import 'package:nirva_app/data.dart';
+import 'package:nirva_app/utils.dart';
 
 class SmartDiaryPage extends StatelessWidget {
   const SmartDiaryPage({super.key});
@@ -10,6 +10,10 @@ class SmartDiaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final quotes = DataManager().currentJournal.quotes;
+
+    final fullDateTime = Utils.fullDateTime(
+      DataManager().currentJournal.dateTime,
+    );
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,7 +30,7 @@ class SmartDiaryPage extends StatelessWidget {
               vertical: 8.0,
             ),
             child: Text(
-              DataManager().currentJournal.formattedDate,
+              fullDateTime,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),

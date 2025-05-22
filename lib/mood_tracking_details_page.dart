@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
-//import 'package:nirva_app/utils.dart';
+import 'package:nirva_app/utils.dart';
 
 class MoodTrackingDetailsPage extends StatefulWidget {
   const MoodTrackingDetailsPage({super.key});
@@ -53,30 +53,6 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
                     ),
                     const SizedBox(height: 16 * 2),
 
-                    // 平均情绪得分
-                    // Center(
-                    //   child: Column(
-                    //     children: [
-                    //       Text(
-                    //         'Average Mood Score',
-                    //         style: TextStyle(
-                    //           fontSize: 14,
-                    //           color: Colors.grey[600],
-                    //         ),
-                    //       ),
-                    //       const SizedBox(height: 4),
-                    //       Text(
-                    //         _getAverageMoodScore(_selectedType),
-                    //         style: const TextStyle(
-                    //           fontSize: 48,
-                    //           fontWeight: FontWeight.bold,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    //const SizedBox(height: 16),
-
                     // 折线图
                     SizedBox(
                       height: 200, // 为图表提供明确的高度
@@ -100,93 +76,6 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
       ),
     );
   }
-
-  // String _getAverageMoodScore(MoodTrackingChartType type) {
-  //   switch (type) {
-  //     case MoodTrackingChartType.day:
-  //       return "7.8";
-  //     case MoodTrackingChartType.week:
-  //       return "7.5";
-  //     case MoodTrackingChartType.month:
-  //       return "7.2";
-  //   }
-  // }
-
-  // // 构建情绪分布图表
-  // Widget _buildMoodDistribution(MoodTrackingChartType type) {
-  //   // 根据选择的类型返回不同的数据
-  //   Map<String, double> distributionData;
-
-  //   switch (type) {
-  //     case MoodTrackingChartType.day:
-  //       distributionData = {
-  //         'Happy': 50,
-  //         'Calm': 30,
-  //         'Stressed': 10,
-  //         'Focused': 10,
-  //       };
-  //       break;
-  //     case MoodTrackingChartType.week:
-  //       distributionData = {
-  //         'Happy': 45,
-  //         'Calm': 25,
-  //         'Stressed': 15,
-  //         'Focused': 15,
-  //       };
-  //       break;
-  //     case MoodTrackingChartType.month:
-  //       distributionData = {
-  //         'Happy': 40,
-  //         'Calm': 20,
-  //         'Stressed': 20,
-  //         'Focused': 20,
-  //       };
-  //       break;
-  //   }
-
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //     children:
-  //         distributionData.entries.map((entry) {
-  //           return Column(
-  //             children: [
-  //               Container(
-  //                 width: 60,
-  //                 height: 100,
-  //                 decoration: BoxDecoration(
-  //                   borderRadius: BorderRadius.circular(8),
-  //                   color: _getMoodColor(entry.key),
-  //                 ),
-  //                 alignment: Alignment.center,
-  //                 child: Text(
-  //                   '${entry.value.toInt()}%',
-  //                   style: const TextStyle(
-  //                     color: Colors.white,
-  //                     fontWeight: FontWeight.bold,
-  //                   ),
-  //                 ),
-  //               ),
-  //               const SizedBox(height: 8),
-  //               Text(entry.key, style: const TextStyle(fontSize: 12)),
-  //             ],
-  //           );
-  //         }).toList(),
-  //   );
-  // }
-
-  // 获取情绪对应的颜色
-  // Color _getMoodColor(String moodName) {
-  //   if (moodName == 'Happy') {
-  //     return Colors.blue;
-  //   } else if (moodName == 'Calm') {
-  //     return Colors.green;
-  //   } else if (moodName == 'Stressed') {
-  //     return Colors.red;
-  //   } else if (moodName == 'Focused') {
-  //     return Colors.orange;
-  //   }
-  //   return Colors.grey; // 默认颜色
-  // }
 
   /// 构建按钮
   Widget _buildTab(String title, MoodTrackingChartType type) {
@@ -212,14 +101,7 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
   // 提取 Insights 卡片部分为独立函数
   Widget _buildInsightsCard(List<String> insights) {
     // 如果insights为空，提供一些默认值
-    final List<String> displayInsights =
-        insights.isNotEmpty
-            ? insights
-            : [
-              // 'Happiness and calmness are your dominant emotions this day.',
-              // 'Stress levels peak during midweek but decrease on weekends.',
-              // 'Focus appears to be strongest in the mornings - consider scheduling important tasks then.',
-            ];
+    final List<String> displayInsights = insights.isNotEmpty ? insights : [];
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -372,8 +254,8 @@ class MoodTrackingChart extends StatelessWidget {
   final List<MoodTrackingChartData> monthData;
 
   final double _minY = 0; // 最小值
-  final double _maxY = 10; // 最大值
-  final double _interval = 2; // 刻度间隔
+  final double _maxY = 100; // 最大值
+  final double _interval = 25; // 刻度间隔
 
   List<double> get yAxisValues {
     return List.generate(
@@ -457,7 +339,11 @@ class MoodTrackingChart extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(top: 8.0), // 添加顶部间距
               child: Text(
-                _formatDayTitle(value.toInt()),
+                _formatDayTitle(
+                  value.toInt(),
+                  DataManager().moodTrackingDashboard.dateTime.weekday,
+                  dayData.length,
+                ),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -493,7 +379,11 @@ class MoodTrackingChart extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(top: 8.0), // 添加顶部间距
               child: Text(
-                _formatMonthTitle(value.toInt()),
+                _formatMonthTitle(
+                  value.toInt(),
+                  DataManager().moodTrackingDashboard.dateTime.month,
+                  monthData.length,
+                ),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -577,37 +467,36 @@ class MoodTrackingChart extends StatelessWidget {
     }
   }
 
+  /// 格式化月份标题
+  String _formatMonthTitle(
+    int widgetIndexValue,
+    int currentMonth,
+    int monthsCount,
+  ) {
+    int startMonth = (currentMonth - monthsCount) % 12;
+    if (startMonth <= 0) startMonth += 12;
+    int targetMonth = (startMonth + widgetIndexValue) % 12;
+    if (targetMonth == 0) targetMonth = 12;
+    return Utils.shortMonthNames[targetMonth - 1];
+  }
+
   // 格式化每天的标题
-  String _formatDayTitle(int value) {
-    List<String> days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days[value % days.length];
+  String _formatDayTitle(
+    int widgetIndexValue,
+    int currentWeekDay,
+    int dayCount,
+  ) {
+    // 计算从当前月份开始的正序排列
+    int startWeekDay = (currentWeekDay - dayCount) % 7;
+    if (startWeekDay <= 0) startWeekDay += 7;
+    int targetWeekDay = (startWeekDay + widgetIndexValue) % 7;
+    if (targetWeekDay == 0) targetWeekDay = 7;
+    return Utils.weekDayNames[targetWeekDay - 1];
   }
 
   /// 显示最近的4个周
-  String _formatWeekTitle(int value) {
+  String _formatWeekTitle(int widgetIndexValue) {
     List<String> weekNames = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-    return weekNames[value];
-  }
-
-  /// 格式化月份标题
-  String _formatMonthTitle(int value) {
-    List<String> months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final now = DateTime.now();
-    int monthIndex = (now.month - 5 + value) % 12;
-    if (monthIndex == 0) monthIndex = 12;
-    return months[monthIndex - 1];
+    return weekNames[widgetIndexValue];
   }
 }

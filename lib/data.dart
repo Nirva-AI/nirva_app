@@ -149,65 +149,24 @@ class Task with _$Task {
 }
 
 @freezed
-class EnergyLabel with _$EnergyLabel {
-  const factory EnergyLabel({
-    required String label,
-    required double measurementValue,
-  }) = _EnergyLabel;
-
-  factory EnergyLabel.fromJson(Map<String, dynamic> json) =>
-      _$EnergyLabelFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _EnergyLabel).toJson();
-}
-
-@freezed
-class Energy with _$Energy {
-  const factory Energy({
+class EnergyLevel with _$EnergyLevel {
+  const factory EnergyLevel({
     required DateTime dateTime,
-    required double energyLevel,
-  }) = _Energy;
+    required double value,
+  }) = _EnergyLevel;
 
-  factory Energy.fromJson(Map<String, dynamic> json) => _$EnergyFromJson(json);
+  factory EnergyLevel.fromJson(Map<String, dynamic> json) =>
+      _$EnergyLevelFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _Energy).toJson();
-
-  static const lowMinus = EnergyLabel(label: '', measurementValue: 0.0);
-  static const low = EnergyLabel(label: 'Low', measurementValue: 1.0);
-  static const neutral = EnergyLabel(label: 'Neutral', measurementValue: 2.0);
-  static const high = EnergyLabel(label: 'High', measurementValue: 3.0);
-  static const highPlus = EnergyLabel(label: '', measurementValue: 4.0);
-}
-
-extension EnergyExtensions on Energy {
-  String get time =>
-      "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
-
-  EnergyLabel get energyLabel {
-    if (energyLevel <= Energy.lowMinus.measurementValue) {
-      return Energy.lowMinus;
-    }
-    if (energyLevel <= Energy.low.measurementValue) {
-      return Energy.low;
-    }
-    if (energyLevel <= Energy.neutral.measurementValue) {
-      return Energy.neutral;
-    }
-    if (energyLevel <= Energy.high.measurementValue) {
-      return Energy.high;
-    }
-    return Energy.highPlus;
-  }
-
-  String get energyLabelString => energyLabel.label;
+  Map<String, dynamic> toJson() => (this as _EnergyLevel).toJson();
 }
 
 @freezed
 class MoodTracking with _$MoodTracking {
   const factory MoodTracking({
     required String name,
-    required double percentage,
-    @Default(0xFF00FF00) int color, // 默认颜色为绿色
+    required double value,
+    @Default(0xFF000000) int color, // 默认颜色为绿色
   }) = _MoodTracking;
 
   factory MoodTracking.fromJson(Map<String, dynamic> json) =>
@@ -269,8 +228,8 @@ class Journal with _$Journal {
     required MoodScore moodScore,
     required StressLevel stressLevel,
     required List<Highlight> highlights,
-    required List<Energy> energyRecords,
-    required List<MoodTracking> moods,
+    required List<EnergyLevel> energyLevels,
+    required List<MoodTracking> moodTrackings,
     required List<AwakeTimeAction> awakeTimeActions,
     required SocialMap socialMap,
   }) = _Journal;
@@ -292,8 +251,8 @@ class Journal with _$Journal {
       moodScore: MoodScore(value: 0.0, change: 0.0),
       stressLevel: StressLevel(value: 0.0, change: -1.3),
       highlights: [],
-      energyRecords: [],
-      moods: [],
+      energyLevels: [],
+      moodTrackings: [],
       awakeTimeActions: [],
       socialMap: SocialMap(socialEntities: []),
     );
@@ -301,31 +260,19 @@ class Journal with _$Journal {
 }
 
 extension JournalExtensions on Journal {
-  Map<String, double> get moodMap {
-    final Map<String, double> moodMap = {};
-    for (var mood in moods) {
-      moodMap[mood.name] = mood.percentage;
+  Map<MoodTracking, double> get moodTrackingData {
+    double totalValue = 0.0;
+    for (var mood in moodTrackings) {
+      totalValue += mood.value;
+    }
+    final Map<MoodTracking, double> moodMap = {};
+    if (totalValue == 0) {
+      return moodMap;
+    }
+    for (var mood in moodTrackings) {
+      moodMap[mood] = mood.value / totalValue;
     }
     return moodMap;
-  }
-
-  static final monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
-  String get formattedDate {
-    return '${monthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
   }
 }
 

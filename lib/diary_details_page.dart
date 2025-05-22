@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart';
+import 'package:nirva_app/utils.dart';
 
 class DiaryDetailsPage extends StatefulWidget {
   final DiaryEntry diaryData;
@@ -38,6 +39,9 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final fullDateTime = Utils.fullDateTime(
+      DataManager().currentJournal.dateTime,
+    );
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56.0),
@@ -111,7 +115,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      DataManager().currentJournal.formattedDate,
+                      fullDateTime,
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
