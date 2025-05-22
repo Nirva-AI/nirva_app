@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/utils.dart';
 
 class MoodScoreDetailsPage extends StatelessWidget {
   const MoodScoreDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    //final moodScoreInsights = DataManager().moodScoreInsights; // 获取数据
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mood Score'),
@@ -137,36 +136,20 @@ class MoodScoreDetailsPage extends StatelessWidget {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
+                  reservedSize: 32, // 为底部标题预留空间
+                  interval: 1, // 设置刻度间隔为 1，与 FlSpot 的 x 值一致
                   getTitlesWidget: (value, meta) {
-                    switch (value.toInt()) {
-                      case 0:
-                        return const Text(
-                          'Jan',
-                          style: TextStyle(fontSize: 12),
-                        );
-                      case 1:
-                        return const Text(
-                          'Feb',
-                          style: TextStyle(fontSize: 12),
-                        );
-                      case 2:
-                        return const Text(
-                          'Mar',
-                          style: TextStyle(fontSize: 12),
-                        );
-                      case 3:
-                        return const Text(
-                          'Apr',
-                          style: TextStyle(fontSize: 12),
-                        );
-                      case 4:
-                        return const Text(
-                          'May',
-                          style: TextStyle(fontSize: 12),
-                        );
-                      default:
-                        return const Text('');
-                    }
+                    // 返回对应的月份标签
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0), // 添加顶部间距
+                      child: Text(
+                        _formatMonthTitle(value.toInt()),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -180,10 +163,10 @@ class MoodScoreDetailsPage extends StatelessWidget {
               LineChartBarData(
                 spots: const [
                   FlSpot(0, 70),
-                  FlSpot(1, 75),
+                  FlSpot(1, 78),
                   FlSpot(2, 80),
-                  FlSpot(3, 85),
-                  FlSpot(4, 90),
+                  FlSpot(3, 82),
+                  FlSpot(4, 85),
                 ],
                 isCurved: true,
                 color: Colors.purple,
@@ -197,6 +180,18 @@ class MoodScoreDetailsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatMonthTitle(int widgetIndexValue) {
+    // 获取当前月份
+    DateTime dateTime = DataManager().moodScoreInsights.dateTime;
+    final int currentMonth = dateTime.month;
+
+    // 计算从当前月份开始的正序排列
+    int startMonth = (currentMonth - 5) % 12; // 计算起始月份索引
+    if (startMonth < 0) startMonth += 12; // 确保索引为正数
+    int targetMonth = (startMonth + widgetIndexValue) % 12; // 计算目标月份索引
+    return Utils.monthNames[targetMonth];
   }
 
   // 提取 Insights 卡片部分为独立函数
@@ -221,13 +216,12 @@ class MoodScoreDetailsPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (insights.isNotEmpty)
-              ...insights.map((insight) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Text(
-                      insight,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ))
+              ...insights.map(
+                (insight) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Text(insight, style: const TextStyle(fontSize: 14)),
+                ),
+              )
             else
               const Text(
                 'No insights available.',
