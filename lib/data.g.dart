@@ -293,3 +293,18 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
       'awakeTimeActions': instance.awakeTimeActions,
       'socialMap': instance.socialMap,
     };
+
+_$MoodScoreInsightsImpl _$$MoodScoreInsightsImplFromJson(
+  Map<String, dynamic> json,
+) => _$MoodScoreInsightsImpl(
+  dateTime: DateTime.parse(json['dateTime'] as String),
+  insights:
+      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+);
+
+Map<String, dynamic> _$$MoodScoreInsightsImplToJson(
+  _$MoodScoreInsightsImpl instance,
+) => <String, dynamic>{
+  'dateTime': instance.dateTime.toIso8601String(),
+  'insights': instance.insights,
+};

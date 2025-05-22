@@ -25,9 +25,13 @@ class DataManager {
   ValueNotifier<List<String>> diaryFavoritesNotifier = ValueNotifier([]);
 
   // 日记条目笔记
-  ValueNotifier<List<DiaryEntryNote>> diaryNotesNotifier = ValueNotifier(
-    [],
-  ); // 用于存储日记条目笔记的通知器
+  ValueNotifier<List<DiaryEntryNote>> diaryNotesNotifier = ValueNotifier([]);
+
+  //
+  MoodScoreInsights moodScoreInsights = MoodScoreInsights(
+    dateTime: DateTime.now(),
+    insights: [],
+  );
 
   // 清空数据
   void clear() {
@@ -37,6 +41,10 @@ class DataManager {
     archivedHighlights = [];
     diaryFavoritesNotifier = ValueNotifier([]);
     diaryNotesNotifier = ValueNotifier([]);
+    moodScoreInsights = MoodScoreInsights(
+      dateTime: DateTime.now(),
+      insights: [],
+    );
   }
 
   //

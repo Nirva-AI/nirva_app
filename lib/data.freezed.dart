@@ -4106,3 +4106,191 @@ abstract class _Journal implements Journal {
   _$$JournalImplCopyWith<_$JournalImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+MoodScoreInsights _$MoodScoreInsightsFromJson(Map<String, dynamic> json) {
+  return _MoodScoreInsights.fromJson(json);
+}
+
+/// @nodoc
+mixin _$MoodScoreInsights {
+  DateTime get dateTime => throw _privateConstructorUsedError;
+  List<String> get insights => throw _privateConstructorUsedError;
+
+  /// Serializes this MoodScoreInsights to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of MoodScoreInsights
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MoodScoreInsightsCopyWith<MoodScoreInsights> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MoodScoreInsightsCopyWith<$Res> {
+  factory $MoodScoreInsightsCopyWith(
+    MoodScoreInsights value,
+    $Res Function(MoodScoreInsights) then,
+  ) = _$MoodScoreInsightsCopyWithImpl<$Res, MoodScoreInsights>;
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class _$MoodScoreInsightsCopyWithImpl<$Res, $Val extends MoodScoreInsights>
+    implements $MoodScoreInsightsCopyWith<$Res> {
+  _$MoodScoreInsightsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of MoodScoreInsights
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _value.copyWith(
+            dateTime:
+                null == dateTime
+                    ? _value.dateTime
+                    : dateTime // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            insights:
+                null == insights
+                    ? _value.insights
+                    : insights // ignore: cast_nullable_to_non_nullable
+                        as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$MoodScoreInsightsImplCopyWith<$Res>
+    implements $MoodScoreInsightsCopyWith<$Res> {
+  factory _$$MoodScoreInsightsImplCopyWith(
+    _$MoodScoreInsightsImpl value,
+    $Res Function(_$MoodScoreInsightsImpl) then,
+  ) = __$$MoodScoreInsightsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime dateTime, List<String> insights});
+}
+
+/// @nodoc
+class __$$MoodScoreInsightsImplCopyWithImpl<$Res>
+    extends _$MoodScoreInsightsCopyWithImpl<$Res, _$MoodScoreInsightsImpl>
+    implements _$$MoodScoreInsightsImplCopyWith<$Res> {
+  __$$MoodScoreInsightsImplCopyWithImpl(
+    _$MoodScoreInsightsImpl _value,
+    $Res Function(_$MoodScoreInsightsImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of MoodScoreInsights
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? dateTime = null, Object? insights = null}) {
+    return _then(
+      _$MoodScoreInsightsImpl(
+        dateTime:
+            null == dateTime
+                ? _value.dateTime
+                : dateTime // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        insights:
+            null == insights
+                ? _value._insights
+                : insights // ignore: cast_nullable_to_non_nullable
+                    as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MoodScoreInsightsImpl implements _MoodScoreInsights {
+  const _$MoodScoreInsightsImpl({
+    required this.dateTime,
+    required final List<String> insights,
+  }) : _insights = insights;
+
+  factory _$MoodScoreInsightsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MoodScoreInsightsImplFromJson(json);
+
+  @override
+  final DateTime dateTime;
+  final List<String> _insights;
+  @override
+  List<String> get insights {
+    if (_insights is EqualUnmodifiableListView) return _insights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_insights);
+  }
+
+  @override
+  String toString() {
+    return 'MoodScoreInsights(dateTime: $dateTime, insights: $insights)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MoodScoreInsightsImpl &&
+            (identical(other.dateTime, dateTime) ||
+                other.dateTime == dateTime) &&
+            const DeepCollectionEquality().equals(other._insights, _insights));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    dateTime,
+    const DeepCollectionEquality().hash(_insights),
+  );
+
+  /// Create a copy of MoodScoreInsights
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MoodScoreInsightsImplCopyWith<_$MoodScoreInsightsImpl> get copyWith =>
+      __$$MoodScoreInsightsImplCopyWithImpl<_$MoodScoreInsightsImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MoodScoreInsightsImplToJson(this);
+  }
+}
+
+abstract class _MoodScoreInsights implements MoodScoreInsights {
+  const factory _MoodScoreInsights({
+    required final DateTime dateTime,
+    required final List<String> insights,
+  }) = _$MoodScoreInsightsImpl;
+
+  factory _MoodScoreInsights.fromJson(Map<String, dynamic> json) =
+      _$MoodScoreInsightsImpl.fromJson;
+
+  @override
+  DateTime get dateTime;
+  @override
+  List<String> get insights;
+
+  /// Create a copy of MoodScoreInsights
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MoodScoreInsightsImplCopyWith<_$MoodScoreInsightsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
