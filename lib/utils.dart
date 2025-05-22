@@ -5,6 +5,22 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Utils {
+  // 计算对应的月份标签
+  static List<String> monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
   // 静态方法：加载 JSON 文件并解析为 Map
   static Future<Map<String, dynamic>> loadJsonAsset(String path) async {
     // 加载 JSON 文件内容
