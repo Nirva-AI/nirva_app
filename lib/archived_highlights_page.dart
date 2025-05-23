@@ -69,13 +69,16 @@ class ArchivedHighlightsPage extends StatelessWidget {
         '${Utils.fullDiaryDateTime(archivedHighlights.beginTime)} - ${Utils.fullDiaryDateTime(archivedHighlights.endTime)}',
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
+      childrenPadding: EdgeInsets.zero, // 添加此行确保无额外内边距
       children:
           archivedHighlights.highlights.map((highlight) {
-            return Padding(
+            return Container(
+              // 使用Container替代Padding以确保一致性
               padding: const EdgeInsets.symmetric(
                 vertical: 8.0,
                 horizontal: 16.0,
               ),
+              width: double.infinity, // 确保宽度一致
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
