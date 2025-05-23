@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/utils.dart';
 
 class ArchivedHighlightsPage extends StatelessWidget {
-  final highlightGroups = DataManager().archivedHighlights;
+  final archivedHighlights = DataManager().archivedHighlights;
 
   ArchivedHighlightsPage({super.key});
 
@@ -39,9 +40,9 @@ class ArchivedHighlightsPage extends StatelessWidget {
           const Divider(height: 1, thickness: 1),
           Expanded(
             child: ListView.builder(
-              itemCount: highlightGroups.length,
+              itemCount: archivedHighlights.length,
               itemBuilder: (context, index) {
-                final group = highlightGroups[index];
+                final group = archivedHighlights[index];
                 return _buildHighlightGroup(group);
               },
             ),
@@ -62,14 +63,14 @@ class ArchivedHighlightsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHighlightGroup(HighlightGroup group) {
+  Widget _buildHighlightGroup(ArchivedHighlights archivedHighlights) {
     return ExpansionTile(
       title: Text(
-        '${_formatDate(group.beginTime)} - ${_formatDate(group.endTime)}',
+        '${Utils.fullDiaryDateTime(archivedHighlights.beginTime)} - ${Utils.fullDiaryDateTime(archivedHighlights.endTime)}',
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
       children:
-          group.highlights.map((highlight) {
+          archivedHighlights.highlights.map((highlight) {
             return Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 8.0,
@@ -93,27 +94,5 @@ class ArchivedHighlightsPage extends StatelessWidget {
             );
           }).toList(),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${_monthName(date.month)} ${date.day}, ${date.year}';
-  }
-
-  String _monthName(int month) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return months[month - 1];
   }
 }

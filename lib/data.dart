@@ -122,17 +122,17 @@ class Highlight with _$Highlight {
 }
 
 @freezed
-class HighlightGroup with _$HighlightGroup {
-  const factory HighlightGroup({
+class ArchivedHighlights with _$ArchivedHighlights {
+  const factory ArchivedHighlights({
     required DateTime beginTime,
     required DateTime endTime,
     required List<Highlight> highlights,
-  }) = _HighlightGroup;
+  }) = _ArchivedHighlights;
 
-  factory HighlightGroup.fromJson(Map<String, dynamic> json) =>
-      _$HighlightGroupFromJson(json);
+  factory ArchivedHighlights.fromJson(Map<String, dynamic> json) =>
+      _$ArchivedHighlightsFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _HighlightGroup).toJson();
+  Map<String, dynamic> toJson() => (this as _ArchivedHighlights).toJson();
 }
 
 @freezed

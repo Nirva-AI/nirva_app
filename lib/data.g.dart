@@ -117,18 +117,19 @@ Map<String, dynamic> _$$HighlightImplToJson(_$HighlightImpl instance) =>
       'color': instance.color,
     };
 
-_$HighlightGroupImpl _$$HighlightGroupImplFromJson(Map<String, dynamic> json) =>
-    _$HighlightGroupImpl(
-      beginTime: DateTime.parse(json['beginTime'] as String),
-      endTime: DateTime.parse(json['endTime'] as String),
-      highlights:
-          (json['highlights'] as List<dynamic>)
-              .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
-              .toList(),
-    );
+_$ArchivedHighlightsImpl _$$ArchivedHighlightsImplFromJson(
+  Map<String, dynamic> json,
+) => _$ArchivedHighlightsImpl(
+  beginTime: DateTime.parse(json['beginTime'] as String),
+  endTime: DateTime.parse(json['endTime'] as String),
+  highlights:
+      (json['highlights'] as List<dynamic>)
+          .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
+          .toList(),
+);
 
-Map<String, dynamic> _$$HighlightGroupImplToJson(
-  _$HighlightGroupImpl instance,
+Map<String, dynamic> _$$ArchivedHighlightsImplToJson(
+  _$ArchivedHighlightsImpl instance,
 ) => <String, dynamic>{
   'beginTime': instance.beginTime.toIso8601String(),
   'endTime': instance.endTime.toIso8601String(),
