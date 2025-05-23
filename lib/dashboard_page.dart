@@ -5,7 +5,7 @@ import 'package:nirva_app/energy_level_card.dart';
 import 'package:nirva_app/mood_tracking_card.dart';
 import 'package:nirva_app/social_map_view.dart';
 import 'package:nirva_app/awake_time_allocation_card.dart';
-import 'package:nirva_app/today_highlights_panel.dart';
+import 'package:nirva_app/today_highlights_card.dart';
 import 'package:nirva_app/mood_score_card.dart';
 //import 'package:nirva_app/mood_details_page.dart';
 
@@ -68,7 +68,7 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildHighlights() {
-    final highlights = DataManager().currentJournal.highlights;
-    return TodayHighlightsPanel(highlights: highlights);
+    //final highlights = DataManager().currentJournal.highlights;
+    return TodayHighlightsCard();
   }
 }
