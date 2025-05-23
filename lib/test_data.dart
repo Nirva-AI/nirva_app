@@ -31,6 +31,9 @@ class TestData {
     // 添加日记的笔记数据
     initializeTestMyNotes(DataManager().currentJournal);
 
+    //
+    initializeTestSocalMap();
+
     // 添加情绪分数
     DataManager().moodScoreDashboard = TestData.createMoodScoreDashboard(
       DataManager().currentJournal.dateTime,
@@ -58,6 +61,7 @@ class TestData {
         );
   }
 
+  // 添加日记的最爱数据
   static void initializeTestFavorites(Journal journal) {
     // 设置测试数据
     List<DiaryEntry> diaryEntries = journal.diaryEntries;
@@ -75,6 +79,7 @@ class TestData {
     }
   }
 
+  // 添加日记的笔记数据
   static void initializeTestMyNotes(Journal journal) {
     // 设置测试数据
     List<DiaryEntry> diaryEntries = journal.diaryEntries;
@@ -96,6 +101,43 @@ class TestData {
     } else {
       debugPrint('diaryEntries 列表为空');
     }
+  }
+
+  // 随机生成社交影响
+  static String randomSocialImpact() {
+    List<String> impacts = ['Positive', 'Negative', 'Neutral'];
+    final random = Random();
+    return impacts[random.nextInt(impacts.length)];
+  }
+
+  // 随机生成社交影响
+  static void initializeTestSocalMap() {
+    Map<String, SocialEntity> globalSocialMap = {};
+
+    for (var journal in DataManager().journals) {
+      // 设置测试数据
+      for (var socialEntity in journal.socialMap.socialEntities) {
+        debugPrint('社交实体: ${socialEntity.name}');
+        if (globalSocialMap.containsKey(socialEntity.name)) {
+          debugPrint('社交实体已存在: ${socialEntity.name}');
+          SocialEntity existingEntity = globalSocialMap[socialEntity.name]!;
+          //目前就把时间相加。
+          globalSocialMap[socialEntity.name] = existingEntity.copyWith(
+            hours: existingEntity.hours + socialEntity.hours,
+          );
+
+          continue;
+        }
+
+        globalSocialMap[socialEntity.name] = socialEntity.copyWith(
+          impact: randomSocialImpact(),
+        );
+      }
+    }
+
+    // 把 globalSocialMap 的value合成一个list
+    List<SocialEntity> socialEntities = globalSocialMap.values.toList();
+    DataManager().socialMap = SocialMap(socialEntities: socialEntities);
   }
 
   // 测试数据： 初始化待办事项数据

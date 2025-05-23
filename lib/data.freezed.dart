@@ -2933,6 +2933,7 @@ mixin _$SocialEntity {
   String get description => throw _privateConstructorUsedError;
   List<String> get tips => throw _privateConstructorUsedError;
   double get hours => throw _privateConstructorUsedError;
+  String get impact => throw _privateConstructorUsedError;
 
   /// Serializes this SocialEntity to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2951,7 +2952,13 @@ abstract class $SocialEntityCopyWith<$Res> {
     $Res Function(SocialEntity) then,
   ) = _$SocialEntityCopyWithImpl<$Res, SocialEntity>;
   @useResult
-  $Res call({String name, String description, List<String> tips, double hours});
+  $Res call({
+    String name,
+    String description,
+    List<String> tips,
+    double hours,
+    String impact,
+  });
 }
 
 /// @nodoc
@@ -2973,6 +2980,7 @@ class _$SocialEntityCopyWithImpl<$Res, $Val extends SocialEntity>
     Object? description = null,
     Object? tips = null,
     Object? hours = null,
+    Object? impact = null,
   }) {
     return _then(
       _value.copyWith(
@@ -2996,6 +3004,11 @@ class _$SocialEntityCopyWithImpl<$Res, $Val extends SocialEntity>
                     ? _value.hours
                     : hours // ignore: cast_nullable_to_non_nullable
                         as double,
+            impact:
+                null == impact
+                    ? _value.impact
+                    : impact // ignore: cast_nullable_to_non_nullable
+                        as String,
           )
           as $Val,
     );
@@ -3011,7 +3024,13 @@ abstract class _$$SocialEntityImplCopyWith<$Res>
   ) = __$$SocialEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, String description, List<String> tips, double hours});
+  $Res call({
+    String name,
+    String description,
+    List<String> tips,
+    double hours,
+    String impact,
+  });
 }
 
 /// @nodoc
@@ -3032,6 +3051,7 @@ class __$$SocialEntityImplCopyWithImpl<$Res>
     Object? description = null,
     Object? tips = null,
     Object? hours = null,
+    Object? impact = null,
   }) {
     return _then(
       _$SocialEntityImpl(
@@ -3055,6 +3075,11 @@ class __$$SocialEntityImplCopyWithImpl<$Res>
                 ? _value.hours
                 : hours // ignore: cast_nullable_to_non_nullable
                     as double,
+        impact:
+            null == impact
+                ? _value.impact
+                : impact // ignore: cast_nullable_to_non_nullable
+                    as String,
       ),
     );
   }
@@ -3068,6 +3093,7 @@ class _$SocialEntityImpl implements _SocialEntity {
     required this.description,
     required final List<String> tips,
     required this.hours,
+    this.impact = '',
   }) : _tips = tips;
 
   factory _$SocialEntityImpl.fromJson(Map<String, dynamic> json) =>
@@ -3087,10 +3113,13 @@ class _$SocialEntityImpl implements _SocialEntity {
 
   @override
   final double hours;
+  @override
+  @JsonKey()
+  final String impact;
 
   @override
   String toString() {
-    return 'SocialEntity(name: $name, description: $description, tips: $tips, hours: $hours)';
+    return 'SocialEntity(name: $name, description: $description, tips: $tips, hours: $hours, impact: $impact)';
   }
 
   @override
@@ -3102,7 +3131,8 @@ class _$SocialEntityImpl implements _SocialEntity {
             (identical(other.description, description) ||
                 other.description == description) &&
             const DeepCollectionEquality().equals(other._tips, _tips) &&
-            (identical(other.hours, hours) || other.hours == hours));
+            (identical(other.hours, hours) || other.hours == hours) &&
+            (identical(other.impact, impact) || other.impact == impact));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3113,6 +3143,7 @@ class _$SocialEntityImpl implements _SocialEntity {
     description,
     const DeepCollectionEquality().hash(_tips),
     hours,
+    impact,
   );
 
   /// Create a copy of SocialEntity
@@ -3135,6 +3166,7 @@ abstract class _SocialEntity implements SocialEntity {
     required final String description,
     required final List<String> tips,
     required final double hours,
+    final String impact,
   }) = _$SocialEntityImpl;
 
   factory _SocialEntity.fromJson(Map<String, dynamic> json) =
@@ -3148,6 +3180,8 @@ abstract class _SocialEntity implements SocialEntity {
   List<String> get tips;
   @override
   double get hours;
+  @override
+  String get impact;
 
   /// Create a copy of SocialEntity
   /// with the given fields replaced by the non-null parameter values.
