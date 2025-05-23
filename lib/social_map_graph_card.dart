@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:nirva_app/custom_fruchterman_reingold_algorithm.dart';
 import 'package:nirva_app/social_map_page.dart';
+import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/data.dart';
 
 class SocialMapGraphCard extends StatefulWidget {
   const SocialMapGraphCard({super.key});
@@ -19,9 +21,8 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
   // 控制参数
   double screenWidth = 0.0;
   final double graphBackgroundHeight = 400.0;
-  final double nodeWidth = 80.0;
+  final double nodeWidth = 100.0;
   final double nodeHeight = 40.0;
-  final int nodeCount = 8;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
 
   void _initializeGraph() {
     // 创建图
-    final newGraph = createGraph(nodeCount);
+    final newGraph = createGraph();
 
     setState(() {
       graph = newGraph;
@@ -44,23 +45,19 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
     });
   }
 
-  Graph createGraph(int nodeCount) {
+  Graph createGraph() {
     final newGraph = Graph();
 
-    // 创建指定数量的节点
-    final nodes = List.generate(
-      nodeCount,
-      (index) => Node.Id('节点${index + 1}'),
-    );
+    User user = DataManager().user;
+    Node userNode = Node.Id(user.name);
+    newGraph.addNode(userNode);
 
-    // 添加节点到图中
-    for (var node in nodes) {
+    Journal currentJournal = DataManager().currentJournal;
+
+    for (var socialEntity in currentJournal.socialMap.socialEntities) {
+      Node node = Node.Id(socialEntity.name);
       newGraph.addNode(node);
-    }
-
-    // 确保每个节点都与节点[0]有一条边
-    for (int i = 1; i < nodeCount; i++) {
-      newGraph.addEdge(nodes[0], nodes[i]);
+      newGraph.addEdge(userNode, node);
     }
 
     return newGraph;
@@ -154,7 +151,10 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
                             child: Center(
                               child: Text(
                                 nodeValue,
-                                style: const TextStyle(color: Colors.white),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
