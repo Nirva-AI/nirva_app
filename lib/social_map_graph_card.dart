@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
-import 'dart:math';
 import 'package:nirva_app/custom_fruchterman_reingold_algorithm.dart';
 import 'package:nirva_app/social_map_page.dart';
 
@@ -23,7 +22,6 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
   final double nodeWidth = 80.0;
   final double nodeHeight = 40.0;
   final int nodeCount = 8;
-  bool shouldRandomLinkNodes = false;
 
   @override
   void initState() {
@@ -48,7 +46,6 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
 
   Graph createGraph(int nodeCount) {
     final newGraph = Graph();
-    final random = Random();
 
     // 创建指定数量的节点
     final nodes = List.generate(
@@ -64,21 +61,6 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
     // 确保每个节点都与节点[0]有一条边
     for (int i = 1; i < nodeCount; i++) {
       newGraph.addEdge(nodes[0], nodes[i]);
-    }
-
-    // 随机生成节点之间的连接关系
-    if (shouldRandomLinkNodes) {
-      for (int i = 0; i < nodeCount; i++) {
-        // 每个节点随机连接 1 到 nodeCount/2 个其他节点
-        final connections = random.nextInt(nodeCount ~/ 2) + 1;
-        for (int j = 0; j < connections; j++) {
-          final targetIndex = random.nextInt(nodeCount);
-          if (targetIndex != i && targetIndex != 0) {
-            // 避免重复连接到[0]
-            newGraph.addEdge(nodes[i], nodes[targetIndex]);
-          }
-        }
-      }
     }
 
     return newGraph;
@@ -115,22 +97,7 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
                       icon: const Icon(Icons.refresh, size: 20),
                       onPressed: _resetGraph,
                     ),
-                    // 添加随机连接开关
-                    Row(
-                      children: [
-                        const Text('随机连接', style: TextStyle(fontSize: 12)),
-                        Switch(
-                          value: shouldRandomLinkNodes,
-                          onChanged: (value) {
-                            setState(() {
-                              shouldRandomLinkNodes = value;
-                              _resetGraph();
-                            });
-                          },
-                          //scale: 0.7,
-                        ),
-                      ],
-                    ),
+
                     // 原有的箭头按钮
                     IconButton(
                       icon: const Icon(Icons.arrow_forward),
