@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/social_map_page.dart'; // 添加导入
 
 class SocialMapCard extends StatefulWidget {
   const SocialMapCard({super.key});
@@ -109,7 +110,27 @@ class _SocialMapCardState extends State<SocialMapCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Social Map', style: TextStyle(fontSize: 16)),
+            Row(
+              children: [
+                const Text('Social Map', style: TextStyle(fontSize: 16)),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    debugPrint('Social Map arrow button clicked');
+                    // 添加导航到新页面的逻辑
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SocialMapPage(),
+                      ),
+                    );
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
