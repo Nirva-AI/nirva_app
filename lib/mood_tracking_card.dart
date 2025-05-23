@@ -46,7 +46,7 @@ class MoodTrackingCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const MoodTrackingDetailsPage(),
+                        builder: (context) => MoodTrackingDetailsPage(),
                       ),
                     );
                   },
