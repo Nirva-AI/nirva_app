@@ -197,6 +197,7 @@ _$SocialEntityImpl _$$SocialEntityImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String,
       tips: (json['tips'] as List<dynamic>).map((e) => e as String).toList(),
       hours: (json['hours'] as num).toDouble(),
+      impact: json['impact'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
@@ -205,6 +206,7 @@ Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
       'description': instance.description,
       'tips': instance.tips,
       'hours': instance.hours,
+      'impact': instance.impact,
     };
 
 _$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>

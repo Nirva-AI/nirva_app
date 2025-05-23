@@ -196,6 +196,7 @@ class SocialEntity with _$SocialEntity {
     required String description,
     required List<String> tips,
     required double hours,
+    @Default('') String impact,
   }) = _SocialEntity;
 
   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
