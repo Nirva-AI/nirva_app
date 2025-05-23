@@ -7,7 +7,7 @@ class DateAndSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fullDateTime = Utils.fullDateTime(
+    final fullDateTime = Utils.fullDiaryDateTime(
       DataManager().currentJournal.dateTime,
     );
     return Container(

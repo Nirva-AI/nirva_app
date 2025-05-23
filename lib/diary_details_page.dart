@@ -39,7 +39,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final fullDateTime = Utils.fullDateTime(
+    final fullDateTime = Utils.fullDiaryDateTime(
       DataManager().currentJournal.dateTime,
     );
     return Scaffold(

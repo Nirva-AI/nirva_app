@@ -11,7 +11,7 @@ class SmartDiaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final quotes = DataManager().currentJournal.quotes;
 
-    final fullDateTime = Utils.fullDateTime(
+    final fullDateTime = Utils.fullDiaryDateTime(
       DataManager().currentJournal.dateTime,
     );
     return SingleChildScrollView(
