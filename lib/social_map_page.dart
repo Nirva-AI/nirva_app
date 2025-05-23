@@ -1,57 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/data.dart';
+import 'package:nirva_app/data_manager.dart';
 
 class SocialMapPage extends StatelessWidget {
   const SocialMapPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 示例数据
-    final List<Map<String, dynamic>> socialData = [
-      {'name': 'Michael', 'hours': 8.5, 'impact': 'Positive'},
-      {'name': 'Sarah', 'hours': 6.8, 'impact': 'Positive'},
-      {'name': 'Trent', 'hours': 5.5, 'impact': 'Positive'},
-      {'name': 'Emma', 'hours': 4.2, 'impact': 'Neutral'},
-      {'name': 'Raj', 'hours': 3.7, 'impact': 'Positive'},
-      {'name': 'Ashley', 'hours': 3.0, 'impact': 'Positive'},
-      {'name': 'Jason', 'hours': 2.1, 'impact': 'Negative'},
-    ];
-
-    // 关系详情数据
-    final List<Map<String, dynamic>> relationshipData = [
-      {
-        'name': 'Michael',
-        'hours': 8.5,
-        'description':
-            'Long-time friend who brings perspective and shared history. Conversations are effortless and restorative.',
-        'tips': [
-          'Schedule Regular Check-ins: Make time for your monthly calls even when busy.',
-          'Share Your Growth: Keep them updated on your personal development.',
-          'Plan That Trip: Follow through on your discussed travel plans.',
-        ],
-      },
-      {
-        'name': 'Sarah',
-        'hours': 6.8,
-        'description':
-            'Creative collaborator who inspires new ideas. Time flies during conversations about art and projects.',
-        'tips': [
-          'Schedule Making Sessions: Set aside time for collaborative creation.',
-          'Share Inspirations: Continue exchanging creative resources.',
-          'Celebrate Wins: Acknowledge each other\'s creative successes.',
-        ],
-      },
-      {
-        'name': 'Trent',
-        'hours': 5.5,
-        'description':
-            'Highly engaging, intellectually stimulating conversations. Covered a wide range of topics (work, philosophy, film, society).',
-        'tips': [
-          'Continue intellectual exchanges on various topics.',
-          'Plan regular coffee meetups for deeper discussions.',
-          'Share book and film recommendations.',
-        ],
-      },
-    ];
+    // 获取 DataManager 中的社交数据
+    final socialEntities = DataManager().socialMap.socialEntities;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Holistic Social Map')),
@@ -61,7 +18,7 @@ class SocialMapPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Social Interactions 卡片
-            SocialInteractionsCard(socialData: socialData),
+            SocialInteractionsCard(socialEntities: socialEntities),
 
             const SizedBox(height: 24),
 
@@ -74,7 +31,7 @@ class SocialMapPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Relationship Details 内容
-            RelationshipDetailsCard(relationshipData: relationshipData),
+            RelationshipDetailsCard(socialEntities: socialEntities),
           ],
         ),
       ),
@@ -83,16 +40,16 @@ class SocialMapPage extends StatelessWidget {
 }
 
 class SocialInteractionsCard extends StatelessWidget {
-  final List<Map<String, dynamic>> socialData;
+  final List<SocialEntity> socialEntities;
 
-  const SocialInteractionsCard({super.key, required this.socialData});
+  const SocialInteractionsCard({super.key, required this.socialEntities});
 
   @override
   Widget build(BuildContext context) {
     // 计算总时间
     double totalHours = 0;
-    for (var person in socialData) {
-      totalHours += person['hours'] as double;
+    for (var entity in socialEntities) {
+      totalHours += entity.hours;
     }
 
     return Card(
@@ -163,16 +120,16 @@ class SocialInteractionsCard extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.zero,
-                itemCount: socialData.length,
+                itemCount: socialEntities.length,
                 separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
-                  final person = socialData[index];
+                  final entity = socialEntities[index];
 
                   // 根据impact选择颜色
                   Color impactColor;
-                  if (person['impact'] == 'Positive') {
+                  if (entity.impact == 'Positive') {
                     impactColor = Colors.green;
-                  } else if (person['impact'] == 'Neutral') {
+                  } else if (entity.impact == 'Neutral') {
                     impactColor = Colors.amber;
                   } else {
                     impactColor = Colors.red;
@@ -185,14 +142,11 @@ class SocialInteractionsCard extends StatelessWidget {
                         Expanded(
                           flex: 3,
                           child: Text(
-                            person['name'],
+                            entity.name,
                             style: const TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ),
-                        Expanded(
-                          flex: 2,
-                          child: Text(person['hours'].toString()),
-                        ),
+                        Expanded(flex: 2, child: Text(entity.hours.toString())),
                         Expanded(
                           flex: 3,
                           child: Row(
@@ -206,7 +160,7 @@ class SocialInteractionsCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(person['impact']),
+                              Text(entity.impact),
                             ],
                           ),
                         ),
@@ -224,9 +178,9 @@ class SocialInteractionsCard extends StatelessWidget {
 }
 
 class RelationshipDetailsCard extends StatelessWidget {
-  final List<Map<String, dynamic>> relationshipData;
+  final List<SocialEntity> socialEntities;
 
-  const RelationshipDetailsCard({super.key, required this.relationshipData});
+  const RelationshipDetailsCard({super.key, required this.socialEntities});
 
   @override
   Widget build(BuildContext context) {
@@ -234,18 +188,16 @@ class RelationshipDetailsCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 关系详情卡片列表
-        ...relationshipData.map(
-          (relationship) => _buildRelationshipCard(relationship),
-        ),
+        ...socialEntities.map((entity) => _buildRelationshipCard(entity)),
       ],
     );
   }
 
-  Widget _buildRelationshipCard(Map<String, dynamic> relationship) {
+  Widget _buildRelationshipCard(SocialEntity entity) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Card(
-        elevation: 2, // 可以稍微增加一点海拔高度，因为现在它是主要的卡片
+        elevation: 2,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -261,7 +213,7 @@ class RelationshipDetailsCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    relationship['name'],
+                    entity.name,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -270,15 +222,20 @@ class RelationshipDetailsCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '${relationship['hours']} hours',
+                        '${entity.hours} hours',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(width: 8),
                       Container(
                         width: 12,
                         height: 12,
-                        decoration: const BoxDecoration(
-                          color: Colors.green,
+                        decoration: BoxDecoration(
+                          color:
+                              entity.impact == 'Positive'
+                                  ? Colors.green
+                                  : entity.impact == 'Neutral'
+                                  ? Colors.amber
+                                  : Colors.red,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -289,10 +246,7 @@ class RelationshipDetailsCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               // 描述
-              Text(
-                relationship['description'],
-                style: const TextStyle(fontSize: 16),
-              ),
+              Text(entity.description, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
 
               // 关系提示标题
@@ -307,31 +261,27 @@ class RelationshipDetailsCard extends StatelessWidget {
               const SizedBox(height: 8),
 
               // 提示列表
-              ...relationship['tips']
-                  .map<Widget>(
-                    (tip) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '• ',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              tip,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
+              ...entity.tips.map<Widget>(
+                (tip) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '• ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  )
-                  .toList(),
+                      Expanded(
+                        child: Text(tip, style: const TextStyle(fontSize: 16)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              //.toList(),
             ],
           ),
         ),
