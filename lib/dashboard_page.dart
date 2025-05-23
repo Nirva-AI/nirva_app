@@ -3,10 +3,11 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/stress_level_card.dart';
 import 'package:nirva_app/energy_level_card.dart';
 import 'package:nirva_app/mood_tracking_card.dart';
-import 'package:nirva_app/social_map_card.dart';
+//import 'package:nirva_app/social_map_card.dart';
 import 'package:nirva_app/awake_time_allocation_card.dart';
 import 'package:nirva_app/today_highlights_card.dart';
 import 'package:nirva_app/mood_score_card.dart';
+import 'package:nirva_app/social_map_graph_card.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -61,7 +62,8 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildSocialMapCard() {
-    return const SocialMapCard();
+    return const SocialMapGraphCard();
+    //return const SocialMapCard();
   }
 
   Widget _buildTodaysHighlightsCard() {
