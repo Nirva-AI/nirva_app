@@ -132,14 +132,14 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
                     final nodeValue = node.key?.value?.toString() ?? '未知节点';
                     return GestureDetector(
                       onPanStart: (details) {
-                        algorithm.setFocusedNode(node);
+                        //algorithm.setFocusedNode(node);
                       },
                       onPanUpdate: (details) {
-                        node.position += details.delta;
-                        setState(() {});
+                        // node.position += details.delta;
+                        // setState(() {});
                       },
                       onPanEnd: (details) {
-                        algorithm.setFocusedNode(null);
+                        //algorithm.setFocusedNode(null);
                       },
                       child: SizedBox(
                         width: nodeWidth,
