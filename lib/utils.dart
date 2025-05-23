@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class Utils {
   // 计算对应的月份标签
-  static List<String> shortMonthNames = [
+  static const List<String> shortMonthNames = [
     'Jan',
     'Feb',
     'Mar',
@@ -21,7 +21,7 @@ class Utils {
     'Dec',
   ];
 
-  static final fullMonthNames = [
+  static const List<String> fullMonthNames = [
     'January',
     'February',
     'March',
@@ -36,7 +36,7 @@ class Utils {
     'December',
   ];
 
-  static List<String> weekDayNames = [
+  static const List<String> weekDayNames = [
     'Mon',
     'Tue',
     'Wed',
@@ -74,7 +74,38 @@ class Utils {
     }
   }
 
-  static String fullDateTime(DateTime dateTime) {
+  static String fullDiaryDateTime(DateTime dateTime) {
     return '${fullMonthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
+  }
+
+  /// 格式化月份标题
+  static String formatMonthTitleForDashboardChart(
+    int widgetIndexValue,
+    int currentMonth,
+    int monthsCount,
+  ) {
+    int startMonth = (currentMonth - monthsCount) % 12;
+    if (startMonth < 0) startMonth += 12;
+    int targetMonth = (startMonth + widgetIndexValue) % 12;
+    return Utils.shortMonthNames[targetMonth];
+  }
+
+  // 格式化每天的标题 formatDayTitleForDashboardChart
+  static String formatDayTitleForDashboardChart(
+    int widgetIndexValue,
+    int currentWeekDay,
+    int dayCount,
+  ) {
+    // 计算从当前月份开始的正序排列
+    int startWeekDay = (currentWeekDay - dayCount) % 7;
+    if (startWeekDay < 0) startWeekDay += 7;
+    int targetWeekDay = (startWeekDay + widgetIndexValue) % 7;
+    return Utils.weekDayNames[targetWeekDay];
+  }
+
+  /// 写死，就显示最近的4个周 formateWeekTitleForDashboardChart
+  static String formateWeekTitleForDashboardChart(int widgetIndexValue) {
+    List<String> weekNames = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+    return weekNames[widgetIndexValue];
   }
 }
