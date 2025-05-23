@@ -635,28 +635,28 @@ class TestData {
         ],
         hours: 2,
       ),
-      // SocialEntity(
-      //   name: 'Charlie',
-      //   details:
-      //       'Had a long discussion about books and movies. Discovered shared interests.',
-      //   tips: [
-      //     'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-      //     'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-      //     'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-      //   ],
-      //   timeSpent: '~1.5 hours',
-      // ),
-      // SocialEntity(
-      //   name: 'Diana',
-      //   details:
-      //       'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
-      //   tips: [
-      //     'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-      //     'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-      //     'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-      //   ],
-      //   timeSpent: '~4 hours',
-      // ),
+      SocialEntity(
+        name: 'Charlie',
+        description:
+            'Had a long discussion about books and movies. Discovered shared interests.',
+        tips: [
+          'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+          'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+          'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+        ],
+        hours: 1.5,
+      ),
+      SocialEntity(
+        name: 'Diana',
+        description:
+            'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
+        tips: [
+          'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+          'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+          'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+        ],
+        hours: 4,
+      ),
     ];
 
     return Journal(
