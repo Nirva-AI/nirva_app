@@ -18,7 +18,7 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
 
   // 控制参数
   double screenWidth = 0.0;
-  final double graphBackgroundHeight = 600.0;
+  final double graphBackgroundHeight = 400.0;
   final double nodeWidth = 80.0;
   final double nodeHeight = 40.0;
   final int nodeCount = 8;
@@ -118,57 +118,50 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
 
             // 图表视图
             SizedBox(
+              // 用 SizedBox 替代 Container
+              key: graphKey,
               width: screenWidth,
               height: graphBackgroundHeight,
-              child: Card(
-                key: graphKey,
-                color: Colors.grey[200],
-                elevation: 4,
-                margin: const EdgeInsets.all(8),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: InteractiveViewer(
-                    constrained: false,
-                    boundaryMargin: const EdgeInsets.all(1000),
-                    minScale: 0.01,
-                    maxScale: 5.0,
-                    child: GraphView(
-                      key: ValueKey(graph),
-                      graph: graph,
-                      algorithm: algorithm,
-                      builder: (Node node) {
-                        final nodeValue = node.key?.value?.toString() ?? '未知节点';
-                        return GestureDetector(
-                          onPanStart: (details) {
-                            algorithm.setFocusedNode(node);
-                          },
-                          onPanUpdate: (details) {
-                            node.position += details.delta;
-                            setState(() {});
-                          },
-                          onPanEnd: (details) {
-                            algorithm.setFocusedNode(null);
-                          },
-                          child: SizedBox(
-                            width: nodeWidth,
-                            height: nodeHeight,
-                            child: Card(
-                              color: Colors.deepPurple,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: Text(
-                                    nodeValue,
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ),
+              child: InteractiveViewer(
+                constrained: false,
+                boundaryMargin: const EdgeInsets.all(1000),
+                minScale: 0.01,
+                maxScale: 5.0,
+                child: GraphView(
+                  key: ValueKey(graph),
+                  graph: graph,
+                  algorithm: algorithm,
+                  builder: (Node node) {
+                    final nodeValue = node.key?.value?.toString() ?? '未知节点';
+                    return GestureDetector(
+                      onPanStart: (details) {
+                        algorithm.setFocusedNode(node);
+                      },
+                      onPanUpdate: (details) {
+                        node.position += details.delta;
+                        setState(() {});
+                      },
+                      onPanEnd: (details) {
+                        algorithm.setFocusedNode(null);
+                      },
+                      child: SizedBox(
+                        width: nodeWidth,
+                        height: nodeHeight,
+                        child: Card(
+                          color: Colors.deepPurple,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Text(
+                                nodeValue,
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
