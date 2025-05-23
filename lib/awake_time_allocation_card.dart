@@ -26,106 +26,102 @@ class AwakeTimeAllocationCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
                 const Text(
                   'Awake Time Allocation',
                   style: TextStyle(fontSize: 16),
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 200,
-                  child: BarChart(
-                    BarChartData(
-                      alignment: BarChartAlignment.spaceAround,
-                      minY: _minY,
-                      maxY: _maxY,
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 28,
-                            interval: _interval,
-                            getTitlesWidget: (value, meta) {
-                              String title = _formatLeftTitle(value);
-                              if (title.isNotEmpty) {
-                                return Text(
-                                  title,
-                                  style: const TextStyle(fontSize: 12),
-                                );
-                              }
-
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              if (value.toInt() >= 0 &&
-                                  value.toInt() <
-                                      awakeTimeAllocationDataList.length) {
-                                return Text(
-                                  awakeTimeAllocationDataList[value.toInt()]
-                                      .label,
-                                  style: const TextStyle(fontSize: 10),
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                        ),
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AwakeTimeAllocationDetailsPage(),
                       ),
-                      barGroups:
-                          awakeTimeAllocationDataList
-                              .asMap()
-                              .entries
-                              .map(
-                                (entry) => BarChartGroupData(
-                                  x: entry.key,
-                                  barRods: [
-                                    BarChartRodData(
-                                      toY: entry.value.value,
-                                      //color: _getColor(entry.value.label),
-                                      color: Color(entry.value.color),
-                                      width: 15,
-                                      borderRadius:
-                                          BorderRadius.zero, // 添加此行将圆角改为直角
-                                    ),
-                                  ],
-                                ),
-                              )
-                              .toList(),
-                      gridData: FlGridData(show: false),
-                      borderData: FlBorderData(show: false),
-                    ),
-                  ),
+                    );
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
-            Positioned(
-              top: 0,
-              right: 0,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AwakeTimeAllocationDetailsPage(),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  minY: _minY,
+                  maxY: _maxY,
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 28,
+                        interval: _interval,
+                        getTitlesWidget: (value, meta) {
+                          String title = _formatLeftTitle(value);
+                          if (title.isNotEmpty) {
+                            return Text(
+                              title,
+                              style: const TextStyle(fontSize: 12),
+                            );
+                          }
+
+                          return const SizedBox.shrink();
+                        },
+                      ),
                     ),
-                  );
-                },
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          if (value.toInt() >= 0 &&
+                              value.toInt() < awakeTimeAllocationDataList.length) {
+                            return Text(
+                              awakeTimeAllocationDataList[value.toInt()]
+                                  .label,
+                              style: const TextStyle(fontSize: 10),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  barGroups:
+                      awakeTimeAllocationDataList
+                          .asMap()
+                          .entries
+                          .map(
+                            (entry) => BarChartGroupData(
+                              x: entry.key,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: entry.value.value,
+                                  color: Color(entry.value.color),
+                                  width: 15,
+                                  borderRadius: BorderRadius.zero,
+                                ),
+                              ],
+                            ),
+                          )
+                          .toList(),
+                  gridData: FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+                ),
               ),
             ),
           ],

@@ -480,14 +480,17 @@ class TestData {
       Highlight(
         category: 'ACHIEVEMENT',
         content: 'Completed your morning meditation streak - 7 days!',
+        color: 0xFFEDE7F6,
       ),
       Highlight(
         category: 'INSIGHT',
         content: 'You\'re most productive between 9-11 AM.',
+        color: 0xFFF1F8E9,
       ),
       Highlight(
         category: 'SOCIAL',
         content: 'You\'ve connected with 3 friends this week.',
+        color: 0xFFFFF3E0,
       ),
     ];
 
