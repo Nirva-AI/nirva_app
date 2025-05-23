@@ -16,6 +16,43 @@ class SocialMapPage extends StatelessWidget {
       {'name': 'Jason', 'hours': 2.1, 'impact': 'Negative'},
     ];
 
+    // 关系详情数据
+    final List<Map<String, dynamic>> relationshipData = [
+      {
+        'name': 'Michael',
+        'hours': 8.5,
+        'description':
+            'Long-time friend who brings perspective and shared history. Conversations are effortless and restorative.',
+        'tips': [
+          'Schedule Regular Check-ins: Make time for your monthly calls even when busy.',
+          'Share Your Growth: Keep them updated on your personal development.',
+          'Plan That Trip: Follow through on your discussed travel plans.',
+        ],
+      },
+      {
+        'name': 'Sarah',
+        'hours': 6.8,
+        'description':
+            'Creative collaborator who inspires new ideas. Time flies during conversations about art and projects.',
+        'tips': [
+          'Schedule Making Sessions: Set aside time for collaborative creation.',
+          'Share Inspirations: Continue exchanging creative resources.',
+          'Celebrate Wins: Acknowledge each other\'s creative successes.',
+        ],
+      },
+      {
+        'name': 'Trent',
+        'hours': 5.5,
+        'description':
+            'Highly engaging, intellectually stimulating conversations. Covered a wide range of topics (work, philosophy, film, society).',
+        'tips': [
+          'Continue intellectual exchanges on various topics.',
+          'Plan regular coffee meetups for deeper discussions.',
+          'Share book and film recommendations.',
+        ],
+      },
+    ];
+
     return Scaffold(
       appBar: AppBar(title: const Text('Holistic Social Map')),
       body: SingleChildScrollView(
@@ -27,7 +64,8 @@ class SocialMapPage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // 这里可以添加其他内容
+            // Relationship Details 卡片
+            RelationshipDetailsCard(relationshipData: relationshipData),
           ],
         ),
       ),
@@ -175,3 +213,141 @@ class SocialInteractionsCard extends StatelessWidget {
     );
   }
 }
+
+class RelationshipDetailsCard extends StatelessWidget {
+  final List<Map<String, dynamic>> relationshipData;
+
+  const RelationshipDetailsCard({super.key, required this.relationshipData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 标题
+            const Text(
+              'Relationship Details',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+
+            // 关系详情卡片列表
+            ...relationshipData.map(
+              (relationship) => _buildRelationshipCard(relationship),
+            ),
+            //.toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRelationshipCard(Map<String, dynamic> relationship) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Card(
+        elevation: 1,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.grey.shade200),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 名字和小时
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    relationship['name'],
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        '${relationship['hours']} hours',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // 描述
+              Text(
+                relationship['description'],
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+
+              // 关系提示标题
+              const Text(
+                'RELATIONSHIP TIPS:',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // 提示列表
+              ...relationship['tips']
+                  .map<Widget>(
+                    (tip) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              tip,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+/*
+
+*/

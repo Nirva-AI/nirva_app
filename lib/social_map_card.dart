@@ -68,7 +68,7 @@ class _SocialMapCardState extends State<SocialMapCard> {
                 Row(
                   children: [
                     Text(
-                      'Time: ${entity.hoursSpent} hours',
+                      'Time: ${entity.hours} hours',
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(width: 4),
@@ -77,7 +77,7 @@ class _SocialMapCardState extends State<SocialMapCard> {
               ],
             ),
             const SizedBox(height: 8),
-            Text(entity.details),
+            Text(entity.description),
             const SizedBox(height: 16),
             const Text(
               'TIPS FOR IMPROVING RELATIONSHIP:',
@@ -146,7 +146,7 @@ class _SocialMapCardState extends State<SocialMapCard> {
                         ),
                       ),
                       child: Text(
-                        '${socialEntities[index].name}:${socialEntities[index].hoursSpent}',
+                        '${socialEntities[index].name}:${socialEntities[index].hours}',
                       ),
                     ),
                   );

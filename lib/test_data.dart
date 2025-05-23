@@ -573,25 +573,25 @@ class TestData {
     List<SocialEntity> socialEntities = [
       SocialEntity(
         name: 'Ashley',
-        details:
+        description:
             'Deep, supportive conversation. Vulnerability was met with understanding.',
         tips: [
           'Reciprocate Support: Ensure you\'re actively listening and offering support for her challenges (job search, etc.) as she does for you.',
           'Follow Through: Act on plans discussed, like the library meet-up, to build reliability.',
           'Shared Fun: Continue exploring shared interests beyond processing difficulties, like the arts or potential future activities.',
         ],
-        hoursSpent: 3,
+        hours: 3,
       ),
       SocialEntity(
         name: 'Trent',
-        details:
+        description:
             'Shared a fun hiking trip. Great teamwork and mutual encouragement.',
         tips: [
           'Acknowledge Commitments: Address things like listening to the record he gave you to show you value his gestures and follow through.',
           'Appreciate His Perspective: Even when disagreeing (like on AI ethics), acknowledge and show respect for his viewpoint to maintain positive discourse.',
           'Continue Shared Exploration: Lean into shared interests like film, exploring challenging ideas, and trying new experiences (restaurants, neighborhoods). Ask about his work/life updates proactively.',
         ],
-        hoursSpent: 2,
+        hours: 2,
       ),
       // SocialEntity(
       //   name: 'Charlie',

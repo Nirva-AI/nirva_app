@@ -193,9 +193,9 @@ class AwakeTimeAllocation with _$AwakeTimeAllocation {
 class SocialEntity with _$SocialEntity {
   const factory SocialEntity({
     required String name,
-    required String details,
+    required String description,
     required List<String> tips,
-    required double hoursSpent,
+    required double hours,
   }) = _SocialEntity;
 
   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
