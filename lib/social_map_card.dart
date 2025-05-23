@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
 
-class SocialMapView extends StatefulWidget {
-  const SocialMapView({super.key});
+class SocialMapCard extends StatefulWidget {
+  const SocialMapCard({super.key});
 
   @override
-  State<SocialMapView> createState() => _SocialMapViewState();
+  State<SocialMapCard> createState() => _SocialMapCardState();
 }
 
-class _SocialMapViewState extends State<SocialMapView> {
+class _SocialMapCardState extends State<SocialMapCard> {
   int selectedEntityIndex = -1;
 
   void selectEntity(int index) {
@@ -67,7 +67,7 @@ class _SocialMapViewState extends State<SocialMapView> {
                 Row(
                   children: [
                     Text(
-                      'Time: ${entity.timeSpent}',
+                      'Time: ${entity.hoursSpent} hours',
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(width: 4),
@@ -109,10 +109,7 @@ class _SocialMapViewState extends State<SocialMapView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Social Map',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            const Text('Social Map', style: TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -128,7 +125,7 @@ class _SocialMapViewState extends State<SocialMapView> {
                         ),
                       ),
                       child: Text(
-                        '${socialEntities[index].name}:${socialEntities[index].timeSpent}',
+                        '${socialEntities[index].name}:${socialEntities[index].hoursSpent}',
                       ),
                     ),
                   );

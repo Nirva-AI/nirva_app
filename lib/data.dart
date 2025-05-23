@@ -195,7 +195,7 @@ class SocialEntity with _$SocialEntity {
     required String name,
     required String details,
     required List<String> tips,
-    required String timeSpent,
+    required double hoursSpent,
   }) = _SocialEntity;
 
   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
