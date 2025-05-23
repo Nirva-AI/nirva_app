@@ -106,33 +106,6 @@ class _AwakeTimeAllocationDetailsPageState
     List<AwakeTimeAllocation> awakeTimeAllocations =
         DataManager().currentJournal.awakeTimeActions;
 
-    // 如果没有数据，创建一些示例数据
-    if (awakeTimeAllocations.isEmpty) {
-      awakeTimeAllocations = [
-        AwakeTimeAllocation(label: "Work", value: 8.0, color: 0xFF9C27B0), // 紫色
-        AwakeTimeAllocation(
-          label: "Exercise",
-          value: 1.0,
-          color: 0xFF4CAF50,
-        ), // 绿色
-        AwakeTimeAllocation(
-          label: "Social",
-          value: 2.0,
-          color: 0xFFE91E63,
-        ), // 粉色
-        AwakeTimeAllocation(
-          label: "Learning",
-          value: 1.5,
-          color: 0xFFFF9800,
-        ), // 橙色
-        AwakeTimeAllocation(
-          label: "Self-Care",
-          value: 1.0,
-          color: 0xFFFFEB3B,
-        ), // 黄色
-      ];
-    }
-
     for (var awakeTimeAllocation in awakeTimeAllocations) {
       widget.dataManager.addGroup(
         awakeTimeAllocation.label,
@@ -181,10 +154,6 @@ class _AwakeTimeAllocationDetailsPageState
                         _buildTab('Month', AwakeTimeChartType.month),
                       ],
                     ),
-                    const SizedBox(height: 16 * 2),
-
-                    // 图例说明
-                    _buildLegend(),
                     const SizedBox(height: 16),
 
                     // 折线图
@@ -195,6 +164,10 @@ class _AwakeTimeAllocationDetailsPageState
                         dataManager: widget.dataManager,
                       ),
                     ),
+
+                    const SizedBox(height: 16),
+                    // 图例说明
+                    _buildLegend(),
                   ],
                 ),
               ),
@@ -213,27 +186,31 @@ class _AwakeTimeAllocationDetailsPageState
 
   // 构建图例
   Widget _buildLegend() {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 8,
-      children:
-          widget.dataManager.groups.values.map((dataGroup) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: dataGroup.lineBarColor,
-                    shape: BoxShape.circle,
+    return Center(
+      // 添加Center容器使整体居中
+      child: Wrap(
+        alignment: WrapAlignment.center, // 设置Wrap的内部对齐方式为居中
+        spacing: 16,
+        runSpacing: 8,
+        children:
+            widget.dataManager.groups.values.map((dataGroup) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: dataGroup.lineBarColor,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                Text(dataGroup.label, style: TextStyle(fontSize: 12)),
-              ],
-            );
-          }).toList(),
+                  const SizedBox(width: 4),
+                  Text(dataGroup.label, style: const TextStyle(fontSize: 12)),
+                ],
+              );
+            }).toList(),
+      ),
     );
   }
 
@@ -261,14 +238,7 @@ class _AwakeTimeAllocationDetailsPageState
   // 提取 Insights 卡片部分为独立函数
   Widget _buildInsightsCard(List<String> insights) {
     // 如果insights为空，提供一些默认值
-    final List<String> displayInsights =
-        insights.isNotEmpty
-            ? insights
-            : [
-              'Work takes up the majority of your awake hours this day.',
-              'Self-care and exercise time has increased compared to previous periods.',
-              'Consider increasing learning activities to meet your personal growth goals.',
-            ];
+    final List<String> displayInsights = insights.isNotEmpty ? insights : [];
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -330,18 +300,6 @@ class AwakeTimeChart extends StatelessWidget {
                   showTitles: true,
                   interval: dataManager.interval,
                   getTitlesWidget: (value, meta) {
-                    if (value % dataManager.interval == 0) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Text(
-                          '${value.toInt()}h',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      );
-                    }
                     return const SizedBox.shrink();
                   },
                 ),
