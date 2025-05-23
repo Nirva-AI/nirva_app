@@ -96,7 +96,7 @@ class EnergyLevelCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const EnergyLevelDetailsPage(),
+                        builder: (context) => EnergyLevelDetailsPage(),
                       ),
                     );
                   },
