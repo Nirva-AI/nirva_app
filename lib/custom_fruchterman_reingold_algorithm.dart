@@ -15,10 +15,10 @@ class CustomFruchtermanReingoldAlgorithm extends FruchtermanReingoldAlgorithm {
     required this.nodeWidth,
     required this.nodeHeight,
   }) {
-    repulsionRate = 1.0; // 增大排斥力
-    attractionRate = 0.05; // 减小吸引力
-    repulsionPercentage = 0.5; // 增大排斥力作用范围
-    attractionPercentage = 0.1; // 减小吸引力作用范围
+    // repulsionRate = 1.0; // 增大排斥力
+    // attractionRate = 0.05; // 减小吸引力
+    // repulsionPercentage = 0.5; // 增大排斥力作用范围
+    // attractionPercentage = 0.1; // 减小吸引力作用范围
   }
 
   @override
