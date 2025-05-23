@@ -4,8 +4,9 @@ import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
-//import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/me_page.dart';
+
+enum HomePageNavigationType { smartDiary, reflection, dashboard, me }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -17,7 +18,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedPage = 0;
+  // 使用枚举类型替代整数
+  HomePageNavigationType _selectedPage = HomePageNavigationType.dashboard;
 
   final TextEditingController _textController = TextEditingController();
 
@@ -26,36 +28,33 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => AssistantChatPage(
-              //chatMessages: ChatManager().getChatMessageNotifier(),
-              textController: _textController,
-            ),
+            (context) => AssistantChatPage(textController: _textController),
       ),
     );
   }
 
   Widget _getBodyContent() {
     switch (_selectedPage) {
-      case 0:
+      case HomePageNavigationType.smartDiary:
         return SmartDiaryPage();
-      case 1:
+      case HomePageNavigationType.reflection:
         return const ReflectionsPage();
-      case 2:
+      case HomePageNavigationType.dashboard:
         return const DashboardPage();
-      default:
+      case HomePageNavigationType.me:
         return const MePage();
     }
   }
 
   String _getTitle() {
     switch (_selectedPage) {
-      case 0:
+      case HomePageNavigationType.smartDiary:
         return 'Smart Diary';
-      case 1:
+      case HomePageNavigationType.reflection:
         return 'Reflections';
-      case 2:
+      case HomePageNavigationType.dashboard:
         return 'Dashboard';
-      default:
+      case HomePageNavigationType.me:
         return 'Me';
     }
   }
@@ -143,10 +142,11 @@ class _HomePageState extends State<HomePage> {
                 child: _buildBottomAppBarItem(
                   icon: Icons.book,
                   label: 'Smart Diary',
-                  isSelected: _selectedPage == 0,
+                  isSelected:
+                      _selectedPage == HomePageNavigationType.smartDiary,
                   onTap: () {
                     setState(() {
-                      _selectedPage = 0;
+                      _selectedPage = HomePageNavigationType.smartDiary;
                     });
                   },
                 ),
@@ -155,10 +155,11 @@ class _HomePageState extends State<HomePage> {
                 child: _buildBottomAppBarItem(
                   icon: Icons.lightbulb,
                   label: 'Reflections',
-                  isSelected: _selectedPage == 1,
+                  isSelected:
+                      _selectedPage == HomePageNavigationType.reflection,
                   onTap: () {
                     setState(() {
-                      _selectedPage = 1;
+                      _selectedPage = HomePageNavigationType.reflection;
                     });
                   },
                 ),
@@ -167,10 +168,10 @@ class _HomePageState extends State<HomePage> {
                 child: _buildBottomAppBarItem(
                   icon: Icons.dashboard,
                   label: 'Dashboard',
-                  isSelected: _selectedPage == 2,
+                  isSelected: _selectedPage == HomePageNavigationType.dashboard,
                   onTap: () {
                     setState(() {
-                      _selectedPage = 2;
+                      _selectedPage = HomePageNavigationType.dashboard;
                     });
                   },
                 ),
@@ -179,11 +180,11 @@ class _HomePageState extends State<HomePage> {
                 child: _buildBottomAppBarItem(
                   icon: Icons.person,
                   label: 'Me',
-                  isSelected: _selectedPage == 3,
+                  isSelected: _selectedPage == HomePageNavigationType.me,
                   onTap: () {
                     debugPrint('Me button tapped');
                     setState(() {
-                      _selectedPage = 3;
+                      _selectedPage = HomePageNavigationType.me;
                     });
                   },
                 ),
