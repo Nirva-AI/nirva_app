@@ -163,6 +163,12 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
                         dataManager: widget.dataManager,
                       ),
                     ),
+
+                    // 添加间距
+                    const SizedBox(height: 16),
+
+                    // 添加图例
+                    _buildLegend(),
                   ],
                 ),
               ),
@@ -230,6 +236,36 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // 构建图例
+  Widget _buildLegend() {
+    return Center(
+      // 添加Center容器使整体居中
+      child: Wrap(
+        alignment: WrapAlignment.center, // 设置Wrap的内部对齐方式为居中
+        spacing: 16,
+        runSpacing: 8,
+        children:
+            widget.dataManager.groups.values.map((dataGroup) {
+              return Row(
+                mainAxisSize: MainAxisSize.min, // 设置为最小宽度
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: dataGroup.lineBarColor,
+                      shape: BoxShape.circle, // 使用圆形表示情绪类型
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(dataGroup.label, style: const TextStyle(fontSize: 12)),
+                ],
+              );
+            }).toList(),
       ),
     );
   }

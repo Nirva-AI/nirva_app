@@ -46,6 +46,12 @@ class TestData {
     DataManager().moodTrackingDashboard = TestData.createMoodTrackingDashboard(
       DataManager().currentJournal.dateTime,
     );
+
+    // 添加醒着的时间分配
+    DataManager().awakeTimeAllocationDashboard =
+        TestData.createAwakeTimeAllocationDashboard(
+          DataManager().currentJournal.dateTime,
+        );
   }
 
   static void initializeTestFavorites(Journal journal) {
