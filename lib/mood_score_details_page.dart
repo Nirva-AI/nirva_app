@@ -110,7 +110,6 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
                     // Mood Score
                     Center(
                       child: Text(
-                        //_parseMoodScoreString(_selectedType),
                         widget.dataManager
                             .getScore(_selectedType)
                             .toInt()

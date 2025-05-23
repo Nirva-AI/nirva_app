@@ -41,7 +41,7 @@ class StressLevelCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const StressLevelDetailsPage(),
+                          builder: (context) => StressLevelDetailsPage(),
                         ),
                       );
                     },
