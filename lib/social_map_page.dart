@@ -58,13 +58,22 @@ class SocialMapPage extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Social Interactions 卡片
             SocialInteractionsCard(socialData: socialData),
 
+            const SizedBox(height: 24),
+
+            // Relationship Details 标题
+            const Text(
+              'Relationship Details',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+
             const SizedBox(height: 16),
 
-            // Relationship Details 卡片
+            // Relationship Details 内容
             RelationshipDetailsCard(relationshipData: relationshipData),
           ],
         ),
@@ -221,29 +230,14 @@ class RelationshipDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 标题
-            const Text(
-              'Relationship Details',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-
-            // 关系详情卡片列表
-            ...relationshipData.map(
-              (relationship) => _buildRelationshipCard(relationship),
-            ),
-            //.toList(),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 关系详情卡片列表
+        ...relationshipData.map(
+          (relationship) => _buildRelationshipCard(relationship),
         ),
-      ),
+      ],
     );
   }
 
@@ -251,7 +245,7 @@ class RelationshipDetailsCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Card(
-        elevation: 1,
+        elevation: 2, // 可以稍微增加一点海拔高度，因为现在它是主要的卡片
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -345,9 +339,3 @@ class RelationshipDetailsCard extends StatelessWidget {
     );
   }
 }
-
-
-
-/*
-
-*/
