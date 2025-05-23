@@ -19,7 +19,11 @@ class TestData {
     DataManager().journals.add(TestData.createTestJournal());
 
     // 添加高亮数据
-    DataManager().archivedHighlights = TestData.createTestArchivedHighlights();
+    DataManager().weeklyArchivedHighlights =
+        TestData.createTestWeeklyArchivedHighlights();
+
+    DataManager().monthlyArchivedHighlights =
+        TestData.createTestMonthlyArchivedHighlights();
 
     // 添加日记的最爱数据
     initializeTestFavorites(DataManager().currentJournal);
@@ -105,7 +109,7 @@ class TestData {
     ];
   }
 
-  static List<ArchivedHighlights> createTestArchivedHighlights() {
+  static List<ArchivedHighlights> createTestWeeklyArchivedHighlights() {
     return [
       ArchivedHighlights(
         beginTime: DateTime(2025, 5, 9),
@@ -142,6 +146,49 @@ class TestData {
           Highlight(
             category: 'Social',
             content: 'Connected with 2 friends this week',
+          ),
+        ],
+      ),
+    ];
+  }
+
+  static List<ArchivedHighlights> createTestMonthlyArchivedHighlights() {
+    return [
+      ArchivedHighlights(
+        beginTime: DateTime(2025, 4, 1),
+        endTime: DateTime(2025, 4, 30),
+        highlights: [
+          Highlight(
+            category: 'Achievement',
+            content: 'Completed 20 meditation sessions this month',
+          ),
+          Highlight(
+            category: 'Insight',
+            content:
+                'Your stress levels were 25% lower when you exercised in the morning',
+          ),
+          Highlight(
+            category: 'Social',
+            content: 'Connected with 10 friends this month',
+          ),
+        ],
+      ),
+      ArchivedHighlights(
+        beginTime: DateTime(2025, 3, 1),
+        endTime: DateTime(2025, 3, 31),
+        highlights: [
+          Highlight(
+            category: 'Achievement',
+            content: 'Completed 15 meditation sessions this month',
+          ),
+          Highlight(
+            category: 'Insight',
+            content:
+                'Your stress levels were 30% lower when you exercised in the morning',
+          ),
+          Highlight(
+            category: 'Social',
+            content: 'Connected with 8 friends this month',
           ),
         ],
       ),
