@@ -1936,47 +1936,47 @@ abstract class _Highlight implements Highlight {
       throw _privateConstructorUsedError;
 }
 
-HighlightGroup _$HighlightGroupFromJson(Map<String, dynamic> json) {
-  return _HighlightGroup.fromJson(json);
+ArchivedHighlights _$ArchivedHighlightsFromJson(Map<String, dynamic> json) {
+  return _ArchivedHighlights.fromJson(json);
 }
 
 /// @nodoc
-mixin _$HighlightGroup {
+mixin _$ArchivedHighlights {
   DateTime get beginTime => throw _privateConstructorUsedError;
   DateTime get endTime => throw _privateConstructorUsedError;
   List<Highlight> get highlights => throw _privateConstructorUsedError;
 
-  /// Serializes this HighlightGroup to a JSON map.
+  /// Serializes this ArchivedHighlights to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of HighlightGroup
+  /// Create a copy of ArchivedHighlights
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $HighlightGroupCopyWith<HighlightGroup> get copyWith =>
+  $ArchivedHighlightsCopyWith<ArchivedHighlights> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $HighlightGroupCopyWith<$Res> {
-  factory $HighlightGroupCopyWith(
-    HighlightGroup value,
-    $Res Function(HighlightGroup) then,
-  ) = _$HighlightGroupCopyWithImpl<$Res, HighlightGroup>;
+abstract class $ArchivedHighlightsCopyWith<$Res> {
+  factory $ArchivedHighlightsCopyWith(
+    ArchivedHighlights value,
+    $Res Function(ArchivedHighlights) then,
+  ) = _$ArchivedHighlightsCopyWithImpl<$Res, ArchivedHighlights>;
   @useResult
   $Res call({DateTime beginTime, DateTime endTime, List<Highlight> highlights});
 }
 
 /// @nodoc
-class _$HighlightGroupCopyWithImpl<$Res, $Val extends HighlightGroup>
-    implements $HighlightGroupCopyWith<$Res> {
-  _$HighlightGroupCopyWithImpl(this._value, this._then);
+class _$ArchivedHighlightsCopyWithImpl<$Res, $Val extends ArchivedHighlights>
+    implements $ArchivedHighlightsCopyWith<$Res> {
+  _$ArchivedHighlightsCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of HighlightGroup
+  /// Create a copy of ArchivedHighlights
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -2009,27 +2009,27 @@ class _$HighlightGroupCopyWithImpl<$Res, $Val extends HighlightGroup>
 }
 
 /// @nodoc
-abstract class _$$HighlightGroupImplCopyWith<$Res>
-    implements $HighlightGroupCopyWith<$Res> {
-  factory _$$HighlightGroupImplCopyWith(
-    _$HighlightGroupImpl value,
-    $Res Function(_$HighlightGroupImpl) then,
-  ) = __$$HighlightGroupImplCopyWithImpl<$Res>;
+abstract class _$$ArchivedHighlightsImplCopyWith<$Res>
+    implements $ArchivedHighlightsCopyWith<$Res> {
+  factory _$$ArchivedHighlightsImplCopyWith(
+    _$ArchivedHighlightsImpl value,
+    $Res Function(_$ArchivedHighlightsImpl) then,
+  ) = __$$ArchivedHighlightsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime beginTime, DateTime endTime, List<Highlight> highlights});
 }
 
 /// @nodoc
-class __$$HighlightGroupImplCopyWithImpl<$Res>
-    extends _$HighlightGroupCopyWithImpl<$Res, _$HighlightGroupImpl>
-    implements _$$HighlightGroupImplCopyWith<$Res> {
-  __$$HighlightGroupImplCopyWithImpl(
-    _$HighlightGroupImpl _value,
-    $Res Function(_$HighlightGroupImpl) _then,
+class __$$ArchivedHighlightsImplCopyWithImpl<$Res>
+    extends _$ArchivedHighlightsCopyWithImpl<$Res, _$ArchivedHighlightsImpl>
+    implements _$$ArchivedHighlightsImplCopyWith<$Res> {
+  __$$ArchivedHighlightsImplCopyWithImpl(
+    _$ArchivedHighlightsImpl _value,
+    $Res Function(_$ArchivedHighlightsImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of HighlightGroup
+  /// Create a copy of ArchivedHighlights
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -2039,7 +2039,7 @@ class __$$HighlightGroupImplCopyWithImpl<$Res>
     Object? highlights = null,
   }) {
     return _then(
-      _$HighlightGroupImpl(
+      _$ArchivedHighlightsImpl(
         beginTime:
             null == beginTime
                 ? _value.beginTime
@@ -2062,15 +2062,15 @@ class __$$HighlightGroupImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$HighlightGroupImpl implements _HighlightGroup {
-  const _$HighlightGroupImpl({
+class _$ArchivedHighlightsImpl implements _ArchivedHighlights {
+  const _$ArchivedHighlightsImpl({
     required this.beginTime,
     required this.endTime,
     required final List<Highlight> highlights,
   }) : _highlights = highlights;
 
-  factory _$HighlightGroupImpl.fromJson(Map<String, dynamic> json) =>
-      _$$HighlightGroupImplFromJson(json);
+  factory _$ArchivedHighlightsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ArchivedHighlightsImplFromJson(json);
 
   @override
   final DateTime beginTime;
@@ -2086,14 +2086,14 @@ class _$HighlightGroupImpl implements _HighlightGroup {
 
   @override
   String toString() {
-    return 'HighlightGroup(beginTime: $beginTime, endTime: $endTime, highlights: $highlights)';
+    return 'ArchivedHighlights(beginTime: $beginTime, endTime: $endTime, highlights: $highlights)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HighlightGroupImpl &&
+            other is _$ArchivedHighlightsImpl &&
             (identical(other.beginTime, beginTime) ||
                 other.beginTime == beginTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
@@ -2112,32 +2112,32 @@ class _$HighlightGroupImpl implements _HighlightGroup {
     const DeepCollectionEquality().hash(_highlights),
   );
 
-  /// Create a copy of HighlightGroup
+  /// Create a copy of ArchivedHighlights
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$HighlightGroupImplCopyWith<_$HighlightGroupImpl> get copyWith =>
-      __$$HighlightGroupImplCopyWithImpl<_$HighlightGroupImpl>(
+  _$$ArchivedHighlightsImplCopyWith<_$ArchivedHighlightsImpl> get copyWith =>
+      __$$ArchivedHighlightsImplCopyWithImpl<_$ArchivedHighlightsImpl>(
         this,
         _$identity,
       );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$HighlightGroupImplToJson(this);
+    return _$$ArchivedHighlightsImplToJson(this);
   }
 }
 
-abstract class _HighlightGroup implements HighlightGroup {
-  const factory _HighlightGroup({
+abstract class _ArchivedHighlights implements ArchivedHighlights {
+  const factory _ArchivedHighlights({
     required final DateTime beginTime,
     required final DateTime endTime,
     required final List<Highlight> highlights,
-  }) = _$HighlightGroupImpl;
+  }) = _$ArchivedHighlightsImpl;
 
-  factory _HighlightGroup.fromJson(Map<String, dynamic> json) =
-      _$HighlightGroupImpl.fromJson;
+  factory _ArchivedHighlights.fromJson(Map<String, dynamic> json) =
+      _$ArchivedHighlightsImpl.fromJson;
 
   @override
   DateTime get beginTime;
@@ -2146,11 +2146,11 @@ abstract class _HighlightGroup implements HighlightGroup {
   @override
   List<Highlight> get highlights;
 
-  /// Create a copy of HighlightGroup
+  /// Create a copy of ArchivedHighlights
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$HighlightGroupImplCopyWith<_$HighlightGroupImpl> get copyWith =>
+  _$$ArchivedHighlightsImplCopyWith<_$ArchivedHighlightsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

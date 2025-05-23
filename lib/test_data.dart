@@ -19,7 +19,7 @@ class TestData {
     DataManager().journals.add(TestData.createTestJournal());
 
     // 添加高亮数据
-    DataManager().archivedHighlights = TestData.createTestHighlightGroup();
+    DataManager().archivedHighlights = TestData.createTestArchivedHighlights();
 
     // 添加日记的最爱数据
     initializeTestFavorites(DataManager().currentJournal);
@@ -105,9 +105,9 @@ class TestData {
     ];
   }
 
-  static List<HighlightGroup> createTestHighlightGroup() {
+  static List<ArchivedHighlights> createTestArchivedHighlights() {
     return [
-      HighlightGroup(
+      ArchivedHighlights(
         beginTime: DateTime(2025, 5, 9),
         endTime: DateTime(2025, 5, 15),
         highlights: [
@@ -126,7 +126,7 @@ class TestData {
           ),
         ],
       ),
-      HighlightGroup(
+      ArchivedHighlights(
         beginTime: DateTime(2025, 5, 2),
         endTime: DateTime(2025, 5, 8),
         highlights: [
