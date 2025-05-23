@@ -580,7 +580,7 @@ class TestData {
           'Follow Through: Act on plans discussed, like the library meet-up, to build reliability.',
           'Shared Fun: Continue exploring shared interests beyond processing difficulties, like the arts or potential future activities.',
         ],
-        timeSpent: '~3 hours',
+        hoursSpent: 3,
       ),
       SocialEntity(
         name: 'Trent',
@@ -591,30 +591,30 @@ class TestData {
           'Appreciate His Perspective: Even when disagreeing (like on AI ethics), acknowledge and show respect for his viewpoint to maintain positive discourse.',
           'Continue Shared Exploration: Lean into shared interests like film, exploring challenging ideas, and trying new experiences (restaurants, neighborhoods). Ask about his work/life updates proactively.',
         ],
-        timeSpent: '~2 hours',
+        hoursSpent: 2,
       ),
-      SocialEntity(
-        name: 'Charlie',
-        details:
-            'Had a long discussion about books and movies. Discovered shared interests.',
-        tips: [
-          'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-          'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-          'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-        ],
-        timeSpent: '~1.5 hours',
-      ),
-      SocialEntity(
-        name: 'Diana',
-        details:
-            'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
-        tips: [
-          'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-          'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-          'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-        ],
-        timeSpent: '~4 hours',
-      ),
+      // SocialEntity(
+      //   name: 'Charlie',
+      //   details:
+      //       'Had a long discussion about books and movies. Discovered shared interests.',
+      //   tips: [
+      //     'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+      //     'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+      //     'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+      //   ],
+      //   timeSpent: '~1.5 hours',
+      // ),
+      // SocialEntity(
+      //   name: 'Diana',
+      //   details:
+      //       'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
+      //   tips: [
+      //     'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+      //     'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+      //     'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+      //   ],
+      //   timeSpent: '~4 hours',
+      // ),
     ];
 
     return Journal(

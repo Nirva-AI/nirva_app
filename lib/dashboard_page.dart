@@ -3,11 +3,10 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/stress_level_card.dart';
 import 'package:nirva_app/energy_level_card.dart';
 import 'package:nirva_app/mood_tracking_card.dart';
-import 'package:nirva_app/social_map_view.dart';
+import 'package:nirva_app/social_map_card.dart';
 import 'package:nirva_app/awake_time_allocation_card.dart';
 import 'package:nirva_app/today_highlights_card.dart';
 import 'package:nirva_app/mood_score_card.dart';
-//import 'package:nirva_app/mood_details_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -25,13 +24,13 @@ class DashboardPage extends StatelessWidget {
               const SizedBox(height: 16),
               _buildEnergyLevelCard(),
               const SizedBox(height: 16),
-              _buildMoodTracking(),
+              _buildMoodTrackingCard(),
               const SizedBox(height: 16),
-              _buildAwakeTimeAllocation(),
+              _buildAwakeTimeAllocationCard(),
               const SizedBox(height: 16),
-              _buildSocialMap(),
+              _buildSocialMapCard(),
               const SizedBox(height: 16),
-              _buildHighlights(),
+              _buildTodaysHighlightsCard(),
             ],
           ),
         ),
@@ -40,13 +39,11 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildMoodScoreCardAndStressLevelCard() {
-    final currentDiary = DataManager().currentJournal;
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        MoodScoreCard(data: currentDiary.moodScore),
-        StressLevelCard(data: currentDiary.stressLevel),
+        MoodScoreCard(data: DataManager().currentJournal.moodScore),
+        StressLevelCard(data: DataManager().currentJournal.stressLevel),
       ],
     );
   }
@@ -55,20 +52,19 @@ class DashboardPage extends StatelessWidget {
     return const EnergyLevelCard();
   }
 
-  Widget _buildMoodTracking() {
+  Widget _buildMoodTrackingCard() {
     return const MoodTrackingCard();
   }
 
-  Widget _buildAwakeTimeAllocation() {
+  Widget _buildAwakeTimeAllocationCard() {
     return const AwakeTimeAllocationCard();
   }
 
-  Widget _buildSocialMap() {
-    return const SocialMapView();
+  Widget _buildSocialMapCard() {
+    return const SocialMapCard();
   }
 
-  Widget _buildHighlights() {
-    //final highlights = DataManager().currentJournal.highlights;
+  Widget _buildTodaysHighlightsCard() {
     return TodayHighlightsCard();
   }
 }
