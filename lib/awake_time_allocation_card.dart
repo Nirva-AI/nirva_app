@@ -122,8 +122,7 @@ class AwakeTimeAllocationCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => const AwakeTimeAllocationDetailsPage(),
+                      builder: (context) => AwakeTimeAllocationDetailsPage(),
                     ),
                   );
                 },
