@@ -19,7 +19,8 @@ class DataManager {
   List<Task> tasks = [];
 
   // 当前的高亮数据
-  List<ArchivedHighlights> archivedHighlights = [];
+  List<ArchivedHighlights> weeklyArchivedHighlights = [];
+  List<ArchivedHighlights> monthlyArchivedHighlights = [];
 
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
   ValueNotifier<List<String>> diaryFavoritesNotifier = ValueNotifier([]);
@@ -60,7 +61,8 @@ class DataManager {
     user = User(name: '');
     journals = [];
     tasks = [];
-    archivedHighlights = [];
+    weeklyArchivedHighlights = [];
+    monthlyArchivedHighlights = [];
     diaryFavoritesNotifier = ValueNotifier([]);
     diaryNotesNotifier = ValueNotifier([]);
     moodScoreDashboard = MoodScoreDashboard(
