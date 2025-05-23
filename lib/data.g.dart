@@ -194,17 +194,17 @@ Map<String, dynamic> _$$AwakeTimeAllocationImplToJson(
 _$SocialEntityImpl _$$SocialEntityImplFromJson(Map<String, dynamic> json) =>
     _$SocialEntityImpl(
       name: json['name'] as String,
-      details: json['details'] as String,
+      description: json['description'] as String,
       tips: (json['tips'] as List<dynamic>).map((e) => e as String).toList(),
-      hoursSpent: (json['hoursSpent'] as num).toDouble(),
+      hours: (json['hours'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'details': instance.details,
+      'description': instance.description,
       'tips': instance.tips,
-      'hoursSpent': instance.hoursSpent,
+      'hours': instance.hours,
     };
 
 _$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>
