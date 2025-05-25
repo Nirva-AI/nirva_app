@@ -29,7 +29,7 @@ class WeekCalendarWidget extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         selectedDecoration: BoxDecoration(
-          color: Color(0xFFFFD700), // 金黄色背景
+          color: Color.fromARGB(255, 90, 94, 210), // 金黄色背景
           shape: BoxShape.circle,
         ),
         todayTextStyle: TextStyle(
