@@ -55,6 +55,7 @@ class _ArchivedHighlightsPageState extends State<ArchivedHighlightsPage> {
           const Divider(height: 1, thickness: 1),
           Expanded(
             child: ListView.builder(
+              key: UniqueKey(),
               itemCount: selectedArchivedHighlights.length,
               itemBuilder: (context, index) {
                 return _buildArchivedHighlights(
