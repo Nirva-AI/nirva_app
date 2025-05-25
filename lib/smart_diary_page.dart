@@ -9,11 +9,6 @@ class SmartDiaryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final quotes = DataManager().currentJournal.quotes;
-
-    final fullDateTime = Utils.fullDiaryDateTime(
-      DataManager().currentJournal.dateTime,
-    );
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,7 +16,7 @@ class SmartDiaryPage extends StatelessWidget {
           // 顶部引言卡片轮播
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: QuoteCarousel(quotes: quotes),
+            child: QuoteCarousel(quotes: DataManager().currentJournal.quotes),
           ),
           // 日期标题
           Padding(
@@ -30,7 +25,7 @@ class SmartDiaryPage extends StatelessWidget {
               vertical: 8.0,
             ),
             child: Text(
-              fullDateTime,
+              Utils.fullDiaryDateTime(DataManager().currentJournal.dateTime),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
