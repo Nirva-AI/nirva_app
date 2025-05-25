@@ -4,9 +4,16 @@ import 'package:flutter/foundation.dart';
 
 // 管理全局数据的类
 class DataManager {
-  // 单例模式
-  static final DataManager _instance = DataManager._internal();
-  factory DataManager() => _instance;
+  // 可重置的单例模式
+  static DataManager? _instance;
+
+  static DataManager get instance {
+    _instance ??= DataManager._internal();
+    return _instance!;
+  }
+
+  factory DataManager() => instance;
+
   DataManager._internal();
 
   // 用户信息
@@ -60,35 +67,8 @@ class DataManager {
   SocialMap socialMap = SocialMap(socialEntities: []);
 
   // 清空数据
-  void clear() {
-    user = User(name: '');
-    journals = [];
-    tasks = [];
-    weeklyArchivedHighlights = [];
-    monthlyArchivedHighlights = [];
-    diaryFavoritesNotifier = ValueNotifier([]);
-    diaryNotesNotifier = ValueNotifier([]);
-    moodScoreDashboard = MoodScoreDashboard(
-      dateTime: DateTime.now(),
-      insights: [],
-    );
-    stressLevelDashboard = StressLevelDashboard(
-      dateTime: DateTime.now(),
-      insights: [],
-    );
-    energyLevelDashboard = EnergyLevelDashboard(
-      dateTime: DateTime.now(),
-      insights: [],
-    );
-    moodTrackingDashboard = MoodTrackingDashboard(
-      dateTime: DateTime.now(),
-      insights: [],
-    );
-    awakeTimeAllocationDashboard = AwakeTimeAllocationDashboard(
-      dateTime: DateTime.now(),
-      insights: [],
-    );
-    socialMap = SocialMap(socialEntities: []);
+  static void clear() {
+    _instance = DataManager._internal();
   }
 
   //

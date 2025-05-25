@@ -8,7 +8,7 @@ import 'dart:math';
 class TestData {
   //
   static void initializeTestData() {
-    DataManager().clear();
+    DataManager.clear();
     // 添加用户信息
     DataManager().user = User(name: 'Weiwei');
 
