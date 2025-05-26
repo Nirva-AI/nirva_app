@@ -28,7 +28,7 @@ class TestData {
         TestData.createTestMonthlyArchivedHighlights();
 
     // 添加日记的最爱数据
-    initializeTestFavorites(DataManager().currentJournal);
+    //initializeTestFavorites(DataManager().currentJournal);
 
     // 添加日记的笔记数据
     initializeTestMyNotes(DataManager().currentJournal);
