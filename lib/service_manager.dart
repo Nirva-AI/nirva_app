@@ -17,9 +17,15 @@ class ChatActionResult {
 
 // 管理全局数据的类
 class ServiceManager {
-  // 单例模式
-  static final ServiceManager _instance = ServiceManager._internal();
-  factory ServiceManager() => _instance;
+  static ServiceManager? _instance;
+
+  static ServiceManager get instance {
+    _instance ??= ServiceManager._internal();
+    return _instance!;
+  }
+
+  factory ServiceManager() => instance;
+
   ServiceManager._internal();
 
   final DioService _dioService = DioService();
@@ -90,10 +96,6 @@ class ServiceManager {
     }
 
     return false;
-  }
-
-  String urlConfigJson() {
-    return jsonEncode(_url_configuration_response.toJson());
   }
 
   // 登录请求

@@ -3,7 +3,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/diary_details_page.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/hive_manager.dart';
-import 'package:nirva_app/hive_data.dart';
+import 'package:nirva_app/hive_object.dart';
 
 class DiaryEntryCard extends StatefulWidget {
   final DiaryEntry diaryData;

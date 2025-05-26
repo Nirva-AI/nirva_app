@@ -39,25 +39,6 @@ Future<void> testHive() async {
   //await HiveManager().deleteFromDisk(); // 清空之前的数据
   await HiveManager().initHive();
 
-  // 测试存储和读取数据
-  // final testHiveData = HiveTest(1, 'Test Name');
-  // await HiveManager().saveHiveTest(testHiveData);
-
-  // final retrievedData = HiveManager().getHiveTest(1);
-
-  // if (retrievedData != null &&
-  //     retrievedData.id == testHiveData.id &&
-  //     retrievedData.name == testHiveData.name) {
-  //   debugPrint('Hive 测试通过: 数据一致');
-  // } else {
-  //   debugPrint('Hive 测试失败: 数据不一致');
-  // }
-
-  // final diaryFavorites = DiaryFavorites(
-  //   favoriteIds: DataManager().diaryFavoritesNotifier.value,
-  // );
-  // await HiveManager().saveDiaryFavorites(diaryFavorites);
-
   final retrievedFavorites = HiveManager().getDiaryFavorites();
   if (retrievedFavorites != null && retrievedFavorites.favoriteIds.isNotEmpty) {
     debugPrint('DiaryFavorites 测试通过: 收藏夹数据存在');
