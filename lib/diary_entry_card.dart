@@ -102,7 +102,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                           .map(
                             (tag) => Chip(
                               label: Text(tag.name),
-                              backgroundColor: Colors.blue.shade100,
+                              backgroundColor: Color(tag.color),
                             ),
                           )
                           .toList(),

@@ -64,7 +64,7 @@ class DataManager {
       AwakeTimeAllocationDashboard(dateTime: DateTime.now(), insights: []);
 
   //
-  SocialMap socialMap = SocialMap(socialEntities: []);
+  SocialMap globalSocialMap = SocialMap(id: "", socialEntities: []);
 
   // 清空数据
   static void clear() {

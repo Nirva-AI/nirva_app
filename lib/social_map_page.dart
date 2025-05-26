@@ -8,7 +8,7 @@ class SocialMapPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 获取 DataManager 中的社交数据
-    final socialEntities = DataManager().socialMap.socialEntities;
+    final socialEntities = DataManager().globalSocialMap.socialEntities;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Holistic Social Map')),

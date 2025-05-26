@@ -83,10 +83,10 @@ class AwakeTimeAllocationCard extends StatelessWidget {
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
                           if (value.toInt() >= 0 &&
-                              value.toInt() < awakeTimeAllocationDataList.length) {
+                              value.toInt() <
+                                  awakeTimeAllocationDataList.length) {
                             return Text(
-                              awakeTimeAllocationDataList[value.toInt()]
-                                  .label,
+                              awakeTimeAllocationDataList[value.toInt()].name,
                               style: const TextStyle(fontSize: 10),
                             );
                           }

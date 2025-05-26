@@ -139,17 +139,24 @@ class TestData {
 
     // 把 globalSocialMap 的value合成一个list
     List<SocialEntity> socialEntities = globalSocialMap.values.toList();
-    DataManager().socialMap = SocialMap(socialEntities: socialEntities);
+    DataManager().globalSocialMap = SocialMap(
+      id: "",
+      socialEntities: socialEntities,
+    );
   }
 
   // 测试数据： 初始化待办事项数据
   static List<Task> createTestTasks() {
     return [
-      Task(tag: 'Wellness', description: 'Morning meditation'),
-      Task(tag: 'Wellness', description: 'Evening reading - 30 mins'),
-      Task(tag: 'Work', description: 'Prepare presentation for meeting'),
-      Task(tag: 'Personal', description: 'Call mom', isCompleted: true),
-      Task(tag: 'Health', description: 'Schedule dentist appointment'),
+      Task(id: "", tag: 'Wellness', description: 'Morning meditation'),
+      Task(id: "", tag: 'Wellness', description: 'Evening reading - 30 mins'),
+      Task(
+        id: "",
+        tag: 'Work',
+        description: 'Prepare presentation for meeting',
+      ),
+      Task(id: "", tag: 'Personal', description: 'Call mom', isCompleted: true),
+      Task(id: "", tag: 'Health', description: 'Schedule dentist appointment'),
     ];
   }
 
@@ -606,16 +613,17 @@ class TestData {
     ];
 
     final List<AwakeTimeAllocation> awakeTimeAllocations = [
-      AwakeTimeAllocation(label: 'Work', value: 8, color: 0xFF2196F3),
-      AwakeTimeAllocation(label: 'Exercise', value: 2, color: 0xFF4CAF50),
-      AwakeTimeAllocation(label: 'Social', value: 3, color: 0xFFF44336),
-      AwakeTimeAllocation(label: 'Learning', value: 3, color: 0xFFFF9800),
-      AwakeTimeAllocation(label: 'Self-care', value: 1, color: 0xFF9C27B0),
-      AwakeTimeAllocation(label: 'Other', value: 4, color: 0xFF9E9E9E),
+      AwakeTimeAllocation(name: 'Work', value: 8, color: 0xFF2196F3),
+      AwakeTimeAllocation(name: 'Exercise', value: 2, color: 0xFF4CAF50),
+      AwakeTimeAllocation(name: 'Social', value: 3, color: 0xFFF44336),
+      AwakeTimeAllocation(name: 'Learning', value: 3, color: 0xFFFF9800),
+      AwakeTimeAllocation(name: 'Self-care', value: 1, color: 0xFF9C27B0),
+      AwakeTimeAllocation(name: 'Other', value: 4, color: 0xFF9E9E9E),
     ];
 
     List<SocialEntity> socialEntities = [
       SocialEntity(
+        id: "",
         name: 'Ashley',
         description:
             'Deep, supportive conversation. Vulnerability was met with understanding.',
@@ -627,6 +635,7 @@ class TestData {
         hours: 3,
       ),
       SocialEntity(
+        id: "",
         name: 'Trent',
         description:
             'Shared a fun hiking trip. Great teamwork and mutual encouragement.',
@@ -638,6 +647,7 @@ class TestData {
         hours: 2,
       ),
       SocialEntity(
+        id: "",
         name: 'Charlie',
         description:
             'Had a long discussion about books and movies. Discovered shared interests.',
@@ -649,6 +659,7 @@ class TestData {
         hours: 1.5,
       ),
       SocialEntity(
+        id: "",
         name: 'Diana',
         description:
             'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
@@ -662,6 +673,7 @@ class TestData {
     ];
 
     return Journal(
+      id: dateTime.toIso8601String(),
       dateTime: dateTime,
       summary: summary,
       diaryEntries: diaryEntries,
@@ -675,7 +687,7 @@ class TestData {
       energyLevels: energyLevels,
       moodTrackings: moodTrackings,
       awakeTimeActions: awakeTimeAllocations,
-      socialMap: SocialMap(socialEntities: socialEntities),
+      socialMap: SocialMap(id: "", socialEntities: socialEntities),
     );
   }
 
