@@ -22,13 +22,6 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     _selectedDay = DataManager().currentJournal.dateTime;
   }
 
-  void _updateSelectedDay(DateTime selectedDay, DateTime focusedDay) {
-    setState(() {
-      _selectedDay = selectedDay;
-      _focusedDay = focusedDay;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -40,6 +33,9 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
             padding: const EdgeInsets.all(16.0),
             child: QuoteCarousel(quotes: DataManager().currentJournal.quotes),
           ),
+
+          // 添加日期标题栏组件
+          _buildDateHeader(),
 
           // 周日历组件替代原来的日期标题
           Padding(
@@ -60,6 +56,62 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
               final entry = DataManager().currentJournal.diaryEntries[index];
               return DiaryEntryCard(diaryData: entry);
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _updateSelectedDay(DateTime selectedDay, DateTime focusedDay) {
+    setState(() {
+      _selectedDay = selectedDay;
+      _focusedDay = focusedDay;
+    });
+  }
+
+  // 提取的日期标题栏组件函数
+  Widget _buildDateHeader() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      height: 56.0,
+      decoration: BoxDecoration(
+        color: Color(0xFFF9F9F7),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // 日历图标（左侧）
+          IconButton(
+            icon: const Icon(
+              Icons.calendar_today_outlined,
+              color: Colors.purple,
+            ),
+            onPressed: () => debugPrint('点击了日历图标'),
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints(minWidth: 36.0, minHeight: 36.0),
+          ),
+
+          // 右侧图标组
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.star_border_outlined),
+                onPressed: () => debugPrint('点击了收藏图标'),
+                color: Colors.grey,
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(minWidth: 36.0, minHeight: 36.0),
+              ),
+              const SizedBox(width: 16),
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () => debugPrint('点击了搜索图标'),
+                color: Colors.grey,
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(minWidth: 36.0, minHeight: 36.0),
+              ),
+            ],
           ),
         ],
       ),
