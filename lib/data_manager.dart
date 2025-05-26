@@ -109,6 +109,7 @@ class DataManager {
     } else {
       diaryFavoritesNotifier.value.add(diaryEntry.id);
     }
+    // 更新收藏列表
     diaryFavoritesNotifier.value = List.from(
       diaryFavoritesNotifier.value,
     ); // 通知监听者
