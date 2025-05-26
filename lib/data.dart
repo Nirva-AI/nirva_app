@@ -22,7 +22,10 @@ class Quote with _$Quote {
 
 @freezed
 class EventTag with _$EventTag {
-  const factory EventTag({required String name}) = _EventTag;
+  const factory EventTag({
+    required String name,
+    @Default(0xFFDFE7FF) int color,
+  }) = _EventTag;
 
   factory EventTag.fromJson(Map<String, dynamic> json) =>
       _$EventTagFromJson(json);
@@ -138,6 +141,7 @@ class ArchivedHighlights with _$ArchivedHighlights {
 @freezed
 class Task with _$Task {
   const factory Task({
+    required String id,
     required String tag,
     required String description,
     @Default(false) bool isCompleted,
@@ -178,7 +182,7 @@ class MoodTracking with _$MoodTracking {
 @freezed
 class AwakeTimeAllocation with _$AwakeTimeAllocation {
   const factory AwakeTimeAllocation({
-    required String label,
+    required String name,
     required double value,
     @Default(0xFF00FF00) int color, // 默认颜色为绿色
   }) = _AwakeTimeAllocation;
@@ -192,6 +196,7 @@ class AwakeTimeAllocation with _$AwakeTimeAllocation {
 @freezed
 class SocialEntity with _$SocialEntity {
   const factory SocialEntity({
+    required String id,
     required String name,
     required String description,
     required List<String> tips,
@@ -207,8 +212,10 @@ class SocialEntity with _$SocialEntity {
 
 @freezed
 class SocialMap with _$SocialMap {
-  const factory SocialMap({required List<SocialEntity> socialEntities}) =
-      _SocialMap;
+  const factory SocialMap({
+    required String id,
+    required List<SocialEntity> socialEntities,
+  }) = _SocialMap;
 
   factory SocialMap.fromJson(Map<String, dynamic> json) =>
       _$SocialMapFromJson(json);
@@ -219,6 +226,7 @@ class SocialMap with _$SocialMap {
 @freezed
 class Journal with _$Journal {
   const factory Journal({
+    required String id,
     required DateTime dateTime,
     required String summary,
     required List<DiaryEntry> diaryEntries,
@@ -242,6 +250,7 @@ class Journal with _$Journal {
 
   static Journal createEmpty() {
     return Journal(
+      id: "",
       dateTime: DateTime.now(),
       summary: '',
       diaryEntries: [],
@@ -255,7 +264,7 @@ class Journal with _$Journal {
       energyLevels: [],
       moodTrackings: [],
       awakeTimeActions: [],
-      socialMap: SocialMap(socialEntities: []),
+      socialMap: SocialMap(id: "", socialEntities: []),
     );
   }
 }

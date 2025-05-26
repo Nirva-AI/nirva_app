@@ -19,10 +19,13 @@ Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
     <String, dynamic>{'text': instance.text, 'mood': instance.mood};
 
 _$EventTagImpl _$$EventTagImplFromJson(Map<String, dynamic> json) =>
-    _$EventTagImpl(name: json['name'] as String);
+    _$EventTagImpl(
+      name: json['name'] as String,
+      color: (json['color'] as num?)?.toInt() ?? 0xFFDFE7FF,
+    );
 
 Map<String, dynamic> _$$EventTagImplToJson(_$EventTagImpl instance) =>
-    <String, dynamic>{'name': instance.name};
+    <String, dynamic>{'name': instance.name, 'color': instance.color};
 
 _$EventLocationImpl _$$EventLocationImplFromJson(Map<String, dynamic> json) =>
     _$EventLocationImpl(name: json['name'] as String);
@@ -137,6 +140,7 @@ Map<String, dynamic> _$$ArchivedHighlightsImplToJson(
 };
 
 _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
+  id: json['id'] as String,
   tag: json['tag'] as String,
   description: json['description'] as String,
   isCompleted: json['isCompleted'] as bool? ?? false,
@@ -144,6 +148,7 @@ _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
 
 Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'tag': instance.tag,
       'description': instance.description,
       'isCompleted': instance.isCompleted,
@@ -178,7 +183,7 @@ Map<String, dynamic> _$$MoodTrackingImplToJson(_$MoodTrackingImpl instance) =>
 _$AwakeTimeAllocationImpl _$$AwakeTimeAllocationImplFromJson(
   Map<String, dynamic> json,
 ) => _$AwakeTimeAllocationImpl(
-  label: json['label'] as String,
+  name: json['name'] as String,
   value: (json['value'] as num).toDouble(),
   color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
 );
@@ -186,13 +191,14 @@ _$AwakeTimeAllocationImpl _$$AwakeTimeAllocationImplFromJson(
 Map<String, dynamic> _$$AwakeTimeAllocationImplToJson(
   _$AwakeTimeAllocationImpl instance,
 ) => <String, dynamic>{
-  'label': instance.label,
+  'name': instance.name,
   'value': instance.value,
   'color': instance.color,
 };
 
 _$SocialEntityImpl _$$SocialEntityImplFromJson(Map<String, dynamic> json) =>
     _$SocialEntityImpl(
+      id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
       tips: (json['tips'] as List<dynamic>).map((e) => e as String).toList(),
@@ -202,6 +208,7 @@ _$SocialEntityImpl _$$SocialEntityImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'description': instance.description,
       'tips': instance.tips,
@@ -211,6 +218,7 @@ Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
 
 _$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>
     _$SocialMapImpl(
+      id: json['id'] as String,
       socialEntities:
           (json['socialEntities'] as List<dynamic>)
               .map((e) => SocialEntity.fromJson(e as Map<String, dynamic>))
@@ -218,10 +226,14 @@ _$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$SocialMapImplToJson(_$SocialMapImpl instance) =>
-    <String, dynamic>{'socialEntities': instance.socialEntities};
+    <String, dynamic>{
+      'id': instance.id,
+      'socialEntities': instance.socialEntities,
+    };
 
 _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
     _$JournalImpl(
+      id: json['id'] as String,
       dateTime: DateTime.parse(json['dateTime'] as String),
       summary: json['summary'] as String,
       diaryEntries:
@@ -271,6 +283,7 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'dateTime': instance.dateTime.toIso8601String(),
       'summary': instance.summary,
       'diaryEntries': instance.diaryEntries,

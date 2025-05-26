@@ -27,7 +27,7 @@ class AwakeTimeChartDataGroup {
   }
 
   String get label {
-    return awakeTimeAllocation.label;
+    return awakeTimeAllocation.name;
   }
 
   static createGroup(AwakeTimeAllocation awakeTimeAllocation) {
@@ -108,7 +108,7 @@ class _AwakeTimeAllocationDetailsPageState
 
     for (var awakeTimeAllocation in awakeTimeAllocations) {
       widget.dataManager.addGroup(
-        awakeTimeAllocation.label,
+        awakeTimeAllocation.name,
         AwakeTimeChartDataGroup.createGroup(awakeTimeAllocation),
       );
     }

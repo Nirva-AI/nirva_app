@@ -335,6 +335,7 @@ EventTag _$EventTagFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$EventTag {
   String get name => throw _privateConstructorUsedError;
+  int get color => throw _privateConstructorUsedError;
 
   /// Serializes this EventTag to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -351,7 +352,7 @@ abstract class $EventTagCopyWith<$Res> {
   factory $EventTagCopyWith(EventTag value, $Res Function(EventTag) then) =
       _$EventTagCopyWithImpl<$Res, EventTag>;
   @useResult
-  $Res call({String name});
+  $Res call({String name, int color});
 }
 
 /// @nodoc
@@ -368,7 +369,7 @@ class _$EventTagCopyWithImpl<$Res, $Val extends EventTag>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null}) {
+  $Res call({Object? name = null, Object? color = null}) {
     return _then(
       _value.copyWith(
             name:
@@ -376,6 +377,11 @@ class _$EventTagCopyWithImpl<$Res, $Val extends EventTag>
                     ? _value.name
                     : name // ignore: cast_nullable_to_non_nullable
                         as String,
+            color:
+                null == color
+                    ? _value.color
+                    : color // ignore: cast_nullable_to_non_nullable
+                        as int,
           )
           as $Val,
     );
@@ -391,7 +397,7 @@ abstract class _$$EventTagImplCopyWith<$Res>
   ) = __$$EventTagImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name});
+  $Res call({String name, int color});
 }
 
 /// @nodoc
@@ -407,7 +413,7 @@ class __$$EventTagImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null}) {
+  $Res call({Object? name = null, Object? color = null}) {
     return _then(
       _$EventTagImpl(
         name:
@@ -415,6 +421,11 @@ class __$$EventTagImplCopyWithImpl<$Res>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                     as String,
+        color:
+            null == color
+                ? _value.color
+                : color // ignore: cast_nullable_to_non_nullable
+                    as int,
       ),
     );
   }
@@ -423,17 +434,20 @@ class __$$EventTagImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$EventTagImpl implements _EventTag {
-  const _$EventTagImpl({required this.name});
+  const _$EventTagImpl({required this.name, this.color = 0xFFDFE7FF});
 
   factory _$EventTagImpl.fromJson(Map<String, dynamic> json) =>
       _$$EventTagImplFromJson(json);
 
   @override
   final String name;
+  @override
+  @JsonKey()
+  final int color;
 
   @override
   String toString() {
-    return 'EventTag(name: $name)';
+    return 'EventTag(name: $name, color: $color)';
   }
 
   @override
@@ -441,12 +455,13 @@ class _$EventTagImpl implements _EventTag {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EventTagImpl &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.color, color) || other.color == color));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, name);
+  int get hashCode => Object.hash(runtimeType, name, color);
 
   /// Create a copy of EventTag
   /// with the given fields replaced by the non-null parameter values.
@@ -463,13 +478,16 @@ class _$EventTagImpl implements _EventTag {
 }
 
 abstract class _EventTag implements EventTag {
-  const factory _EventTag({required final String name}) = _$EventTagImpl;
+  const factory _EventTag({required final String name, final int color}) =
+      _$EventTagImpl;
 
   factory _EventTag.fromJson(Map<String, dynamic> json) =
       _$EventTagImpl.fromJson;
 
   @override
   String get name;
+  @override
+  int get color;
 
   /// Create a copy of EventTag
   /// with the given fields replaced by the non-null parameter values.
@@ -2160,6 +2178,7 @@ Task _$TaskFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Task {
+  String get id => throw _privateConstructorUsedError;
   String get tag => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
@@ -2178,7 +2197,7 @@ abstract class $TaskCopyWith<$Res> {
   factory $TaskCopyWith(Task value, $Res Function(Task) then) =
       _$TaskCopyWithImpl<$Res, Task>;
   @useResult
-  $Res call({String tag, String description, bool isCompleted});
+  $Res call({String id, String tag, String description, bool isCompleted});
 }
 
 /// @nodoc
@@ -2196,12 +2215,18 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? tag = null,
     Object? description = null,
     Object? isCompleted = null,
   }) {
     return _then(
       _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
             tag:
                 null == tag
                     ? _value.tag
@@ -2231,7 +2256,7 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
   ) = __$$TaskImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String tag, String description, bool isCompleted});
+  $Res call({String id, String tag, String description, bool isCompleted});
 }
 
 /// @nodoc
@@ -2246,12 +2271,18 @@ class __$$TaskImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? tag = null,
     Object? description = null,
     Object? isCompleted = null,
   }) {
     return _then(
       _$TaskImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
         tag:
             null == tag
                 ? _value.tag
@@ -2276,6 +2307,7 @@ class __$$TaskImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$TaskImpl implements _Task {
   const _$TaskImpl({
+    required this.id,
     required this.tag,
     required this.description,
     this.isCompleted = false,
@@ -2284,6 +2316,8 @@ class _$TaskImpl implements _Task {
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskImplFromJson(json);
 
+  @override
+  final String id;
   @override
   final String tag;
   @override
@@ -2294,7 +2328,7 @@ class _$TaskImpl implements _Task {
 
   @override
   String toString() {
-    return 'Task(tag: $tag, description: $description, isCompleted: $isCompleted)';
+    return 'Task(id: $id, tag: $tag, description: $description, isCompleted: $isCompleted)';
   }
 
   @override
@@ -2302,6 +2336,7 @@ class _$TaskImpl implements _Task {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TaskImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.tag, tag) || other.tag == tag) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -2311,7 +2346,8 @@ class _$TaskImpl implements _Task {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, tag, description, isCompleted);
+  int get hashCode =>
+      Object.hash(runtimeType, id, tag, description, isCompleted);
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -2329,6 +2365,7 @@ class _$TaskImpl implements _Task {
 
 abstract class _Task implements Task {
   const factory _Task({
+    required final String id,
     required final String tag,
     required final String description,
     final bool isCompleted,
@@ -2336,6 +2373,8 @@ abstract class _Task implements Task {
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
 
+  @override
+  String get id;
   @override
   String get tag;
   @override
@@ -2724,7 +2763,7 @@ AwakeTimeAllocation _$AwakeTimeAllocationFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$AwakeTimeAllocation {
-  String get label => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
   double get value => throw _privateConstructorUsedError;
   int get color => throw _privateConstructorUsedError;
 
@@ -2745,7 +2784,7 @@ abstract class $AwakeTimeAllocationCopyWith<$Res> {
     $Res Function(AwakeTimeAllocation) then,
   ) = _$AwakeTimeAllocationCopyWithImpl<$Res, AwakeTimeAllocation>;
   @useResult
-  $Res call({String label, double value, int color});
+  $Res call({String name, double value, int color});
 }
 
 /// @nodoc
@@ -2762,17 +2801,13 @@ class _$AwakeTimeAllocationCopyWithImpl<$Res, $Val extends AwakeTimeAllocation>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? label = null,
-    Object? value = null,
-    Object? color = null,
-  }) {
+  $Res call({Object? name = null, Object? value = null, Object? color = null}) {
     return _then(
       _value.copyWith(
-            label:
-                null == label
-                    ? _value.label
-                    : label // ignore: cast_nullable_to_non_nullable
+            name:
+                null == name
+                    ? _value.name
+                    : name // ignore: cast_nullable_to_non_nullable
                         as String,
             value:
                 null == value
@@ -2799,7 +2834,7 @@ abstract class _$$AwakeTimeAllocationImplCopyWith<$Res>
   ) = __$$AwakeTimeAllocationImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String label, double value, int color});
+  $Res call({String name, double value, int color});
 }
 
 /// @nodoc
@@ -2815,17 +2850,13 @@ class __$$AwakeTimeAllocationImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? label = null,
-    Object? value = null,
-    Object? color = null,
-  }) {
+  $Res call({Object? name = null, Object? value = null, Object? color = null}) {
     return _then(
       _$AwakeTimeAllocationImpl(
-        label:
-            null == label
-                ? _value.label
-                : label // ignore: cast_nullable_to_non_nullable
+        name:
+            null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
                     as String,
         value:
             null == value
@@ -2846,7 +2877,7 @@ class __$$AwakeTimeAllocationImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
   const _$AwakeTimeAllocationImpl({
-    required this.label,
+    required this.name,
     required this.value,
     this.color = 0xFF00FF00,
   });
@@ -2855,7 +2886,7 @@ class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
       _$$AwakeTimeAllocationImplFromJson(json);
 
   @override
-  final String label;
+  final String name;
   @override
   final double value;
   @override
@@ -2864,7 +2895,7 @@ class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
 
   @override
   String toString() {
-    return 'AwakeTimeAllocation(label: $label, value: $value, color: $color)';
+    return 'AwakeTimeAllocation(name: $name, value: $value, color: $color)';
   }
 
   @override
@@ -2872,14 +2903,14 @@ class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AwakeTimeAllocationImpl &&
-            (identical(other.label, label) || other.label == label) &&
+            (identical(other.name, name) || other.name == name) &&
             (identical(other.value, value) || other.value == value) &&
             (identical(other.color, color) || other.color == color));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, label, value, color);
+  int get hashCode => Object.hash(runtimeType, name, value, color);
 
   /// Create a copy of AwakeTimeAllocation
   /// with the given fields replaced by the non-null parameter values.
@@ -2900,7 +2931,7 @@ class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
 
 abstract class _AwakeTimeAllocation implements AwakeTimeAllocation {
   const factory _AwakeTimeAllocation({
-    required final String label,
+    required final String name,
     required final double value,
     final int color,
   }) = _$AwakeTimeAllocationImpl;
@@ -2909,7 +2940,7 @@ abstract class _AwakeTimeAllocation implements AwakeTimeAllocation {
       _$AwakeTimeAllocationImpl.fromJson;
 
   @override
-  String get label;
+  String get name;
   @override
   double get value;
   @override
@@ -2929,6 +2960,7 @@ SocialEntity _$SocialEntityFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SocialEntity {
+  String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   List<String> get tips => throw _privateConstructorUsedError;
@@ -2953,6 +2985,7 @@ abstract class $SocialEntityCopyWith<$Res> {
   ) = _$SocialEntityCopyWithImpl<$Res, SocialEntity>;
   @useResult
   $Res call({
+    String id,
     String name,
     String description,
     List<String> tips,
@@ -2976,6 +3009,7 @@ class _$SocialEntityCopyWithImpl<$Res, $Val extends SocialEntity>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
     Object? description = null,
     Object? tips = null,
@@ -2984,6 +3018,11 @@ class _$SocialEntityCopyWithImpl<$Res, $Val extends SocialEntity>
   }) {
     return _then(
       _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
             name:
                 null == name
                     ? _value.name
@@ -3025,6 +3064,7 @@ abstract class _$$SocialEntityImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
+    String id,
     String name,
     String description,
     List<String> tips,
@@ -3047,6 +3087,7 @@ class __$$SocialEntityImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
     Object? description = null,
     Object? tips = null,
@@ -3055,6 +3096,11 @@ class __$$SocialEntityImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$SocialEntityImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
         name:
             null == name
                 ? _value.name
@@ -3089,6 +3135,7 @@ class __$$SocialEntityImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SocialEntityImpl implements _SocialEntity {
   const _$SocialEntityImpl({
+    required this.id,
     required this.name,
     required this.description,
     required final List<String> tips,
@@ -3099,6 +3146,8 @@ class _$SocialEntityImpl implements _SocialEntity {
   factory _$SocialEntityImpl.fromJson(Map<String, dynamic> json) =>
       _$$SocialEntityImplFromJson(json);
 
+  @override
+  final String id;
   @override
   final String name;
   @override
@@ -3119,7 +3168,7 @@ class _$SocialEntityImpl implements _SocialEntity {
 
   @override
   String toString() {
-    return 'SocialEntity(name: $name, description: $description, tips: $tips, hours: $hours, impact: $impact)';
+    return 'SocialEntity(id: $id, name: $name, description: $description, tips: $tips, hours: $hours, impact: $impact)';
   }
 
   @override
@@ -3127,6 +3176,7 @@ class _$SocialEntityImpl implements _SocialEntity {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SocialEntityImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -3139,6 +3189,7 @@ class _$SocialEntityImpl implements _SocialEntity {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    id,
     name,
     description,
     const DeepCollectionEquality().hash(_tips),
@@ -3162,6 +3213,7 @@ class _$SocialEntityImpl implements _SocialEntity {
 
 abstract class _SocialEntity implements SocialEntity {
   const factory _SocialEntity({
+    required final String id,
     required final String name,
     required final String description,
     required final List<String> tips,
@@ -3172,6 +3224,8 @@ abstract class _SocialEntity implements SocialEntity {
   factory _SocialEntity.fromJson(Map<String, dynamic> json) =
       _$SocialEntityImpl.fromJson;
 
+  @override
+  String get id;
   @override
   String get name;
   @override
@@ -3197,6 +3251,7 @@ SocialMap _$SocialMapFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SocialMap {
+  String get id => throw _privateConstructorUsedError;
   List<SocialEntity> get socialEntities => throw _privateConstructorUsedError;
 
   /// Serializes this SocialMap to a JSON map.
@@ -3214,7 +3269,7 @@ abstract class $SocialMapCopyWith<$Res> {
   factory $SocialMapCopyWith(SocialMap value, $Res Function(SocialMap) then) =
       _$SocialMapCopyWithImpl<$Res, SocialMap>;
   @useResult
-  $Res call({List<SocialEntity> socialEntities});
+  $Res call({String id, List<SocialEntity> socialEntities});
 }
 
 /// @nodoc
@@ -3231,9 +3286,14 @@ class _$SocialMapCopyWithImpl<$Res, $Val extends SocialMap>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? socialEntities = null}) {
+  $Res call({Object? id = null, Object? socialEntities = null}) {
     return _then(
       _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
             socialEntities:
                 null == socialEntities
                     ? _value.socialEntities
@@ -3254,7 +3314,7 @@ abstract class _$$SocialMapImplCopyWith<$Res>
   ) = __$$SocialMapImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<SocialEntity> socialEntities});
+  $Res call({String id, List<SocialEntity> socialEntities});
 }
 
 /// @nodoc
@@ -3270,9 +3330,14 @@ class __$$SocialMapImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? socialEntities = null}) {
+  $Res call({Object? id = null, Object? socialEntities = null}) {
     return _then(
       _$SocialMapImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
         socialEntities:
             null == socialEntities
                 ? _value._socialEntities
@@ -3286,12 +3351,16 @@ class __$$SocialMapImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$SocialMapImpl implements _SocialMap {
-  const _$SocialMapImpl({required final List<SocialEntity> socialEntities})
-    : _socialEntities = socialEntities;
+  const _$SocialMapImpl({
+    required this.id,
+    required final List<SocialEntity> socialEntities,
+  }) : _socialEntities = socialEntities;
 
   factory _$SocialMapImpl.fromJson(Map<String, dynamic> json) =>
       _$$SocialMapImplFromJson(json);
 
+  @override
+  final String id;
   final List<SocialEntity> _socialEntities;
   @override
   List<SocialEntity> get socialEntities {
@@ -3302,7 +3371,7 @@ class _$SocialMapImpl implements _SocialMap {
 
   @override
   String toString() {
-    return 'SocialMap(socialEntities: $socialEntities)';
+    return 'SocialMap(id: $id, socialEntities: $socialEntities)';
   }
 
   @override
@@ -3310,6 +3379,7 @@ class _$SocialMapImpl implements _SocialMap {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SocialMapImpl &&
+            (identical(other.id, id) || other.id == id) &&
             const DeepCollectionEquality().equals(
               other._socialEntities,
               _socialEntities,
@@ -3320,6 +3390,7 @@ class _$SocialMapImpl implements _SocialMap {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    id,
     const DeepCollectionEquality().hash(_socialEntities),
   );
 
@@ -3338,12 +3409,16 @@ class _$SocialMapImpl implements _SocialMap {
 }
 
 abstract class _SocialMap implements SocialMap {
-  const factory _SocialMap({required final List<SocialEntity> socialEntities}) =
-      _$SocialMapImpl;
+  const factory _SocialMap({
+    required final String id,
+    required final List<SocialEntity> socialEntities,
+  }) = _$SocialMapImpl;
 
   factory _SocialMap.fromJson(Map<String, dynamic> json) =
       _$SocialMapImpl.fromJson;
 
+  @override
+  String get id;
   @override
   List<SocialEntity> get socialEntities;
 
@@ -3361,6 +3436,7 @@ Journal _$JournalFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Journal {
+  String get id => throw _privateConstructorUsedError;
   DateTime get dateTime => throw _privateConstructorUsedError;
   String get summary => throw _privateConstructorUsedError;
   List<DiaryEntry> get diaryEntries => throw _privateConstructorUsedError;
@@ -3392,6 +3468,7 @@ abstract class $JournalCopyWith<$Res> {
       _$JournalCopyWithImpl<$Res, Journal>;
   @useResult
   $Res call({
+    String id,
     DateTime dateTime,
     String summary,
     List<DiaryEntry> diaryEntries,
@@ -3428,6 +3505,7 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? dateTime = null,
     Object? summary = null,
     Object? diaryEntries = null,
@@ -3445,6 +3523,11 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
   }) {
     return _then(
       _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
             dateTime:
                 null == dateTime
                     ? _value.dateTime
@@ -3560,6 +3643,7 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
   @override
   @useResult
   $Res call({
+    String id,
     DateTime dateTime,
     String summary,
     List<DiaryEntry> diaryEntries,
@@ -3598,6 +3682,7 @@ class __$$JournalImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? dateTime = null,
     Object? summary = null,
     Object? diaryEntries = null,
@@ -3615,6 +3700,11 @@ class __$$JournalImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$JournalImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
         dateTime:
             null == dateTime
                 ? _value.dateTime
@@ -3694,6 +3784,7 @@ class __$$JournalImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$JournalImpl implements _Journal {
   const _$JournalImpl({
+    required this.id,
     required this.dateTime,
     required this.summary,
     required final List<DiaryEntry> diaryEntries,
@@ -3721,6 +3812,8 @@ class _$JournalImpl implements _Journal {
   factory _$JournalImpl.fromJson(Map<String, dynamic> json) =>
       _$$JournalImplFromJson(json);
 
+  @override
+  final String id;
   @override
   final DateTime dateTime;
   @override
@@ -3808,7 +3901,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(dateTime: $dateTime, summary: $summary, diaryEntries: $diaryEntries, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeActions: $awakeTimeActions, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, summary: $summary, diaryEntries: $diaryEntries, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeActions: $awakeTimeActions, socialMap: $socialMap)';
   }
 
   @override
@@ -3816,6 +3909,7 @@ class _$JournalImpl implements _Journal {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$JournalImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
             (identical(other.summary, summary) || other.summary == summary) &&
@@ -3861,6 +3955,7 @@ class _$JournalImpl implements _Journal {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    id,
     dateTime,
     summary,
     const DeepCollectionEquality().hash(_diaryEntries),
@@ -3893,6 +3988,7 @@ class _$JournalImpl implements _Journal {
 
 abstract class _Journal implements Journal {
   const factory _Journal({
+    required final String id,
     required final DateTime dateTime,
     required final String summary,
     required final List<DiaryEntry> diaryEntries,
@@ -3911,6 +4007,8 @@ abstract class _Journal implements Journal {
 
   factory _Journal.fromJson(Map<String, dynamic> json) = _$JournalImpl.fromJson;
 
+  @override
+  String get id;
   @override
   DateTime get dateTime;
   @override
