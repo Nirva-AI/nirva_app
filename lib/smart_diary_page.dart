@@ -3,6 +3,7 @@ import 'package:nirva_app/diary_entry_card.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/quote_carousel.dart';
 import 'package:nirva_app/week_calendar_widget.dart';
+import 'package:nirva_app/month_calendar_page.dart';
 
 class SmartDiaryPage extends StatefulWidget {
   const SmartDiaryPage({super.key});
@@ -88,9 +89,21 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
               Icons.calendar_today_outlined,
               color: Colors.purple,
             ),
-            onPressed: () => debugPrint('点击了日历图标'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => MonthCalendarPage(
+                        initialFocusedDay: _focusedDay,
+                        initialSelectedDay: _selectedDay,
+                        onDaySelected: _updateSelectedDay,
+                      ),
+                ),
+              );
+            },
             padding: EdgeInsets.zero,
-            constraints: BoxConstraints(minWidth: 36.0, minHeight: 36.0),
+            constraints: const BoxConstraints(minWidth: 36.0, minHeight: 36.0),
           ),
 
           // 右侧图标组
