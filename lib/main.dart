@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/main_app.dart';
 import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
 //import 'package:nirva_app/test_calendar_app.dart';
 import 'package:nirva_app/hive_manager.dart';
-import 'package:nirva_app/hive_data.dart';
+//import 'package:nirva_app/hive_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
@@ -35,19 +36,33 @@ Future<void> initializeApp() async {
 
 Future<void> testHive() async {
   // 初始化 Hive
+  //await HiveManager().deleteFromDisk(); // 清空之前的数据
   await HiveManager().initHive();
 
   // 测试存储和读取数据
-  final testHiveData = HiveTest(1, 'Test Name');
-  await HiveManager().saveHiveTest(testHiveData);
+  // final testHiveData = HiveTest(1, 'Test Name');
+  // await HiveManager().saveHiveTest(testHiveData);
 
-  final retrievedData = HiveManager().getHiveTest(1);
+  // final retrievedData = HiveManager().getHiveTest(1);
 
-  if (retrievedData != null &&
-      retrievedData.id == testHiveData.id &&
-      retrievedData.name == testHiveData.name) {
-    debugPrint('Hive 测试通过: 数据一致');
+  // if (retrievedData != null &&
+  //     retrievedData.id == testHiveData.id &&
+  //     retrievedData.name == testHiveData.name) {
+  //   debugPrint('Hive 测试通过: 数据一致');
+  // } else {
+  //   debugPrint('Hive 测试失败: 数据不一致');
+  // }
+
+  // final diaryFavorites = DiaryFavorites(
+  //   favoriteIds: DataManager().diaryFavoritesNotifier.value,
+  // );
+  // await HiveManager().saveDiaryFavorites(diaryFavorites);
+
+  final retrievedFavorites = HiveManager().getDiaryFavorites();
+  if (retrievedFavorites != null && retrievedFavorites.favoriteIds.isNotEmpty) {
+    debugPrint('DiaryFavorites 测试通过: 收藏夹数据存在');
+    DataManager().diaryFavoritesNotifier.value = retrievedFavorites.favoriteIds;
   } else {
-    debugPrint('Hive 测试失败: 数据不一致');
+    debugPrint('DiaryFavorites 测试失败: 收藏夹数据不存在或为空');
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/diary_details_page.dart';
 import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/hive_manager.dart';
+import 'package:nirva_app/hive_data.dart';
 
 class DiaryEntryCard extends StatefulWidget {
   final DiaryEntry diaryData;
@@ -32,6 +34,14 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
     if (mounted) {
       setState(() {}); // 刷新 UI
     }
+
+    // 将收藏夹数据存储到 Hive
+    final diaryFavorites = DiaryFavorites(favoriteIds: favoriteNotifier.value);
+
+    // 异步保存，不阻塞当前线程
+    HiveManager().saveDiaryFavorites(diaryFavorites).catchError((error) {
+      debugPrint('保存收藏夹数据失败: $error');
+    });
   }
 
   bool get isFavoriteDiaryEntry {
