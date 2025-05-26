@@ -3,14 +3,14 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/social_map_page.dart'; // 添加导入
 
-class SocialMapCard extends StatefulWidget {
-  const SocialMapCard({super.key});
+class SocialMapNormalCard extends StatefulWidget {
+  const SocialMapNormalCard({super.key});
 
   @override
-  State<SocialMapCard> createState() => _SocialMapCardState();
+  State<SocialMapNormalCard> createState() => _SocialMapNormalCardState();
 }
 
-class _SocialMapCardState extends State<SocialMapCard> {
+class _SocialMapNormalCardState extends State<SocialMapNormalCard> {
   int selectedEntityIndex = -1;
 
   void selectEntity(int index) {

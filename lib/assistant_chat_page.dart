@@ -5,14 +5,9 @@ import 'package:nirva_app/service_manager.dart';
 import 'package:nirva_app/data_manager.dart';
 
 class AssistantChatPage extends StatefulWidget {
-  //final ValueNotifier<List<BaseMessage>> chatMessages;
   final TextEditingController textController;
 
-  const AssistantChatPage({
-    super.key,
-    //required this.chatMessages,
-    required this.textController,
-  });
+  const AssistantChatPage({super.key, required this.textController});
 
   @override
   State<AssistantChatPage> createState() => _AssistantChatPageState();
