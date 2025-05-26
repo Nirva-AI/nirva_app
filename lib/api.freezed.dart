@@ -12,12 +12,10 @@ part of 'api.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 URLConfigurationResponse _$URLConfigurationResponseFromJson(
-  Map<String, dynamic> json,
-) {
+    Map<String, dynamic> json) {
   return _URLConfigurationResponse.fromJson(json);
 }
 
@@ -40,24 +38,20 @@ mixin _$URLConfigurationResponse {
 
 /// @nodoc
 abstract class $URLConfigurationResponseCopyWith<$Res> {
-  factory $URLConfigurationResponseCopyWith(
-    URLConfigurationResponse value,
-    $Res Function(URLConfigurationResponse) then,
-  ) = _$URLConfigurationResponseCopyWithImpl<$Res, URLConfigurationResponse>;
+  factory $URLConfigurationResponseCopyWith(URLConfigurationResponse value,
+          $Res Function(URLConfigurationResponse) then) =
+      _$URLConfigurationResponseCopyWithImpl<$Res, URLConfigurationResponse>;
   @useResult
-  $Res call({
-    String api_version,
-    Map<String, String> endpoints,
-    bool deprecated,
-    String notice,
-  });
+  $Res call(
+      {String api_version,
+      Map<String, String> endpoints,
+      bool deprecated,
+      String notice});
 }
 
 /// @nodoc
-class _$URLConfigurationResponseCopyWithImpl<
-  $Res,
-  $Val extends URLConfigurationResponse
->
+class _$URLConfigurationResponseCopyWithImpl<$Res,
+        $Val extends URLConfigurationResponse>
     implements $URLConfigurationResponseCopyWith<$Res> {
   _$URLConfigurationResponseCopyWithImpl(this._value, this._then);
 
@@ -76,31 +70,24 @@ class _$URLConfigurationResponseCopyWithImpl<
     Object? deprecated = null,
     Object? notice = null,
   }) {
-    return _then(
-      _value.copyWith(
-            api_version:
-                null == api_version
-                    ? _value.api_version
-                    : api_version // ignore: cast_nullable_to_non_nullable
-                        as String,
-            endpoints:
-                null == endpoints
-                    ? _value.endpoints
-                    : endpoints // ignore: cast_nullable_to_non_nullable
-                        as Map<String, String>,
-            deprecated:
-                null == deprecated
-                    ? _value.deprecated
-                    : deprecated // ignore: cast_nullable_to_non_nullable
-                        as bool,
-            notice:
-                null == notice
-                    ? _value.notice
-                    : notice // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      api_version: null == api_version
+          ? _value.api_version
+          : api_version // ignore: cast_nullable_to_non_nullable
+              as String,
+      endpoints: null == endpoints
+          ? _value.endpoints
+          : endpoints // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      deprecated: null == deprecated
+          ? _value.deprecated
+          : deprecated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      notice: null == notice
+          ? _value.notice
+          : notice // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -108,31 +95,27 @@ class _$URLConfigurationResponseCopyWithImpl<
 abstract class _$$URLConfigurationResponseImplCopyWith<$Res>
     implements $URLConfigurationResponseCopyWith<$Res> {
   factory _$$URLConfigurationResponseImplCopyWith(
-    _$URLConfigurationResponseImpl value,
-    $Res Function(_$URLConfigurationResponseImpl) then,
-  ) = __$$URLConfigurationResponseImplCopyWithImpl<$Res>;
+          _$URLConfigurationResponseImpl value,
+          $Res Function(_$URLConfigurationResponseImpl) then) =
+      __$$URLConfigurationResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String api_version,
-    Map<String, String> endpoints,
-    bool deprecated,
-    String notice,
-  });
+  $Res call(
+      {String api_version,
+      Map<String, String> endpoints,
+      bool deprecated,
+      String notice});
 }
 
 /// @nodoc
 class __$$URLConfigurationResponseImplCopyWithImpl<$Res>
-    extends
-        _$URLConfigurationResponseCopyWithImpl<
-          $Res,
-          _$URLConfigurationResponseImpl
-        >
+    extends _$URLConfigurationResponseCopyWithImpl<$Res,
+        _$URLConfigurationResponseImpl>
     implements _$$URLConfigurationResponseImplCopyWith<$Res> {
   __$$URLConfigurationResponseImplCopyWithImpl(
-    _$URLConfigurationResponseImpl _value,
-    $Res Function(_$URLConfigurationResponseImpl) _then,
-  ) : super(_value, _then);
+      _$URLConfigurationResponseImpl _value,
+      $Res Function(_$URLConfigurationResponseImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of URLConfigurationResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -144,42 +127,36 @@ class __$$URLConfigurationResponseImplCopyWithImpl<$Res>
     Object? deprecated = null,
     Object? notice = null,
   }) {
-    return _then(
-      _$URLConfigurationResponseImpl(
-        api_version:
-            null == api_version
-                ? _value.api_version
-                : api_version // ignore: cast_nullable_to_non_nullable
-                    as String,
-        endpoints:
-            null == endpoints
-                ? _value._endpoints
-                : endpoints // ignore: cast_nullable_to_non_nullable
-                    as Map<String, String>,
-        deprecated:
-            null == deprecated
-                ? _value.deprecated
-                : deprecated // ignore: cast_nullable_to_non_nullable
-                    as bool,
-        notice:
-            null == notice
-                ? _value.notice
-                : notice // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+    return _then(_$URLConfigurationResponseImpl(
+      api_version: null == api_version
+          ? _value.api_version
+          : api_version // ignore: cast_nullable_to_non_nullable
+              as String,
+      endpoints: null == endpoints
+          ? _value._endpoints
+          : endpoints // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      deprecated: null == deprecated
+          ? _value.deprecated
+          : deprecated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      notice: null == notice
+          ? _value.notice
+          : notice // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$URLConfigurationResponseImpl implements _URLConfigurationResponse {
-  const _$URLConfigurationResponseImpl({
-    required this.api_version,
-    required final Map<String, String> endpoints,
-    required this.deprecated,
-    required this.notice,
-  }) : _endpoints = endpoints;
+  const _$URLConfigurationResponseImpl(
+      {required this.api_version,
+      required final Map<String, String> endpoints,
+      required this.deprecated,
+      required this.notice})
+      : _endpoints = endpoints;
 
   factory _$URLConfigurationResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$URLConfigurationResponseImplFromJson(json);
@@ -211,10 +188,8 @@ class _$URLConfigurationResponseImpl implements _URLConfigurationResponse {
             other is _$URLConfigurationResponseImpl &&
             (identical(other.api_version, api_version) ||
                 other.api_version == api_version) &&
-            const DeepCollectionEquality().equals(
-              other._endpoints,
-              _endpoints,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._endpoints, _endpoints) &&
             (identical(other.deprecated, deprecated) ||
                 other.deprecated == deprecated) &&
             (identical(other.notice, notice) || other.notice == notice));
@@ -222,13 +197,8 @@ class _$URLConfigurationResponseImpl implements _URLConfigurationResponse {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    api_version,
-    const DeepCollectionEquality().hash(_endpoints),
-    deprecated,
-    notice,
-  );
+  int get hashCode => Object.hash(runtimeType, api_version,
+      const DeepCollectionEquality().hash(_endpoints), deprecated, notice);
 
   /// Create a copy of URLConfigurationResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -236,23 +206,23 @@ class _$URLConfigurationResponseImpl implements _URLConfigurationResponse {
   @override
   @pragma('vm:prefer-inline')
   _$$URLConfigurationResponseImplCopyWith<_$URLConfigurationResponseImpl>
-  get copyWith => __$$URLConfigurationResponseImplCopyWithImpl<
-    _$URLConfigurationResponseImpl
-  >(this, _$identity);
+      get copyWith => __$$URLConfigurationResponseImplCopyWithImpl<
+          _$URLConfigurationResponseImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$URLConfigurationResponseImplToJson(this);
+    return _$$URLConfigurationResponseImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _URLConfigurationResponse implements URLConfigurationResponse {
-  const factory _URLConfigurationResponse({
-    required final String api_version,
-    required final Map<String, String> endpoints,
-    required final bool deprecated,
-    required final String notice,
-  }) = _$URLConfigurationResponseImpl;
+  const factory _URLConfigurationResponse(
+      {required final String api_version,
+      required final Map<String, String> endpoints,
+      required final bool deprecated,
+      required final String notice}) = _$URLConfigurationResponseImpl;
 
   factory _URLConfigurationResponse.fromJson(Map<String, dynamic> json) =
       _$URLConfigurationResponseImpl.fromJson;
@@ -271,7 +241,7 @@ abstract class _URLConfigurationResponse implements URLConfigurationResponse {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$URLConfigurationResponseImplCopyWith<_$URLConfigurationResponseImpl>
-  get copyWith => throw _privateConstructorUsedError;
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) {
@@ -295,9 +265,8 @@ mixin _$LoginRequest {
 /// @nodoc
 abstract class $LoginRequestCopyWith<$Res> {
   factory $LoginRequestCopyWith(
-    LoginRequest value,
-    $Res Function(LoginRequest) then,
-  ) = _$LoginRequestCopyWithImpl<$Res, LoginRequest>;
+          LoginRequest value, $Res Function(LoginRequest) then) =
+      _$LoginRequestCopyWithImpl<$Res, LoginRequest>;
   @useResult
   $Res call({String user_name});
 }
@@ -316,17 +285,15 @@ class _$LoginRequestCopyWithImpl<$Res, $Val extends LoginRequest>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user_name = null}) {
-    return _then(
-      _value.copyWith(
-            user_name:
-                null == user_name
-                    ? _value.user_name
-                    : user_name // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? user_name = null,
+  }) {
+    return _then(_value.copyWith(
+      user_name: null == user_name
+          ? _value.user_name
+          : user_name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -334,9 +301,8 @@ class _$LoginRequestCopyWithImpl<$Res, $Val extends LoginRequest>
 abstract class _$$LoginRequestImplCopyWith<$Res>
     implements $LoginRequestCopyWith<$Res> {
   factory _$$LoginRequestImplCopyWith(
-    _$LoginRequestImpl value,
-    $Res Function(_$LoginRequestImpl) then,
-  ) = __$$LoginRequestImplCopyWithImpl<$Res>;
+          _$LoginRequestImpl value, $Res Function(_$LoginRequestImpl) then) =
+      __$$LoginRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String user_name});
@@ -347,24 +313,22 @@ class __$$LoginRequestImplCopyWithImpl<$Res>
     extends _$LoginRequestCopyWithImpl<$Res, _$LoginRequestImpl>
     implements _$$LoginRequestImplCopyWith<$Res> {
   __$$LoginRequestImplCopyWithImpl(
-    _$LoginRequestImpl _value,
-    $Res Function(_$LoginRequestImpl) _then,
-  ) : super(_value, _then);
+      _$LoginRequestImpl _value, $Res Function(_$LoginRequestImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LoginRequest
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user_name = null}) {
-    return _then(
-      _$LoginRequestImpl(
-        user_name:
-            null == user_name
-                ? _value.user_name
-                : user_name // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? user_name = null,
+  }) {
+    return _then(_$LoginRequestImpl(
+      user_name: null == user_name
+          ? _value.user_name
+          : user_name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -407,7 +371,9 @@ class _$LoginRequestImpl implements _LoginRequest {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LoginRequestImplToJson(this);
+    return _$$LoginRequestImplToJson(
+      this,
+    );
   }
 }
 
@@ -451,9 +417,8 @@ mixin _$LoginResponse {
 /// @nodoc
 abstract class $LoginResponseCopyWith<$Res> {
   factory $LoginResponseCopyWith(
-    LoginResponse value,
-    $Res Function(LoginResponse) then,
-  ) = _$LoginResponseCopyWithImpl<$Res, LoginResponse>;
+          LoginResponse value, $Res Function(LoginResponse) then) =
+      _$LoginResponseCopyWithImpl<$Res, LoginResponse>;
   @useResult
   $Res call({int error, String message});
 }
@@ -472,22 +437,20 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? error = null, Object? message = null}) {
-    return _then(
-      _value.copyWith(
-            error:
-                null == error
-                    ? _value.error
-                    : error // ignore: cast_nullable_to_non_nullable
-                        as int,
-            message:
-                null == message
-                    ? _value.message
-                    : message // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? error = null,
+    Object? message = null,
+  }) {
+    return _then(_value.copyWith(
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as int,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -495,9 +458,8 @@ class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
 abstract class _$$LoginResponseImplCopyWith<$Res>
     implements $LoginResponseCopyWith<$Res> {
   factory _$$LoginResponseImplCopyWith(
-    _$LoginResponseImpl value,
-    $Res Function(_$LoginResponseImpl) then,
-  ) = __$$LoginResponseImplCopyWithImpl<$Res>;
+          _$LoginResponseImpl value, $Res Function(_$LoginResponseImpl) then) =
+      __$$LoginResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int error, String message});
@@ -508,29 +470,27 @@ class __$$LoginResponseImplCopyWithImpl<$Res>
     extends _$LoginResponseCopyWithImpl<$Res, _$LoginResponseImpl>
     implements _$$LoginResponseImplCopyWith<$Res> {
   __$$LoginResponseImplCopyWithImpl(
-    _$LoginResponseImpl _value,
-    $Res Function(_$LoginResponseImpl) _then,
-  ) : super(_value, _then);
+      _$LoginResponseImpl _value, $Res Function(_$LoginResponseImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LoginResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? error = null, Object? message = null}) {
-    return _then(
-      _$LoginResponseImpl(
-        error:
-            null == error
-                ? _value.error
-                : error // ignore: cast_nullable_to_non_nullable
-                    as int,
-        message:
-            null == message
-                ? _value.message
-                : message // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? error = null,
+    Object? message = null,
+  }) {
+    return _then(_$LoginResponseImpl(
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as int,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -575,15 +535,16 @@ class _$LoginResponseImpl implements _LoginResponse {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LoginResponseImplToJson(this);
+    return _$$LoginResponseImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _LoginResponse implements LoginResponse {
-  const factory _LoginResponse({
-    required final int error,
-    required final String message,
-  }) = _$LoginResponseImpl;
+  const factory _LoginResponse(
+      {required final int error,
+      required final String message}) = _$LoginResponseImpl;
 
   factory _LoginResponse.fromJson(Map<String, dynamic> json) =
       _$LoginResponseImpl.fromJson;
@@ -622,9 +583,8 @@ mixin _$LogoutRequest {
 /// @nodoc
 abstract class $LogoutRequestCopyWith<$Res> {
   factory $LogoutRequestCopyWith(
-    LogoutRequest value,
-    $Res Function(LogoutRequest) then,
-  ) = _$LogoutRequestCopyWithImpl<$Res, LogoutRequest>;
+          LogoutRequest value, $Res Function(LogoutRequest) then) =
+      _$LogoutRequestCopyWithImpl<$Res, LogoutRequest>;
   @useResult
   $Res call({String user_name});
 }
@@ -643,17 +603,15 @@ class _$LogoutRequestCopyWithImpl<$Res, $Val extends LogoutRequest>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user_name = null}) {
-    return _then(
-      _value.copyWith(
-            user_name:
-                null == user_name
-                    ? _value.user_name
-                    : user_name // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? user_name = null,
+  }) {
+    return _then(_value.copyWith(
+      user_name: null == user_name
+          ? _value.user_name
+          : user_name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -661,9 +619,8 @@ class _$LogoutRequestCopyWithImpl<$Res, $Val extends LogoutRequest>
 abstract class _$$LogoutRequestImplCopyWith<$Res>
     implements $LogoutRequestCopyWith<$Res> {
   factory _$$LogoutRequestImplCopyWith(
-    _$LogoutRequestImpl value,
-    $Res Function(_$LogoutRequestImpl) then,
-  ) = __$$LogoutRequestImplCopyWithImpl<$Res>;
+          _$LogoutRequestImpl value, $Res Function(_$LogoutRequestImpl) then) =
+      __$$LogoutRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String user_name});
@@ -674,24 +631,22 @@ class __$$LogoutRequestImplCopyWithImpl<$Res>
     extends _$LogoutRequestCopyWithImpl<$Res, _$LogoutRequestImpl>
     implements _$$LogoutRequestImplCopyWith<$Res> {
   __$$LogoutRequestImplCopyWithImpl(
-    _$LogoutRequestImpl _value,
-    $Res Function(_$LogoutRequestImpl) _then,
-  ) : super(_value, _then);
+      _$LogoutRequestImpl _value, $Res Function(_$LogoutRequestImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LogoutRequest
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user_name = null}) {
-    return _then(
-      _$LogoutRequestImpl(
-        user_name:
-            null == user_name
-                ? _value.user_name
-                : user_name // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? user_name = null,
+  }) {
+    return _then(_$LogoutRequestImpl(
+      user_name: null == user_name
+          ? _value.user_name
+          : user_name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -734,7 +689,9 @@ class _$LogoutRequestImpl implements _LogoutRequest {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LogoutRequestImplToJson(this);
+    return _$$LogoutRequestImplToJson(
+      this,
+    );
   }
 }
 
@@ -778,9 +735,8 @@ mixin _$LogoutResponse {
 /// @nodoc
 abstract class $LogoutResponseCopyWith<$Res> {
   factory $LogoutResponseCopyWith(
-    LogoutResponse value,
-    $Res Function(LogoutResponse) then,
-  ) = _$LogoutResponseCopyWithImpl<$Res, LogoutResponse>;
+          LogoutResponse value, $Res Function(LogoutResponse) then) =
+      _$LogoutResponseCopyWithImpl<$Res, LogoutResponse>;
   @useResult
   $Res call({int error, String message});
 }
@@ -799,32 +755,29 @@ class _$LogoutResponseCopyWithImpl<$Res, $Val extends LogoutResponse>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? error = null, Object? message = null}) {
-    return _then(
-      _value.copyWith(
-            error:
-                null == error
-                    ? _value.error
-                    : error // ignore: cast_nullable_to_non_nullable
-                        as int,
-            message:
-                null == message
-                    ? _value.message
-                    : message // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? error = null,
+    Object? message = null,
+  }) {
+    return _then(_value.copyWith(
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as int,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$LogoutResponseImplCopyWith<$Res>
     implements $LogoutResponseCopyWith<$Res> {
-  factory _$$LogoutResponseImplCopyWith(
-    _$LogoutResponseImpl value,
-    $Res Function(_$LogoutResponseImpl) then,
-  ) = __$$LogoutResponseImplCopyWithImpl<$Res>;
+  factory _$$LogoutResponseImplCopyWith(_$LogoutResponseImpl value,
+          $Res Function(_$LogoutResponseImpl) then) =
+      __$$LogoutResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int error, String message});
@@ -835,29 +788,27 @@ class __$$LogoutResponseImplCopyWithImpl<$Res>
     extends _$LogoutResponseCopyWithImpl<$Res, _$LogoutResponseImpl>
     implements _$$LogoutResponseImplCopyWith<$Res> {
   __$$LogoutResponseImplCopyWithImpl(
-    _$LogoutResponseImpl _value,
-    $Res Function(_$LogoutResponseImpl) _then,
-  ) : super(_value, _then);
+      _$LogoutResponseImpl _value, $Res Function(_$LogoutResponseImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of LogoutResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? error = null, Object? message = null}) {
-    return _then(
-      _$LogoutResponseImpl(
-        error:
-            null == error
-                ? _value.error
-                : error // ignore: cast_nullable_to_non_nullable
-                    as int,
-        message:
-            null == message
-                ? _value.message
-                : message // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? error = null,
+    Object? message = null,
+  }) {
+    return _then(_$LogoutResponseImpl(
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as int,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -899,21 +850,20 @@ class _$LogoutResponseImpl implements _LogoutResponse {
   @pragma('vm:prefer-inline')
   _$$LogoutResponseImplCopyWith<_$LogoutResponseImpl> get copyWith =>
       __$$LogoutResponseImplCopyWithImpl<_$LogoutResponseImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LogoutResponseImplToJson(this);
+    return _$$LogoutResponseImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _LogoutResponse implements LogoutResponse {
-  const factory _LogoutResponse({
-    required final int error,
-    required final String message,
-  }) = _$LogoutResponseImpl;
+  const factory _LogoutResponse(
+      {required final int error,
+      required final String message}) = _$LogoutResponseImpl;
 
   factory _LogoutResponse.fromJson(Map<String, dynamic> json) =
       _$LogoutResponseImpl.fromJson;
@@ -953,9 +903,8 @@ mixin _$ChatActionRequest {
 /// @nodoc
 abstract class $ChatActionRequestCopyWith<$Res> {
   factory $ChatActionRequestCopyWith(
-    ChatActionRequest value,
-    $Res Function(ChatActionRequest) then,
-  ) = _$ChatActionRequestCopyWithImpl<$Res, ChatActionRequest>;
+          ChatActionRequest value, $Res Function(ChatActionRequest) then) =
+      _$ChatActionRequestCopyWithImpl<$Res, ChatActionRequest>;
   @useResult
   $Res call({String user_name, String content});
 }
@@ -974,32 +923,29 @@ class _$ChatActionRequestCopyWithImpl<$Res, $Val extends ChatActionRequest>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user_name = null, Object? content = null}) {
-    return _then(
-      _value.copyWith(
-            user_name:
-                null == user_name
-                    ? _value.user_name
-                    : user_name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            content:
-                null == content
-                    ? _value.content
-                    : content // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? user_name = null,
+    Object? content = null,
+  }) {
+    return _then(_value.copyWith(
+      user_name: null == user_name
+          ? _value.user_name
+          : user_name // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$ChatActionRequestImplCopyWith<$Res>
     implements $ChatActionRequestCopyWith<$Res> {
-  factory _$$ChatActionRequestImplCopyWith(
-    _$ChatActionRequestImpl value,
-    $Res Function(_$ChatActionRequestImpl) then,
-  ) = __$$ChatActionRequestImplCopyWithImpl<$Res>;
+  factory _$$ChatActionRequestImplCopyWith(_$ChatActionRequestImpl value,
+          $Res Function(_$ChatActionRequestImpl) then) =
+      __$$ChatActionRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String user_name, String content});
@@ -1009,40 +955,36 @@ abstract class _$$ChatActionRequestImplCopyWith<$Res>
 class __$$ChatActionRequestImplCopyWithImpl<$Res>
     extends _$ChatActionRequestCopyWithImpl<$Res, _$ChatActionRequestImpl>
     implements _$$ChatActionRequestImplCopyWith<$Res> {
-  __$$ChatActionRequestImplCopyWithImpl(
-    _$ChatActionRequestImpl _value,
-    $Res Function(_$ChatActionRequestImpl) _then,
-  ) : super(_value, _then);
+  __$$ChatActionRequestImplCopyWithImpl(_$ChatActionRequestImpl _value,
+      $Res Function(_$ChatActionRequestImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of ChatActionRequest
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user_name = null, Object? content = null}) {
-    return _then(
-      _$ChatActionRequestImpl(
-        user_name:
-            null == user_name
-                ? _value.user_name
-                : user_name // ignore: cast_nullable_to_non_nullable
-                    as String,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? user_name = null,
+    Object? content = null,
+  }) {
+    return _then(_$ChatActionRequestImpl(
+      user_name: null == user_name
+          ? _value.user_name
+          : user_name // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$ChatActionRequestImpl implements _ChatActionRequest {
-  const _$ChatActionRequestImpl({
-    required this.user_name,
-    required this.content,
-  });
+  const _$ChatActionRequestImpl(
+      {required this.user_name, required this.content});
 
   factory _$ChatActionRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChatActionRequestImplFromJson(json);
@@ -1078,21 +1020,20 @@ class _$ChatActionRequestImpl implements _ChatActionRequest {
   @pragma('vm:prefer-inline')
   _$$ChatActionRequestImplCopyWith<_$ChatActionRequestImpl> get copyWith =>
       __$$ChatActionRequestImplCopyWithImpl<_$ChatActionRequestImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ChatActionRequestImplToJson(this);
+    return _$$ChatActionRequestImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _ChatActionRequest implements ChatActionRequest {
-  const factory _ChatActionRequest({
-    required final String user_name,
-    required final String content,
-  }) = _$ChatActionRequestImpl;
+  const factory _ChatActionRequest(
+      {required final String user_name,
+      required final String content}) = _$ChatActionRequestImpl;
 
   factory _ChatActionRequest.fromJson(Map<String, dynamic> json) =
       _$ChatActionRequestImpl.fromJson;
@@ -1132,9 +1073,8 @@ mixin _$ChatActionResponse {
 /// @nodoc
 abstract class $ChatActionResponseCopyWith<$Res> {
   factory $ChatActionResponseCopyWith(
-    ChatActionResponse value,
-    $Res Function(ChatActionResponse) then,
-  ) = _$ChatActionResponseCopyWithImpl<$Res, ChatActionResponse>;
+          ChatActionResponse value, $Res Function(ChatActionResponse) then) =
+      _$ChatActionResponseCopyWithImpl<$Res, ChatActionResponse>;
   @useResult
   $Res call({int error, String message});
 }
@@ -1153,32 +1093,29 @@ class _$ChatActionResponseCopyWithImpl<$Res, $Val extends ChatActionResponse>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? error = null, Object? message = null}) {
-    return _then(
-      _value.copyWith(
-            error:
-                null == error
-                    ? _value.error
-                    : error // ignore: cast_nullable_to_non_nullable
-                        as int,
-            message:
-                null == message
-                    ? _value.message
-                    : message // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? error = null,
+    Object? message = null,
+  }) {
+    return _then(_value.copyWith(
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as int,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$ChatActionResponseImplCopyWith<$Res>
     implements $ChatActionResponseCopyWith<$Res> {
-  factory _$$ChatActionResponseImplCopyWith(
-    _$ChatActionResponseImpl value,
-    $Res Function(_$ChatActionResponseImpl) then,
-  ) = __$$ChatActionResponseImplCopyWithImpl<$Res>;
+  factory _$$ChatActionResponseImplCopyWith(_$ChatActionResponseImpl value,
+          $Res Function(_$ChatActionResponseImpl) then) =
+      __$$ChatActionResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int error, String message});
@@ -1188,30 +1125,28 @@ abstract class _$$ChatActionResponseImplCopyWith<$Res>
 class __$$ChatActionResponseImplCopyWithImpl<$Res>
     extends _$ChatActionResponseCopyWithImpl<$Res, _$ChatActionResponseImpl>
     implements _$$ChatActionResponseImplCopyWith<$Res> {
-  __$$ChatActionResponseImplCopyWithImpl(
-    _$ChatActionResponseImpl _value,
-    $Res Function(_$ChatActionResponseImpl) _then,
-  ) : super(_value, _then);
+  __$$ChatActionResponseImplCopyWithImpl(_$ChatActionResponseImpl _value,
+      $Res Function(_$ChatActionResponseImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of ChatActionResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? error = null, Object? message = null}) {
-    return _then(
-      _$ChatActionResponseImpl(
-        error:
-            null == error
-                ? _value.error
-                : error // ignore: cast_nullable_to_non_nullable
-                    as int,
-        message:
-            null == message
-                ? _value.message
-                : message // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? error = null,
+    Object? message = null,
+  }) {
+    return _then(_$ChatActionResponseImpl(
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as int,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -1253,21 +1188,20 @@ class _$ChatActionResponseImpl implements _ChatActionResponse {
   @pragma('vm:prefer-inline')
   _$$ChatActionResponseImplCopyWith<_$ChatActionResponseImpl> get copyWith =>
       __$$ChatActionResponseImplCopyWithImpl<_$ChatActionResponseImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ChatActionResponseImplToJson(this);
+    return _$$ChatActionResponseImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _ChatActionResponse implements ChatActionResponse {
-  const factory _ChatActionResponse({
-    required final int error,
-    required final String message,
-  }) = _$ChatActionResponseImpl;
+  const factory _ChatActionResponse(
+      {required final int error,
+      required final String message}) = _$ChatActionResponseImpl;
 
   factory _ChatActionResponse.fromJson(Map<String, dynamic> json) =
       _$ChatActionResponseImpl.fromJson;

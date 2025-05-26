@@ -12,8 +12,7 @@ part of 'message.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 BaseMessage _$BaseMessageFromJson(Map<String, dynamic> json) {
   switch (json['runtimeType']) {
@@ -23,12 +22,8 @@ BaseMessage _$BaseMessageFromJson(Map<String, dynamic> json) {
       return UserMessage.fromJson(json);
 
     default:
-      throw CheckedFromJsonException(
-        json,
-        'runtimeType',
-        'BaseMessage',
-        'Invalid union type "${json['runtimeType']}"!',
-      );
+      throw CheckedFromJsonException(json, 'runtimeType', 'BaseMessage',
+          'Invalid union type "${json['runtimeType']}"!');
   }
 }
 
@@ -40,34 +35,40 @@ mixin _$BaseMessage {
   TResult when<TResult extends Object?>({
     required TResult Function(String role, String content) aiMessage,
     required TResult Function(String role, String content) userMessage,
-  }) => throw _privateConstructorUsedError;
+  }) =>
+      throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String role, String content)? aiMessage,
     TResult? Function(String role, String content)? userMessage,
-  }) => throw _privateConstructorUsedError;
+  }) =>
+      throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String role, String content)? aiMessage,
     TResult Function(String role, String content)? userMessage,
     required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
+  }) =>
+      throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(AIMessage value) aiMessage,
     required TResult Function(UserMessage value) userMessage,
-  }) => throw _privateConstructorUsedError;
+  }) =>
+      throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(AIMessage value)? aiMessage,
     TResult? Function(UserMessage value)? userMessage,
-  }) => throw _privateConstructorUsedError;
+  }) =>
+      throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(AIMessage value)? aiMessage,
     TResult Function(UserMessage value)? userMessage,
     required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
+  }) =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this BaseMessage to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -82,9 +83,8 @@ mixin _$BaseMessage {
 /// @nodoc
 abstract class $BaseMessageCopyWith<$Res> {
   factory $BaseMessageCopyWith(
-    BaseMessage value,
-    $Res Function(BaseMessage) then,
-  ) = _$BaseMessageCopyWithImpl<$Res, BaseMessage>;
+          BaseMessage value, $Res Function(BaseMessage) then) =
+      _$BaseMessageCopyWithImpl<$Res, BaseMessage>;
   @useResult
   $Res call({String role, String content});
 }
@@ -103,22 +103,20 @@ class _$BaseMessageCopyWithImpl<$Res, $Val extends BaseMessage>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? role = null, Object? content = null}) {
-    return _then(
-      _value.copyWith(
-            role:
-                null == role
-                    ? _value.role
-                    : role // ignore: cast_nullable_to_non_nullable
-                        as String,
-            content:
-                null == content
-                    ? _value.content
-                    : content // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? role = null,
+    Object? content = null,
+  }) {
+    return _then(_value.copyWith(
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -126,9 +124,8 @@ class _$BaseMessageCopyWithImpl<$Res, $Val extends BaseMessage>
 abstract class _$$AIMessageImplCopyWith<$Res>
     implements $BaseMessageCopyWith<$Res> {
   factory _$$AIMessageImplCopyWith(
-    _$AIMessageImpl value,
-    $Res Function(_$AIMessageImpl) then,
-  ) = __$$AIMessageImplCopyWithImpl<$Res>;
+          _$AIMessageImpl value, $Res Function(_$AIMessageImpl) then) =
+      __$$AIMessageImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String role, String content});
@@ -139,40 +136,36 @@ class __$$AIMessageImplCopyWithImpl<$Res>
     extends _$BaseMessageCopyWithImpl<$Res, _$AIMessageImpl>
     implements _$$AIMessageImplCopyWith<$Res> {
   __$$AIMessageImplCopyWithImpl(
-    _$AIMessageImpl _value,
-    $Res Function(_$AIMessageImpl) _then,
-  ) : super(_value, _then);
+      _$AIMessageImpl _value, $Res Function(_$AIMessageImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of BaseMessage
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? role = null, Object? content = null}) {
-    return _then(
-      _$AIMessageImpl(
-        role:
-            null == role
-                ? _value.role
-                : role // ignore: cast_nullable_to_non_nullable
-                    as String,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? role = null,
+    Object? content = null,
+  }) {
+    return _then(_$AIMessageImpl(
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$AIMessageImpl implements AIMessage {
-  const _$AIMessageImpl({
-    this.role = ChatRole.ai,
-    required this.content,
-    final String? $type,
-  }) : $type = $type ?? 'aiMessage';
+  const _$AIMessageImpl(
+      {this.role = ChatRole.ai, required this.content, final String? $type})
+      : $type = $type ?? 'aiMessage';
 
   factory _$AIMessageImpl.fromJson(Map<String, dynamic> json) =>
       _$$AIMessageImplFromJson(json);
@@ -276,7 +269,9 @@ class _$AIMessageImpl implements AIMessage {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AIMessageImplToJson(this);
+    return _$$AIMessageImplToJson(
+      this,
+    );
   }
 }
 
@@ -304,9 +299,8 @@ abstract class AIMessage implements BaseMessage {
 abstract class _$$UserMessageImplCopyWith<$Res>
     implements $BaseMessageCopyWith<$Res> {
   factory _$$UserMessageImplCopyWith(
-    _$UserMessageImpl value,
-    $Res Function(_$UserMessageImpl) then,
-  ) = __$$UserMessageImplCopyWithImpl<$Res>;
+          _$UserMessageImpl value, $Res Function(_$UserMessageImpl) then) =
+      __$$UserMessageImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String role, String content});
@@ -317,40 +311,36 @@ class __$$UserMessageImplCopyWithImpl<$Res>
     extends _$BaseMessageCopyWithImpl<$Res, _$UserMessageImpl>
     implements _$$UserMessageImplCopyWith<$Res> {
   __$$UserMessageImplCopyWithImpl(
-    _$UserMessageImpl _value,
-    $Res Function(_$UserMessageImpl) _then,
-  ) : super(_value, _then);
+      _$UserMessageImpl _value, $Res Function(_$UserMessageImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of BaseMessage
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? role = null, Object? content = null}) {
-    return _then(
-      _$UserMessageImpl(
-        role:
-            null == role
-                ? _value.role
-                : role // ignore: cast_nullable_to_non_nullable
-                    as String,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? role = null,
+    Object? content = null,
+  }) {
+    return _then(_$UserMessageImpl(
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserMessageImpl implements UserMessage {
-  const _$UserMessageImpl({
-    this.role = ChatRole.user,
-    required this.content,
-    final String? $type,
-  }) : $type = $type ?? 'userMessage';
+  const _$UserMessageImpl(
+      {this.role = ChatRole.user, required this.content, final String? $type})
+      : $type = $type ?? 'userMessage';
 
   factory _$UserMessageImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserMessageImplFromJson(json);
@@ -454,15 +444,15 @@ class _$UserMessageImpl implements UserMessage {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserMessageImplToJson(this);
+    return _$$UserMessageImplToJson(
+      this,
+    );
   }
 }
 
 abstract class UserMessage implements BaseMessage {
-  const factory UserMessage({
-    final String role,
-    required final String content,
-  }) = _$UserMessageImpl;
+  const factory UserMessage(
+      {final String role, required final String content}) = _$UserMessageImpl;
 
   factory UserMessage.fromJson(Map<String, dynamic> json) =
       _$UserMessageImpl.fromJson;

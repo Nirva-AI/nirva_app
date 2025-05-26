@@ -12,8 +12,7 @@ part of 'data.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 User _$UserFromJson(Map<String, dynamic> json) {
   return _User.fromJson(json);
@@ -54,26 +53,23 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null}) {
-    return _then(
-      _value.copyWith(
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? name = null,
+  }) {
+    return _then(_value.copyWith(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$$UserImplCopyWith(
-    _$UserImpl value,
-    $Res Function(_$UserImpl) then,
-  ) = __$$UserImplCopyWithImpl<$Res>;
+          _$UserImpl value, $Res Function(_$UserImpl) then) =
+      __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name});
@@ -84,22 +80,21 @@ class __$$UserImplCopyWithImpl<$Res>
     extends _$UserCopyWithImpl<$Res, _$UserImpl>
     implements _$$UserImplCopyWith<$Res> {
   __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then)
-    : super(_value, _then);
+      : super(_value, _then);
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null}) {
-    return _then(
-      _$UserImpl(
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? name = null,
+  }) {
+    return _then(_$UserImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -141,7 +136,9 @@ class _$UserImpl implements _User {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserImplToJson(this);
+    return _$$UserImplToJson(
+      this,
+    );
   }
 }
 
@@ -201,31 +198,28 @@ class _$QuoteCopyWithImpl<$Res, $Val extends Quote>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? text = null, Object? mood = null}) {
-    return _then(
-      _value.copyWith(
-            text:
-                null == text
-                    ? _value.text
-                    : text // ignore: cast_nullable_to_non_nullable
-                        as String,
-            mood:
-                null == mood
-                    ? _value.mood
-                    : mood // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? text = null,
+    Object? mood = null,
+  }) {
+    return _then(_value.copyWith(
+      text: null == text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+      mood: null == mood
+          ? _value.mood
+          : mood // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$QuoteImplCopyWith<$Res> implements $QuoteCopyWith<$Res> {
   factory _$$QuoteImplCopyWith(
-    _$QuoteImpl value,
-    $Res Function(_$QuoteImpl) then,
-  ) = __$$QuoteImplCopyWithImpl<$Res>;
+          _$QuoteImpl value, $Res Function(_$QuoteImpl) then) =
+      __$$QuoteImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String text, String mood});
@@ -236,29 +230,27 @@ class __$$QuoteImplCopyWithImpl<$Res>
     extends _$QuoteCopyWithImpl<$Res, _$QuoteImpl>
     implements _$$QuoteImplCopyWith<$Res> {
   __$$QuoteImplCopyWithImpl(
-    _$QuoteImpl _value,
-    $Res Function(_$QuoteImpl) _then,
-  ) : super(_value, _then);
+      _$QuoteImpl _value, $Res Function(_$QuoteImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Quote
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? text = null, Object? mood = null}) {
-    return _then(
-      _$QuoteImpl(
-        text:
-            null == text
-                ? _value.text
-                : text // ignore: cast_nullable_to_non_nullable
-                    as String,
-        mood:
-            null == mood
-                ? _value.mood
-                : mood // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? text = null,
+    Object? mood = null,
+  }) {
+    return _then(_$QuoteImpl(
+      text: null == text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+      mood: null == mood
+          ? _value.mood
+          : mood // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -303,15 +295,15 @@ class _$QuoteImpl implements _Quote {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$QuoteImplToJson(this);
+    return _$$QuoteImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Quote implements Quote {
-  const factory _Quote({
-    required final String text,
-    required final String mood,
-  }) = _$QuoteImpl;
+  const factory _Quote(
+      {required final String text, required final String mood}) = _$QuoteImpl;
 
   factory _Quote.fromJson(Map<String, dynamic> json) = _$QuoteImpl.fromJson;
 
@@ -369,22 +361,20 @@ class _$EventTagCopyWithImpl<$Res, $Val extends EventTag>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? color = null}) {
-    return _then(
-      _value.copyWith(
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            color:
-                null == color
-                    ? _value.color
-                    : color // ignore: cast_nullable_to_non_nullable
-                        as int,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? name = null,
+    Object? color = null,
+  }) {
+    return _then(_value.copyWith(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
   }
 }
 
@@ -392,9 +382,8 @@ class _$EventTagCopyWithImpl<$Res, $Val extends EventTag>
 abstract class _$$EventTagImplCopyWith<$Res>
     implements $EventTagCopyWith<$Res> {
   factory _$$EventTagImplCopyWith(
-    _$EventTagImpl value,
-    $Res Function(_$EventTagImpl) then,
-  ) = __$$EventTagImplCopyWithImpl<$Res>;
+          _$EventTagImpl value, $Res Function(_$EventTagImpl) then) =
+      __$$EventTagImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, int color});
@@ -405,29 +394,27 @@ class __$$EventTagImplCopyWithImpl<$Res>
     extends _$EventTagCopyWithImpl<$Res, _$EventTagImpl>
     implements _$$EventTagImplCopyWith<$Res> {
   __$$EventTagImplCopyWithImpl(
-    _$EventTagImpl _value,
-    $Res Function(_$EventTagImpl) _then,
-  ) : super(_value, _then);
+      _$EventTagImpl _value, $Res Function(_$EventTagImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of EventTag
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? color = null}) {
-    return _then(
-      _$EventTagImpl(
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-        color:
-            null == color
-                ? _value.color
-                : color // ignore: cast_nullable_to_non_nullable
-                    as int,
-      ),
-    );
+  $Res call({
+    Object? name = null,
+    Object? color = null,
+  }) {
+    return _then(_$EventTagImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
   }
 }
 
@@ -473,7 +460,9 @@ class _$EventTagImpl implements _EventTag {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EventTagImplToJson(this);
+    return _$$EventTagImplToJson(
+      this,
+    );
   }
 }
 
@@ -518,9 +507,8 @@ mixin _$EventLocation {
 /// @nodoc
 abstract class $EventLocationCopyWith<$Res> {
   factory $EventLocationCopyWith(
-    EventLocation value,
-    $Res Function(EventLocation) then,
-  ) = _$EventLocationCopyWithImpl<$Res, EventLocation>;
+          EventLocation value, $Res Function(EventLocation) then) =
+      _$EventLocationCopyWithImpl<$Res, EventLocation>;
   @useResult
   $Res call({String name});
 }
@@ -539,17 +527,15 @@ class _$EventLocationCopyWithImpl<$Res, $Val extends EventLocation>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null}) {
-    return _then(
-      _value.copyWith(
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? name = null,
+  }) {
+    return _then(_value.copyWith(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -557,9 +543,8 @@ class _$EventLocationCopyWithImpl<$Res, $Val extends EventLocation>
 abstract class _$$EventLocationImplCopyWith<$Res>
     implements $EventLocationCopyWith<$Res> {
   factory _$$EventLocationImplCopyWith(
-    _$EventLocationImpl value,
-    $Res Function(_$EventLocationImpl) then,
-  ) = __$$EventLocationImplCopyWithImpl<$Res>;
+          _$EventLocationImpl value, $Res Function(_$EventLocationImpl) then) =
+      __$$EventLocationImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name});
@@ -570,24 +555,22 @@ class __$$EventLocationImplCopyWithImpl<$Res>
     extends _$EventLocationCopyWithImpl<$Res, _$EventLocationImpl>
     implements _$$EventLocationImplCopyWith<$Res> {
   __$$EventLocationImplCopyWithImpl(
-    _$EventLocationImpl _value,
-    $Res Function(_$EventLocationImpl) _then,
-  ) : super(_value, _then);
+      _$EventLocationImpl _value, $Res Function(_$EventLocationImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of EventLocation
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null}) {
-    return _then(
-      _$EventLocationImpl(
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? name = null,
+  }) {
+    return _then(_$EventLocationImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -629,7 +612,9 @@ class _$EventLocationImpl implements _EventLocation {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EventLocationImplToJson(this);
+    return _$$EventLocationImplToJson(
+      this,
+    );
   }
 }
 
@@ -679,20 +664,18 @@ mixin _$DiaryEntry {
 /// @nodoc
 abstract class $DiaryEntryCopyWith<$Res> {
   factory $DiaryEntryCopyWith(
-    DiaryEntry value,
-    $Res Function(DiaryEntry) then,
-  ) = _$DiaryEntryCopyWithImpl<$Res, DiaryEntry>;
+          DiaryEntry value, $Res Function(DiaryEntry) then) =
+      _$DiaryEntryCopyWithImpl<$Res, DiaryEntry>;
   @useResult
-  $Res call({
-    String id,
-    DateTime beginTime,
-    DateTime endTime,
-    String title,
-    String summary,
-    String content,
-    List<EventTag> tags,
-    EventLocation location,
-  });
+  $Res call(
+      {String id,
+      DateTime beginTime,
+      DateTime endTime,
+      String title,
+      String summary,
+      String content,
+      List<EventTag> tags,
+      EventLocation location});
 
   $EventLocationCopyWith<$Res> get location;
 }
@@ -721,51 +704,40 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
     Object? tags = null,
     Object? location = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            beginTime:
-                null == beginTime
-                    ? _value.beginTime
-                    : beginTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            endTime:
-                null == endTime
-                    ? _value.endTime
-                    : endTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            title:
-                null == title
-                    ? _value.title
-                    : title // ignore: cast_nullable_to_non_nullable
-                        as String,
-            summary:
-                null == summary
-                    ? _value.summary
-                    : summary // ignore: cast_nullable_to_non_nullable
-                        as String,
-            content:
-                null == content
-                    ? _value.content
-                    : content // ignore: cast_nullable_to_non_nullable
-                        as String,
-            tags:
-                null == tags
-                    ? _value.tags
-                    : tags // ignore: cast_nullable_to_non_nullable
-                        as List<EventTag>,
-            location:
-                null == location
-                    ? _value.location
-                    : location // ignore: cast_nullable_to_non_nullable
-                        as EventLocation,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      beginTime: null == beginTime
+          ? _value.beginTime
+          : beginTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      summary: null == summary
+          ? _value.summary
+          : summary // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+      tags: null == tags
+          ? _value.tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<EventTag>,
+      location: null == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as EventLocation,
+    ) as $Val);
   }
 
   /// Create a copy of DiaryEntry
@@ -783,21 +755,19 @@ class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
 abstract class _$$DiaryEntryImplCopyWith<$Res>
     implements $DiaryEntryCopyWith<$Res> {
   factory _$$DiaryEntryImplCopyWith(
-    _$DiaryEntryImpl value,
-    $Res Function(_$DiaryEntryImpl) then,
-  ) = __$$DiaryEntryImplCopyWithImpl<$Res>;
+          _$DiaryEntryImpl value, $Res Function(_$DiaryEntryImpl) then) =
+      __$$DiaryEntryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    DateTime beginTime,
-    DateTime endTime,
-    String title,
-    String summary,
-    String content,
-    List<EventTag> tags,
-    EventLocation location,
-  });
+  $Res call(
+      {String id,
+      DateTime beginTime,
+      DateTime endTime,
+      String title,
+      String summary,
+      String content,
+      List<EventTag> tags,
+      EventLocation location});
 
   @override
   $EventLocationCopyWith<$Res> get location;
@@ -808,9 +778,8 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
     extends _$DiaryEntryCopyWithImpl<$Res, _$DiaryEntryImpl>
     implements _$$DiaryEntryImplCopyWith<$Res> {
   __$$DiaryEntryImplCopyWithImpl(
-    _$DiaryEntryImpl _value,
-    $Res Function(_$DiaryEntryImpl) _then,
-  ) : super(_value, _then);
+      _$DiaryEntryImpl _value, $Res Function(_$DiaryEntryImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
@@ -826,66 +795,56 @@ class __$$DiaryEntryImplCopyWithImpl<$Res>
     Object? tags = null,
     Object? location = null,
   }) {
-    return _then(
-      _$DiaryEntryImpl(
-        id:
-            null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                    as String,
-        beginTime:
-            null == beginTime
-                ? _value.beginTime
-                : beginTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        endTime:
-            null == endTime
-                ? _value.endTime
-                : endTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        title:
-            null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                    as String,
-        summary:
-            null == summary
-                ? _value.summary
-                : summary // ignore: cast_nullable_to_non_nullable
-                    as String,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as String,
-        tags:
-            null == tags
-                ? _value._tags
-                : tags // ignore: cast_nullable_to_non_nullable
-                    as List<EventTag>,
-        location:
-            null == location
-                ? _value.location
-                : location // ignore: cast_nullable_to_non_nullable
-                    as EventLocation,
-      ),
-    );
+    return _then(_$DiaryEntryImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      beginTime: null == beginTime
+          ? _value.beginTime
+          : beginTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      summary: null == summary
+          ? _value.summary
+          : summary // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+      tags: null == tags
+          ? _value._tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<EventTag>,
+      location: null == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as EventLocation,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DiaryEntryImpl implements _DiaryEntry {
-  const _$DiaryEntryImpl({
-    required this.id,
-    required this.beginTime,
-    required this.endTime,
-    required this.title,
-    required this.summary,
-    required this.content,
-    required final List<EventTag> tags,
-    required this.location,
-  }) : _tags = tags;
+  const _$DiaryEntryImpl(
+      {required this.id,
+      required this.beginTime,
+      required this.endTime,
+      required this.title,
+      required this.summary,
+      required this.content,
+      required final List<EventTag> tags,
+      required this.location})
+      : _tags = tags;
 
   factory _$DiaryEntryImpl.fromJson(Map<String, dynamic> json) =>
       _$$DiaryEntryImplFromJson(json);
@@ -937,17 +896,8 @@ class _$DiaryEntryImpl implements _DiaryEntry {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    beginTime,
-    endTime,
-    title,
-    summary,
-    content,
-    const DeepCollectionEquality().hash(_tags),
-    location,
-  );
+  int get hashCode => Object.hash(runtimeType, id, beginTime, endTime, title,
+      summary, content, const DeepCollectionEquality().hash(_tags), location);
 
   /// Create a copy of DiaryEntry
   /// with the given fields replaced by the non-null parameter values.
@@ -959,21 +909,22 @@ class _$DiaryEntryImpl implements _DiaryEntry {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DiaryEntryImplToJson(this);
+    return _$$DiaryEntryImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _DiaryEntry implements DiaryEntry {
-  const factory _DiaryEntry({
-    required final String id,
-    required final DateTime beginTime,
-    required final DateTime endTime,
-    required final String title,
-    required final String summary,
-    required final String content,
-    required final List<EventTag> tags,
-    required final EventLocation location,
-  }) = _$DiaryEntryImpl;
+  const factory _DiaryEntry(
+      {required final String id,
+      required final DateTime beginTime,
+      required final DateTime endTime,
+      required final String title,
+      required final String summary,
+      required final String content,
+      required final List<EventTag> tags,
+      required final EventLocation location}) = _$DiaryEntryImpl;
 
   factory _DiaryEntry.fromJson(Map<String, dynamic> json) =
       _$DiaryEntryImpl.fromJson;
@@ -1025,9 +976,8 @@ mixin _$DiaryEntryNote {
 /// @nodoc
 abstract class $DiaryEntryNoteCopyWith<$Res> {
   factory $DiaryEntryNoteCopyWith(
-    DiaryEntryNote value,
-    $Res Function(DiaryEntryNote) then,
-  ) = _$DiaryEntryNoteCopyWithImpl<$Res, DiaryEntryNote>;
+          DiaryEntryNote value, $Res Function(DiaryEntryNote) then) =
+      _$DiaryEntryNoteCopyWithImpl<$Res, DiaryEntryNote>;
   @useResult
   $Res call({String id, String content});
 }
@@ -1046,32 +996,29 @@ class _$DiaryEntryNoteCopyWithImpl<$Res, $Val extends DiaryEntryNote>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? content = null}) {
-    return _then(
-      _value.copyWith(
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            content:
-                null == content
-                    ? _value.content
-                    : content // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? id = null,
+    Object? content = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$DiaryEntryNoteImplCopyWith<$Res>
     implements $DiaryEntryNoteCopyWith<$Res> {
-  factory _$$DiaryEntryNoteImplCopyWith(
-    _$DiaryEntryNoteImpl value,
-    $Res Function(_$DiaryEntryNoteImpl) then,
-  ) = __$$DiaryEntryNoteImplCopyWithImpl<$Res>;
+  factory _$$DiaryEntryNoteImplCopyWith(_$DiaryEntryNoteImpl value,
+          $Res Function(_$DiaryEntryNoteImpl) then) =
+      __$$DiaryEntryNoteImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, String content});
@@ -1082,29 +1029,27 @@ class __$$DiaryEntryNoteImplCopyWithImpl<$Res>
     extends _$DiaryEntryNoteCopyWithImpl<$Res, _$DiaryEntryNoteImpl>
     implements _$$DiaryEntryNoteImplCopyWith<$Res> {
   __$$DiaryEntryNoteImplCopyWithImpl(
-    _$DiaryEntryNoteImpl _value,
-    $Res Function(_$DiaryEntryNoteImpl) _then,
-  ) : super(_value, _then);
+      _$DiaryEntryNoteImpl _value, $Res Function(_$DiaryEntryNoteImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of DiaryEntryNote
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? content = null}) {
-    return _then(
-      _$DiaryEntryNoteImpl(
-        id:
-            null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                    as String,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+  $Res call({
+    Object? id = null,
+    Object? content = null,
+  }) {
+    return _then(_$DiaryEntryNoteImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
@@ -1146,21 +1091,20 @@ class _$DiaryEntryNoteImpl implements _DiaryEntryNote {
   @pragma('vm:prefer-inline')
   _$$DiaryEntryNoteImplCopyWith<_$DiaryEntryNoteImpl> get copyWith =>
       __$$DiaryEntryNoteImplCopyWithImpl<_$DiaryEntryNoteImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DiaryEntryNoteImplToJson(this);
+    return _$$DiaryEntryNoteImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _DiaryEntryNote implements DiaryEntryNote {
-  const factory _DiaryEntryNote({
-    required final String id,
-    required final String content,
-  }) = _$DiaryEntryNoteImpl;
+  const factory _DiaryEntryNote(
+      {required final String id,
+      required final String content}) = _$DiaryEntryNoteImpl;
 
   factory _DiaryEntryNote.fromJson(Map<String, dynamic> json) =
       _$DiaryEntryNoteImpl.fromJson;
@@ -1202,9 +1146,8 @@ mixin _$Reflection {
 /// @nodoc
 abstract class $ReflectionCopyWith<$Res> {
   factory $ReflectionCopyWith(
-    Reflection value,
-    $Res Function(Reflection) then,
-  ) = _$ReflectionCopyWithImpl<$Res, Reflection>;
+          Reflection value, $Res Function(Reflection) then) =
+      _$ReflectionCopyWithImpl<$Res, Reflection>;
   @useResult
   $Res call({String id, String title, List<String> items, String content});
 }
@@ -1229,31 +1172,24 @@ class _$ReflectionCopyWithImpl<$Res, $Val extends Reflection>
     Object? items = null,
     Object? content = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            title:
-                null == title
-                    ? _value.title
-                    : title // ignore: cast_nullable_to_non_nullable
-                        as String,
-            items:
-                null == items
-                    ? _value.items
-                    : items // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
-            content:
-                null == content
-                    ? _value.content
-                    : content // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      items: null == items
+          ? _value.items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -1261,9 +1197,8 @@ class _$ReflectionCopyWithImpl<$Res, $Val extends Reflection>
 abstract class _$$ReflectionImplCopyWith<$Res>
     implements $ReflectionCopyWith<$Res> {
   factory _$$ReflectionImplCopyWith(
-    _$ReflectionImpl value,
-    $Res Function(_$ReflectionImpl) then,
-  ) = __$$ReflectionImplCopyWithImpl<$Res>;
+          _$ReflectionImpl value, $Res Function(_$ReflectionImpl) then) =
+      __$$ReflectionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, String title, List<String> items, String content});
@@ -1274,9 +1209,8 @@ class __$$ReflectionImplCopyWithImpl<$Res>
     extends _$ReflectionCopyWithImpl<$Res, _$ReflectionImpl>
     implements _$$ReflectionImplCopyWith<$Res> {
   __$$ReflectionImplCopyWithImpl(
-    _$ReflectionImpl _value,
-    $Res Function(_$ReflectionImpl) _then,
-  ) : super(_value, _then);
+      _$ReflectionImpl _value, $Res Function(_$ReflectionImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Reflection
   /// with the given fields replaced by the non-null parameter values.
@@ -1288,42 +1222,36 @@ class __$$ReflectionImplCopyWithImpl<$Res>
     Object? items = null,
     Object? content = null,
   }) {
-    return _then(
-      _$ReflectionImpl(
-        id:
-            null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                    as String,
-        title:
-            null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                    as String,
-        items:
-            null == items
-                ? _value._items
-                : items // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+    return _then(_$ReflectionImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      items: null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$ReflectionImpl implements _Reflection {
-  const _$ReflectionImpl({
-    required this.id,
-    required this.title,
-    required final List<String> items,
-    required this.content,
-  }) : _items = items;
+  const _$ReflectionImpl(
+      {required this.id,
+      required this.title,
+      required final List<String> items,
+      required this.content})
+      : _items = items;
 
   factory _$ReflectionImpl.fromJson(Map<String, dynamic> json) =>
       _$$ReflectionImplFromJson(json);
@@ -1361,13 +1289,8 @@ class _$ReflectionImpl implements _Reflection {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    title,
-    const DeepCollectionEquality().hash(_items),
-    content,
-  );
+  int get hashCode => Object.hash(runtimeType, id, title,
+      const DeepCollectionEquality().hash(_items), content);
 
   /// Create a copy of Reflection
   /// with the given fields replaced by the non-null parameter values.
@@ -1379,17 +1302,18 @@ class _$ReflectionImpl implements _Reflection {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ReflectionImplToJson(this);
+    return _$$ReflectionImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Reflection implements Reflection {
-  const factory _Reflection({
-    required final String id,
-    required final String title,
-    required final List<String> items,
-    required final String content,
-  }) = _$ReflectionImpl;
+  const factory _Reflection(
+      {required final String id,
+      required final String title,
+      required final List<String> items,
+      required final String content}) = _$ReflectionImpl;
 
   factory _Reflection.fromJson(Map<String, dynamic> json) =
       _$ReflectionImpl.fromJson;
@@ -1452,22 +1376,20 @@ class _$MoodScoreCopyWithImpl<$Res, $Val extends MoodScore>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? value = null, Object? change = null}) {
-    return _then(
-      _value.copyWith(
-            value:
-                null == value
-                    ? _value.value
-                    : value // ignore: cast_nullable_to_non_nullable
-                        as double,
-            change:
-                null == change
-                    ? _value.change
-                    : change // ignore: cast_nullable_to_non_nullable
-                        as double,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? value = null,
+    Object? change = null,
+  }) {
+    return _then(_value.copyWith(
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      change: null == change
+          ? _value.change
+          : change // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
   }
 }
 
@@ -1475,9 +1397,8 @@ class _$MoodScoreCopyWithImpl<$Res, $Val extends MoodScore>
 abstract class _$$MoodScoreImplCopyWith<$Res>
     implements $MoodScoreCopyWith<$Res> {
   factory _$$MoodScoreImplCopyWith(
-    _$MoodScoreImpl value,
-    $Res Function(_$MoodScoreImpl) then,
-  ) = __$$MoodScoreImplCopyWithImpl<$Res>;
+          _$MoodScoreImpl value, $Res Function(_$MoodScoreImpl) then) =
+      __$$MoodScoreImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({double value, double change});
@@ -1488,29 +1409,27 @@ class __$$MoodScoreImplCopyWithImpl<$Res>
     extends _$MoodScoreCopyWithImpl<$Res, _$MoodScoreImpl>
     implements _$$MoodScoreImplCopyWith<$Res> {
   __$$MoodScoreImplCopyWithImpl(
-    _$MoodScoreImpl _value,
-    $Res Function(_$MoodScoreImpl) _then,
-  ) : super(_value, _then);
+      _$MoodScoreImpl _value, $Res Function(_$MoodScoreImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of MoodScore
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? value = null, Object? change = null}) {
-    return _then(
-      _$MoodScoreImpl(
-        value:
-            null == value
-                ? _value.value
-                : value // ignore: cast_nullable_to_non_nullable
-                    as double,
-        change:
-            null == change
-                ? _value.change
-                : change // ignore: cast_nullable_to_non_nullable
-                    as double,
-      ),
-    );
+  $Res call({
+    Object? value = null,
+    Object? change = null,
+  }) {
+    return _then(_$MoodScoreImpl(
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      change: null == change
+          ? _value.change
+          : change // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
   }
 }
 
@@ -1555,15 +1474,16 @@ class _$MoodScoreImpl implements _MoodScore {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MoodScoreImplToJson(this);
+    return _$$MoodScoreImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _MoodScore implements MoodScore {
-  const factory _MoodScore({
-    required final double value,
-    required final double change,
-  }) = _$MoodScoreImpl;
+  const factory _MoodScore(
+      {required final double value,
+      required final double change}) = _$MoodScoreImpl;
 
   factory _MoodScore.fromJson(Map<String, dynamic> json) =
       _$MoodScoreImpl.fromJson;
@@ -1603,9 +1523,8 @@ mixin _$StressLevel {
 /// @nodoc
 abstract class $StressLevelCopyWith<$Res> {
   factory $StressLevelCopyWith(
-    StressLevel value,
-    $Res Function(StressLevel) then,
-  ) = _$StressLevelCopyWithImpl<$Res, StressLevel>;
+          StressLevel value, $Res Function(StressLevel) then) =
+      _$StressLevelCopyWithImpl<$Res, StressLevel>;
   @useResult
   $Res call({double value, double change});
 }
@@ -1624,22 +1543,20 @@ class _$StressLevelCopyWithImpl<$Res, $Val extends StressLevel>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? value = null, Object? change = null}) {
-    return _then(
-      _value.copyWith(
-            value:
-                null == value
-                    ? _value.value
-                    : value // ignore: cast_nullable_to_non_nullable
-                        as double,
-            change:
-                null == change
-                    ? _value.change
-                    : change // ignore: cast_nullable_to_non_nullable
-                        as double,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? value = null,
+    Object? change = null,
+  }) {
+    return _then(_value.copyWith(
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      change: null == change
+          ? _value.change
+          : change // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
   }
 }
 
@@ -1647,9 +1564,8 @@ class _$StressLevelCopyWithImpl<$Res, $Val extends StressLevel>
 abstract class _$$StressLevelImplCopyWith<$Res>
     implements $StressLevelCopyWith<$Res> {
   factory _$$StressLevelImplCopyWith(
-    _$StressLevelImpl value,
-    $Res Function(_$StressLevelImpl) then,
-  ) = __$$StressLevelImplCopyWithImpl<$Res>;
+          _$StressLevelImpl value, $Res Function(_$StressLevelImpl) then) =
+      __$$StressLevelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({double value, double change});
@@ -1660,29 +1576,27 @@ class __$$StressLevelImplCopyWithImpl<$Res>
     extends _$StressLevelCopyWithImpl<$Res, _$StressLevelImpl>
     implements _$$StressLevelImplCopyWith<$Res> {
   __$$StressLevelImplCopyWithImpl(
-    _$StressLevelImpl _value,
-    $Res Function(_$StressLevelImpl) _then,
-  ) : super(_value, _then);
+      _$StressLevelImpl _value, $Res Function(_$StressLevelImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of StressLevel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? value = null, Object? change = null}) {
-    return _then(
-      _$StressLevelImpl(
-        value:
-            null == value
-                ? _value.value
-                : value // ignore: cast_nullable_to_non_nullable
-                    as double,
-        change:
-            null == change
-                ? _value.change
-                : change // ignore: cast_nullable_to_non_nullable
-                    as double,
-      ),
-    );
+  $Res call({
+    Object? value = null,
+    Object? change = null,
+  }) {
+    return _then(_$StressLevelImpl(
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      change: null == change
+          ? _value.change
+          : change // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
   }
 }
 
@@ -1727,15 +1641,16 @@ class _$StressLevelImpl implements _StressLevel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$StressLevelImplToJson(this);
+    return _$$StressLevelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _StressLevel implements StressLevel {
-  const factory _StressLevel({
-    required final double value,
-    required final double change,
-  }) = _$StressLevelImpl;
+  const factory _StressLevel(
+      {required final double value,
+      required final double change}) = _$StressLevelImpl;
 
   factory _StressLevel.fromJson(Map<String, dynamic> json) =
       _$StressLevelImpl.fromJson;
@@ -1800,26 +1715,20 @@ class _$HighlightCopyWithImpl<$Res, $Val extends Highlight>
     Object? content = null,
     Object? color = null,
   }) {
-    return _then(
-      _value.copyWith(
-            category:
-                null == category
-                    ? _value.category
-                    : category // ignore: cast_nullable_to_non_nullable
-                        as String,
-            content:
-                null == content
-                    ? _value.content
-                    : content // ignore: cast_nullable_to_non_nullable
-                        as String,
-            color:
-                null == color
-                    ? _value.color
-                    : color // ignore: cast_nullable_to_non_nullable
-                        as int,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
   }
 }
 
@@ -1827,9 +1736,8 @@ class _$HighlightCopyWithImpl<$Res, $Val extends Highlight>
 abstract class _$$HighlightImplCopyWith<$Res>
     implements $HighlightCopyWith<$Res> {
   factory _$$HighlightImplCopyWith(
-    _$HighlightImpl value,
-    $Res Function(_$HighlightImpl) then,
-  ) = __$$HighlightImplCopyWithImpl<$Res>;
+          _$HighlightImpl value, $Res Function(_$HighlightImpl) then) =
+      __$$HighlightImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String category, String content, int color});
@@ -1840,9 +1748,8 @@ class __$$HighlightImplCopyWithImpl<$Res>
     extends _$HighlightCopyWithImpl<$Res, _$HighlightImpl>
     implements _$$HighlightImplCopyWith<$Res> {
   __$$HighlightImplCopyWithImpl(
-    _$HighlightImpl _value,
-    $Res Function(_$HighlightImpl) _then,
-  ) : super(_value, _then);
+      _$HighlightImpl _value, $Res Function(_$HighlightImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Highlight
   /// with the given fields replaced by the non-null parameter values.
@@ -1853,36 +1760,28 @@ class __$$HighlightImplCopyWithImpl<$Res>
     Object? content = null,
     Object? color = null,
   }) {
-    return _then(
-      _$HighlightImpl(
-        category:
-            null == category
-                ? _value.category
-                : category // ignore: cast_nullable_to_non_nullable
-                    as String,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as String,
-        color:
-            null == color
-                ? _value.color
-                : color // ignore: cast_nullable_to_non_nullable
-                    as int,
-      ),
-    );
+    return _then(_$HighlightImpl(
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+      content: null == content
+          ? _value.content
+          : content // ignore: cast_nullable_to_non_nullable
+              as String,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$HighlightImpl implements _Highlight {
-  const _$HighlightImpl({
-    required this.category,
-    required this.content,
-    this.color = 0xFF00FF00,
-  });
+  const _$HighlightImpl(
+      {required this.category, required this.content, this.color = 0xFF00FF00});
 
   factory _$HighlightImpl.fromJson(Map<String, dynamic> json) =>
       _$$HighlightImplFromJson(json);
@@ -1925,16 +1824,17 @@ class _$HighlightImpl implements _Highlight {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$HighlightImplToJson(this);
+    return _$$HighlightImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Highlight implements Highlight {
-  const factory _Highlight({
-    required final String category,
-    required final String content,
-    final int color,
-  }) = _$HighlightImpl;
+  const factory _Highlight(
+      {required final String category,
+      required final String content,
+      final int color}) = _$HighlightImpl;
 
   factory _Highlight.fromJson(Map<String, dynamic> json) =
       _$HighlightImpl.fromJson;
@@ -1977,9 +1877,8 @@ mixin _$ArchivedHighlights {
 /// @nodoc
 abstract class $ArchivedHighlightsCopyWith<$Res> {
   factory $ArchivedHighlightsCopyWith(
-    ArchivedHighlights value,
-    $Res Function(ArchivedHighlights) then,
-  ) = _$ArchivedHighlightsCopyWithImpl<$Res, ArchivedHighlights>;
+          ArchivedHighlights value, $Res Function(ArchivedHighlights) then) =
+      _$ArchivedHighlightsCopyWithImpl<$Res, ArchivedHighlights>;
   @useResult
   $Res call({DateTime beginTime, DateTime endTime, List<Highlight> highlights});
 }
@@ -2003,36 +1902,29 @@ class _$ArchivedHighlightsCopyWithImpl<$Res, $Val extends ArchivedHighlights>
     Object? endTime = null,
     Object? highlights = null,
   }) {
-    return _then(
-      _value.copyWith(
-            beginTime:
-                null == beginTime
-                    ? _value.beginTime
-                    : beginTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            endTime:
-                null == endTime
-                    ? _value.endTime
-                    : endTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            highlights:
-                null == highlights
-                    ? _value.highlights
-                    : highlights // ignore: cast_nullable_to_non_nullable
-                        as List<Highlight>,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      beginTime: null == beginTime
+          ? _value.beginTime
+          : beginTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      highlights: null == highlights
+          ? _value.highlights
+          : highlights // ignore: cast_nullable_to_non_nullable
+              as List<Highlight>,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$ArchivedHighlightsImplCopyWith<$Res>
     implements $ArchivedHighlightsCopyWith<$Res> {
-  factory _$$ArchivedHighlightsImplCopyWith(
-    _$ArchivedHighlightsImpl value,
-    $Res Function(_$ArchivedHighlightsImpl) then,
-  ) = __$$ArchivedHighlightsImplCopyWithImpl<$Res>;
+  factory _$$ArchivedHighlightsImplCopyWith(_$ArchivedHighlightsImpl value,
+          $Res Function(_$ArchivedHighlightsImpl) then) =
+      __$$ArchivedHighlightsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime beginTime, DateTime endTime, List<Highlight> highlights});
@@ -2042,10 +1934,9 @@ abstract class _$$ArchivedHighlightsImplCopyWith<$Res>
 class __$$ArchivedHighlightsImplCopyWithImpl<$Res>
     extends _$ArchivedHighlightsCopyWithImpl<$Res, _$ArchivedHighlightsImpl>
     implements _$$ArchivedHighlightsImplCopyWith<$Res> {
-  __$$ArchivedHighlightsImplCopyWithImpl(
-    _$ArchivedHighlightsImpl _value,
-    $Res Function(_$ArchivedHighlightsImpl) _then,
-  ) : super(_value, _then);
+  __$$ArchivedHighlightsImplCopyWithImpl(_$ArchivedHighlightsImpl _value,
+      $Res Function(_$ArchivedHighlightsImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of ArchivedHighlights
   /// with the given fields replaced by the non-null parameter values.
@@ -2056,36 +1947,31 @@ class __$$ArchivedHighlightsImplCopyWithImpl<$Res>
     Object? endTime = null,
     Object? highlights = null,
   }) {
-    return _then(
-      _$ArchivedHighlightsImpl(
-        beginTime:
-            null == beginTime
-                ? _value.beginTime
-                : beginTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        endTime:
-            null == endTime
-                ? _value.endTime
-                : endTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        highlights:
-            null == highlights
-                ? _value._highlights
-                : highlights // ignore: cast_nullable_to_non_nullable
-                    as List<Highlight>,
-      ),
-    );
+    return _then(_$ArchivedHighlightsImpl(
+      beginTime: null == beginTime
+          ? _value.beginTime
+          : beginTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      highlights: null == highlights
+          ? _value._highlights
+          : highlights // ignore: cast_nullable_to_non_nullable
+              as List<Highlight>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$ArchivedHighlightsImpl implements _ArchivedHighlights {
-  const _$ArchivedHighlightsImpl({
-    required this.beginTime,
-    required this.endTime,
-    required final List<Highlight> highlights,
-  }) : _highlights = highlights;
+  const _$ArchivedHighlightsImpl(
+      {required this.beginTime,
+      required this.endTime,
+      required final List<Highlight> highlights})
+      : _highlights = highlights;
 
   factory _$ArchivedHighlightsImpl.fromJson(Map<String, dynamic> json) =>
       _$$ArchivedHighlightsImplFromJson(json);
@@ -2115,20 +2001,14 @@ class _$ArchivedHighlightsImpl implements _ArchivedHighlights {
             (identical(other.beginTime, beginTime) ||
                 other.beginTime == beginTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
-            const DeepCollectionEquality().equals(
-              other._highlights,
-              _highlights,
-            ));
+            const DeepCollectionEquality()
+                .equals(other._highlights, _highlights));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    beginTime,
-    endTime,
-    const DeepCollectionEquality().hash(_highlights),
-  );
+  int get hashCode => Object.hash(runtimeType, beginTime, endTime,
+      const DeepCollectionEquality().hash(_highlights));
 
   /// Create a copy of ArchivedHighlights
   /// with the given fields replaced by the non-null parameter values.
@@ -2137,22 +2017,21 @@ class _$ArchivedHighlightsImpl implements _ArchivedHighlights {
   @pragma('vm:prefer-inline')
   _$$ArchivedHighlightsImplCopyWith<_$ArchivedHighlightsImpl> get copyWith =>
       __$$ArchivedHighlightsImplCopyWithImpl<_$ArchivedHighlightsImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ArchivedHighlightsImplToJson(this);
+    return _$$ArchivedHighlightsImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _ArchivedHighlights implements ArchivedHighlights {
-  const factory _ArchivedHighlights({
-    required final DateTime beginTime,
-    required final DateTime endTime,
-    required final List<Highlight> highlights,
-  }) = _$ArchivedHighlightsImpl;
+  const factory _ArchivedHighlights(
+      {required final DateTime beginTime,
+      required final DateTime endTime,
+      required final List<Highlight> highlights}) = _$ArchivedHighlightsImpl;
 
   factory _ArchivedHighlights.fromJson(Map<String, dynamic> json) =
       _$ArchivedHighlightsImpl.fromJson;
@@ -2220,40 +2099,32 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? description = null,
     Object? isCompleted = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            tag:
-                null == tag
-                    ? _value.tag
-                    : tag // ignore: cast_nullable_to_non_nullable
-                        as String,
-            description:
-                null == description
-                    ? _value.description
-                    : description // ignore: cast_nullable_to_non_nullable
-                        as String,
-            isCompleted:
-                null == isCompleted
-                    ? _value.isCompleted
-                    : isCompleted // ignore: cast_nullable_to_non_nullable
-                        as bool,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      tag: null == tag
+          ? _value.tag
+          : tag // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
   factory _$$TaskImplCopyWith(
-    _$TaskImpl value,
-    $Res Function(_$TaskImpl) then,
-  ) = __$$TaskImplCopyWithImpl<$Res>;
+          _$TaskImpl value, $Res Function(_$TaskImpl) then) =
+      __$$TaskImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, String tag, String description, bool isCompleted});
@@ -2264,7 +2135,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     extends _$TaskCopyWithImpl<$Res, _$TaskImpl>
     implements _$$TaskImplCopyWith<$Res> {
   __$$TaskImplCopyWithImpl(_$TaskImpl _value, $Res Function(_$TaskImpl) _then)
-    : super(_value, _then);
+      : super(_value, _then);
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -2276,42 +2147,35 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? description = null,
     Object? isCompleted = null,
   }) {
-    return _then(
-      _$TaskImpl(
-        id:
-            null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                    as String,
-        tag:
-            null == tag
-                ? _value.tag
-                : tag // ignore: cast_nullable_to_non_nullable
-                    as String,
-        description:
-            null == description
-                ? _value.description
-                : description // ignore: cast_nullable_to_non_nullable
-                    as String,
-        isCompleted:
-            null == isCompleted
-                ? _value.isCompleted
-                : isCompleted // ignore: cast_nullable_to_non_nullable
-                    as bool,
-      ),
-    );
+    return _then(_$TaskImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      tag: null == tag
+          ? _value.tag
+          : tag // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TaskImpl implements _Task {
-  const _$TaskImpl({
-    required this.id,
-    required this.tag,
-    required this.description,
-    this.isCompleted = false,
-  });
+  const _$TaskImpl(
+      {required this.id,
+      required this.tag,
+      required this.description,
+      this.isCompleted = false});
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskImplFromJson(json);
@@ -2359,17 +2223,18 @@ class _$TaskImpl implements _Task {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TaskImplToJson(this);
+    return _$$TaskImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Task implements Task {
-  const factory _Task({
-    required final String id,
-    required final String tag,
-    required final String description,
-    final bool isCompleted,
-  }) = _$TaskImpl;
+  const factory _Task(
+      {required final String id,
+      required final String tag,
+      required final String description,
+      final bool isCompleted}) = _$TaskImpl;
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
 
@@ -2412,9 +2277,8 @@ mixin _$EnergyLevel {
 /// @nodoc
 abstract class $EnergyLevelCopyWith<$Res> {
   factory $EnergyLevelCopyWith(
-    EnergyLevel value,
-    $Res Function(EnergyLevel) then,
-  ) = _$EnergyLevelCopyWithImpl<$Res, EnergyLevel>;
+          EnergyLevel value, $Res Function(EnergyLevel) then) =
+      _$EnergyLevelCopyWithImpl<$Res, EnergyLevel>;
   @useResult
   $Res call({DateTime dateTime, double value});
 }
@@ -2433,22 +2297,20 @@ class _$EnergyLevelCopyWithImpl<$Res, $Val extends EnergyLevel>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? value = null}) {
-    return _then(
-      _value.copyWith(
-            dateTime:
-                null == dateTime
-                    ? _value.dateTime
-                    : dateTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            value:
-                null == value
-                    ? _value.value
-                    : value // ignore: cast_nullable_to_non_nullable
-                        as double,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? value = null,
+  }) {
+    return _then(_value.copyWith(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
   }
 }
 
@@ -2456,9 +2318,8 @@ class _$EnergyLevelCopyWithImpl<$Res, $Val extends EnergyLevel>
 abstract class _$$EnergyLevelImplCopyWith<$Res>
     implements $EnergyLevelCopyWith<$Res> {
   factory _$$EnergyLevelImplCopyWith(
-    _$EnergyLevelImpl value,
-    $Res Function(_$EnergyLevelImpl) then,
-  ) = __$$EnergyLevelImplCopyWithImpl<$Res>;
+          _$EnergyLevelImpl value, $Res Function(_$EnergyLevelImpl) then) =
+      __$$EnergyLevelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime dateTime, double value});
@@ -2469,29 +2330,27 @@ class __$$EnergyLevelImplCopyWithImpl<$Res>
     extends _$EnergyLevelCopyWithImpl<$Res, _$EnergyLevelImpl>
     implements _$$EnergyLevelImplCopyWith<$Res> {
   __$$EnergyLevelImplCopyWithImpl(
-    _$EnergyLevelImpl _value,
-    $Res Function(_$EnergyLevelImpl) _then,
-  ) : super(_value, _then);
+      _$EnergyLevelImpl _value, $Res Function(_$EnergyLevelImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of EnergyLevel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? value = null}) {
-    return _then(
-      _$EnergyLevelImpl(
-        dateTime:
-            null == dateTime
-                ? _value.dateTime
-                : dateTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        value:
-            null == value
-                ? _value.value
-                : value // ignore: cast_nullable_to_non_nullable
-                    as double,
-      ),
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? value = null,
+  }) {
+    return _then(_$EnergyLevelImpl(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
   }
 }
 
@@ -2537,15 +2396,16 @@ class _$EnergyLevelImpl implements _EnergyLevel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EnergyLevelImplToJson(this);
+    return _$$EnergyLevelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _EnergyLevel implements EnergyLevel {
-  const factory _EnergyLevel({
-    required final DateTime dateTime,
-    required final double value,
-  }) = _$EnergyLevelImpl;
+  const factory _EnergyLevel(
+      {required final DateTime dateTime,
+      required final double value}) = _$EnergyLevelImpl;
 
   factory _EnergyLevel.fromJson(Map<String, dynamic> json) =
       _$EnergyLevelImpl.fromJson;
@@ -2586,9 +2446,8 @@ mixin _$MoodTracking {
 /// @nodoc
 abstract class $MoodTrackingCopyWith<$Res> {
   factory $MoodTrackingCopyWith(
-    MoodTracking value,
-    $Res Function(MoodTracking) then,
-  ) = _$MoodTrackingCopyWithImpl<$Res, MoodTracking>;
+          MoodTracking value, $Res Function(MoodTracking) then) =
+      _$MoodTrackingCopyWithImpl<$Res, MoodTracking>;
   @useResult
   $Res call({String name, double value, int color});
 }
@@ -2607,27 +2466,25 @@ class _$MoodTrackingCopyWithImpl<$Res, $Val extends MoodTracking>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? value = null, Object? color = null}) {
-    return _then(
-      _value.copyWith(
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            value:
-                null == value
-                    ? _value.value
-                    : value // ignore: cast_nullable_to_non_nullable
-                        as double,
-            color:
-                null == color
-                    ? _value.color
-                    : color // ignore: cast_nullable_to_non_nullable
-                        as int,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? name = null,
+    Object? value = null,
+    Object? color = null,
+  }) {
+    return _then(_value.copyWith(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
   }
 }
 
@@ -2635,9 +2492,8 @@ class _$MoodTrackingCopyWithImpl<$Res, $Val extends MoodTracking>
 abstract class _$$MoodTrackingImplCopyWith<$Res>
     implements $MoodTrackingCopyWith<$Res> {
   factory _$$MoodTrackingImplCopyWith(
-    _$MoodTrackingImpl value,
-    $Res Function(_$MoodTrackingImpl) then,
-  ) = __$$MoodTrackingImplCopyWithImpl<$Res>;
+          _$MoodTrackingImpl value, $Res Function(_$MoodTrackingImpl) then) =
+      __$$MoodTrackingImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, double value, int color});
@@ -2648,45 +2504,40 @@ class __$$MoodTrackingImplCopyWithImpl<$Res>
     extends _$MoodTrackingCopyWithImpl<$Res, _$MoodTrackingImpl>
     implements _$$MoodTrackingImplCopyWith<$Res> {
   __$$MoodTrackingImplCopyWithImpl(
-    _$MoodTrackingImpl _value,
-    $Res Function(_$MoodTrackingImpl) _then,
-  ) : super(_value, _then);
+      _$MoodTrackingImpl _value, $Res Function(_$MoodTrackingImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of MoodTracking
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? value = null, Object? color = null}) {
-    return _then(
-      _$MoodTrackingImpl(
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-        value:
-            null == value
-                ? _value.value
-                : value // ignore: cast_nullable_to_non_nullable
-                    as double,
-        color:
-            null == color
-                ? _value.color
-                : color // ignore: cast_nullable_to_non_nullable
-                    as int,
-      ),
-    );
+  $Res call({
+    Object? name = null,
+    Object? value = null,
+    Object? color = null,
+  }) {
+    return _then(_$MoodTrackingImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$MoodTrackingImpl implements _MoodTracking {
-  const _$MoodTrackingImpl({
-    required this.name,
-    required this.value,
-    this.color = 0xFF000000,
-  });
+  const _$MoodTrackingImpl(
+      {required this.name, required this.value, this.color = 0xFF000000});
 
   factory _$MoodTrackingImpl.fromJson(Map<String, dynamic> json) =>
       _$$MoodTrackingImplFromJson(json);
@@ -2728,16 +2579,17 @@ class _$MoodTrackingImpl implements _MoodTracking {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MoodTrackingImplToJson(this);
+    return _$$MoodTrackingImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _MoodTracking implements MoodTracking {
-  const factory _MoodTracking({
-    required final String name,
-    required final double value,
-    final int color,
-  }) = _$MoodTrackingImpl;
+  const factory _MoodTracking(
+      {required final String name,
+      required final double value,
+      final int color}) = _$MoodTrackingImpl;
 
   factory _MoodTracking.fromJson(Map<String, dynamic> json) =
       _$MoodTrackingImpl.fromJson;
@@ -2780,9 +2632,8 @@ mixin _$AwakeTimeAllocation {
 /// @nodoc
 abstract class $AwakeTimeAllocationCopyWith<$Res> {
   factory $AwakeTimeAllocationCopyWith(
-    AwakeTimeAllocation value,
-    $Res Function(AwakeTimeAllocation) then,
-  ) = _$AwakeTimeAllocationCopyWithImpl<$Res, AwakeTimeAllocation>;
+          AwakeTimeAllocation value, $Res Function(AwakeTimeAllocation) then) =
+      _$AwakeTimeAllocationCopyWithImpl<$Res, AwakeTimeAllocation>;
   @useResult
   $Res call({String name, double value, int color});
 }
@@ -2801,37 +2652,34 @@ class _$AwakeTimeAllocationCopyWithImpl<$Res, $Val extends AwakeTimeAllocation>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? value = null, Object? color = null}) {
-    return _then(
-      _value.copyWith(
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            value:
-                null == value
-                    ? _value.value
-                    : value // ignore: cast_nullable_to_non_nullable
-                        as double,
-            color:
-                null == color
-                    ? _value.color
-                    : color // ignore: cast_nullable_to_non_nullable
-                        as int,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? name = null,
+    Object? value = null,
+    Object? color = null,
+  }) {
+    return _then(_value.copyWith(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$AwakeTimeAllocationImplCopyWith<$Res>
     implements $AwakeTimeAllocationCopyWith<$Res> {
-  factory _$$AwakeTimeAllocationImplCopyWith(
-    _$AwakeTimeAllocationImpl value,
-    $Res Function(_$AwakeTimeAllocationImpl) then,
-  ) = __$$AwakeTimeAllocationImplCopyWithImpl<$Res>;
+  factory _$$AwakeTimeAllocationImplCopyWith(_$AwakeTimeAllocationImpl value,
+          $Res Function(_$AwakeTimeAllocationImpl) then) =
+      __$$AwakeTimeAllocationImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, double value, int color});
@@ -2841,46 +2689,41 @@ abstract class _$$AwakeTimeAllocationImplCopyWith<$Res>
 class __$$AwakeTimeAllocationImplCopyWithImpl<$Res>
     extends _$AwakeTimeAllocationCopyWithImpl<$Res, _$AwakeTimeAllocationImpl>
     implements _$$AwakeTimeAllocationImplCopyWith<$Res> {
-  __$$AwakeTimeAllocationImplCopyWithImpl(
-    _$AwakeTimeAllocationImpl _value,
-    $Res Function(_$AwakeTimeAllocationImpl) _then,
-  ) : super(_value, _then);
+  __$$AwakeTimeAllocationImplCopyWithImpl(_$AwakeTimeAllocationImpl _value,
+      $Res Function(_$AwakeTimeAllocationImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of AwakeTimeAllocation
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? name = null, Object? value = null, Object? color = null}) {
-    return _then(
-      _$AwakeTimeAllocationImpl(
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-        value:
-            null == value
-                ? _value.value
-                : value // ignore: cast_nullable_to_non_nullable
-                    as double,
-        color:
-            null == color
-                ? _value.color
-                : color // ignore: cast_nullable_to_non_nullable
-                    as int,
-      ),
-    );
+  $Res call({
+    Object? name = null,
+    Object? value = null,
+    Object? color = null,
+  }) {
+    return _then(_$AwakeTimeAllocationImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as double,
+      color: null == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
-  const _$AwakeTimeAllocationImpl({
-    required this.name,
-    required this.value,
-    this.color = 0xFF00FF00,
-  });
+  const _$AwakeTimeAllocationImpl(
+      {required this.name, required this.value, this.color = 0xFF00FF00});
 
   factory _$AwakeTimeAllocationImpl.fromJson(Map<String, dynamic> json) =>
       _$$AwakeTimeAllocationImplFromJson(json);
@@ -2919,22 +2762,21 @@ class _$AwakeTimeAllocationImpl implements _AwakeTimeAllocation {
   @pragma('vm:prefer-inline')
   _$$AwakeTimeAllocationImplCopyWith<_$AwakeTimeAllocationImpl> get copyWith =>
       __$$AwakeTimeAllocationImplCopyWithImpl<_$AwakeTimeAllocationImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AwakeTimeAllocationImplToJson(this);
+    return _$$AwakeTimeAllocationImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _AwakeTimeAllocation implements AwakeTimeAllocation {
-  const factory _AwakeTimeAllocation({
-    required final String name,
-    required final double value,
-    final int color,
-  }) = _$AwakeTimeAllocationImpl;
+  const factory _AwakeTimeAllocation(
+      {required final String name,
+      required final double value,
+      final int color}) = _$AwakeTimeAllocationImpl;
 
   factory _AwakeTimeAllocation.fromJson(Map<String, dynamic> json) =
       _$AwakeTimeAllocationImpl.fromJson;
@@ -2980,18 +2822,16 @@ mixin _$SocialEntity {
 /// @nodoc
 abstract class $SocialEntityCopyWith<$Res> {
   factory $SocialEntityCopyWith(
-    SocialEntity value,
-    $Res Function(SocialEntity) then,
-  ) = _$SocialEntityCopyWithImpl<$Res, SocialEntity>;
+          SocialEntity value, $Res Function(SocialEntity) then) =
+      _$SocialEntityCopyWithImpl<$Res, SocialEntity>;
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String description,
-    List<String> tips,
-    double hours,
-    String impact,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String description,
+      List<String> tips,
+      double hours,
+      String impact});
 }
 
 /// @nodoc
@@ -3016,41 +2856,32 @@ class _$SocialEntityCopyWithImpl<$Res, $Val extends SocialEntity>
     Object? hours = null,
     Object? impact = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            name:
-                null == name
-                    ? _value.name
-                    : name // ignore: cast_nullable_to_non_nullable
-                        as String,
-            description:
-                null == description
-                    ? _value.description
-                    : description // ignore: cast_nullable_to_non_nullable
-                        as String,
-            tips:
-                null == tips
-                    ? _value.tips
-                    : tips // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
-            hours:
-                null == hours
-                    ? _value.hours
-                    : hours // ignore: cast_nullable_to_non_nullable
-                        as double,
-            impact:
-                null == impact
-                    ? _value.impact
-                    : impact // ignore: cast_nullable_to_non_nullable
-                        as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      tips: null == tips
+          ? _value.tips
+          : tips // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      hours: null == hours
+          ? _value.hours
+          : hours // ignore: cast_nullable_to_non_nullable
+              as double,
+      impact: null == impact
+          ? _value.impact
+          : impact // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -3058,19 +2889,17 @@ class _$SocialEntityCopyWithImpl<$Res, $Val extends SocialEntity>
 abstract class _$$SocialEntityImplCopyWith<$Res>
     implements $SocialEntityCopyWith<$Res> {
   factory _$$SocialEntityImplCopyWith(
-    _$SocialEntityImpl value,
-    $Res Function(_$SocialEntityImpl) then,
-  ) = __$$SocialEntityImplCopyWithImpl<$Res>;
+          _$SocialEntityImpl value, $Res Function(_$SocialEntityImpl) then) =
+      __$$SocialEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String description,
-    List<String> tips,
-    double hours,
-    String impact,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String description,
+      List<String> tips,
+      double hours,
+      String impact});
 }
 
 /// @nodoc
@@ -3078,9 +2907,8 @@ class __$$SocialEntityImplCopyWithImpl<$Res>
     extends _$SocialEntityCopyWithImpl<$Res, _$SocialEntityImpl>
     implements _$$SocialEntityImplCopyWith<$Res> {
   __$$SocialEntityImplCopyWithImpl(
-    _$SocialEntityImpl _value,
-    $Res Function(_$SocialEntityImpl) _then,
-  ) : super(_value, _then);
+      _$SocialEntityImpl _value, $Res Function(_$SocialEntityImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of SocialEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -3094,54 +2922,46 @@ class __$$SocialEntityImplCopyWithImpl<$Res>
     Object? hours = null,
     Object? impact = null,
   }) {
-    return _then(
-      _$SocialEntityImpl(
-        id:
-            null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                    as String,
-        name:
-            null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                    as String,
-        description:
-            null == description
-                ? _value.description
-                : description // ignore: cast_nullable_to_non_nullable
-                    as String,
-        tips:
-            null == tips
-                ? _value._tips
-                : tips // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
-        hours:
-            null == hours
-                ? _value.hours
-                : hours // ignore: cast_nullable_to_non_nullable
-                    as double,
-        impact:
-            null == impact
-                ? _value.impact
-                : impact // ignore: cast_nullable_to_non_nullable
-                    as String,
-      ),
-    );
+    return _then(_$SocialEntityImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      tips: null == tips
+          ? _value._tips
+          : tips // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      hours: null == hours
+          ? _value.hours
+          : hours // ignore: cast_nullable_to_non_nullable
+              as double,
+      impact: null == impact
+          ? _value.impact
+          : impact // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$SocialEntityImpl implements _SocialEntity {
-  const _$SocialEntityImpl({
-    required this.id,
-    required this.name,
-    required this.description,
-    required final List<String> tips,
-    required this.hours,
-    this.impact = '',
-  }) : _tips = tips;
+  const _$SocialEntityImpl(
+      {required this.id,
+      required this.name,
+      required this.description,
+      required final List<String> tips,
+      required this.hours,
+      this.impact = ''})
+      : _tips = tips;
 
   factory _$SocialEntityImpl.fromJson(Map<String, dynamic> json) =>
       _$$SocialEntityImplFromJson(json);
@@ -3187,15 +3007,8 @@ class _$SocialEntityImpl implements _SocialEntity {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    name,
-    description,
-    const DeepCollectionEquality().hash(_tips),
-    hours,
-    impact,
-  );
+  int get hashCode => Object.hash(runtimeType, id, name, description,
+      const DeepCollectionEquality().hash(_tips), hours, impact);
 
   /// Create a copy of SocialEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -3207,19 +3020,20 @@ class _$SocialEntityImpl implements _SocialEntity {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SocialEntityImplToJson(this);
+    return _$$SocialEntityImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _SocialEntity implements SocialEntity {
-  const factory _SocialEntity({
-    required final String id,
-    required final String name,
-    required final String description,
-    required final List<String> tips,
-    required final double hours,
-    final String impact,
-  }) = _$SocialEntityImpl;
+  const factory _SocialEntity(
+      {required final String id,
+      required final String name,
+      required final String description,
+      required final List<String> tips,
+      required final double hours,
+      final String impact}) = _$SocialEntityImpl;
 
   factory _SocialEntity.fromJson(Map<String, dynamic> json) =
       _$SocialEntityImpl.fromJson;
@@ -3286,22 +3100,20 @@ class _$SocialMapCopyWithImpl<$Res, $Val extends SocialMap>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? socialEntities = null}) {
-    return _then(
-      _value.copyWith(
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            socialEntities:
-                null == socialEntities
-                    ? _value.socialEntities
-                    : socialEntities // ignore: cast_nullable_to_non_nullable
-                        as List<SocialEntity>,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? id = null,
+    Object? socialEntities = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      socialEntities: null == socialEntities
+          ? _value.socialEntities
+          : socialEntities // ignore: cast_nullable_to_non_nullable
+              as List<SocialEntity>,
+    ) as $Val);
   }
 }
 
@@ -3309,9 +3121,8 @@ class _$SocialMapCopyWithImpl<$Res, $Val extends SocialMap>
 abstract class _$$SocialMapImplCopyWith<$Res>
     implements $SocialMapCopyWith<$Res> {
   factory _$$SocialMapImplCopyWith(
-    _$SocialMapImpl value,
-    $Res Function(_$SocialMapImpl) then,
-  ) = __$$SocialMapImplCopyWithImpl<$Res>;
+          _$SocialMapImpl value, $Res Function(_$SocialMapImpl) then) =
+      __$$SocialMapImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, List<SocialEntity> socialEntities});
@@ -3322,39 +3133,36 @@ class __$$SocialMapImplCopyWithImpl<$Res>
     extends _$SocialMapCopyWithImpl<$Res, _$SocialMapImpl>
     implements _$$SocialMapImplCopyWith<$Res> {
   __$$SocialMapImplCopyWithImpl(
-    _$SocialMapImpl _value,
-    $Res Function(_$SocialMapImpl) _then,
-  ) : super(_value, _then);
+      _$SocialMapImpl _value, $Res Function(_$SocialMapImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of SocialMap
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? socialEntities = null}) {
-    return _then(
-      _$SocialMapImpl(
-        id:
-            null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                    as String,
-        socialEntities:
-            null == socialEntities
-                ? _value._socialEntities
-                : socialEntities // ignore: cast_nullable_to_non_nullable
-                    as List<SocialEntity>,
-      ),
-    );
+  $Res call({
+    Object? id = null,
+    Object? socialEntities = null,
+  }) {
+    return _then(_$SocialMapImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      socialEntities: null == socialEntities
+          ? _value._socialEntities
+          : socialEntities // ignore: cast_nullable_to_non_nullable
+              as List<SocialEntity>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$SocialMapImpl implements _SocialMap {
-  const _$SocialMapImpl({
-    required this.id,
-    required final List<SocialEntity> socialEntities,
-  }) : _socialEntities = socialEntities;
+  const _$SocialMapImpl(
+      {required this.id, required final List<SocialEntity> socialEntities})
+      : _socialEntities = socialEntities;
 
   factory _$SocialMapImpl.fromJson(Map<String, dynamic> json) =>
       _$$SocialMapImplFromJson(json);
@@ -3380,19 +3188,14 @@ class _$SocialMapImpl implements _SocialMap {
         (other.runtimeType == runtimeType &&
             other is _$SocialMapImpl &&
             (identical(other.id, id) || other.id == id) &&
-            const DeepCollectionEquality().equals(
-              other._socialEntities,
-              _socialEntities,
-            ));
+            const DeepCollectionEquality()
+                .equals(other._socialEntities, _socialEntities));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    const DeepCollectionEquality().hash(_socialEntities),
-  );
+      runtimeType, id, const DeepCollectionEquality().hash(_socialEntities));
 
   /// Create a copy of SocialMap
   /// with the given fields replaced by the non-null parameter values.
@@ -3404,15 +3207,16 @@ class _$SocialMapImpl implements _SocialMap {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SocialMapImplToJson(this);
+    return _$$SocialMapImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _SocialMap implements SocialMap {
-  const factory _SocialMap({
-    required final String id,
-    required final List<SocialEntity> socialEntities,
-  }) = _$SocialMapImpl;
+  const factory _SocialMap(
+      {required final String id,
+      required final List<SocialEntity> socialEntities}) = _$SocialMapImpl;
 
   factory _SocialMap.fromJson(Map<String, dynamic> json) =
       _$SocialMapImpl.fromJson;
@@ -3467,23 +3271,22 @@ abstract class $JournalCopyWith<$Res> {
   factory $JournalCopyWith(Journal value, $Res Function(Journal) then) =
       _$JournalCopyWithImpl<$Res, Journal>;
   @useResult
-  $Res call({
-    String id,
-    DateTime dateTime,
-    String summary,
-    List<DiaryEntry> diaryEntries,
-    List<Quote> quotes,
-    List<Reflection> selfReflections,
-    List<Reflection> detailedInsights,
-    List<Reflection> goals,
-    MoodScore moodScore,
-    StressLevel stressLevel,
-    List<Highlight> highlights,
-    List<EnergyLevel> energyLevels,
-    List<MoodTracking> moodTrackings,
-    List<AwakeTimeAllocation> awakeTimeActions,
-    SocialMap socialMap,
-  });
+  $Res call(
+      {String id,
+      DateTime dateTime,
+      String summary,
+      List<DiaryEntry> diaryEntries,
+      List<Quote> quotes,
+      List<Reflection> selfReflections,
+      List<Reflection> detailedInsights,
+      List<Reflection> goals,
+      MoodScore moodScore,
+      StressLevel stressLevel,
+      List<Highlight> highlights,
+      List<EnergyLevel> energyLevels,
+      List<MoodTracking> moodTrackings,
+      List<AwakeTimeAllocation> awakeTimeActions,
+      SocialMap socialMap});
 
   $MoodScoreCopyWith<$Res> get moodScore;
   $StressLevelCopyWith<$Res> get stressLevel;
@@ -3521,86 +3324,68 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
     Object? awakeTimeActions = null,
     Object? socialMap = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id:
-                null == id
-                    ? _value.id
-                    : id // ignore: cast_nullable_to_non_nullable
-                        as String,
-            dateTime:
-                null == dateTime
-                    ? _value.dateTime
-                    : dateTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            summary:
-                null == summary
-                    ? _value.summary
-                    : summary // ignore: cast_nullable_to_non_nullable
-                        as String,
-            diaryEntries:
-                null == diaryEntries
-                    ? _value.diaryEntries
-                    : diaryEntries // ignore: cast_nullable_to_non_nullable
-                        as List<DiaryEntry>,
-            quotes:
-                null == quotes
-                    ? _value.quotes
-                    : quotes // ignore: cast_nullable_to_non_nullable
-                        as List<Quote>,
-            selfReflections:
-                null == selfReflections
-                    ? _value.selfReflections
-                    : selfReflections // ignore: cast_nullable_to_non_nullable
-                        as List<Reflection>,
-            detailedInsights:
-                null == detailedInsights
-                    ? _value.detailedInsights
-                    : detailedInsights // ignore: cast_nullable_to_non_nullable
-                        as List<Reflection>,
-            goals:
-                null == goals
-                    ? _value.goals
-                    : goals // ignore: cast_nullable_to_non_nullable
-                        as List<Reflection>,
-            moodScore:
-                null == moodScore
-                    ? _value.moodScore
-                    : moodScore // ignore: cast_nullable_to_non_nullable
-                        as MoodScore,
-            stressLevel:
-                null == stressLevel
-                    ? _value.stressLevel
-                    : stressLevel // ignore: cast_nullable_to_non_nullable
-                        as StressLevel,
-            highlights:
-                null == highlights
-                    ? _value.highlights
-                    : highlights // ignore: cast_nullable_to_non_nullable
-                        as List<Highlight>,
-            energyLevels:
-                null == energyLevels
-                    ? _value.energyLevels
-                    : energyLevels // ignore: cast_nullable_to_non_nullable
-                        as List<EnergyLevel>,
-            moodTrackings:
-                null == moodTrackings
-                    ? _value.moodTrackings
-                    : moodTrackings // ignore: cast_nullable_to_non_nullable
-                        as List<MoodTracking>,
-            awakeTimeActions:
-                null == awakeTimeActions
-                    ? _value.awakeTimeActions
-                    : awakeTimeActions // ignore: cast_nullable_to_non_nullable
-                        as List<AwakeTimeAllocation>,
-            socialMap:
-                null == socialMap
-                    ? _value.socialMap
-                    : socialMap // ignore: cast_nullable_to_non_nullable
-                        as SocialMap,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      summary: null == summary
+          ? _value.summary
+          : summary // ignore: cast_nullable_to_non_nullable
+              as String,
+      diaryEntries: null == diaryEntries
+          ? _value.diaryEntries
+          : diaryEntries // ignore: cast_nullable_to_non_nullable
+              as List<DiaryEntry>,
+      quotes: null == quotes
+          ? _value.quotes
+          : quotes // ignore: cast_nullable_to_non_nullable
+              as List<Quote>,
+      selfReflections: null == selfReflections
+          ? _value.selfReflections
+          : selfReflections // ignore: cast_nullable_to_non_nullable
+              as List<Reflection>,
+      detailedInsights: null == detailedInsights
+          ? _value.detailedInsights
+          : detailedInsights // ignore: cast_nullable_to_non_nullable
+              as List<Reflection>,
+      goals: null == goals
+          ? _value.goals
+          : goals // ignore: cast_nullable_to_non_nullable
+              as List<Reflection>,
+      moodScore: null == moodScore
+          ? _value.moodScore
+          : moodScore // ignore: cast_nullable_to_non_nullable
+              as MoodScore,
+      stressLevel: null == stressLevel
+          ? _value.stressLevel
+          : stressLevel // ignore: cast_nullable_to_non_nullable
+              as StressLevel,
+      highlights: null == highlights
+          ? _value.highlights
+          : highlights // ignore: cast_nullable_to_non_nullable
+              as List<Highlight>,
+      energyLevels: null == energyLevels
+          ? _value.energyLevels
+          : energyLevels // ignore: cast_nullable_to_non_nullable
+              as List<EnergyLevel>,
+      moodTrackings: null == moodTrackings
+          ? _value.moodTrackings
+          : moodTrackings // ignore: cast_nullable_to_non_nullable
+              as List<MoodTracking>,
+      awakeTimeActions: null == awakeTimeActions
+          ? _value.awakeTimeActions
+          : awakeTimeActions // ignore: cast_nullable_to_non_nullable
+              as List<AwakeTimeAllocation>,
+      socialMap: null == socialMap
+          ? _value.socialMap
+          : socialMap // ignore: cast_nullable_to_non_nullable
+              as SocialMap,
+    ) as $Val);
   }
 
   /// Create a copy of Journal
@@ -3637,28 +3422,26 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
 /// @nodoc
 abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
   factory _$$JournalImplCopyWith(
-    _$JournalImpl value,
-    $Res Function(_$JournalImpl) then,
-  ) = __$$JournalImplCopyWithImpl<$Res>;
+          _$JournalImpl value, $Res Function(_$JournalImpl) then) =
+      __$$JournalImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    DateTime dateTime,
-    String summary,
-    List<DiaryEntry> diaryEntries,
-    List<Quote> quotes,
-    List<Reflection> selfReflections,
-    List<Reflection> detailedInsights,
-    List<Reflection> goals,
-    MoodScore moodScore,
-    StressLevel stressLevel,
-    List<Highlight> highlights,
-    List<EnergyLevel> energyLevels,
-    List<MoodTracking> moodTrackings,
-    List<AwakeTimeAllocation> awakeTimeActions,
-    SocialMap socialMap,
-  });
+  $Res call(
+      {String id,
+      DateTime dateTime,
+      String summary,
+      List<DiaryEntry> diaryEntries,
+      List<Quote> quotes,
+      List<Reflection> selfReflections,
+      List<Reflection> detailedInsights,
+      List<Reflection> goals,
+      MoodScore moodScore,
+      StressLevel stressLevel,
+      List<Highlight> highlights,
+      List<EnergyLevel> energyLevels,
+      List<MoodTracking> moodTrackings,
+      List<AwakeTimeAllocation> awakeTimeActions,
+      SocialMap socialMap});
 
   @override
   $MoodScoreCopyWith<$Res> get moodScore;
@@ -3673,9 +3456,8 @@ class __$$JournalImplCopyWithImpl<$Res>
     extends _$JournalCopyWithImpl<$Res, _$JournalImpl>
     implements _$$JournalImplCopyWith<$Res> {
   __$$JournalImplCopyWithImpl(
-    _$JournalImpl _value,
-    $Res Function(_$JournalImpl) _then,
-  ) : super(_value, _then);
+      _$JournalImpl _value, $Res Function(_$JournalImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Journal
   /// with the given fields replaced by the non-null parameter values.
@@ -3698,116 +3480,99 @@ class __$$JournalImplCopyWithImpl<$Res>
     Object? awakeTimeActions = null,
     Object? socialMap = null,
   }) {
-    return _then(
-      _$JournalImpl(
-        id:
-            null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                    as String,
-        dateTime:
-            null == dateTime
-                ? _value.dateTime
-                : dateTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        summary:
-            null == summary
-                ? _value.summary
-                : summary // ignore: cast_nullable_to_non_nullable
-                    as String,
-        diaryEntries:
-            null == diaryEntries
-                ? _value._diaryEntries
-                : diaryEntries // ignore: cast_nullable_to_non_nullable
-                    as List<DiaryEntry>,
-        quotes:
-            null == quotes
-                ? _value._quotes
-                : quotes // ignore: cast_nullable_to_non_nullable
-                    as List<Quote>,
-        selfReflections:
-            null == selfReflections
-                ? _value._selfReflections
-                : selfReflections // ignore: cast_nullable_to_non_nullable
-                    as List<Reflection>,
-        detailedInsights:
-            null == detailedInsights
-                ? _value._detailedInsights
-                : detailedInsights // ignore: cast_nullable_to_non_nullable
-                    as List<Reflection>,
-        goals:
-            null == goals
-                ? _value._goals
-                : goals // ignore: cast_nullable_to_non_nullable
-                    as List<Reflection>,
-        moodScore:
-            null == moodScore
-                ? _value.moodScore
-                : moodScore // ignore: cast_nullable_to_non_nullable
-                    as MoodScore,
-        stressLevel:
-            null == stressLevel
-                ? _value.stressLevel
-                : stressLevel // ignore: cast_nullable_to_non_nullable
-                    as StressLevel,
-        highlights:
-            null == highlights
-                ? _value._highlights
-                : highlights // ignore: cast_nullable_to_non_nullable
-                    as List<Highlight>,
-        energyLevels:
-            null == energyLevels
-                ? _value._energyLevels
-                : energyLevels // ignore: cast_nullable_to_non_nullable
-                    as List<EnergyLevel>,
-        moodTrackings:
-            null == moodTrackings
-                ? _value._moodTrackings
-                : moodTrackings // ignore: cast_nullable_to_non_nullable
-                    as List<MoodTracking>,
-        awakeTimeActions:
-            null == awakeTimeActions
-                ? _value._awakeTimeActions
-                : awakeTimeActions // ignore: cast_nullable_to_non_nullable
-                    as List<AwakeTimeAllocation>,
-        socialMap:
-            null == socialMap
-                ? _value.socialMap
-                : socialMap // ignore: cast_nullable_to_non_nullable
-                    as SocialMap,
-      ),
-    );
+    return _then(_$JournalImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      summary: null == summary
+          ? _value.summary
+          : summary // ignore: cast_nullable_to_non_nullable
+              as String,
+      diaryEntries: null == diaryEntries
+          ? _value._diaryEntries
+          : diaryEntries // ignore: cast_nullable_to_non_nullable
+              as List<DiaryEntry>,
+      quotes: null == quotes
+          ? _value._quotes
+          : quotes // ignore: cast_nullable_to_non_nullable
+              as List<Quote>,
+      selfReflections: null == selfReflections
+          ? _value._selfReflections
+          : selfReflections // ignore: cast_nullable_to_non_nullable
+              as List<Reflection>,
+      detailedInsights: null == detailedInsights
+          ? _value._detailedInsights
+          : detailedInsights // ignore: cast_nullable_to_non_nullable
+              as List<Reflection>,
+      goals: null == goals
+          ? _value._goals
+          : goals // ignore: cast_nullable_to_non_nullable
+              as List<Reflection>,
+      moodScore: null == moodScore
+          ? _value.moodScore
+          : moodScore // ignore: cast_nullable_to_non_nullable
+              as MoodScore,
+      stressLevel: null == stressLevel
+          ? _value.stressLevel
+          : stressLevel // ignore: cast_nullable_to_non_nullable
+              as StressLevel,
+      highlights: null == highlights
+          ? _value._highlights
+          : highlights // ignore: cast_nullable_to_non_nullable
+              as List<Highlight>,
+      energyLevels: null == energyLevels
+          ? _value._energyLevels
+          : energyLevels // ignore: cast_nullable_to_non_nullable
+              as List<EnergyLevel>,
+      moodTrackings: null == moodTrackings
+          ? _value._moodTrackings
+          : moodTrackings // ignore: cast_nullable_to_non_nullable
+              as List<MoodTracking>,
+      awakeTimeActions: null == awakeTimeActions
+          ? _value._awakeTimeActions
+          : awakeTimeActions // ignore: cast_nullable_to_non_nullable
+              as List<AwakeTimeAllocation>,
+      socialMap: null == socialMap
+          ? _value.socialMap
+          : socialMap // ignore: cast_nullable_to_non_nullable
+              as SocialMap,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$JournalImpl implements _Journal {
-  const _$JournalImpl({
-    required this.id,
-    required this.dateTime,
-    required this.summary,
-    required final List<DiaryEntry> diaryEntries,
-    required final List<Quote> quotes,
-    required final List<Reflection> selfReflections,
-    required final List<Reflection> detailedInsights,
-    required final List<Reflection> goals,
-    required this.moodScore,
-    required this.stressLevel,
-    required final List<Highlight> highlights,
-    required final List<EnergyLevel> energyLevels,
-    required final List<MoodTracking> moodTrackings,
-    required final List<AwakeTimeAllocation> awakeTimeActions,
-    required this.socialMap,
-  }) : _diaryEntries = diaryEntries,
-       _quotes = quotes,
-       _selfReflections = selfReflections,
-       _detailedInsights = detailedInsights,
-       _goals = goals,
-       _highlights = highlights,
-       _energyLevels = energyLevels,
-       _moodTrackings = moodTrackings,
-       _awakeTimeActions = awakeTimeActions;
+  const _$JournalImpl(
+      {required this.id,
+      required this.dateTime,
+      required this.summary,
+      required final List<DiaryEntry> diaryEntries,
+      required final List<Quote> quotes,
+      required final List<Reflection> selfReflections,
+      required final List<Reflection> detailedInsights,
+      required final List<Reflection> goals,
+      required this.moodScore,
+      required this.stressLevel,
+      required final List<Highlight> highlights,
+      required final List<EnergyLevel> energyLevels,
+      required final List<MoodTracking> moodTrackings,
+      required final List<AwakeTimeAllocation> awakeTimeActions,
+      required this.socialMap})
+      : _diaryEntries = diaryEntries,
+        _quotes = quotes,
+        _selfReflections = selfReflections,
+        _detailedInsights = detailedInsights,
+        _goals = goals,
+        _highlights = highlights,
+        _energyLevels = energyLevels,
+        _moodTrackings = moodTrackings,
+        _awakeTimeActions = awakeTimeActions;
 
   factory _$JournalImpl.fromJson(Map<String, dynamic> json) =>
       _$$JournalImplFromJson(json);
@@ -3913,40 +3678,26 @@ class _$JournalImpl implements _Journal {
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
             (identical(other.summary, summary) || other.summary == summary) &&
-            const DeepCollectionEquality().equals(
-              other._diaryEntries,
-              _diaryEntries,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._diaryEntries, _diaryEntries) &&
             const DeepCollectionEquality().equals(other._quotes, _quotes) &&
-            const DeepCollectionEquality().equals(
-              other._selfReflections,
-              _selfReflections,
-            ) &&
-            const DeepCollectionEquality().equals(
-              other._detailedInsights,
-              _detailedInsights,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._selfReflections, _selfReflections) &&
+            const DeepCollectionEquality()
+                .equals(other._detailedInsights, _detailedInsights) &&
             const DeepCollectionEquality().equals(other._goals, _goals) &&
             (identical(other.moodScore, moodScore) ||
                 other.moodScore == moodScore) &&
             (identical(other.stressLevel, stressLevel) ||
                 other.stressLevel == stressLevel) &&
-            const DeepCollectionEquality().equals(
-              other._highlights,
-              _highlights,
-            ) &&
-            const DeepCollectionEquality().equals(
-              other._energyLevels,
-              _energyLevels,
-            ) &&
-            const DeepCollectionEquality().equals(
-              other._moodTrackings,
-              _moodTrackings,
-            ) &&
-            const DeepCollectionEquality().equals(
-              other._awakeTimeActions,
-              _awakeTimeActions,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._highlights, _highlights) &&
+            const DeepCollectionEquality()
+                .equals(other._energyLevels, _energyLevels) &&
+            const DeepCollectionEquality()
+                .equals(other._moodTrackings, _moodTrackings) &&
+            const DeepCollectionEquality()
+                .equals(other._awakeTimeActions, _awakeTimeActions) &&
             (identical(other.socialMap, socialMap) ||
                 other.socialMap == socialMap));
   }
@@ -3954,23 +3705,22 @@ class _$JournalImpl implements _Journal {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    dateTime,
-    summary,
-    const DeepCollectionEquality().hash(_diaryEntries),
-    const DeepCollectionEquality().hash(_quotes),
-    const DeepCollectionEquality().hash(_selfReflections),
-    const DeepCollectionEquality().hash(_detailedInsights),
-    const DeepCollectionEquality().hash(_goals),
-    moodScore,
-    stressLevel,
-    const DeepCollectionEquality().hash(_highlights),
-    const DeepCollectionEquality().hash(_energyLevels),
-    const DeepCollectionEquality().hash(_moodTrackings),
-    const DeepCollectionEquality().hash(_awakeTimeActions),
-    socialMap,
-  );
+      runtimeType,
+      id,
+      dateTime,
+      summary,
+      const DeepCollectionEquality().hash(_diaryEntries),
+      const DeepCollectionEquality().hash(_quotes),
+      const DeepCollectionEquality().hash(_selfReflections),
+      const DeepCollectionEquality().hash(_detailedInsights),
+      const DeepCollectionEquality().hash(_goals),
+      moodScore,
+      stressLevel,
+      const DeepCollectionEquality().hash(_highlights),
+      const DeepCollectionEquality().hash(_energyLevels),
+      const DeepCollectionEquality().hash(_moodTrackings),
+      const DeepCollectionEquality().hash(_awakeTimeActions),
+      socialMap);
 
   /// Create a copy of Journal
   /// with the given fields replaced by the non-null parameter values.
@@ -3982,28 +3732,29 @@ class _$JournalImpl implements _Journal {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$JournalImplToJson(this);
+    return _$$JournalImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Journal implements Journal {
-  const factory _Journal({
-    required final String id,
-    required final DateTime dateTime,
-    required final String summary,
-    required final List<DiaryEntry> diaryEntries,
-    required final List<Quote> quotes,
-    required final List<Reflection> selfReflections,
-    required final List<Reflection> detailedInsights,
-    required final List<Reflection> goals,
-    required final MoodScore moodScore,
-    required final StressLevel stressLevel,
-    required final List<Highlight> highlights,
-    required final List<EnergyLevel> energyLevels,
-    required final List<MoodTracking> moodTrackings,
-    required final List<AwakeTimeAllocation> awakeTimeActions,
-    required final SocialMap socialMap,
-  }) = _$JournalImpl;
+  const factory _Journal(
+      {required final String id,
+      required final DateTime dateTime,
+      required final String summary,
+      required final List<DiaryEntry> diaryEntries,
+      required final List<Quote> quotes,
+      required final List<Reflection> selfReflections,
+      required final List<Reflection> detailedInsights,
+      required final List<Reflection> goals,
+      required final MoodScore moodScore,
+      required final StressLevel stressLevel,
+      required final List<Highlight> highlights,
+      required final List<EnergyLevel> energyLevels,
+      required final List<MoodTracking> moodTrackings,
+      required final List<AwakeTimeAllocation> awakeTimeActions,
+      required final SocialMap socialMap}) = _$JournalImpl;
 
   factory _Journal.fromJson(Map<String, dynamic> json) = _$JournalImpl.fromJson;
 
@@ -4068,9 +3819,8 @@ mixin _$MoodScoreDashboard {
 /// @nodoc
 abstract class $MoodScoreDashboardCopyWith<$Res> {
   factory $MoodScoreDashboardCopyWith(
-    MoodScoreDashboard value,
-    $Res Function(MoodScoreDashboard) then,
-  ) = _$MoodScoreDashboardCopyWithImpl<$Res, MoodScoreDashboard>;
+          MoodScoreDashboard value, $Res Function(MoodScoreDashboard) then) =
+      _$MoodScoreDashboardCopyWithImpl<$Res, MoodScoreDashboard>;
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
 }
@@ -4089,32 +3839,29 @@ class _$MoodScoreDashboardCopyWithImpl<$Res, $Val extends MoodScoreDashboard>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _value.copyWith(
-            dateTime:
-                null == dateTime
-                    ? _value.dateTime
-                    : dateTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            insights:
-                null == insights
-                    ? _value.insights
-                    : insights // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_value.copyWith(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value.insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$MoodScoreDashboardImplCopyWith<$Res>
     implements $MoodScoreDashboardCopyWith<$Res> {
-  factory _$$MoodScoreDashboardImplCopyWith(
-    _$MoodScoreDashboardImpl value,
-    $Res Function(_$MoodScoreDashboardImpl) then,
-  ) = __$$MoodScoreDashboardImplCopyWithImpl<$Res>;
+  factory _$$MoodScoreDashboardImplCopyWith(_$MoodScoreDashboardImpl value,
+          $Res Function(_$MoodScoreDashboardImpl) then) =
+      __$$MoodScoreDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
@@ -4124,40 +3871,37 @@ abstract class _$$MoodScoreDashboardImplCopyWith<$Res>
 class __$$MoodScoreDashboardImplCopyWithImpl<$Res>
     extends _$MoodScoreDashboardCopyWithImpl<$Res, _$MoodScoreDashboardImpl>
     implements _$$MoodScoreDashboardImplCopyWith<$Res> {
-  __$$MoodScoreDashboardImplCopyWithImpl(
-    _$MoodScoreDashboardImpl _value,
-    $Res Function(_$MoodScoreDashboardImpl) _then,
-  ) : super(_value, _then);
+  __$$MoodScoreDashboardImplCopyWithImpl(_$MoodScoreDashboardImpl _value,
+      $Res Function(_$MoodScoreDashboardImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of MoodScoreDashboard
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _$MoodScoreDashboardImpl(
-        dateTime:
-            null == dateTime
-                ? _value.dateTime
-                : dateTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        insights:
-            null == insights
-                ? _value._insights
-                : insights // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
-      ),
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_$MoodScoreDashboardImpl(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value._insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
-  const _$MoodScoreDashboardImpl({
-    required this.dateTime,
-    required final List<String> insights,
-  }) : _insights = insights;
+  const _$MoodScoreDashboardImpl(
+      {required this.dateTime, required final List<String> insights})
+      : _insights = insights;
 
   factory _$MoodScoreDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$MoodScoreDashboardImplFromJson(json);
@@ -4190,10 +3934,7 @@ class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    dateTime,
-    const DeepCollectionEquality().hash(_insights),
-  );
+      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
 
   /// Create a copy of MoodScoreDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4202,21 +3943,20 @@ class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
   @pragma('vm:prefer-inline')
   _$$MoodScoreDashboardImplCopyWith<_$MoodScoreDashboardImpl> get copyWith =>
       __$$MoodScoreDashboardImplCopyWithImpl<_$MoodScoreDashboardImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MoodScoreDashboardImplToJson(this);
+    return _$$MoodScoreDashboardImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _MoodScoreDashboard implements MoodScoreDashboard {
-  const factory _MoodScoreDashboard({
-    required final DateTime dateTime,
-    required final List<String> insights,
-  }) = _$MoodScoreDashboardImpl;
+  const factory _MoodScoreDashboard(
+      {required final DateTime dateTime,
+      required final List<String> insights}) = _$MoodScoreDashboardImpl;
 
   factory _MoodScoreDashboard.fromJson(Map<String, dynamic> json) =
       _$MoodScoreDashboardImpl.fromJson;
@@ -4255,19 +3995,16 @@ mixin _$StressLevelDashboard {
 
 /// @nodoc
 abstract class $StressLevelDashboardCopyWith<$Res> {
-  factory $StressLevelDashboardCopyWith(
-    StressLevelDashboard value,
-    $Res Function(StressLevelDashboard) then,
-  ) = _$StressLevelDashboardCopyWithImpl<$Res, StressLevelDashboard>;
+  factory $StressLevelDashboardCopyWith(StressLevelDashboard value,
+          $Res Function(StressLevelDashboard) then) =
+      _$StressLevelDashboardCopyWithImpl<$Res, StressLevelDashboard>;
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
 }
 
 /// @nodoc
-class _$StressLevelDashboardCopyWithImpl<
-  $Res,
-  $Val extends StressLevelDashboard
->
+class _$StressLevelDashboardCopyWithImpl<$Res,
+        $Val extends StressLevelDashboard>
     implements $StressLevelDashboardCopyWith<$Res> {
   _$StressLevelDashboardCopyWithImpl(this._value, this._then);
 
@@ -4280,32 +4017,29 @@ class _$StressLevelDashboardCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _value.copyWith(
-            dateTime:
-                null == dateTime
-                    ? _value.dateTime
-                    : dateTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            insights:
-                null == insights
-                    ? _value.insights
-                    : insights // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_value.copyWith(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value.insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$StressLevelDashboardImplCopyWith<$Res>
     implements $StressLevelDashboardCopyWith<$Res> {
-  factory _$$StressLevelDashboardImplCopyWith(
-    _$StressLevelDashboardImpl value,
-    $Res Function(_$StressLevelDashboardImpl) then,
-  ) = __$$StressLevelDashboardImplCopyWithImpl<$Res>;
+  factory _$$StressLevelDashboardImplCopyWith(_$StressLevelDashboardImpl value,
+          $Res Function(_$StressLevelDashboardImpl) then) =
+      __$$StressLevelDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
@@ -4315,40 +4049,37 @@ abstract class _$$StressLevelDashboardImplCopyWith<$Res>
 class __$$StressLevelDashboardImplCopyWithImpl<$Res>
     extends _$StressLevelDashboardCopyWithImpl<$Res, _$StressLevelDashboardImpl>
     implements _$$StressLevelDashboardImplCopyWith<$Res> {
-  __$$StressLevelDashboardImplCopyWithImpl(
-    _$StressLevelDashboardImpl _value,
-    $Res Function(_$StressLevelDashboardImpl) _then,
-  ) : super(_value, _then);
+  __$$StressLevelDashboardImplCopyWithImpl(_$StressLevelDashboardImpl _value,
+      $Res Function(_$StressLevelDashboardImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of StressLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _$StressLevelDashboardImpl(
-        dateTime:
-            null == dateTime
-                ? _value.dateTime
-                : dateTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        insights:
-            null == insights
-                ? _value._insights
-                : insights // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
-      ),
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_$StressLevelDashboardImpl(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value._insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$StressLevelDashboardImpl implements _StressLevelDashboard {
-  const _$StressLevelDashboardImpl({
-    required this.dateTime,
-    required final List<String> insights,
-  }) : _insights = insights;
+  const _$StressLevelDashboardImpl(
+      {required this.dateTime, required final List<String> insights})
+      : _insights = insights;
 
   factory _$StressLevelDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$StressLevelDashboardImplFromJson(json);
@@ -4381,10 +4112,7 @@ class _$StressLevelDashboardImpl implements _StressLevelDashboard {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    dateTime,
-    const DeepCollectionEquality().hash(_insights),
-  );
+      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
 
   /// Create a copy of StressLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4392,23 +4120,22 @@ class _$StressLevelDashboardImpl implements _StressLevelDashboard {
   @override
   @pragma('vm:prefer-inline')
   _$$StressLevelDashboardImplCopyWith<_$StressLevelDashboardImpl>
-  get copyWith =>
-      __$$StressLevelDashboardImplCopyWithImpl<_$StressLevelDashboardImpl>(
-        this,
-        _$identity,
-      );
+      get copyWith =>
+          __$$StressLevelDashboardImplCopyWithImpl<_$StressLevelDashboardImpl>(
+              this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$StressLevelDashboardImplToJson(this);
+    return _$$StressLevelDashboardImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _StressLevelDashboard implements StressLevelDashboard {
-  const factory _StressLevelDashboard({
-    required final DateTime dateTime,
-    required final List<String> insights,
-  }) = _$StressLevelDashboardImpl;
+  const factory _StressLevelDashboard(
+      {required final DateTime dateTime,
+      required final List<String> insights}) = _$StressLevelDashboardImpl;
 
   factory _StressLevelDashboard.fromJson(Map<String, dynamic> json) =
       _$StressLevelDashboardImpl.fromJson;
@@ -4423,7 +4150,7 @@ abstract class _StressLevelDashboard implements StressLevelDashboard {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$StressLevelDashboardImplCopyWith<_$StressLevelDashboardImpl>
-  get copyWith => throw _privateConstructorUsedError;
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 EnergyLevelDashboard _$EnergyLevelDashboardFromJson(Map<String, dynamic> json) {
@@ -4447,19 +4174,16 @@ mixin _$EnergyLevelDashboard {
 
 /// @nodoc
 abstract class $EnergyLevelDashboardCopyWith<$Res> {
-  factory $EnergyLevelDashboardCopyWith(
-    EnergyLevelDashboard value,
-    $Res Function(EnergyLevelDashboard) then,
-  ) = _$EnergyLevelDashboardCopyWithImpl<$Res, EnergyLevelDashboard>;
+  factory $EnergyLevelDashboardCopyWith(EnergyLevelDashboard value,
+          $Res Function(EnergyLevelDashboard) then) =
+      _$EnergyLevelDashboardCopyWithImpl<$Res, EnergyLevelDashboard>;
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
 }
 
 /// @nodoc
-class _$EnergyLevelDashboardCopyWithImpl<
-  $Res,
-  $Val extends EnergyLevelDashboard
->
+class _$EnergyLevelDashboardCopyWithImpl<$Res,
+        $Val extends EnergyLevelDashboard>
     implements $EnergyLevelDashboardCopyWith<$Res> {
   _$EnergyLevelDashboardCopyWithImpl(this._value, this._then);
 
@@ -4472,32 +4196,29 @@ class _$EnergyLevelDashboardCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _value.copyWith(
-            dateTime:
-                null == dateTime
-                    ? _value.dateTime
-                    : dateTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            insights:
-                null == insights
-                    ? _value.insights
-                    : insights // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_value.copyWith(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value.insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$EnergyLevelDashboardImplCopyWith<$Res>
     implements $EnergyLevelDashboardCopyWith<$Res> {
-  factory _$$EnergyLevelDashboardImplCopyWith(
-    _$EnergyLevelDashboardImpl value,
-    $Res Function(_$EnergyLevelDashboardImpl) then,
-  ) = __$$EnergyLevelDashboardImplCopyWithImpl<$Res>;
+  factory _$$EnergyLevelDashboardImplCopyWith(_$EnergyLevelDashboardImpl value,
+          $Res Function(_$EnergyLevelDashboardImpl) then) =
+      __$$EnergyLevelDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
@@ -4507,40 +4228,37 @@ abstract class _$$EnergyLevelDashboardImplCopyWith<$Res>
 class __$$EnergyLevelDashboardImplCopyWithImpl<$Res>
     extends _$EnergyLevelDashboardCopyWithImpl<$Res, _$EnergyLevelDashboardImpl>
     implements _$$EnergyLevelDashboardImplCopyWith<$Res> {
-  __$$EnergyLevelDashboardImplCopyWithImpl(
-    _$EnergyLevelDashboardImpl _value,
-    $Res Function(_$EnergyLevelDashboardImpl) _then,
-  ) : super(_value, _then);
+  __$$EnergyLevelDashboardImplCopyWithImpl(_$EnergyLevelDashboardImpl _value,
+      $Res Function(_$EnergyLevelDashboardImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of EnergyLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _$EnergyLevelDashboardImpl(
-        dateTime:
-            null == dateTime
-                ? _value.dateTime
-                : dateTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        insights:
-            null == insights
-                ? _value._insights
-                : insights // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
-      ),
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_$EnergyLevelDashboardImpl(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value._insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
-  const _$EnergyLevelDashboardImpl({
-    required this.dateTime,
-    required final List<String> insights,
-  }) : _insights = insights;
+  const _$EnergyLevelDashboardImpl(
+      {required this.dateTime, required final List<String> insights})
+      : _insights = insights;
 
   factory _$EnergyLevelDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$EnergyLevelDashboardImplFromJson(json);
@@ -4573,10 +4291,7 @@ class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    dateTime,
-    const DeepCollectionEquality().hash(_insights),
-  );
+      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
 
   /// Create a copy of EnergyLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4584,23 +4299,22 @@ class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
   @override
   @pragma('vm:prefer-inline')
   _$$EnergyLevelDashboardImplCopyWith<_$EnergyLevelDashboardImpl>
-  get copyWith =>
-      __$$EnergyLevelDashboardImplCopyWithImpl<_$EnergyLevelDashboardImpl>(
-        this,
-        _$identity,
-      );
+      get copyWith =>
+          __$$EnergyLevelDashboardImplCopyWithImpl<_$EnergyLevelDashboardImpl>(
+              this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EnergyLevelDashboardImplToJson(this);
+    return _$$EnergyLevelDashboardImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _EnergyLevelDashboard implements EnergyLevelDashboard {
-  const factory _EnergyLevelDashboard({
-    required final DateTime dateTime,
-    required final List<String> insights,
-  }) = _$EnergyLevelDashboardImpl;
+  const factory _EnergyLevelDashboard(
+      {required final DateTime dateTime,
+      required final List<String> insights}) = _$EnergyLevelDashboardImpl;
 
   factory _EnergyLevelDashboard.fromJson(Map<String, dynamic> json) =
       _$EnergyLevelDashboardImpl.fromJson;
@@ -4615,12 +4329,11 @@ abstract class _EnergyLevelDashboard implements EnergyLevelDashboard {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EnergyLevelDashboardImplCopyWith<_$EnergyLevelDashboardImpl>
-  get copyWith => throw _privateConstructorUsedError;
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 MoodTrackingDashboard _$MoodTrackingDashboardFromJson(
-  Map<String, dynamic> json,
-) {
+    Map<String, dynamic> json) {
   return _MoodTrackingDashboard.fromJson(json);
 }
 
@@ -4641,19 +4354,16 @@ mixin _$MoodTrackingDashboard {
 
 /// @nodoc
 abstract class $MoodTrackingDashboardCopyWith<$Res> {
-  factory $MoodTrackingDashboardCopyWith(
-    MoodTrackingDashboard value,
-    $Res Function(MoodTrackingDashboard) then,
-  ) = _$MoodTrackingDashboardCopyWithImpl<$Res, MoodTrackingDashboard>;
+  factory $MoodTrackingDashboardCopyWith(MoodTrackingDashboard value,
+          $Res Function(MoodTrackingDashboard) then) =
+      _$MoodTrackingDashboardCopyWithImpl<$Res, MoodTrackingDashboard>;
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
 }
 
 /// @nodoc
-class _$MoodTrackingDashboardCopyWithImpl<
-  $Res,
-  $Val extends MoodTrackingDashboard
->
+class _$MoodTrackingDashboardCopyWithImpl<$Res,
+        $Val extends MoodTrackingDashboard>
     implements $MoodTrackingDashboardCopyWith<$Res> {
   _$MoodTrackingDashboardCopyWithImpl(this._value, this._then);
 
@@ -4666,22 +4376,20 @@ class _$MoodTrackingDashboardCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _value.copyWith(
-            dateTime:
-                null == dateTime
-                    ? _value.dateTime
-                    : dateTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            insights:
-                null == insights
-                    ? _value.insights
-                    : insights // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_value.copyWith(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value.insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
   }
 }
 
@@ -4689,9 +4397,9 @@ class _$MoodTrackingDashboardCopyWithImpl<
 abstract class _$$MoodTrackingDashboardImplCopyWith<$Res>
     implements $MoodTrackingDashboardCopyWith<$Res> {
   factory _$$MoodTrackingDashboardImplCopyWith(
-    _$MoodTrackingDashboardImpl value,
-    $Res Function(_$MoodTrackingDashboardImpl) then,
-  ) = __$$MoodTrackingDashboardImplCopyWithImpl<$Res>;
+          _$MoodTrackingDashboardImpl value,
+          $Res Function(_$MoodTrackingDashboardImpl) then) =
+      __$$MoodTrackingDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
@@ -4699,43 +4407,40 @@ abstract class _$$MoodTrackingDashboardImplCopyWith<$Res>
 
 /// @nodoc
 class __$$MoodTrackingDashboardImplCopyWithImpl<$Res>
-    extends
-        _$MoodTrackingDashboardCopyWithImpl<$Res, _$MoodTrackingDashboardImpl>
+    extends _$MoodTrackingDashboardCopyWithImpl<$Res,
+        _$MoodTrackingDashboardImpl>
     implements _$$MoodTrackingDashboardImplCopyWith<$Res> {
-  __$$MoodTrackingDashboardImplCopyWithImpl(
-    _$MoodTrackingDashboardImpl _value,
-    $Res Function(_$MoodTrackingDashboardImpl) _then,
-  ) : super(_value, _then);
+  __$$MoodTrackingDashboardImplCopyWithImpl(_$MoodTrackingDashboardImpl _value,
+      $Res Function(_$MoodTrackingDashboardImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of MoodTrackingDashboard
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _$MoodTrackingDashboardImpl(
-        dateTime:
-            null == dateTime
-                ? _value.dateTime
-                : dateTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        insights:
-            null == insights
-                ? _value._insights
-                : insights // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
-      ),
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_$MoodTrackingDashboardImpl(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value._insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
-  const _$MoodTrackingDashboardImpl({
-    required this.dateTime,
-    required final List<String> insights,
-  }) : _insights = insights;
+  const _$MoodTrackingDashboardImpl(
+      {required this.dateTime, required final List<String> insights})
+      : _insights = insights;
 
   factory _$MoodTrackingDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$MoodTrackingDashboardImplFromJson(json);
@@ -4768,10 +4473,7 @@ class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    dateTime,
-    const DeepCollectionEquality().hash(_insights),
-  );
+      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
 
   /// Create a copy of MoodTrackingDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4779,23 +4481,21 @@ class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
   @override
   @pragma('vm:prefer-inline')
   _$$MoodTrackingDashboardImplCopyWith<_$MoodTrackingDashboardImpl>
-  get copyWith =>
-      __$$MoodTrackingDashboardImplCopyWithImpl<_$MoodTrackingDashboardImpl>(
-        this,
-        _$identity,
-      );
+      get copyWith => __$$MoodTrackingDashboardImplCopyWithImpl<
+          _$MoodTrackingDashboardImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MoodTrackingDashboardImplToJson(this);
+    return _$$MoodTrackingDashboardImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _MoodTrackingDashboard implements MoodTrackingDashboard {
-  const factory _MoodTrackingDashboard({
-    required final DateTime dateTime,
-    required final List<String> insights,
-  }) = _$MoodTrackingDashboardImpl;
+  const factory _MoodTrackingDashboard(
+      {required final DateTime dateTime,
+      required final List<String> insights}) = _$MoodTrackingDashboardImpl;
 
   factory _MoodTrackingDashboard.fromJson(Map<String, dynamic> json) =
       _$MoodTrackingDashboardImpl.fromJson;
@@ -4810,12 +4510,11 @@ abstract class _MoodTrackingDashboard implements MoodTrackingDashboard {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$MoodTrackingDashboardImplCopyWith<_$MoodTrackingDashboardImpl>
-  get copyWith => throw _privateConstructorUsedError;
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 AwakeTimeAllocationDashboard _$AwakeTimeAllocationDashboardFromJson(
-  Map<String, dynamic> json,
-) {
+    Map<String, dynamic> json) {
   return _AwakeTimeAllocationDashboard.fromJson(json);
 }
 
@@ -4831,28 +4530,23 @@ mixin _$AwakeTimeAllocationDashboard {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   $AwakeTimeAllocationDashboardCopyWith<AwakeTimeAllocationDashboard>
-  get copyWith => throw _privateConstructorUsedError;
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $AwakeTimeAllocationDashboardCopyWith<$Res> {
   factory $AwakeTimeAllocationDashboardCopyWith(
-    AwakeTimeAllocationDashboard value,
-    $Res Function(AwakeTimeAllocationDashboard) then,
-  ) =
-      _$AwakeTimeAllocationDashboardCopyWithImpl<
-        $Res,
-        AwakeTimeAllocationDashboard
-      >;
+          AwakeTimeAllocationDashboard value,
+          $Res Function(AwakeTimeAllocationDashboard) then) =
+      _$AwakeTimeAllocationDashboardCopyWithImpl<$Res,
+          AwakeTimeAllocationDashboard>;
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
 }
 
 /// @nodoc
-class _$AwakeTimeAllocationDashboardCopyWithImpl<
-  $Res,
-  $Val extends AwakeTimeAllocationDashboard
->
+class _$AwakeTimeAllocationDashboardCopyWithImpl<$Res,
+        $Val extends AwakeTimeAllocationDashboard>
     implements $AwakeTimeAllocationDashboardCopyWith<$Res> {
   _$AwakeTimeAllocationDashboardCopyWithImpl(this._value, this._then);
 
@@ -4865,22 +4559,20 @@ class _$AwakeTimeAllocationDashboardCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _value.copyWith(
-            dateTime:
-                null == dateTime
-                    ? _value.dateTime
-                    : dateTime // ignore: cast_nullable_to_non_nullable
-                        as DateTime,
-            insights:
-                null == insights
-                    ? _value.insights
-                    : insights // ignore: cast_nullable_to_non_nullable
-                        as List<String>,
-          )
-          as $Val,
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_value.copyWith(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value.insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
   }
 }
 
@@ -4888,9 +4580,9 @@ class _$AwakeTimeAllocationDashboardCopyWithImpl<
 abstract class _$$AwakeTimeAllocationDashboardImplCopyWith<$Res>
     implements $AwakeTimeAllocationDashboardCopyWith<$Res> {
   factory _$$AwakeTimeAllocationDashboardImplCopyWith(
-    _$AwakeTimeAllocationDashboardImpl value,
-    $Res Function(_$AwakeTimeAllocationDashboardImpl) then,
-  ) = __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>;
+          _$AwakeTimeAllocationDashboardImpl value,
+          $Res Function(_$AwakeTimeAllocationDashboardImpl) then) =
+      __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DateTime dateTime, List<String> insights});
@@ -4898,36 +4590,32 @@ abstract class _$$AwakeTimeAllocationDashboardImplCopyWith<$Res>
 
 /// @nodoc
 class __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>
-    extends
-        _$AwakeTimeAllocationDashboardCopyWithImpl<
-          $Res,
-          _$AwakeTimeAllocationDashboardImpl
-        >
+    extends _$AwakeTimeAllocationDashboardCopyWithImpl<$Res,
+        _$AwakeTimeAllocationDashboardImpl>
     implements _$$AwakeTimeAllocationDashboardImplCopyWith<$Res> {
   __$$AwakeTimeAllocationDashboardImplCopyWithImpl(
-    _$AwakeTimeAllocationDashboardImpl _value,
-    $Res Function(_$AwakeTimeAllocationDashboardImpl) _then,
-  ) : super(_value, _then);
+      _$AwakeTimeAllocationDashboardImpl _value,
+      $Res Function(_$AwakeTimeAllocationDashboardImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of AwakeTimeAllocationDashboard
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? dateTime = null, Object? insights = null}) {
-    return _then(
-      _$AwakeTimeAllocationDashboardImpl(
-        dateTime:
-            null == dateTime
-                ? _value.dateTime
-                : dateTime // ignore: cast_nullable_to_non_nullable
-                    as DateTime,
-        insights:
-            null == insights
-                ? _value._insights
-                : insights // ignore: cast_nullable_to_non_nullable
-                    as List<String>,
-      ),
-    );
+  $Res call({
+    Object? dateTime = null,
+    Object? insights = null,
+  }) {
+    return _then(_$AwakeTimeAllocationDashboardImpl(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      insights: null == insights
+          ? _value._insights
+          : insights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
   }
 }
 
@@ -4935,14 +4623,13 @@ class __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AwakeTimeAllocationDashboardImpl
     implements _AwakeTimeAllocationDashboard {
-  const _$AwakeTimeAllocationDashboardImpl({
-    required this.dateTime,
-    required final List<String> insights,
-  }) : _insights = insights;
+  const _$AwakeTimeAllocationDashboardImpl(
+      {required this.dateTime, required final List<String> insights})
+      : _insights = insights;
 
   factory _$AwakeTimeAllocationDashboardImpl.fromJson(
-    Map<String, dynamic> json,
-  ) => _$$AwakeTimeAllocationDashboardImplFromJson(json);
+          Map<String, dynamic> json) =>
+      _$$AwakeTimeAllocationDashboardImplFromJson(json);
 
   @override
   final DateTime dateTime;
@@ -4972,10 +4659,7 @@ class _$AwakeTimeAllocationDashboardImpl
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    dateTime,
-    const DeepCollectionEquality().hash(_insights),
-  );
+      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
 
   /// Create a copy of AwakeTimeAllocationDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4983,24 +4667,24 @@ class _$AwakeTimeAllocationDashboardImpl
   @override
   @pragma('vm:prefer-inline')
   _$$AwakeTimeAllocationDashboardImplCopyWith<
-    _$AwakeTimeAllocationDashboardImpl
-  >
-  get copyWith => __$$AwakeTimeAllocationDashboardImplCopyWithImpl<
-    _$AwakeTimeAllocationDashboardImpl
-  >(this, _$identity);
+          _$AwakeTimeAllocationDashboardImpl>
+      get copyWith => __$$AwakeTimeAllocationDashboardImplCopyWithImpl<
+          _$AwakeTimeAllocationDashboardImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AwakeTimeAllocationDashboardImplToJson(this);
+    return _$$AwakeTimeAllocationDashboardImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _AwakeTimeAllocationDashboard
     implements AwakeTimeAllocationDashboard {
-  const factory _AwakeTimeAllocationDashboard({
-    required final DateTime dateTime,
-    required final List<String> insights,
-  }) = _$AwakeTimeAllocationDashboardImpl;
+  const factory _AwakeTimeAllocationDashboard(
+          {required final DateTime dateTime,
+          required final List<String> insights}) =
+      _$AwakeTimeAllocationDashboardImpl;
 
   factory _AwakeTimeAllocationDashboard.fromJson(Map<String, dynamic> json) =
       _$AwakeTimeAllocationDashboardImpl.fromJson;
@@ -5015,7 +4699,6 @@ abstract class _AwakeTimeAllocationDashboard
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AwakeTimeAllocationDashboardImplCopyWith<
-    _$AwakeTimeAllocationDashboardImpl
-  >
-  get copyWith => throw _privateConstructorUsedError;
+          _$AwakeTimeAllocationDashboardImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }

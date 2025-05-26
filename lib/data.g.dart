@@ -6,17 +6,25 @@ part of 'data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) =>
-    _$UserImpl(name: json['name'] as String);
+_$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
+      name: json['name'] as String,
+    );
 
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
-    <String, dynamic>{'name': instance.name};
+    <String, dynamic>{
+      'name': instance.name,
+    };
 
-_$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) =>
-    _$QuoteImpl(text: json['text'] as String, mood: json['mood'] as String);
+_$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) => _$QuoteImpl(
+      text: json['text'] as String,
+      mood: json['mood'] as String,
+    );
 
 Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
-    <String, dynamic>{'text': instance.text, 'mood': instance.mood};
+    <String, dynamic>{
+      'text': instance.text,
+      'mood': instance.mood,
+    };
 
 _$EventTagImpl _$$EventTagImplFromJson(Map<String, dynamic> json) =>
     _$EventTagImpl(
@@ -25,13 +33,20 @@ _$EventTagImpl _$$EventTagImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$EventTagImplToJson(_$EventTagImpl instance) =>
-    <String, dynamic>{'name': instance.name, 'color': instance.color};
+    <String, dynamic>{
+      'name': instance.name,
+      'color': instance.color,
+    };
 
 _$EventLocationImpl _$$EventLocationImplFromJson(Map<String, dynamic> json) =>
-    _$EventLocationImpl(name: json['name'] as String);
+    _$EventLocationImpl(
+      name: json['name'] as String,
+    );
 
 Map<String, dynamic> _$$EventLocationImplToJson(_$EventLocationImpl instance) =>
-    <String, dynamic>{'name': instance.name};
+    <String, dynamic>{
+      'name': instance.name,
+    };
 
 _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
     _$DiaryEntryImpl(
@@ -41,13 +56,11 @@ _$DiaryEntryImpl _$$DiaryEntryImplFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       summary: json['summary'] as String,
       content: json['content'] as String,
-      tags:
-          (json['tags'] as List<dynamic>)
-              .map((e) => EventTag.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      location: EventLocation.fromJson(
-        json['location'] as Map<String, dynamic>,
-      ),
+      tags: (json['tags'] as List<dynamic>)
+          .map((e) => EventTag.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      location:
+          EventLocation.fromJson(json['location'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$DiaryEntryImplToJson(_$DiaryEntryImpl instance) =>
@@ -69,8 +82,11 @@ _$DiaryEntryNoteImpl _$$DiaryEntryNoteImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$DiaryEntryNoteImplToJson(
-  _$DiaryEntryNoteImpl instance,
-) => <String, dynamic>{'id': instance.id, 'content': instance.content};
+        _$DiaryEntryNoteImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'content': instance.content,
+    };
 
 _$ReflectionImpl _$$ReflectionImplFromJson(Map<String, dynamic> json) =>
     _$ReflectionImpl(
@@ -95,7 +111,10 @@ _$MoodScoreImpl _$$MoodScoreImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$MoodScoreImplToJson(_$MoodScoreImpl instance) =>
-    <String, dynamic>{'value': instance.value, 'change': instance.change};
+    <String, dynamic>{
+      'value': instance.value,
+      'change': instance.change,
+    };
 
 _$StressLevelImpl _$$StressLevelImplFromJson(Map<String, dynamic> json) =>
     _$StressLevelImpl(
@@ -104,7 +123,10 @@ _$StressLevelImpl _$$StressLevelImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$StressLevelImplToJson(_$StressLevelImpl instance) =>
-    <String, dynamic>{'value': instance.value, 'change': instance.change};
+    <String, dynamic>{
+      'value': instance.value,
+      'change': instance.change,
+    };
 
 _$HighlightImpl _$$HighlightImplFromJson(Map<String, dynamic> json) =>
     _$HighlightImpl(
@@ -121,30 +143,29 @@ Map<String, dynamic> _$$HighlightImplToJson(_$HighlightImpl instance) =>
     };
 
 _$ArchivedHighlightsImpl _$$ArchivedHighlightsImplFromJson(
-  Map<String, dynamic> json,
-) => _$ArchivedHighlightsImpl(
-  beginTime: DateTime.parse(json['beginTime'] as String),
-  endTime: DateTime.parse(json['endTime'] as String),
-  highlights:
-      (json['highlights'] as List<dynamic>)
+        Map<String, dynamic> json) =>
+    _$ArchivedHighlightsImpl(
+      beginTime: DateTime.parse(json['beginTime'] as String),
+      endTime: DateTime.parse(json['endTime'] as String),
+      highlights: (json['highlights'] as List<dynamic>)
           .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
           .toList(),
-);
+    );
 
 Map<String, dynamic> _$$ArchivedHighlightsImplToJson(
-  _$ArchivedHighlightsImpl instance,
-) => <String, dynamic>{
-  'beginTime': instance.beginTime.toIso8601String(),
-  'endTime': instance.endTime.toIso8601String(),
-  'highlights': instance.highlights,
-};
+        _$ArchivedHighlightsImpl instance) =>
+    <String, dynamic>{
+      'beginTime': instance.beginTime.toIso8601String(),
+      'endTime': instance.endTime.toIso8601String(),
+      'highlights': instance.highlights,
+    };
 
 _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
-  id: json['id'] as String,
-  tag: json['tag'] as String,
-  description: json['description'] as String,
-  isCompleted: json['isCompleted'] as bool? ?? false,
-);
+      id: json['id'] as String,
+      tag: json['tag'] as String,
+      description: json['description'] as String,
+      isCompleted: json['isCompleted'] as bool? ?? false,
+    );
 
 Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
     <String, dynamic>{
@@ -181,20 +202,20 @@ Map<String, dynamic> _$$MoodTrackingImplToJson(_$MoodTrackingImpl instance) =>
     };
 
 _$AwakeTimeAllocationImpl _$$AwakeTimeAllocationImplFromJson(
-  Map<String, dynamic> json,
-) => _$AwakeTimeAllocationImpl(
-  name: json['name'] as String,
-  value: (json['value'] as num).toDouble(),
-  color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
-);
+        Map<String, dynamic> json) =>
+    _$AwakeTimeAllocationImpl(
+      name: json['name'] as String,
+      value: (json['value'] as num).toDouble(),
+      color: (json['color'] as num?)?.toInt() ?? 0xFF00FF00,
+    );
 
 Map<String, dynamic> _$$AwakeTimeAllocationImplToJson(
-  _$AwakeTimeAllocationImpl instance,
-) => <String, dynamic>{
-  'name': instance.name,
-  'value': instance.value,
-  'color': instance.color,
-};
+        _$AwakeTimeAllocationImpl instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'value': instance.value,
+      'color': instance.color,
+    };
 
 _$SocialEntityImpl _$$SocialEntityImplFromJson(Map<String, dynamic> json) =>
     _$SocialEntityImpl(
@@ -219,10 +240,9 @@ Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
 _$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>
     _$SocialMapImpl(
       id: json['id'] as String,
-      socialEntities:
-          (json['socialEntities'] as List<dynamic>)
-              .map((e) => SocialEntity.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      socialEntities: (json['socialEntities'] as List<dynamic>)
+          .map((e) => SocialEntity.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$SocialMapImplToJson(_$SocialMapImpl instance) =>
@@ -236,48 +256,36 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       dateTime: DateTime.parse(json['dateTime'] as String),
       summary: json['summary'] as String,
-      diaryEntries:
-          (json['diaryEntries'] as List<dynamic>)
-              .map((e) => DiaryEntry.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      quotes:
-          (json['quotes'] as List<dynamic>)
-              .map((e) => Quote.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      selfReflections:
-          (json['selfReflections'] as List<dynamic>)
-              .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      detailedInsights:
-          (json['detailedInsights'] as List<dynamic>)
-              .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      goals:
-          (json['goals'] as List<dynamic>)
-              .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      diaryEntries: (json['diaryEntries'] as List<dynamic>)
+          .map((e) => DiaryEntry.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      quotes: (json['quotes'] as List<dynamic>)
+          .map((e) => Quote.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      selfReflections: (json['selfReflections'] as List<dynamic>)
+          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      detailedInsights: (json['detailedInsights'] as List<dynamic>)
+          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      goals: (json['goals'] as List<dynamic>)
+          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
+          .toList(),
       moodScore: MoodScore.fromJson(json['moodScore'] as Map<String, dynamic>),
-      stressLevel: StressLevel.fromJson(
-        json['stressLevel'] as Map<String, dynamic>,
-      ),
-      highlights:
-          (json['highlights'] as List<dynamic>)
-              .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      energyLevels:
-          (json['energyLevels'] as List<dynamic>)
-              .map((e) => EnergyLevel.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      moodTrackings:
-          (json['moodTrackings'] as List<dynamic>)
-              .map((e) => MoodTracking.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      awakeTimeActions:
-          (json['awakeTimeActions'] as List<dynamic>)
-              .map(
-                (e) => AwakeTimeAllocation.fromJson(e as Map<String, dynamic>),
-              )
-              .toList(),
+      stressLevel:
+          StressLevel.fromJson(json['stressLevel'] as Map<String, dynamic>),
+      highlights: (json['highlights'] as List<dynamic>)
+          .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      energyLevels: (json['energyLevels'] as List<dynamic>)
+          .map((e) => EnergyLevel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      moodTrackings: (json['moodTrackings'] as List<dynamic>)
+          .map((e) => MoodTracking.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      awakeTimeActions: (json['awakeTimeActions'] as List<dynamic>)
+          .map((e) => AwakeTimeAllocation.fromJson(e as Map<String, dynamic>))
+          .toList(),
       socialMap: SocialMap.fromJson(json['socialMap'] as Map<String, dynamic>),
     );
 
@@ -301,76 +309,76 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
     };
 
 _$MoodScoreDashboardImpl _$$MoodScoreDashboardImplFromJson(
-  Map<String, dynamic> json,
-) => _$MoodScoreDashboardImpl(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  insights:
-      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
-);
+        Map<String, dynamic> json) =>
+    _$MoodScoreDashboardImpl(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      insights:
+          (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+    );
 
 Map<String, dynamic> _$$MoodScoreDashboardImplToJson(
-  _$MoodScoreDashboardImpl instance,
-) => <String, dynamic>{
-  'dateTime': instance.dateTime.toIso8601String(),
-  'insights': instance.insights,
-};
+        _$MoodScoreDashboardImpl instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'insights': instance.insights,
+    };
 
 _$StressLevelDashboardImpl _$$StressLevelDashboardImplFromJson(
-  Map<String, dynamic> json,
-) => _$StressLevelDashboardImpl(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  insights:
-      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
-);
+        Map<String, dynamic> json) =>
+    _$StressLevelDashboardImpl(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      insights:
+          (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+    );
 
 Map<String, dynamic> _$$StressLevelDashboardImplToJson(
-  _$StressLevelDashboardImpl instance,
-) => <String, dynamic>{
-  'dateTime': instance.dateTime.toIso8601String(),
-  'insights': instance.insights,
-};
+        _$StressLevelDashboardImpl instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'insights': instance.insights,
+    };
 
 _$EnergyLevelDashboardImpl _$$EnergyLevelDashboardImplFromJson(
-  Map<String, dynamic> json,
-) => _$EnergyLevelDashboardImpl(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  insights:
-      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
-);
+        Map<String, dynamic> json) =>
+    _$EnergyLevelDashboardImpl(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      insights:
+          (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+    );
 
 Map<String, dynamic> _$$EnergyLevelDashboardImplToJson(
-  _$EnergyLevelDashboardImpl instance,
-) => <String, dynamic>{
-  'dateTime': instance.dateTime.toIso8601String(),
-  'insights': instance.insights,
-};
+        _$EnergyLevelDashboardImpl instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'insights': instance.insights,
+    };
 
 _$MoodTrackingDashboardImpl _$$MoodTrackingDashboardImplFromJson(
-  Map<String, dynamic> json,
-) => _$MoodTrackingDashboardImpl(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  insights:
-      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
-);
+        Map<String, dynamic> json) =>
+    _$MoodTrackingDashboardImpl(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      insights:
+          (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+    );
 
 Map<String, dynamic> _$$MoodTrackingDashboardImplToJson(
-  _$MoodTrackingDashboardImpl instance,
-) => <String, dynamic>{
-  'dateTime': instance.dateTime.toIso8601String(),
-  'insights': instance.insights,
-};
+        _$MoodTrackingDashboardImpl instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'insights': instance.insights,
+    };
 
 _$AwakeTimeAllocationDashboardImpl _$$AwakeTimeAllocationDashboardImplFromJson(
-  Map<String, dynamic> json,
-) => _$AwakeTimeAllocationDashboardImpl(
-  dateTime: DateTime.parse(json['dateTime'] as String),
-  insights:
-      (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
-);
+        Map<String, dynamic> json) =>
+    _$AwakeTimeAllocationDashboardImpl(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      insights:
+          (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+    );
 
 Map<String, dynamic> _$$AwakeTimeAllocationDashboardImplToJson(
-  _$AwakeTimeAllocationDashboardImpl instance,
-) => <String, dynamic>{
-  'dateTime': instance.dateTime.toIso8601String(),
-  'insights': instance.insights,
-};
+        _$AwakeTimeAllocationDashboardImpl instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'insights': instance.insights,
+    };
