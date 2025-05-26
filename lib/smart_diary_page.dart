@@ -21,8 +21,9 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = DataManager().currentJournal.dateTime;
-    _selectedDay = DataManager().currentJournal.dateTime;
+    var nowDate = DateTime.now();
+    _focusedDay = nowDate; //DataManager().currentJournal.dateTime;
+    _selectedDay = nowDate; //DataManager().currentJournal.dateTime;
   }
 
   @override

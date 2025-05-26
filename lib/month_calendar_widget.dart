@@ -24,11 +24,11 @@ class MonthCalendarWidget extends StatelessWidget {
       onDaySelected: onDaySelected,
       calendarStyle: const CalendarStyle(
         todayDecoration: BoxDecoration(
-          color: Colors.blue,
+          color: Color(0xFFFFD700),
           shape: BoxShape.circle,
         ),
         selectedDecoration: BoxDecoration(
-          color: Colors.orange,
+          color: Colors.blue,
           shape: BoxShape.circle,
         ),
       ),
