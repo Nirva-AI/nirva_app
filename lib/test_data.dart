@@ -16,7 +16,9 @@ class TestData {
     DataManager().tasks = TestData.createTestTasks();
 
     // 添加日记数据
-    DataManager().journals.add(TestData.createTestJournal());
+    DataManager().journals.add(
+      TestData.createTestJournal(DateTime(2025, 5, 22)),
+    );
 
     // 添加高亮数据
     DataManager().weeklyArchivedHighlights =
@@ -238,7 +240,7 @@ class TestData {
   }
 
   // 测试数据： 初始化个人数据
-  static Journal createTestJournal() {
+  static Journal createTestJournal(DateTime dateTime) {
     final String summary =
         'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
@@ -660,7 +662,7 @@ class TestData {
     ];
 
     return Journal(
-      dateTime: DateTime(2025, 5, 22),
+      dateTime: dateTime,
       summary: summary,
       diaryEntries: diaryEntries,
       quotes: quotes,
