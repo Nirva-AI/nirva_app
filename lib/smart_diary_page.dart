@@ -4,6 +4,7 @@ import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/quote_carousel.dart';
 import 'package:nirva_app/week_calendar_widget.dart';
 import 'package:nirva_app/month_calendar_page.dart';
+import 'package:nirva_app/data.dart';
 
 class SmartDiaryPage extends StatefulWidget {
   const SmartDiaryPage({super.key});
@@ -15,6 +16,7 @@ class SmartDiaryPage extends StatefulWidget {
 class _SmartDiaryPageState extends State<SmartDiaryPage> {
   late DateTime _focusedDay;
   DateTime? _selectedDay;
+  bool _isFavorite = false; // 新增成员变量，表示收藏状态
 
   @override
   void initState() {
@@ -48,16 +50,8 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
             ),
           ),
 
-          // 使用 ListView.builder 动态展示日记条目
-          ListView.builder(
-            shrinkWrap: true, // 使 ListView 适应父组件高度
-            physics: const NeverScrollableScrollPhysics(), // 禁用内部滚动
-            itemCount: DataManager().currentJournal.diaryEntries.length,
-            itemBuilder: (context, index) {
-              final entry = DataManager().currentJournal.diaryEntries[index];
-              return DiaryEntryCard(diaryData: entry);
-            },
-          ),
+          // 动态展示日记条目
+          _buildDiaryEntriesList(DataManager().currentJournal.diaryEntries),
         ],
       ),
     );
@@ -110,11 +104,23 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.star_border_outlined),
-                onPressed: () => debugPrint('点击了收藏图标'),
-                color: Colors.grey,
+                icon: Icon(
+                  _isFavorite
+                      ? Icons
+                          .star // 实心图标
+                      : Icons.star_border_outlined, // 空心图标
+                  color: _isFavorite ? Colors.yellow : Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isFavorite = !_isFavorite; // 切换收藏状态
+                  });
+                },
                 padding: EdgeInsets.zero,
-                constraints: BoxConstraints(minWidth: 36.0, minHeight: 36.0),
+                constraints: const BoxConstraints(
+                  minWidth: 36.0,
+                  minHeight: 36.0,
+                ),
               ),
               const SizedBox(width: 16),
               IconButton(
@@ -122,12 +128,40 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
                 onPressed: () => debugPrint('点击了搜索图标'),
                 color: Colors.grey,
                 padding: EdgeInsets.zero,
-                constraints: BoxConstraints(minWidth: 36.0, minHeight: 36.0),
+                constraints: const BoxConstraints(
+                  minWidth: 36.0,
+                  minHeight: 36.0,
+                ),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  // 封装 ListView.builder 的实现 List<DiaryEntry> get diaryEntries
+  Widget _buildDiaryEntriesList(List<DiaryEntry> diaryEntriesRange) {
+    List<DiaryEntry> finalDiaryEntries = [];
+    if (_isFavorite) {
+      for (var entry in diaryEntriesRange) {
+        if (DataManager().isFavoriteDiary(entry)) {
+          finalDiaryEntries.add(entry);
+        }
+      }
+    } else {
+      // 如果不是收藏状态，获取所有日记条目
+      finalDiaryEntries = diaryEntriesRange;
+    }
+
+    return ListView.builder(
+      key: UniqueKey(), // 强制刷新 ListView.builder
+      shrinkWrap: true, // 使 ListView 适应父组件高度
+      physics: const NeverScrollableScrollPhysics(), // 禁用内部滚动
+      itemCount: finalDiaryEntries.length,
+      itemBuilder: (context, index) {
+        return DiaryEntryCard(diaryData: finalDiaryEntries[index]);
+      },
     );
   }
 }
