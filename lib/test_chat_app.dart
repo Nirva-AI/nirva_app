@@ -8,7 +8,7 @@ class TestChatApp extends StatelessWidget {
   TestChatApp({super.key});
 
   // 缓存初始化结果
-  final Future<bool> _initFuture = ServiceManager().get_url_config().then((
+  final Future<bool> _initFuture = ServiceManager().getUrlConfig().then((
     isApiConfigurationSuccessful,
   ) async {
     if (!isApiConfigurationSuccessful) {

@@ -30,36 +30,33 @@ class ServiceManager {
 
   final DioService _dioService = DioService();
 
-  URLConfigurationResponse _url_configuration_response =
-      URLConfigurationResponse(
-        api_version: '',
-        endpoints: {},
-        deprecated: false,
-        notice: '',
-      );
+  URLConfigurationResponse _urlConfig = URLConfigurationResponse(
+    api_version: '',
+    endpoints: {},
+    deprecated: false,
+    notice: '',
+  );
 
-  String get login_url {
-    return _url_configuration_response.endpoints['login'] ?? '';
+  String get loginUrl {
+    return _urlConfig.endpoints['login'] ?? '';
   }
 
-  String get logout_url {
-    return _url_configuration_response.endpoints['logout'] ?? '';
+  String get logoutUrl {
+    return _urlConfig.endpoints['logout'] ?? '';
   }
 
-  String get chat_action_url {
-    return _url_configuration_response.endpoints['chat'] ?? '';
+  String get chatActionUrl {
+    return _urlConfig.endpoints['chat'] ?? '';
   }
 
   // 配置 API 端点, 后续可以写的复杂一些。
-  Future<bool> get_url_config() async {
+  Future<bool> getUrlConfig() async {
     try {
       final response = await _dioService.safeGet("/config");
-      _url_configuration_response = URLConfigurationResponse.fromJson(
-        response.data!,
-      );
+      _urlConfig = URLConfigurationResponse.fromJson(response.data!);
 
       Logger().d(
-        '_url_configuration_response=\n${jsonEncode(_url_configuration_response.toJson())}',
+        '_url_configuration_response=\n${jsonEncode(_urlConfig.toJson())}',
       );
       return true;
     } on DioException catch (e) {
@@ -102,7 +99,7 @@ class ServiceManager {
   Future<bool> login(String userName) async {
     try {
       final response = await _dioService.safePost(
-        login_url,
+        loginUrl,
         data: LoginRequest(user_name: userName).toJson(),
       );
 
@@ -128,7 +125,7 @@ class ServiceManager {
   Future<bool> logout(String userName) async {
     try {
       final response = await _dioService.safePost(
-        logout_url,
+        logoutUrl,
         data: LogoutRequest(user_name: userName).toJson(),
       );
 
@@ -154,7 +151,7 @@ class ServiceManager {
   Future<ChatActionResult> chatAction(String userName, String content) async {
     try {
       final response = await _dioService.safePost(
-        chat_action_url,
+        chatActionUrl,
         data: ChatActionRequest(user_name: userName, content: content).toJson(),
       );
 
