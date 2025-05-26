@@ -5,8 +5,17 @@ import 'package:nirva_app/hive_data.dart';
 
 class HiveManager {
   // 单例模式
-  HiveManager._privateConstructor();
-  static final HiveManager instance = HiveManager._privateConstructor();
+  // 可重置的单例模式
+  static HiveManager? _instance;
+
+  static HiveManager get instance {
+    _instance ??= HiveManager._internal();
+    return _instance!;
+  }
+
+  factory HiveManager() => instance;
+
+  HiveManager._internal();
 
   static const String _boxName = 'hiveTestBox';
 

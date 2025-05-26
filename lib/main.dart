@@ -35,13 +35,13 @@ Future<void> initializeApp() async {
 
 Future<void> testHive() async {
   // 初始化 Hive
-  await HiveManager.instance.initHive();
+  await HiveManager().initHive();
 
   // 测试存储和读取数据
   final testHiveData = HiveTest(1, 'Test Name');
-  await HiveManager.instance.saveHiveTest(testHiveData);
+  await HiveManager().saveHiveTest(testHiveData);
 
-  final retrievedData = HiveManager.instance.getHiveTest(1);
+  final retrievedData = HiveManager().getHiveTest(1);
 
   if (retrievedData != null &&
       retrievedData.id == testHiveData.id &&
