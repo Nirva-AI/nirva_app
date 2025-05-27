@@ -36,35 +36,9 @@ class TestData {
     //
     initializeTestSocalMap();
 
-    // 添加情绪分数
-    DataManager().moodScoreDashboard = TestData.createMoodScoreDashboard(
-      DataManager().currentJournal.dateTime,
-    );
-
-    // 添加压力水平
-    DataManager().stressLevelDashboard = TestData.createStressLevelDashboard(
-      DataManager().currentJournal.dateTime,
-    );
-
-    //添加能量水平
-    DataManager().energyLevelDashboard = TestData.createEnergyLevelDashboard(
-      DataManager().currentJournal.dateTime,
-    );
-
-    // 添加情绪追踪
-    DataManager().moodTrackingDashboard = TestData.createMoodTrackingDashboard(
-      DataManager().currentJournal.dateTime,
-    );
-
-    // 添加醒着的时间分配
-    DataManager().awakeTimeAllocationDashboard =
-        TestData.createAwakeTimeAllocationDashboard(
-          DataManager().currentJournal.dateTime,
-        );
-
     //
     DataManager().dashboards.add(
-      TestData.createDashboard(DataManager().currentJournal.dateTime),
+      TestData.createTestDashboard(DataManager().currentJournal.dateTime),
     );
   }
 
@@ -696,8 +670,9 @@ class TestData {
     );
   }
 
-  static MoodScoreDashboard createMoodScoreDashboard(DateTime dateTime) {
-    return MoodScoreDashboard(
+  static Dashboard createTestDashboard(DateTime dateTime) {
+    // 创建情绪分数仪表盘
+    final moodScore = MoodScoreDashboard(
       dateTime: dateTime,
       insights: [
         // 'Your mood has been generally trending upward this week.',
@@ -708,10 +683,9 @@ class TestData {
       week: [],
       month: [],
     );
-  }
 
-  static StressLevelDashboard createStressLevelDashboard(DateTime dateTime) {
-    return StressLevelDashboard(
+    // 创建压力水平仪表盘
+    final stressLevel = StressLevelDashboard(
       dateTime: dateTime,
       insights: [
         //'Your stress levels have decreased over this week.',
@@ -722,10 +696,9 @@ class TestData {
       week: [],
       month: [],
     );
-  }
 
-  static EnergyLevelDashboard createEnergyLevelDashboard(DateTime dateTime) {
-    return EnergyLevelDashboard(
+    // 创建能量水平仪表盘
+    final energyLevel = EnergyLevelDashboard(
       dateTime: dateTime,
       insights: [
         //'Your energy levels peak in the late morning and early afternoon.',
@@ -736,10 +709,9 @@ class TestData {
       week: [],
       month: [],
     );
-  }
 
-  static MoodTrackingDashboard createMoodTrackingDashboard(DateTime dateTime) {
-    return MoodTrackingDashboard(
+    // 创建情绪追踪仪表盘
+    final moodTracking = MoodTrackingDashboard(
       dateTime: dateTime,
       entries: [],
       insights: [
@@ -748,12 +720,9 @@ class TestData {
         'Focus appears to be strongest in the mornings - consider scheduling important tasks then.',
       ],
     );
-  }
 
-  static AwakeTimeAllocationDashboard createAwakeTimeAllocationDashboard(
-    DateTime dateTime,
-  ) {
-    return AwakeTimeAllocationDashboard(
+    // 创建醒着的时间分配仪表盘
+    final awakeTimeAllocation = AwakeTimeAllocationDashboard(
       dateTime: dateTime,
       entries: [],
       insights: [
@@ -762,16 +731,14 @@ class TestData {
         'Consider increasing learning activities to meet your personal growth goals.',
       ],
     );
-  }
 
-  static Dashboard createDashboard(DateTime dateTime) {
     return Dashboard(
       dateTime: dateTime,
-      moodScore: createMoodScoreDashboard(dateTime),
-      stressLevel: createStressLevelDashboard(dateTime),
-      energyLevel: createEnergyLevelDashboard(dateTime),
-      moodTracking: createMoodTrackingDashboard(dateTime),
-      awakeTimeAllocation: createAwakeTimeAllocationDashboard(dateTime),
+      moodScore: moodScore,
+      stressLevel: stressLevel,
+      energyLevel: energyLevel,
+      moodTracking: moodTracking,
+      awakeTimeAllocation: awakeTimeAllocation,
     );
   }
 }

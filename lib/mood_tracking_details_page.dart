@@ -176,7 +176,9 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
             const SizedBox(height: 16),
 
             // Insights 卡片
-            _buildInsightsCard(DataManager().moodTrackingDashboard.insights),
+            _buildInsightsCard(
+              DataManager().currentDashboard.moodTracking.insights,
+            ),
           ],
         ),
       ),
