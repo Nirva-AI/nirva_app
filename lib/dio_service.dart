@@ -12,7 +12,7 @@ class DioService {
   final Dio _dio =
       Dio(
           BaseOptions(
-            baseUrl: 'http://192.168.192.100:8000',
+            baseUrl: 'http://192.168.22.108:8000',
             connectTimeout: const Duration(seconds: 5),
             receiveTimeout: const Duration(seconds: 30),
           ),
