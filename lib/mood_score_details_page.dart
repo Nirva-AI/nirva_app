@@ -281,7 +281,7 @@ class MoodScoreChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().moodScoreDashboard.dateTime.weekday,
+                  DataManager().currentDashboard.dateTime.weekday,
                   dataManager.day.length,
                 ),
                 style: const TextStyle(
@@ -322,7 +322,7 @@ class MoodScoreChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().moodScoreDashboard.dateTime.month,
+                  DataManager().currentDashboard.dateTime.month,
                   dataManager.month.length,
                 ),
                 style: const TextStyle(

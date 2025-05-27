@@ -278,7 +278,7 @@ class EnergyLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().energyLevelDashboard.dateTime.weekday,
+                  DataManager().currentDashboard.dateTime.weekday,
                   dataManager.day.length,
                 ),
                 style: const TextStyle(
@@ -318,7 +318,7 @@ class EnergyLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().energyLevelDashboard.dateTime.month,
+                  DataManager().currentDashboard.dateTime.month,
                   dataManager.month.length,
                 ),
                 style: const TextStyle(

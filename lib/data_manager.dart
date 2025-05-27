@@ -39,29 +39,46 @@ class DataManager {
   MoodScoreDashboard moodScoreDashboard = MoodScoreDashboard(
     dateTime: DateTime.now(),
     insights: [],
+    day: [],
+    week: [],
+    month: [],
   );
 
   // 压力水平仪表板
   StressLevelDashboard stressLevelDashboard = StressLevelDashboard(
     dateTime: DateTime.now(),
     insights: [],
+    day: [],
+    week: [],
+    month: [],
   );
 
   // 能量水平仪表板
   EnergyLevelDashboard energyLevelDashboard = EnergyLevelDashboard(
     dateTime: DateTime.now(),
     insights: [],
+    day: [],
+    week: [],
+    month: [],
   );
 
   // 情绪追踪仪表板
   MoodTrackingDashboard moodTrackingDashboard = MoodTrackingDashboard(
     dateTime: DateTime.now(),
+    entries: [],
     insights: [],
   );
 
   // 醒着的时间分配仪表板
   AwakeTimeAllocationDashboard awakeTimeAllocationDashboard =
-      AwakeTimeAllocationDashboard(dateTime: DateTime.now(), insights: []);
+      AwakeTimeAllocationDashboard(
+        dateTime: DateTime.now(),
+        entries: [],
+        insights: [],
+      );
+
+  //
+  List<Dashboard> dashboards = [];
 
   //
   SocialMap globalSocialMap = SocialMap(id: "", socialEntities: []);
@@ -89,6 +106,15 @@ class DataManager {
       return journals.last;
     } else {
       return Journal.createEmpty();
+    }
+  }
+
+  Dashboard get currentDashboard {
+    // 获取当前的仪表板
+    if (dashboards.isNotEmpty) {
+      return dashboards.last;
+    } else {
+      return Dashboard.createEmpty();
     }
   }
 

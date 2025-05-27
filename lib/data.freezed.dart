@@ -3805,6 +3805,9 @@ MoodScoreDashboard _$MoodScoreDashboardFromJson(Map<String, dynamic> json) {
 mixin _$MoodScoreDashboard {
   DateTime get dateTime => throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
+  List<double> get day => throw _privateConstructorUsedError;
+  List<double> get week => throw _privateConstructorUsedError;
+  List<double> get month => throw _privateConstructorUsedError;
 
   /// Serializes this MoodScoreDashboard to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3822,7 +3825,12 @@ abstract class $MoodScoreDashboardCopyWith<$Res> {
           MoodScoreDashboard value, $Res Function(MoodScoreDashboard) then) =
       _$MoodScoreDashboardCopyWithImpl<$Res, MoodScoreDashboard>;
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<String> insights,
+      List<double> day,
+      List<double> week,
+      List<double> month});
 }
 
 /// @nodoc
@@ -3842,6 +3850,9 @@ class _$MoodScoreDashboardCopyWithImpl<$Res, $Val extends MoodScoreDashboard>
   $Res call({
     Object? dateTime = null,
     Object? insights = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
   }) {
     return _then(_value.copyWith(
       dateTime: null == dateTime
@@ -3852,6 +3863,18 @@ class _$MoodScoreDashboardCopyWithImpl<$Res, $Val extends MoodScoreDashboard>
           ? _value.insights
           : insights // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      day: null == day
+          ? _value.day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value.week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value.month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
     ) as $Val);
   }
 }
@@ -3864,7 +3887,12 @@ abstract class _$$MoodScoreDashboardImplCopyWith<$Res>
       __$$MoodScoreDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<String> insights,
+      List<double> day,
+      List<double> week,
+      List<double> month});
 }
 
 /// @nodoc
@@ -3882,6 +3910,9 @@ class __$$MoodScoreDashboardImplCopyWithImpl<$Res>
   $Res call({
     Object? dateTime = null,
     Object? insights = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
   }) {
     return _then(_$MoodScoreDashboardImpl(
       dateTime: null == dateTime
@@ -3892,6 +3923,18 @@ class __$$MoodScoreDashboardImplCopyWithImpl<$Res>
           ? _value._insights
           : insights // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      day: null == day
+          ? _value._day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value._week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value._month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
     ));
   }
 }
@@ -3900,8 +3943,15 @@ class __$$MoodScoreDashboardImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
   const _$MoodScoreDashboardImpl(
-      {required this.dateTime, required final List<String> insights})
-      : _insights = insights;
+      {required this.dateTime,
+      required final List<String> insights,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month})
+      : _insights = insights,
+        _day = day,
+        _week = week,
+        _month = month;
 
   factory _$MoodScoreDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$MoodScoreDashboardImplFromJson(json);
@@ -3916,9 +3966,33 @@ class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
     return EqualUnmodifiableListView(_insights);
   }
 
+  final List<double> _day;
+  @override
+  List<double> get day {
+    if (_day is EqualUnmodifiableListView) return _day;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_day);
+  }
+
+  final List<double> _week;
+  @override
+  List<double> get week {
+    if (_week is EqualUnmodifiableListView) return _week;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_week);
+  }
+
+  final List<double> _month;
+  @override
+  List<double> get month {
+    if (_month is EqualUnmodifiableListView) return _month;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_month);
+  }
+
   @override
   String toString() {
-    return 'MoodScoreDashboard(dateTime: $dateTime, insights: $insights)';
+    return 'MoodScoreDashboard(dateTime: $dateTime, insights: $insights, day: $day, week: $week, month: $month)';
   }
 
   @override
@@ -3928,13 +4002,21 @@ class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
             other is _$MoodScoreDashboardImpl &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
-            const DeepCollectionEquality().equals(other._insights, _insights));
+            const DeepCollectionEquality().equals(other._insights, _insights) &&
+            const DeepCollectionEquality().equals(other._day, _day) &&
+            const DeepCollectionEquality().equals(other._week, _week) &&
+            const DeepCollectionEquality().equals(other._month, _month));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
+      runtimeType,
+      dateTime,
+      const DeepCollectionEquality().hash(_insights),
+      const DeepCollectionEquality().hash(_day),
+      const DeepCollectionEquality().hash(_week),
+      const DeepCollectionEquality().hash(_month));
 
   /// Create a copy of MoodScoreDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -3956,7 +4038,10 @@ class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
 abstract class _MoodScoreDashboard implements MoodScoreDashboard {
   const factory _MoodScoreDashboard(
       {required final DateTime dateTime,
-      required final List<String> insights}) = _$MoodScoreDashboardImpl;
+      required final List<String> insights,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month}) = _$MoodScoreDashboardImpl;
 
   factory _MoodScoreDashboard.fromJson(Map<String, dynamic> json) =
       _$MoodScoreDashboardImpl.fromJson;
@@ -3965,6 +4050,12 @@ abstract class _MoodScoreDashboard implements MoodScoreDashboard {
   DateTime get dateTime;
   @override
   List<String> get insights;
+  @override
+  List<double> get day;
+  @override
+  List<double> get week;
+  @override
+  List<double> get month;
 
   /// Create a copy of MoodScoreDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -3982,6 +4073,9 @@ StressLevelDashboard _$StressLevelDashboardFromJson(Map<String, dynamic> json) {
 mixin _$StressLevelDashboard {
   DateTime get dateTime => throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
+  List<double> get day => throw _privateConstructorUsedError;
+  List<double> get week => throw _privateConstructorUsedError;
+  List<double> get month => throw _privateConstructorUsedError;
 
   /// Serializes this StressLevelDashboard to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3999,7 +4093,12 @@ abstract class $StressLevelDashboardCopyWith<$Res> {
           $Res Function(StressLevelDashboard) then) =
       _$StressLevelDashboardCopyWithImpl<$Res, StressLevelDashboard>;
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<String> insights,
+      List<double> day,
+      List<double> week,
+      List<double> month});
 }
 
 /// @nodoc
@@ -4020,6 +4119,9 @@ class _$StressLevelDashboardCopyWithImpl<$Res,
   $Res call({
     Object? dateTime = null,
     Object? insights = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
   }) {
     return _then(_value.copyWith(
       dateTime: null == dateTime
@@ -4030,6 +4132,18 @@ class _$StressLevelDashboardCopyWithImpl<$Res,
           ? _value.insights
           : insights // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      day: null == day
+          ? _value.day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value.week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value.month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
     ) as $Val);
   }
 }
@@ -4042,7 +4156,12 @@ abstract class _$$StressLevelDashboardImplCopyWith<$Res>
       __$$StressLevelDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<String> insights,
+      List<double> day,
+      List<double> week,
+      List<double> month});
 }
 
 /// @nodoc
@@ -4060,6 +4179,9 @@ class __$$StressLevelDashboardImplCopyWithImpl<$Res>
   $Res call({
     Object? dateTime = null,
     Object? insights = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
   }) {
     return _then(_$StressLevelDashboardImpl(
       dateTime: null == dateTime
@@ -4070,6 +4192,18 @@ class __$$StressLevelDashboardImplCopyWithImpl<$Res>
           ? _value._insights
           : insights // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      day: null == day
+          ? _value._day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value._week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value._month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
     ));
   }
 }
@@ -4078,8 +4212,15 @@ class __$$StressLevelDashboardImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$StressLevelDashboardImpl implements _StressLevelDashboard {
   const _$StressLevelDashboardImpl(
-      {required this.dateTime, required final List<String> insights})
-      : _insights = insights;
+      {required this.dateTime,
+      required final List<String> insights,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month})
+      : _insights = insights,
+        _day = day,
+        _week = week,
+        _month = month;
 
   factory _$StressLevelDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$StressLevelDashboardImplFromJson(json);
@@ -4094,9 +4235,33 @@ class _$StressLevelDashboardImpl implements _StressLevelDashboard {
     return EqualUnmodifiableListView(_insights);
   }
 
+  final List<double> _day;
+  @override
+  List<double> get day {
+    if (_day is EqualUnmodifiableListView) return _day;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_day);
+  }
+
+  final List<double> _week;
+  @override
+  List<double> get week {
+    if (_week is EqualUnmodifiableListView) return _week;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_week);
+  }
+
+  final List<double> _month;
+  @override
+  List<double> get month {
+    if (_month is EqualUnmodifiableListView) return _month;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_month);
+  }
+
   @override
   String toString() {
-    return 'StressLevelDashboard(dateTime: $dateTime, insights: $insights)';
+    return 'StressLevelDashboard(dateTime: $dateTime, insights: $insights, day: $day, week: $week, month: $month)';
   }
 
   @override
@@ -4106,13 +4271,21 @@ class _$StressLevelDashboardImpl implements _StressLevelDashboard {
             other is _$StressLevelDashboardImpl &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
-            const DeepCollectionEquality().equals(other._insights, _insights));
+            const DeepCollectionEquality().equals(other._insights, _insights) &&
+            const DeepCollectionEquality().equals(other._day, _day) &&
+            const DeepCollectionEquality().equals(other._week, _week) &&
+            const DeepCollectionEquality().equals(other._month, _month));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
+      runtimeType,
+      dateTime,
+      const DeepCollectionEquality().hash(_insights),
+      const DeepCollectionEquality().hash(_day),
+      const DeepCollectionEquality().hash(_week),
+      const DeepCollectionEquality().hash(_month));
 
   /// Create a copy of StressLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4135,7 +4308,10 @@ class _$StressLevelDashboardImpl implements _StressLevelDashboard {
 abstract class _StressLevelDashboard implements StressLevelDashboard {
   const factory _StressLevelDashboard(
       {required final DateTime dateTime,
-      required final List<String> insights}) = _$StressLevelDashboardImpl;
+      required final List<String> insights,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month}) = _$StressLevelDashboardImpl;
 
   factory _StressLevelDashboard.fromJson(Map<String, dynamic> json) =
       _$StressLevelDashboardImpl.fromJson;
@@ -4144,6 +4320,12 @@ abstract class _StressLevelDashboard implements StressLevelDashboard {
   DateTime get dateTime;
   @override
   List<String> get insights;
+  @override
+  List<double> get day;
+  @override
+  List<double> get week;
+  @override
+  List<double> get month;
 
   /// Create a copy of StressLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4161,6 +4343,9 @@ EnergyLevelDashboard _$EnergyLevelDashboardFromJson(Map<String, dynamic> json) {
 mixin _$EnergyLevelDashboard {
   DateTime get dateTime => throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
+  List<double> get day => throw _privateConstructorUsedError;
+  List<double> get week => throw _privateConstructorUsedError;
+  List<double> get month => throw _privateConstructorUsedError;
 
   /// Serializes this EnergyLevelDashboard to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -4178,7 +4363,12 @@ abstract class $EnergyLevelDashboardCopyWith<$Res> {
           $Res Function(EnergyLevelDashboard) then) =
       _$EnergyLevelDashboardCopyWithImpl<$Res, EnergyLevelDashboard>;
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<String> insights,
+      List<double> day,
+      List<double> week,
+      List<double> month});
 }
 
 /// @nodoc
@@ -4199,6 +4389,9 @@ class _$EnergyLevelDashboardCopyWithImpl<$Res,
   $Res call({
     Object? dateTime = null,
     Object? insights = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
   }) {
     return _then(_value.copyWith(
       dateTime: null == dateTime
@@ -4209,6 +4402,18 @@ class _$EnergyLevelDashboardCopyWithImpl<$Res,
           ? _value.insights
           : insights // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      day: null == day
+          ? _value.day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value.week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value.month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
     ) as $Val);
   }
 }
@@ -4221,7 +4426,12 @@ abstract class _$$EnergyLevelDashboardImplCopyWith<$Res>
       __$$EnergyLevelDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<String> insights,
+      List<double> day,
+      List<double> week,
+      List<double> month});
 }
 
 /// @nodoc
@@ -4239,6 +4449,9 @@ class __$$EnergyLevelDashboardImplCopyWithImpl<$Res>
   $Res call({
     Object? dateTime = null,
     Object? insights = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
   }) {
     return _then(_$EnergyLevelDashboardImpl(
       dateTime: null == dateTime
@@ -4249,6 +4462,18 @@ class __$$EnergyLevelDashboardImplCopyWithImpl<$Res>
           ? _value._insights
           : insights // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      day: null == day
+          ? _value._day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value._week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value._month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
     ));
   }
 }
@@ -4257,8 +4482,15 @@ class __$$EnergyLevelDashboardImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
   const _$EnergyLevelDashboardImpl(
-      {required this.dateTime, required final List<String> insights})
-      : _insights = insights;
+      {required this.dateTime,
+      required final List<String> insights,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month})
+      : _insights = insights,
+        _day = day,
+        _week = week,
+        _month = month;
 
   factory _$EnergyLevelDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$EnergyLevelDashboardImplFromJson(json);
@@ -4273,9 +4505,33 @@ class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
     return EqualUnmodifiableListView(_insights);
   }
 
+  final List<double> _day;
+  @override
+  List<double> get day {
+    if (_day is EqualUnmodifiableListView) return _day;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_day);
+  }
+
+  final List<double> _week;
+  @override
+  List<double> get week {
+    if (_week is EqualUnmodifiableListView) return _week;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_week);
+  }
+
+  final List<double> _month;
+  @override
+  List<double> get month {
+    if (_month is EqualUnmodifiableListView) return _month;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_month);
+  }
+
   @override
   String toString() {
-    return 'EnergyLevelDashboard(dateTime: $dateTime, insights: $insights)';
+    return 'EnergyLevelDashboard(dateTime: $dateTime, insights: $insights, day: $day, week: $week, month: $month)';
   }
 
   @override
@@ -4285,13 +4541,21 @@ class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
             other is _$EnergyLevelDashboardImpl &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
-            const DeepCollectionEquality().equals(other._insights, _insights));
+            const DeepCollectionEquality().equals(other._insights, _insights) &&
+            const DeepCollectionEquality().equals(other._day, _day) &&
+            const DeepCollectionEquality().equals(other._week, _week) &&
+            const DeepCollectionEquality().equals(other._month, _month));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
+      runtimeType,
+      dateTime,
+      const DeepCollectionEquality().hash(_insights),
+      const DeepCollectionEquality().hash(_day),
+      const DeepCollectionEquality().hash(_week),
+      const DeepCollectionEquality().hash(_month));
 
   /// Create a copy of EnergyLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4314,7 +4578,10 @@ class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
 abstract class _EnergyLevelDashboard implements EnergyLevelDashboard {
   const factory _EnergyLevelDashboard(
       {required final DateTime dateTime,
-      required final List<String> insights}) = _$EnergyLevelDashboardImpl;
+      required final List<String> insights,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month}) = _$EnergyLevelDashboardImpl;
 
   factory _EnergyLevelDashboard.fromJson(Map<String, dynamic> json) =
       _$EnergyLevelDashboardImpl.fromJson;
@@ -4323,12 +4590,259 @@ abstract class _EnergyLevelDashboard implements EnergyLevelDashboard {
   DateTime get dateTime;
   @override
   List<String> get insights;
+  @override
+  List<double> get day;
+  @override
+  List<double> get week;
+  @override
+  List<double> get month;
 
   /// Create a copy of EnergyLevelDashboard
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EnergyLevelDashboardImplCopyWith<_$EnergyLevelDashboardImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+MoodTrackingDashboardEntry _$MoodTrackingDashboardEntryFromJson(
+    Map<String, dynamic> json) {
+  return _MoodTrackingDashboardEntry.fromJson(json);
+}
+
+/// @nodoc
+mixin _$MoodTrackingDashboardEntry {
+  String get name => throw _privateConstructorUsedError;
+  List<double> get day => throw _privateConstructorUsedError;
+  List<double> get week => throw _privateConstructorUsedError;
+  List<double> get month => throw _privateConstructorUsedError;
+
+  /// Serializes this MoodTrackingDashboardEntry to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of MoodTrackingDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MoodTrackingDashboardEntryCopyWith<MoodTrackingDashboardEntry>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MoodTrackingDashboardEntryCopyWith<$Res> {
+  factory $MoodTrackingDashboardEntryCopyWith(MoodTrackingDashboardEntry value,
+          $Res Function(MoodTrackingDashboardEntry) then) =
+      _$MoodTrackingDashboardEntryCopyWithImpl<$Res,
+          MoodTrackingDashboardEntry>;
+  @useResult
+  $Res call(
+      {String name, List<double> day, List<double> week, List<double> month});
+}
+
+/// @nodoc
+class _$MoodTrackingDashboardEntryCopyWithImpl<$Res,
+        $Val extends MoodTrackingDashboardEntry>
+    implements $MoodTrackingDashboardEntryCopyWith<$Res> {
+  _$MoodTrackingDashboardEntryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of MoodTrackingDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
+  }) {
+    return _then(_value.copyWith(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      day: null == day
+          ? _value.day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value.week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value.month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$MoodTrackingDashboardEntryImplCopyWith<$Res>
+    implements $MoodTrackingDashboardEntryCopyWith<$Res> {
+  factory _$$MoodTrackingDashboardEntryImplCopyWith(
+          _$MoodTrackingDashboardEntryImpl value,
+          $Res Function(_$MoodTrackingDashboardEntryImpl) then) =
+      __$$MoodTrackingDashboardEntryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String name, List<double> day, List<double> week, List<double> month});
+}
+
+/// @nodoc
+class __$$MoodTrackingDashboardEntryImplCopyWithImpl<$Res>
+    extends _$MoodTrackingDashboardEntryCopyWithImpl<$Res,
+        _$MoodTrackingDashboardEntryImpl>
+    implements _$$MoodTrackingDashboardEntryImplCopyWith<$Res> {
+  __$$MoodTrackingDashboardEntryImplCopyWithImpl(
+      _$MoodTrackingDashboardEntryImpl _value,
+      $Res Function(_$MoodTrackingDashboardEntryImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of MoodTrackingDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
+  }) {
+    return _then(_$MoodTrackingDashboardEntryImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      day: null == day
+          ? _value._day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value._week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value._month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MoodTrackingDashboardEntryImpl implements _MoodTrackingDashboardEntry {
+  const _$MoodTrackingDashboardEntryImpl(
+      {required this.name,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month})
+      : _day = day,
+        _week = week,
+        _month = month;
+
+  factory _$MoodTrackingDashboardEntryImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$MoodTrackingDashboardEntryImplFromJson(json);
+
+  @override
+  final String name;
+  final List<double> _day;
+  @override
+  List<double> get day {
+    if (_day is EqualUnmodifiableListView) return _day;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_day);
+  }
+
+  final List<double> _week;
+  @override
+  List<double> get week {
+    if (_week is EqualUnmodifiableListView) return _week;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_week);
+  }
+
+  final List<double> _month;
+  @override
+  List<double> get month {
+    if (_month is EqualUnmodifiableListView) return _month;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_month);
+  }
+
+  @override
+  String toString() {
+    return 'MoodTrackingDashboardEntry(name: $name, day: $day, week: $week, month: $month)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MoodTrackingDashboardEntryImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            const DeepCollectionEquality().equals(other._day, _day) &&
+            const DeepCollectionEquality().equals(other._week, _week) &&
+            const DeepCollectionEquality().equals(other._month, _month));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      name,
+      const DeepCollectionEquality().hash(_day),
+      const DeepCollectionEquality().hash(_week),
+      const DeepCollectionEquality().hash(_month));
+
+  /// Create a copy of MoodTrackingDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MoodTrackingDashboardEntryImplCopyWith<_$MoodTrackingDashboardEntryImpl>
+      get copyWith => __$$MoodTrackingDashboardEntryImplCopyWithImpl<
+          _$MoodTrackingDashboardEntryImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MoodTrackingDashboardEntryImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _MoodTrackingDashboardEntry
+    implements MoodTrackingDashboardEntry {
+  const factory _MoodTrackingDashboardEntry(
+      {required final String name,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month}) = _$MoodTrackingDashboardEntryImpl;
+
+  factory _MoodTrackingDashboardEntry.fromJson(Map<String, dynamic> json) =
+      _$MoodTrackingDashboardEntryImpl.fromJson;
+
+  @override
+  String get name;
+  @override
+  List<double> get day;
+  @override
+  List<double> get week;
+  @override
+  List<double> get month;
+
+  /// Create a copy of MoodTrackingDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MoodTrackingDashboardEntryImplCopyWith<_$MoodTrackingDashboardEntryImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -4340,6 +4854,8 @@ MoodTrackingDashboard _$MoodTrackingDashboardFromJson(
 /// @nodoc
 mixin _$MoodTrackingDashboard {
   DateTime get dateTime => throw _privateConstructorUsedError;
+  List<MoodTrackingDashboardEntry> get entries =>
+      throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
 
   /// Serializes this MoodTrackingDashboard to a JSON map.
@@ -4358,7 +4874,10 @@ abstract class $MoodTrackingDashboardCopyWith<$Res> {
           $Res Function(MoodTrackingDashboard) then) =
       _$MoodTrackingDashboardCopyWithImpl<$Res, MoodTrackingDashboard>;
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<MoodTrackingDashboardEntry> entries,
+      List<String> insights});
 }
 
 /// @nodoc
@@ -4378,6 +4897,7 @@ class _$MoodTrackingDashboardCopyWithImpl<$Res,
   @override
   $Res call({
     Object? dateTime = null,
+    Object? entries = null,
     Object? insights = null,
   }) {
     return _then(_value.copyWith(
@@ -4385,6 +4905,10 @@ class _$MoodTrackingDashboardCopyWithImpl<$Res,
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      entries: null == entries
+          ? _value.entries
+          : entries // ignore: cast_nullable_to_non_nullable
+              as List<MoodTrackingDashboardEntry>,
       insights: null == insights
           ? _value.insights
           : insights // ignore: cast_nullable_to_non_nullable
@@ -4402,7 +4926,10 @@ abstract class _$$MoodTrackingDashboardImplCopyWith<$Res>
       __$$MoodTrackingDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<MoodTrackingDashboardEntry> entries,
+      List<String> insights});
 }
 
 /// @nodoc
@@ -4420,6 +4947,7 @@ class __$$MoodTrackingDashboardImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? dateTime = null,
+    Object? entries = null,
     Object? insights = null,
   }) {
     return _then(_$MoodTrackingDashboardImpl(
@@ -4427,6 +4955,10 @@ class __$$MoodTrackingDashboardImplCopyWithImpl<$Res>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      entries: null == entries
+          ? _value._entries
+          : entries // ignore: cast_nullable_to_non_nullable
+              as List<MoodTrackingDashboardEntry>,
       insights: null == insights
           ? _value._insights
           : insights // ignore: cast_nullable_to_non_nullable
@@ -4439,14 +4971,25 @@ class __$$MoodTrackingDashboardImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
   const _$MoodTrackingDashboardImpl(
-      {required this.dateTime, required final List<String> insights})
-      : _insights = insights;
+      {required this.dateTime,
+      required final List<MoodTrackingDashboardEntry> entries,
+      required final List<String> insights})
+      : _entries = entries,
+        _insights = insights;
 
   factory _$MoodTrackingDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$MoodTrackingDashboardImplFromJson(json);
 
   @override
   final DateTime dateTime;
+  final List<MoodTrackingDashboardEntry> _entries;
+  @override
+  List<MoodTrackingDashboardEntry> get entries {
+    if (_entries is EqualUnmodifiableListView) return _entries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_entries);
+  }
+
   final List<String> _insights;
   @override
   List<String> get insights {
@@ -4457,7 +5000,7 @@ class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
 
   @override
   String toString() {
-    return 'MoodTrackingDashboard(dateTime: $dateTime, insights: $insights)';
+    return 'MoodTrackingDashboard(dateTime: $dateTime, entries: $entries, insights: $insights)';
   }
 
   @override
@@ -4467,13 +5010,17 @@ class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
             other is _$MoodTrackingDashboardImpl &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
+            const DeepCollectionEquality().equals(other._entries, _entries) &&
             const DeepCollectionEquality().equals(other._insights, _insights));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
+      runtimeType,
+      dateTime,
+      const DeepCollectionEquality().hash(_entries),
+      const DeepCollectionEquality().hash(_insights));
 
   /// Create a copy of MoodTrackingDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4495,6 +5042,7 @@ class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
 abstract class _MoodTrackingDashboard implements MoodTrackingDashboard {
   const factory _MoodTrackingDashboard(
       {required final DateTime dateTime,
+      required final List<MoodTrackingDashboardEntry> entries,
       required final List<String> insights}) = _$MoodTrackingDashboardImpl;
 
   factory _MoodTrackingDashboard.fromJson(Map<String, dynamic> json) =
@@ -4502,6 +5050,8 @@ abstract class _MoodTrackingDashboard implements MoodTrackingDashboard {
 
   @override
   DateTime get dateTime;
+  @override
+  List<MoodTrackingDashboardEntry> get entries;
   @override
   List<String> get insights;
 
@@ -4513,6 +5063,253 @@ abstract class _MoodTrackingDashboard implements MoodTrackingDashboard {
       get copyWith => throw _privateConstructorUsedError;
 }
 
+AwakeTimeAllocationDashboardEntry _$AwakeTimeAllocationDashboardEntryFromJson(
+    Map<String, dynamic> json) {
+  return _AwakeTimeAllocationDashboardEntry.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AwakeTimeAllocationDashboardEntry {
+  String get name => throw _privateConstructorUsedError;
+  List<double> get day => throw _privateConstructorUsedError;
+  List<double> get week => throw _privateConstructorUsedError;
+  List<double> get month => throw _privateConstructorUsedError;
+
+  /// Serializes this AwakeTimeAllocationDashboardEntry to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of AwakeTimeAllocationDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AwakeTimeAllocationDashboardEntryCopyWith<AwakeTimeAllocationDashboardEntry>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AwakeTimeAllocationDashboardEntryCopyWith<$Res> {
+  factory $AwakeTimeAllocationDashboardEntryCopyWith(
+          AwakeTimeAllocationDashboardEntry value,
+          $Res Function(AwakeTimeAllocationDashboardEntry) then) =
+      _$AwakeTimeAllocationDashboardEntryCopyWithImpl<$Res,
+          AwakeTimeAllocationDashboardEntry>;
+  @useResult
+  $Res call(
+      {String name, List<double> day, List<double> week, List<double> month});
+}
+
+/// @nodoc
+class _$AwakeTimeAllocationDashboardEntryCopyWithImpl<$Res,
+        $Val extends AwakeTimeAllocationDashboardEntry>
+    implements $AwakeTimeAllocationDashboardEntryCopyWith<$Res> {
+  _$AwakeTimeAllocationDashboardEntryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of AwakeTimeAllocationDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
+  }) {
+    return _then(_value.copyWith(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      day: null == day
+          ? _value.day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value.week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value.month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$AwakeTimeAllocationDashboardEntryImplCopyWith<$Res>
+    implements $AwakeTimeAllocationDashboardEntryCopyWith<$Res> {
+  factory _$$AwakeTimeAllocationDashboardEntryImplCopyWith(
+          _$AwakeTimeAllocationDashboardEntryImpl value,
+          $Res Function(_$AwakeTimeAllocationDashboardEntryImpl) then) =
+      __$$AwakeTimeAllocationDashboardEntryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String name, List<double> day, List<double> week, List<double> month});
+}
+
+/// @nodoc
+class __$$AwakeTimeAllocationDashboardEntryImplCopyWithImpl<$Res>
+    extends _$AwakeTimeAllocationDashboardEntryCopyWithImpl<$Res,
+        _$AwakeTimeAllocationDashboardEntryImpl>
+    implements _$$AwakeTimeAllocationDashboardEntryImplCopyWith<$Res> {
+  __$$AwakeTimeAllocationDashboardEntryImplCopyWithImpl(
+      _$AwakeTimeAllocationDashboardEntryImpl _value,
+      $Res Function(_$AwakeTimeAllocationDashboardEntryImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AwakeTimeAllocationDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? day = null,
+    Object? week = null,
+    Object? month = null,
+  }) {
+    return _then(_$AwakeTimeAllocationDashboardEntryImpl(
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      day: null == day
+          ? _value._day
+          : day // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      week: null == week
+          ? _value._week
+          : week // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      month: null == month
+          ? _value._month
+          : month // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AwakeTimeAllocationDashboardEntryImpl
+    implements _AwakeTimeAllocationDashboardEntry {
+  const _$AwakeTimeAllocationDashboardEntryImpl(
+      {required this.name,
+      required final List<double> day,
+      required final List<double> week,
+      required final List<double> month})
+      : _day = day,
+        _week = week,
+        _month = month;
+
+  factory _$AwakeTimeAllocationDashboardEntryImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$AwakeTimeAllocationDashboardEntryImplFromJson(json);
+
+  @override
+  final String name;
+  final List<double> _day;
+  @override
+  List<double> get day {
+    if (_day is EqualUnmodifiableListView) return _day;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_day);
+  }
+
+  final List<double> _week;
+  @override
+  List<double> get week {
+    if (_week is EqualUnmodifiableListView) return _week;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_week);
+  }
+
+  final List<double> _month;
+  @override
+  List<double> get month {
+    if (_month is EqualUnmodifiableListView) return _month;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_month);
+  }
+
+  @override
+  String toString() {
+    return 'AwakeTimeAllocationDashboardEntry(name: $name, day: $day, week: $week, month: $month)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AwakeTimeAllocationDashboardEntryImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            const DeepCollectionEquality().equals(other._day, _day) &&
+            const DeepCollectionEquality().equals(other._week, _week) &&
+            const DeepCollectionEquality().equals(other._month, _month));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      name,
+      const DeepCollectionEquality().hash(_day),
+      const DeepCollectionEquality().hash(_week),
+      const DeepCollectionEquality().hash(_month));
+
+  /// Create a copy of AwakeTimeAllocationDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AwakeTimeAllocationDashboardEntryImplCopyWith<
+          _$AwakeTimeAllocationDashboardEntryImpl>
+      get copyWith => __$$AwakeTimeAllocationDashboardEntryImplCopyWithImpl<
+          _$AwakeTimeAllocationDashboardEntryImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AwakeTimeAllocationDashboardEntryImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _AwakeTimeAllocationDashboardEntry
+    implements AwakeTimeAllocationDashboardEntry {
+  const factory _AwakeTimeAllocationDashboardEntry(
+          {required final String name,
+          required final List<double> day,
+          required final List<double> week,
+          required final List<double> month}) =
+      _$AwakeTimeAllocationDashboardEntryImpl;
+
+  factory _AwakeTimeAllocationDashboardEntry.fromJson(
+          Map<String, dynamic> json) =
+      _$AwakeTimeAllocationDashboardEntryImpl.fromJson;
+
+  @override
+  String get name;
+  @override
+  List<double> get day;
+  @override
+  List<double> get week;
+  @override
+  List<double> get month;
+
+  /// Create a copy of AwakeTimeAllocationDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AwakeTimeAllocationDashboardEntryImplCopyWith<
+          _$AwakeTimeAllocationDashboardEntryImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
 AwakeTimeAllocationDashboard _$AwakeTimeAllocationDashboardFromJson(
     Map<String, dynamic> json) {
   return _AwakeTimeAllocationDashboard.fromJson(json);
@@ -4521,6 +5318,8 @@ AwakeTimeAllocationDashboard _$AwakeTimeAllocationDashboardFromJson(
 /// @nodoc
 mixin _$AwakeTimeAllocationDashboard {
   DateTime get dateTime => throw _privateConstructorUsedError;
+  List<AwakeTimeAllocationDashboardEntry> get entries =>
+      throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
 
   /// Serializes this AwakeTimeAllocationDashboard to a JSON map.
@@ -4541,7 +5340,10 @@ abstract class $AwakeTimeAllocationDashboardCopyWith<$Res> {
       _$AwakeTimeAllocationDashboardCopyWithImpl<$Res,
           AwakeTimeAllocationDashboard>;
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<AwakeTimeAllocationDashboardEntry> entries,
+      List<String> insights});
 }
 
 /// @nodoc
@@ -4561,6 +5363,7 @@ class _$AwakeTimeAllocationDashboardCopyWithImpl<$Res,
   @override
   $Res call({
     Object? dateTime = null,
+    Object? entries = null,
     Object? insights = null,
   }) {
     return _then(_value.copyWith(
@@ -4568,6 +5371,10 @@ class _$AwakeTimeAllocationDashboardCopyWithImpl<$Res,
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      entries: null == entries
+          ? _value.entries
+          : entries // ignore: cast_nullable_to_non_nullable
+              as List<AwakeTimeAllocationDashboardEntry>,
       insights: null == insights
           ? _value.insights
           : insights // ignore: cast_nullable_to_non_nullable
@@ -4585,7 +5392,10 @@ abstract class _$$AwakeTimeAllocationDashboardImplCopyWith<$Res>
       __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime dateTime, List<String> insights});
+  $Res call(
+      {DateTime dateTime,
+      List<AwakeTimeAllocationDashboardEntry> entries,
+      List<String> insights});
 }
 
 /// @nodoc
@@ -4604,6 +5414,7 @@ class __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? dateTime = null,
+    Object? entries = null,
     Object? insights = null,
   }) {
     return _then(_$AwakeTimeAllocationDashboardImpl(
@@ -4611,6 +5422,10 @@ class __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      entries: null == entries
+          ? _value._entries
+          : entries // ignore: cast_nullable_to_non_nullable
+              as List<AwakeTimeAllocationDashboardEntry>,
       insights: null == insights
           ? _value._insights
           : insights // ignore: cast_nullable_to_non_nullable
@@ -4624,8 +5439,11 @@ class __$$AwakeTimeAllocationDashboardImplCopyWithImpl<$Res>
 class _$AwakeTimeAllocationDashboardImpl
     implements _AwakeTimeAllocationDashboard {
   const _$AwakeTimeAllocationDashboardImpl(
-      {required this.dateTime, required final List<String> insights})
-      : _insights = insights;
+      {required this.dateTime,
+      required final List<AwakeTimeAllocationDashboardEntry> entries,
+      required final List<String> insights})
+      : _entries = entries,
+        _insights = insights;
 
   factory _$AwakeTimeAllocationDashboardImpl.fromJson(
           Map<String, dynamic> json) =>
@@ -4633,6 +5451,14 @@ class _$AwakeTimeAllocationDashboardImpl
 
   @override
   final DateTime dateTime;
+  final List<AwakeTimeAllocationDashboardEntry> _entries;
+  @override
+  List<AwakeTimeAllocationDashboardEntry> get entries {
+    if (_entries is EqualUnmodifiableListView) return _entries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_entries);
+  }
+
   final List<String> _insights;
   @override
   List<String> get insights {
@@ -4643,7 +5469,7 @@ class _$AwakeTimeAllocationDashboardImpl
 
   @override
   String toString() {
-    return 'AwakeTimeAllocationDashboard(dateTime: $dateTime, insights: $insights)';
+    return 'AwakeTimeAllocationDashboard(dateTime: $dateTime, entries: $entries, insights: $insights)';
   }
 
   @override
@@ -4653,13 +5479,17 @@ class _$AwakeTimeAllocationDashboardImpl
             other is _$AwakeTimeAllocationDashboardImpl &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
+            const DeepCollectionEquality().equals(other._entries, _entries) &&
             const DeepCollectionEquality().equals(other._insights, _insights));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, dateTime, const DeepCollectionEquality().hash(_insights));
+      runtimeType,
+      dateTime,
+      const DeepCollectionEquality().hash(_entries),
+      const DeepCollectionEquality().hash(_insights));
 
   /// Create a copy of AwakeTimeAllocationDashboard
   /// with the given fields replaced by the non-null parameter values.
@@ -4683,6 +5513,7 @@ abstract class _AwakeTimeAllocationDashboard
     implements AwakeTimeAllocationDashboard {
   const factory _AwakeTimeAllocationDashboard(
           {required final DateTime dateTime,
+          required final List<AwakeTimeAllocationDashboardEntry> entries,
           required final List<String> insights}) =
       _$AwakeTimeAllocationDashboardImpl;
 
@@ -4691,6 +5522,8 @@ abstract class _AwakeTimeAllocationDashboard
 
   @override
   DateTime get dateTime;
+  @override
+  List<AwakeTimeAllocationDashboardEntry> get entries;
   @override
   List<String> get insights;
 
@@ -4701,4 +5534,333 @@ abstract class _AwakeTimeAllocationDashboard
   _$$AwakeTimeAllocationDashboardImplCopyWith<
           _$AwakeTimeAllocationDashboardImpl>
       get copyWith => throw _privateConstructorUsedError;
+}
+
+Dashboard _$DashboardFromJson(Map<String, dynamic> json) {
+  return _Dashboard.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Dashboard {
+  DateTime get dateTime => throw _privateConstructorUsedError;
+  MoodScoreDashboard get moodScore => throw _privateConstructorUsedError;
+  StressLevelDashboard get stressLevel => throw _privateConstructorUsedError;
+  EnergyLevelDashboard get energyLevel => throw _privateConstructorUsedError;
+  MoodTrackingDashboard get moodTracking => throw _privateConstructorUsedError;
+  AwakeTimeAllocationDashboard get awakeTimeAllocation =>
+      throw _privateConstructorUsedError;
+
+  /// Serializes this Dashboard to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DashboardCopyWith<Dashboard> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DashboardCopyWith<$Res> {
+  factory $DashboardCopyWith(Dashboard value, $Res Function(Dashboard) then) =
+      _$DashboardCopyWithImpl<$Res, Dashboard>;
+  @useResult
+  $Res call(
+      {DateTime dateTime,
+      MoodScoreDashboard moodScore,
+      StressLevelDashboard stressLevel,
+      EnergyLevelDashboard energyLevel,
+      MoodTrackingDashboard moodTracking,
+      AwakeTimeAllocationDashboard awakeTimeAllocation});
+
+  $MoodScoreDashboardCopyWith<$Res> get moodScore;
+  $StressLevelDashboardCopyWith<$Res> get stressLevel;
+  $EnergyLevelDashboardCopyWith<$Res> get energyLevel;
+  $MoodTrackingDashboardCopyWith<$Res> get moodTracking;
+  $AwakeTimeAllocationDashboardCopyWith<$Res> get awakeTimeAllocation;
+}
+
+/// @nodoc
+class _$DashboardCopyWithImpl<$Res, $Val extends Dashboard>
+    implements $DashboardCopyWith<$Res> {
+  _$DashboardCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? dateTime = null,
+    Object? moodScore = null,
+    Object? stressLevel = null,
+    Object? energyLevel = null,
+    Object? moodTracking = null,
+    Object? awakeTimeAllocation = null,
+  }) {
+    return _then(_value.copyWith(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      moodScore: null == moodScore
+          ? _value.moodScore
+          : moodScore // ignore: cast_nullable_to_non_nullable
+              as MoodScoreDashboard,
+      stressLevel: null == stressLevel
+          ? _value.stressLevel
+          : stressLevel // ignore: cast_nullable_to_non_nullable
+              as StressLevelDashboard,
+      energyLevel: null == energyLevel
+          ? _value.energyLevel
+          : energyLevel // ignore: cast_nullable_to_non_nullable
+              as EnergyLevelDashboard,
+      moodTracking: null == moodTracking
+          ? _value.moodTracking
+          : moodTracking // ignore: cast_nullable_to_non_nullable
+              as MoodTrackingDashboard,
+      awakeTimeAllocation: null == awakeTimeAllocation
+          ? _value.awakeTimeAllocation
+          : awakeTimeAllocation // ignore: cast_nullable_to_non_nullable
+              as AwakeTimeAllocationDashboard,
+    ) as $Val);
+  }
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $MoodScoreDashboardCopyWith<$Res> get moodScore {
+    return $MoodScoreDashboardCopyWith<$Res>(_value.moodScore, (value) {
+      return _then(_value.copyWith(moodScore: value) as $Val);
+    });
+  }
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $StressLevelDashboardCopyWith<$Res> get stressLevel {
+    return $StressLevelDashboardCopyWith<$Res>(_value.stressLevel, (value) {
+      return _then(_value.copyWith(stressLevel: value) as $Val);
+    });
+  }
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $EnergyLevelDashboardCopyWith<$Res> get energyLevel {
+    return $EnergyLevelDashboardCopyWith<$Res>(_value.energyLevel, (value) {
+      return _then(_value.copyWith(energyLevel: value) as $Val);
+    });
+  }
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $MoodTrackingDashboardCopyWith<$Res> get moodTracking {
+    return $MoodTrackingDashboardCopyWith<$Res>(_value.moodTracking, (value) {
+      return _then(_value.copyWith(moodTracking: value) as $Val);
+    });
+  }
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $AwakeTimeAllocationDashboardCopyWith<$Res> get awakeTimeAllocation {
+    return $AwakeTimeAllocationDashboardCopyWith<$Res>(
+        _value.awakeTimeAllocation, (value) {
+      return _then(_value.copyWith(awakeTimeAllocation: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$DashboardImplCopyWith<$Res>
+    implements $DashboardCopyWith<$Res> {
+  factory _$$DashboardImplCopyWith(
+          _$DashboardImpl value, $Res Function(_$DashboardImpl) then) =
+      __$$DashboardImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {DateTime dateTime,
+      MoodScoreDashboard moodScore,
+      StressLevelDashboard stressLevel,
+      EnergyLevelDashboard energyLevel,
+      MoodTrackingDashboard moodTracking,
+      AwakeTimeAllocationDashboard awakeTimeAllocation});
+
+  @override
+  $MoodScoreDashboardCopyWith<$Res> get moodScore;
+  @override
+  $StressLevelDashboardCopyWith<$Res> get stressLevel;
+  @override
+  $EnergyLevelDashboardCopyWith<$Res> get energyLevel;
+  @override
+  $MoodTrackingDashboardCopyWith<$Res> get moodTracking;
+  @override
+  $AwakeTimeAllocationDashboardCopyWith<$Res> get awakeTimeAllocation;
+}
+
+/// @nodoc
+class __$$DashboardImplCopyWithImpl<$Res>
+    extends _$DashboardCopyWithImpl<$Res, _$DashboardImpl>
+    implements _$$DashboardImplCopyWith<$Res> {
+  __$$DashboardImplCopyWithImpl(
+      _$DashboardImpl _value, $Res Function(_$DashboardImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? dateTime = null,
+    Object? moodScore = null,
+    Object? stressLevel = null,
+    Object? energyLevel = null,
+    Object? moodTracking = null,
+    Object? awakeTimeAllocation = null,
+  }) {
+    return _then(_$DashboardImpl(
+      dateTime: null == dateTime
+          ? _value.dateTime
+          : dateTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      moodScore: null == moodScore
+          ? _value.moodScore
+          : moodScore // ignore: cast_nullable_to_non_nullable
+              as MoodScoreDashboard,
+      stressLevel: null == stressLevel
+          ? _value.stressLevel
+          : stressLevel // ignore: cast_nullable_to_non_nullable
+              as StressLevelDashboard,
+      energyLevel: null == energyLevel
+          ? _value.energyLevel
+          : energyLevel // ignore: cast_nullable_to_non_nullable
+              as EnergyLevelDashboard,
+      moodTracking: null == moodTracking
+          ? _value.moodTracking
+          : moodTracking // ignore: cast_nullable_to_non_nullable
+              as MoodTrackingDashboard,
+      awakeTimeAllocation: null == awakeTimeAllocation
+          ? _value.awakeTimeAllocation
+          : awakeTimeAllocation // ignore: cast_nullable_to_non_nullable
+              as AwakeTimeAllocationDashboard,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DashboardImpl implements _Dashboard {
+  const _$DashboardImpl(
+      {required this.dateTime,
+      required this.moodScore,
+      required this.stressLevel,
+      required this.energyLevel,
+      required this.moodTracking,
+      required this.awakeTimeAllocation});
+
+  factory _$DashboardImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DashboardImplFromJson(json);
+
+  @override
+  final DateTime dateTime;
+  @override
+  final MoodScoreDashboard moodScore;
+  @override
+  final StressLevelDashboard stressLevel;
+  @override
+  final EnergyLevelDashboard energyLevel;
+  @override
+  final MoodTrackingDashboard moodTracking;
+  @override
+  final AwakeTimeAllocationDashboard awakeTimeAllocation;
+
+  @override
+  String toString() {
+    return 'Dashboard(dateTime: $dateTime, moodScore: $moodScore, stressLevel: $stressLevel, energyLevel: $energyLevel, moodTracking: $moodTracking, awakeTimeAllocation: $awakeTimeAllocation)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DashboardImpl &&
+            (identical(other.dateTime, dateTime) ||
+                other.dateTime == dateTime) &&
+            (identical(other.moodScore, moodScore) ||
+                other.moodScore == moodScore) &&
+            (identical(other.stressLevel, stressLevel) ||
+                other.stressLevel == stressLevel) &&
+            (identical(other.energyLevel, energyLevel) ||
+                other.energyLevel == energyLevel) &&
+            (identical(other.moodTracking, moodTracking) ||
+                other.moodTracking == moodTracking) &&
+            (identical(other.awakeTimeAllocation, awakeTimeAllocation) ||
+                other.awakeTimeAllocation == awakeTimeAllocation));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, dateTime, moodScore, stressLevel,
+      energyLevel, moodTracking, awakeTimeAllocation);
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DashboardImplCopyWith<_$DashboardImpl> get copyWith =>
+      __$$DashboardImplCopyWithImpl<_$DashboardImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DashboardImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _Dashboard implements Dashboard {
+  const factory _Dashboard(
+          {required final DateTime dateTime,
+          required final MoodScoreDashboard moodScore,
+          required final StressLevelDashboard stressLevel,
+          required final EnergyLevelDashboard energyLevel,
+          required final MoodTrackingDashboard moodTracking,
+          required final AwakeTimeAllocationDashboard awakeTimeAllocation}) =
+      _$DashboardImpl;
+
+  factory _Dashboard.fromJson(Map<String, dynamic> json) =
+      _$DashboardImpl.fromJson;
+
+  @override
+  DateTime get dateTime;
+  @override
+  MoodScoreDashboard get moodScore;
+  @override
+  StressLevelDashboard get stressLevel;
+  @override
+  EnergyLevelDashboard get energyLevel;
+  @override
+  MoodTrackingDashboard get moodTracking;
+  @override
+  AwakeTimeAllocationDashboard get awakeTimeAllocation;
+
+  /// Create a copy of Dashboard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DashboardImplCopyWith<_$DashboardImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

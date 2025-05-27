@@ -61,6 +61,11 @@ class TestData {
         TestData.createAwakeTimeAllocationDashboard(
           DataManager().currentJournal.dateTime,
         );
+
+    //
+    DataManager().dashboards.add(
+      TestData.createDashboard(DataManager().currentJournal.dateTime),
+    );
   }
 
   // 添加日记的最爱数据
@@ -699,6 +704,9 @@ class TestData {
         'Morning periods seem to have higher scores than evenings.',
         'Consider activities that boost your mood during lower periods.',
       ],
+      day: [],
+      week: [],
+      month: [],
     );
   }
 
@@ -710,6 +718,9 @@ class TestData {
         'Meditation sessions appear to reduce stress levels significantly.',
         'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
       ],
+      day: [],
+      week: [],
+      month: [],
     );
   }
 
@@ -721,12 +732,16 @@ class TestData {
         'Social interactions appear to boost your energy significantly.',
         'Consider scheduling important tasks during your high-energy periods.',
       ],
+      day: [],
+      week: [],
+      month: [],
     );
   }
 
   static MoodTrackingDashboard createMoodTrackingDashboard(DateTime dateTime) {
     return MoodTrackingDashboard(
       dateTime: dateTime,
+      entries: [],
       insights: [
         //'Happiness and calmness are your dominant emotions this week.',
         'Stress levels peak during midweek but decrease on weekends.',
@@ -740,11 +755,23 @@ class TestData {
   ) {
     return AwakeTimeAllocationDashboard(
       dateTime: dateTime,
+      entries: [],
       insights: [
         //'Work takes up the majority of your awake hours this week.',
         'Self-care and exercise time has increased compared to previous periods.',
         'Consider increasing learning activities to meet your personal growth goals.',
       ],
+    );
+  }
+
+  static Dashboard createDashboard(DateTime dateTime) {
+    return Dashboard(
+      dateTime: dateTime,
+      moodScore: createMoodScoreDashboard(dateTime),
+      stressLevel: createStressLevelDashboard(dateTime),
+      energyLevel: createEnergyLevelDashboard(dateTime),
+      moodTracking: createMoodTrackingDashboard(dateTime),
+      awakeTimeAllocation: createAwakeTimeAllocationDashboard(dateTime),
     );
   }
 }
