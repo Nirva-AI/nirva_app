@@ -138,7 +138,7 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().moodScoreDashboard.insights,
+              DataManager().currentDashboard.moodScore.insights,
             ), // 传入数据
           ],
         ),

@@ -135,7 +135,7 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().stressLevelDashboard.insights,
+              DataManager().currentDashboard.stressLevel.insights,
             ), // 传入数据
           ],
         ),

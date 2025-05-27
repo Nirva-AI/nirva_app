@@ -176,7 +176,7 @@ class _AwakeTimeAllocationDetailsPageState
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().awakeTimeAllocationDashboard.insights,
+              DataManager().currentDashboard.awakeTimeAllocation.insights,
             ),
           ],
         ),

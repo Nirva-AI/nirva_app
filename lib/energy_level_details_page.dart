@@ -135,7 +135,7 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().energyLevelDashboard.insights,
+              DataManager().currentDashboard.energyLevel.insights,
             ), // 传入数据
           ],
         ),
