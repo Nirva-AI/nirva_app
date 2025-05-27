@@ -41,7 +41,8 @@ class TestData {
     DataManager().dashboards.add(
       TestData.createTestDashboard(
         DataManager().currentJournal.dateTime,
-        DataManager().currentJournal,
+        DataManager().currentJournal.moodTrackings,
+        DataManager().currentJournal.awakeTimeAllocations,
       ),
     );
   }
@@ -669,12 +670,16 @@ class TestData {
       highlights: highlights,
       energyLevels: energyLevels,
       moodTrackings: moodTrackings,
-      awakeTimeActions: awakeTimeAllocations,
+      awakeTimeAllocations: awakeTimeAllocations,
       socialMap: SocialMap(id: "", socialEntities: socialEntities),
     );
   }
 
-  static Dashboard createTestDashboard(DateTime dateTime, Journal journal) {
+  static Dashboard createTestDashboard(
+    DateTime dateTime,
+    List<MoodTracking> moodTrackings,
+    List<AwakeTimeAllocation> awakeTimeAllocations,
+  ) {
     // 创建情绪分数仪表盘
     final moodScore = MoodScoreDashboard(
       insights: [
@@ -716,7 +721,7 @@ class TestData {
 
     // 创建情绪追踪仪表盘条目
     List<MoodTrackingDashboardEntry> moodTrackingEntries = [];
-    for (var moodTracking in journal.moodTrackings) {
+    for (var moodTracking in moodTrackings) {
       moodTrackingEntries.add(
         MoodTrackingDashboardEntry(
           moodTracking: moodTracking,
@@ -739,7 +744,7 @@ class TestData {
 
     // 创建醒着的时间分配仪表盘条目
     List<AwakeTimeAllocationDashboardEntry> awakeTimeAllocationEntries = [];
-    for (var awakeTimeAllocation in journal.awakeTimeActions) {
+    for (var awakeTimeAllocation in awakeTimeAllocations) {
       awakeTimeAllocationEntries.add(
         AwakeTimeAllocationDashboardEntry(
           awakeTimeAllocation: awakeTimeAllocation,

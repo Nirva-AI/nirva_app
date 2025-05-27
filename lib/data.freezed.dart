@@ -3253,7 +3253,7 @@ mixin _$Journal {
   List<Highlight> get highlights => throw _privateConstructorUsedError;
   List<EnergyLevel> get energyLevels => throw _privateConstructorUsedError;
   List<MoodTracking> get moodTrackings => throw _privateConstructorUsedError;
-  List<AwakeTimeAllocation> get awakeTimeActions =>
+  List<AwakeTimeAllocation> get awakeTimeAllocations =>
       throw _privateConstructorUsedError;
   SocialMap get socialMap => throw _privateConstructorUsedError;
 
@@ -3285,7 +3285,7 @@ abstract class $JournalCopyWith<$Res> {
       List<Highlight> highlights,
       List<EnergyLevel> energyLevels,
       List<MoodTracking> moodTrackings,
-      List<AwakeTimeAllocation> awakeTimeActions,
+      List<AwakeTimeAllocation> awakeTimeAllocations,
       SocialMap socialMap});
 
   $MoodScoreCopyWith<$Res> get moodScore;
@@ -3321,7 +3321,7 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
     Object? highlights = null,
     Object? energyLevels = null,
     Object? moodTrackings = null,
-    Object? awakeTimeActions = null,
+    Object? awakeTimeAllocations = null,
     Object? socialMap = null,
   }) {
     return _then(_value.copyWith(
@@ -3377,9 +3377,9 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
           ? _value.moodTrackings
           : moodTrackings // ignore: cast_nullable_to_non_nullable
               as List<MoodTracking>,
-      awakeTimeActions: null == awakeTimeActions
-          ? _value.awakeTimeActions
-          : awakeTimeActions // ignore: cast_nullable_to_non_nullable
+      awakeTimeAllocations: null == awakeTimeAllocations
+          ? _value.awakeTimeAllocations
+          : awakeTimeAllocations // ignore: cast_nullable_to_non_nullable
               as List<AwakeTimeAllocation>,
       socialMap: null == socialMap
           ? _value.socialMap
@@ -3440,7 +3440,7 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
       List<Highlight> highlights,
       List<EnergyLevel> energyLevels,
       List<MoodTracking> moodTrackings,
-      List<AwakeTimeAllocation> awakeTimeActions,
+      List<AwakeTimeAllocation> awakeTimeAllocations,
       SocialMap socialMap});
 
   @override
@@ -3477,7 +3477,7 @@ class __$$JournalImplCopyWithImpl<$Res>
     Object? highlights = null,
     Object? energyLevels = null,
     Object? moodTrackings = null,
-    Object? awakeTimeActions = null,
+    Object? awakeTimeAllocations = null,
     Object? socialMap = null,
   }) {
     return _then(_$JournalImpl(
@@ -3533,9 +3533,9 @@ class __$$JournalImplCopyWithImpl<$Res>
           ? _value._moodTrackings
           : moodTrackings // ignore: cast_nullable_to_non_nullable
               as List<MoodTracking>,
-      awakeTimeActions: null == awakeTimeActions
-          ? _value._awakeTimeActions
-          : awakeTimeActions // ignore: cast_nullable_to_non_nullable
+      awakeTimeAllocations: null == awakeTimeAllocations
+          ? _value._awakeTimeAllocations
+          : awakeTimeAllocations // ignore: cast_nullable_to_non_nullable
               as List<AwakeTimeAllocation>,
       socialMap: null == socialMap
           ? _value.socialMap
@@ -3562,7 +3562,7 @@ class _$JournalImpl implements _Journal {
       required final List<Highlight> highlights,
       required final List<EnergyLevel> energyLevels,
       required final List<MoodTracking> moodTrackings,
-      required final List<AwakeTimeAllocation> awakeTimeActions,
+      required final List<AwakeTimeAllocation> awakeTimeAllocations,
       required this.socialMap})
       : _diaryEntries = diaryEntries,
         _quotes = quotes,
@@ -3572,7 +3572,7 @@ class _$JournalImpl implements _Journal {
         _highlights = highlights,
         _energyLevels = energyLevels,
         _moodTrackings = moodTrackings,
-        _awakeTimeActions = awakeTimeActions;
+        _awakeTimeAllocations = awakeTimeAllocations;
 
   factory _$JournalImpl.fromJson(Map<String, dynamic> json) =>
       _$$JournalImplFromJson(json);
@@ -3652,13 +3652,13 @@ class _$JournalImpl implements _Journal {
     return EqualUnmodifiableListView(_moodTrackings);
   }
 
-  final List<AwakeTimeAllocation> _awakeTimeActions;
+  final List<AwakeTimeAllocation> _awakeTimeAllocations;
   @override
-  List<AwakeTimeAllocation> get awakeTimeActions {
-    if (_awakeTimeActions is EqualUnmodifiableListView)
-      return _awakeTimeActions;
+  List<AwakeTimeAllocation> get awakeTimeAllocations {
+    if (_awakeTimeAllocations is EqualUnmodifiableListView)
+      return _awakeTimeAllocations;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_awakeTimeActions);
+    return EqualUnmodifiableListView(_awakeTimeAllocations);
   }
 
   @override
@@ -3666,7 +3666,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, summary: $summary, diaryEntries: $diaryEntries, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeActions: $awakeTimeActions, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, summary: $summary, diaryEntries: $diaryEntries, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
   }
 
   @override
@@ -3697,7 +3697,7 @@ class _$JournalImpl implements _Journal {
             const DeepCollectionEquality()
                 .equals(other._moodTrackings, _moodTrackings) &&
             const DeepCollectionEquality()
-                .equals(other._awakeTimeActions, _awakeTimeActions) &&
+                .equals(other._awakeTimeAllocations, _awakeTimeAllocations) &&
             (identical(other.socialMap, socialMap) ||
                 other.socialMap == socialMap));
   }
@@ -3719,7 +3719,7 @@ class _$JournalImpl implements _Journal {
       const DeepCollectionEquality().hash(_highlights),
       const DeepCollectionEquality().hash(_energyLevels),
       const DeepCollectionEquality().hash(_moodTrackings),
-      const DeepCollectionEquality().hash(_awakeTimeActions),
+      const DeepCollectionEquality().hash(_awakeTimeAllocations),
       socialMap);
 
   /// Create a copy of Journal
@@ -3753,7 +3753,7 @@ abstract class _Journal implements Journal {
       required final List<Highlight> highlights,
       required final List<EnergyLevel> energyLevels,
       required final List<MoodTracking> moodTrackings,
-      required final List<AwakeTimeAllocation> awakeTimeActions,
+      required final List<AwakeTimeAllocation> awakeTimeAllocations,
       required final SocialMap socialMap}) = _$JournalImpl;
 
   factory _Journal.fromJson(Map<String, dynamic> json) = _$JournalImpl.fromJson;
@@ -3785,7 +3785,7 @@ abstract class _Journal implements Journal {
   @override
   List<MoodTracking> get moodTrackings;
   @override
-  List<AwakeTimeAllocation> get awakeTimeActions;
+  List<AwakeTimeAllocation> get awakeTimeAllocations;
   @override
   SocialMap get socialMap;
 
