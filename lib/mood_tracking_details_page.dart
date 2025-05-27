@@ -2,93 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/utils.dart';
-import 'dart:math';
 import 'package:nirva_app/data.dart';
 
-enum MoodTrackingChartType { day, week, month }
-
-class MoodTrackingChartDataGroup {
-  final MoodTracking moodTracking;
-  final List<double> day;
-  final List<double> week;
-  final List<double> month;
-
-  static final random = Random();
-
-  MoodTrackingChartDataGroup({
-    required this.moodTracking,
-    required this.day,
-    required this.week,
-    required this.month,
-  });
-
-  Color get lineBarColor {
-    return Color(moodTracking.color);
-  }
-
-  String get label {
-    return moodTracking.name;
-  }
-
-  static createGroup(MoodTracking moodTracking) {
-    return MoodTrackingChartDataGroup(
-      moodTracking: moodTracking,
-      day: MoodTrackingChartDataGroup.createDaySamples(),
-      week: MoodTrackingChartDataGroup.createWeekSamples(),
-      month: MoodTrackingChartDataGroup.createMonthSamples(),
-    );
-  }
-
-  static double randomValue() {
-    //用math.Random() , 随机返回一个0～100之间的值
-    final random = Random();
-    return random.nextDouble() * 100;
-  }
-
-  // 生成最近的7天数据
-  static List<double> createDaySamples() {
-    return List.generate(7, (index) => randomValue());
-  }
-
-  // 生成最近的4周数据
-  static List<double> createWeekSamples() {
-    return List.generate(4, (index) => randomValue());
-  }
-
-  // 生成最近的5个月数据
-  static List<double> createMonthSamples() {
-    return List.generate(5, (index) => randomValue());
-  }
-}
-
-class MoodTrackingChartDataManager {
-  final double minY = 0; // 最小值
-  final double maxY = 100; // 最大值
-  final double interval = 25; // 刻度间隔
-  final dayCount = 7;
-  final monthCount = 5;
-  Map<String, MoodTrackingChartDataGroup> groups = {};
-
-  MoodTrackingChartDataManager({required this.groups});
-
-  List<double> get yAxisValues {
-    return List.generate(
-      ((maxY - minY) / interval).toInt() + 1,
-      (index) => minY + index * interval,
-    );
-  }
-
-  void addGroup(String label, MoodTrackingChartDataGroup dataGroup) {
-    groups[label] = dataGroup;
-  }
-}
+enum MoodTrackingChartTab { day, week, month }
 
 class MoodTrackingDetailsPage extends StatefulWidget {
-  MoodTrackingDetailsPage({super.key});
-
-  final MoodTrackingChartDataManager dataManager = MoodTrackingChartDataManager(
-    groups: {},
-  );
+  const MoodTrackingDetailsPage({super.key});
 
   @override
   State<MoodTrackingDetailsPage> createState() =>
@@ -96,28 +15,10 @@ class MoodTrackingDetailsPage extends StatefulWidget {
 }
 
 class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
-  MoodTrackingChartType _selectedType = MoodTrackingChartType.day; // 默认选中类型
-
-  MoodTrackingChartDataManager _initializeDataManager() {
-    if (widget.dataManager.groups.isNotEmpty) {
-      return widget.dataManager;
-    }
-    List<MoodTracking> moodTrackings =
-        DataManager().currentJournal.moodTrackings;
-
-    for (var moodTracking in moodTrackings) {
-      widget.dataManager.addGroup(
-        moodTracking.name,
-        MoodTrackingChartDataGroup.createGroup(moodTracking),
-      );
-    }
-    return widget.dataManager;
-  }
+  MoodTrackingChartTab _selectedType = MoodTrackingChartTab.day; // 默认选中类型
 
   @override
   Widget build(BuildContext context) {
-    _initializeDataManager();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mood Tracking'),
@@ -148,9 +49,9 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildTab('Day', MoodTrackingChartType.day),
-                        _buildTab('Week', MoodTrackingChartType.week),
-                        _buildTab('Month', MoodTrackingChartType.month),
+                        _buildTab('Day', MoodTrackingChartTab.day),
+                        _buildTab('Week', MoodTrackingChartTab.week),
+                        _buildTab('Month', MoodTrackingChartTab.month),
                       ],
                     ),
                     const SizedBox(height: 16 * 2),
@@ -160,7 +61,7 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
                       height: 200, // 为图表提供明确的高度
                       child: MoodTrackingChart(
                         type: _selectedType,
-                        dataManager: widget.dataManager,
+                        //dataManager: widget.dataManager,
                       ),
                     ),
 
@@ -186,7 +87,7 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
   }
 
   /// 构建按钮
-  Widget _buildTab(String title, MoodTrackingChartType type) {
+  Widget _buildTab(String title, MoodTrackingChartTab type) {
     final bool isSelected = _selectedType == type;
     return ElevatedButton(
       onPressed: () {
@@ -251,37 +152,49 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
         spacing: 16,
         runSpacing: 8,
         children:
-            widget.dataManager.groups.values.map((dataGroup) {
-              return Row(
-                mainAxisSize: MainAxisSize.min, // 设置为最小宽度
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: dataGroup.lineBarColor,
-                      shape: BoxShape.circle, // 使用圆形表示情绪类型
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(dataGroup.label, style: const TextStyle(fontSize: 12)),
-                ],
-              );
-            }).toList(),
+            DataManager().currentDashboard.moodTracking.moodTrackingMap.values
+                .map((data) {
+                  return Row(
+                    mainAxisSize: MainAxisSize.min, // 设置为最小宽度
+                    children: [
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Color(data.moodTracking.color),
+                          shape: BoxShape.circle, // 使用圆形表示情绪类型
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        data.moodTracking.name,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  );
+                })
+                .toList(),
       ),
     );
   }
 }
 
 class MoodTrackingChart extends StatelessWidget {
-  final MoodTrackingChartType type;
-  final MoodTrackingChartDataManager dataManager;
+  static const double minY = 0; // 最小值
+  static const double maxY = 100; // 最大值
+  static const double interval = 25; // 刻度间隔
+  static const dayCount = 7;
+  static const monthCount = 5;
+  final MoodTrackingChartTab type;
 
-  const MoodTrackingChart({
-    super.key,
-    required this.type,
-    required this.dataManager,
-  });
+  const MoodTrackingChart({super.key, required this.type});
+
+  List<double> get yAxisValues {
+    return List.generate(
+      ((maxY - minY) / interval).toInt() + 1,
+      (index) => minY + index * interval,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -292,14 +205,14 @@ class MoodTrackingChart extends StatelessWidget {
         heightFactor: 1.0,
         child: LineChart(
           LineChartData(
-            minY: dataManager.minY,
-            maxY: dataManager.maxY,
+            minY: minY,
+            maxY: maxY,
             gridData: FlGridData(show: false),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: dataManager.interval,
+                  interval: interval,
                   //reservedSize: 40,
                   getTitlesWidget: (value, meta) {
                     return const SizedBox.shrink();
@@ -321,9 +234,9 @@ class MoodTrackingChart extends StatelessWidget {
   }
 
   /// 构建底部标题的逻辑
-  SideTitles _buildBottomTitles(MoodTrackingChartType type) {
+  SideTitles _buildBottomTitles(MoodTrackingChartTab type) {
     switch (type) {
-      case MoodTrackingChartType.day:
+      case MoodTrackingChartTab.day:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -335,7 +248,7 @@ class MoodTrackingChart extends StatelessWidget {
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.weekday,
-                  dataManager.dayCount,
+                  dayCount,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -345,7 +258,7 @@ class MoodTrackingChart extends StatelessWidget {
             );
           },
         );
-      case MoodTrackingChartType.week:
+      case MoodTrackingChartTab.week:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -363,7 +276,7 @@ class MoodTrackingChart extends StatelessWidget {
             );
           },
         );
-      case MoodTrackingChartType.month:
+      case MoodTrackingChartTab.month:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -375,7 +288,7 @@ class MoodTrackingChart extends StatelessWidget {
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.month,
-                  dataManager.monthCount,
+                  monthCount,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -408,26 +321,31 @@ class MoodTrackingChart extends StatelessWidget {
   }
 
   /// 构建 lineBarsData 的逻辑
-  List<LineChartBarData> _buildLineBarsData(MoodTrackingChartType type) {
+  List<LineChartBarData> _buildLineBarsData(MoodTrackingChartTab type) {
     List<LineChartBarData> ret = [];
 
+    final moodTrackingMap =
+        DataManager().currentDashboard.moodTracking.moodTrackingMap;
+
     switch (type) {
-      case MoodTrackingChartType.day:
-        for (var dataGroup in dataManager.groups.values) {
-          ret.add(_buildLineBarData(dataGroup.day, dataGroup.lineBarColor));
+      case MoodTrackingChartTab.day:
+        for (var data in moodTrackingMap.values) {
+          ret.add(_buildLineBarData(data.day, Color(data.moodTracking.color)));
         }
         break;
 
-      case MoodTrackingChartType.week:
-        for (var dataGroup in dataManager.groups.values) {
-          ret.add(_buildLineBarData(dataGroup.week, dataGroup.lineBarColor));
+      case MoodTrackingChartTab.week:
+        for (var data in moodTrackingMap.values) {
+          ret.add(_buildLineBarData(data.week, Color(data.moodTracking.color)));
         }
 
         break;
 
-      case MoodTrackingChartType.month:
-        for (var dataGroup in dataManager.groups.values) {
-          ret.add(_buildLineBarData(dataGroup.month, dataGroup.lineBarColor));
+      case MoodTrackingChartTab.month:
+        for (var data in moodTrackingMap.values) {
+          ret.add(
+            _buildLineBarData(data.month, Color(data.moodTracking.color)),
+          );
         }
         break;
     }

@@ -10,7 +10,7 @@ class MoodTrackingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sections =
-        DataManager().currentJournal.moodTrackingData.entries.map((entry) {
+        DataManager().currentJournal.moodTrackingMap.entries.map((entry) {
           return PieChartSectionData(
             value: entry.value.toDouble(),
             color: Color(entry.key.color),

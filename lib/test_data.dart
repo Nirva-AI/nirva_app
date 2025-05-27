@@ -6,6 +6,7 @@ import 'dart:math';
 
 // 管理全局数据的类
 class TestData {
+  static final random = Random();
   //
   static void initializeTestData() {
     DataManager.clear();
@@ -38,7 +39,10 @@ class TestData {
 
     //
     DataManager().dashboards.add(
-      TestData.createTestDashboard(DataManager().currentJournal.dateTime),
+      TestData.createTestDashboard(
+        DataManager().currentJournal.dateTime,
+        DataManager().currentJournal,
+      ),
     );
   }
 
@@ -49,7 +53,7 @@ class TestData {
 
     //
     if (diaryEntries.isNotEmpty) {
-      final random = Random();
+      //final random = Random();
       DiaryEntry randomDiaryEntry =
           diaryEntries[random.nextInt(diaryEntries.length)];
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
@@ -67,7 +71,7 @@ class TestData {
 
     //
     if (diaryEntries.isNotEmpty) {
-      final random = Random();
+      //final random = Random();
       DiaryEntry randomDiaryEntry =
           diaryEntries[random.nextInt(diaryEntries.length)];
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
@@ -87,7 +91,7 @@ class TestData {
   // 随机生成社交影响
   static String randomSocialImpact() {
     List<String> impacts = ['Positive', 'Negative', 'Neutral'];
-    final random = Random();
+    //final random = Random();
     return impacts[random.nextInt(impacts.length)];
   }
 
@@ -670,7 +674,7 @@ class TestData {
     );
   }
 
-  static Dashboard createTestDashboard(DateTime dateTime) {
+  static Dashboard createTestDashboard(DateTime dateTime, Journal journal) {
     // 创建情绪分数仪表盘
     final moodScore = MoodScoreDashboard(
       insights: [
@@ -710,10 +714,22 @@ class TestData {
       month: [6.2, 6.7, 7.3, 7.8, 8.1],
     );
 
+    // 创建情绪追踪仪表盘条目
+    List<MoodTrackingDashboardEntry> moodTrackingEntries = [];
+    for (var moodTracking in journal.moodTrackings) {
+      moodTrackingEntries.add(
+        MoodTrackingDashboardEntry(
+          moodTracking: moodTracking,
+          day: createDaySamples(),
+          week: createWeekSamples(),
+          month: createMonthSamples(),
+        ),
+      );
+    }
+
     // 创建情绪追踪仪表盘
     final moodTracking = MoodTrackingDashboard(
-      //dateTime: dateTime,
-      entries: [],
+      entries: moodTrackingEntries,
       insights: [
         //'Happiness and calmness are your dominant emotions this week.',
         'Stress levels peak during midweek but decrease on weekends.',
@@ -723,7 +739,6 @@ class TestData {
 
     // 创建醒着的时间分配仪表盘
     final awakeTimeAllocation = AwakeTimeAllocationDashboard(
-      //dateTime: dateTime,
       entries: [],
       insights: [
         //'Work takes up the majority of your awake hours this week.',
@@ -740,5 +755,26 @@ class TestData {
       moodTracking: moodTracking,
       awakeTimeAllocation: awakeTimeAllocation,
     );
+  }
+
+  static double randomRange100() {
+    //用math.Random() , 随机返回一个0～100之间的值
+    final random = Random();
+    return random.nextDouble() * 100;
+  }
+
+  // 生成最近的7天数据
+  static List<double> createDaySamples() {
+    return List.generate(7, (index) => randomRange100());
+  }
+
+  // 生成最近的4周数据
+  static List<double> createWeekSamples() {
+    return List.generate(4, (index) => randomRange100());
+  }
+
+  // 生成最近的5个月数据
+  static List<double> createMonthSamples() {
+    return List.generate(5, (index) => randomRange100());
   }
 }

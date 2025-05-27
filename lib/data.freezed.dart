@@ -3803,7 +3803,6 @@ MoodScoreDashboard _$MoodScoreDashboardFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$MoodScoreDashboard {
-//required DateTime dateTime,
   List<String> get insights => throw _privateConstructorUsedError;
   List<double> get scores => throw _privateConstructorUsedError;
   List<double> get day => throw _privateConstructorUsedError;
@@ -3958,9 +3957,7 @@ class _$MoodScoreDashboardImpl implements _MoodScoreDashboard {
   factory _$MoodScoreDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$MoodScoreDashboardImplFromJson(json);
 
-//required DateTime dateTime,
   final List<String> _insights;
-//required DateTime dateTime,
   @override
   List<String> get insights {
     if (_insights is EqualUnmodifiableListView) return _insights;
@@ -4055,7 +4052,6 @@ abstract class _MoodScoreDashboard implements MoodScoreDashboard {
   factory _MoodScoreDashboard.fromJson(Map<String, dynamic> json) =
       _$MoodScoreDashboardImpl.fromJson;
 
-//required DateTime dateTime,
   @override
   List<String> get insights;
   @override
@@ -4081,7 +4077,6 @@ StressLevelDashboard _$StressLevelDashboardFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$StressLevelDashboard {
-//required DateTime dateTime,
   List<String> get insights => throw _privateConstructorUsedError;
   List<double> get scores => throw _privateConstructorUsedError;
   List<double> get day => throw _privateConstructorUsedError;
@@ -4237,9 +4232,7 @@ class _$StressLevelDashboardImpl implements _StressLevelDashboard {
   factory _$StressLevelDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$StressLevelDashboardImplFromJson(json);
 
-//required DateTime dateTime,
   final List<String> _insights;
-//required DateTime dateTime,
   @override
   List<String> get insights {
     if (_insights is EqualUnmodifiableListView) return _insights;
@@ -4335,7 +4328,6 @@ abstract class _StressLevelDashboard implements StressLevelDashboard {
   factory _StressLevelDashboard.fromJson(Map<String, dynamic> json) =
       _$StressLevelDashboardImpl.fromJson;
 
-//required DateTime dateTime,
   @override
   List<String> get insights;
   @override
@@ -4361,7 +4353,6 @@ EnergyLevelDashboard _$EnergyLevelDashboardFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$EnergyLevelDashboard {
-//required DateTime dateTime,
   List<String> get insights => throw _privateConstructorUsedError;
   List<double> get scores => throw _privateConstructorUsedError;
   List<double> get day => throw _privateConstructorUsedError;
@@ -4517,9 +4508,7 @@ class _$EnergyLevelDashboardImpl implements _EnergyLevelDashboard {
   factory _$EnergyLevelDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$EnergyLevelDashboardImplFromJson(json);
 
-//required DateTime dateTime,
   final List<String> _insights;
-//required DateTime dateTime,
   @override
   List<String> get insights {
     if (_insights is EqualUnmodifiableListView) return _insights;
@@ -4615,7 +4604,6 @@ abstract class _EnergyLevelDashboard implements EnergyLevelDashboard {
   factory _EnergyLevelDashboard.fromJson(Map<String, dynamic> json) =
       _$EnergyLevelDashboardImpl.fromJson;
 
-//required DateTime dateTime,
   @override
   List<String> get insights;
   @override
@@ -4642,7 +4630,7 @@ MoodTrackingDashboardEntry _$MoodTrackingDashboardEntryFromJson(
 
 /// @nodoc
 mixin _$MoodTrackingDashboardEntry {
-  String get name => throw _privateConstructorUsedError;
+  MoodTracking get moodTracking => throw _privateConstructorUsedError;
   List<double> get day => throw _privateConstructorUsedError;
   List<double> get week => throw _privateConstructorUsedError;
   List<double> get month => throw _privateConstructorUsedError;
@@ -4665,7 +4653,12 @@ abstract class $MoodTrackingDashboardEntryCopyWith<$Res> {
           MoodTrackingDashboardEntry>;
   @useResult
   $Res call(
-      {String name, List<double> day, List<double> week, List<double> month});
+      {MoodTracking moodTracking,
+      List<double> day,
+      List<double> week,
+      List<double> month});
+
+  $MoodTrackingCopyWith<$Res> get moodTracking;
 }
 
 /// @nodoc
@@ -4684,16 +4677,16 @@ class _$MoodTrackingDashboardEntryCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
+    Object? moodTracking = null,
     Object? day = null,
     Object? week = null,
     Object? month = null,
   }) {
     return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
+      moodTracking: null == moodTracking
+          ? _value.moodTracking
+          : moodTracking // ignore: cast_nullable_to_non_nullable
+              as MoodTracking,
       day: null == day
           ? _value.day
           : day // ignore: cast_nullable_to_non_nullable
@@ -4708,6 +4701,16 @@ class _$MoodTrackingDashboardEntryCopyWithImpl<$Res,
               as List<double>,
     ) as $Val);
   }
+
+  /// Create a copy of MoodTrackingDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $MoodTrackingCopyWith<$Res> get moodTracking {
+    return $MoodTrackingCopyWith<$Res>(_value.moodTracking, (value) {
+      return _then(_value.copyWith(moodTracking: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -4720,7 +4723,13 @@ abstract class _$$MoodTrackingDashboardEntryImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String name, List<double> day, List<double> week, List<double> month});
+      {MoodTracking moodTracking,
+      List<double> day,
+      List<double> week,
+      List<double> month});
+
+  @override
+  $MoodTrackingCopyWith<$Res> get moodTracking;
 }
 
 /// @nodoc
@@ -4738,16 +4747,16 @@ class __$$MoodTrackingDashboardEntryImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
+    Object? moodTracking = null,
     Object? day = null,
     Object? week = null,
     Object? month = null,
   }) {
     return _then(_$MoodTrackingDashboardEntryImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
+      moodTracking: null == moodTracking
+          ? _value.moodTracking
+          : moodTracking // ignore: cast_nullable_to_non_nullable
+              as MoodTracking,
       day: null == day
           ? _value._day
           : day // ignore: cast_nullable_to_non_nullable
@@ -4768,7 +4777,7 @@ class __$$MoodTrackingDashboardEntryImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$MoodTrackingDashboardEntryImpl implements _MoodTrackingDashboardEntry {
   const _$MoodTrackingDashboardEntryImpl(
-      {required this.name,
+      {required this.moodTracking,
       required final List<double> day,
       required final List<double> week,
       required final List<double> month})
@@ -4781,7 +4790,7 @@ class _$MoodTrackingDashboardEntryImpl implements _MoodTrackingDashboardEntry {
       _$$MoodTrackingDashboardEntryImplFromJson(json);
 
   @override
-  final String name;
+  final MoodTracking moodTracking;
   final List<double> _day;
   @override
   List<double> get day {
@@ -4808,7 +4817,7 @@ class _$MoodTrackingDashboardEntryImpl implements _MoodTrackingDashboardEntry {
 
   @override
   String toString() {
-    return 'MoodTrackingDashboardEntry(name: $name, day: $day, week: $week, month: $month)';
+    return 'MoodTrackingDashboardEntry(moodTracking: $moodTracking, day: $day, week: $week, month: $month)';
   }
 
   @override
@@ -4816,7 +4825,8 @@ class _$MoodTrackingDashboardEntryImpl implements _MoodTrackingDashboardEntry {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MoodTrackingDashboardEntryImpl &&
-            (identical(other.name, name) || other.name == name) &&
+            (identical(other.moodTracking, moodTracking) ||
+                other.moodTracking == moodTracking) &&
             const DeepCollectionEquality().equals(other._day, _day) &&
             const DeepCollectionEquality().equals(other._week, _week) &&
             const DeepCollectionEquality().equals(other._month, _month));
@@ -4826,7 +4836,7 @@ class _$MoodTrackingDashboardEntryImpl implements _MoodTrackingDashboardEntry {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      name,
+      moodTracking,
       const DeepCollectionEquality().hash(_day),
       const DeepCollectionEquality().hash(_week),
       const DeepCollectionEquality().hash(_month));
@@ -4851,7 +4861,7 @@ class _$MoodTrackingDashboardEntryImpl implements _MoodTrackingDashboardEntry {
 abstract class _MoodTrackingDashboardEntry
     implements MoodTrackingDashboardEntry {
   const factory _MoodTrackingDashboardEntry(
-      {required final String name,
+      {required final MoodTracking moodTracking,
       required final List<double> day,
       required final List<double> week,
       required final List<double> month}) = _$MoodTrackingDashboardEntryImpl;
@@ -4860,7 +4870,7 @@ abstract class _MoodTrackingDashboardEntry
       _$MoodTrackingDashboardEntryImpl.fromJson;
 
   @override
-  String get name;
+  MoodTracking get moodTracking;
   @override
   List<double> get day;
   @override
@@ -4883,7 +4893,6 @@ MoodTrackingDashboard _$MoodTrackingDashboardFromJson(
 
 /// @nodoc
 mixin _$MoodTrackingDashboard {
-//required DateTime dateTime,
   List<MoodTrackingDashboardEntry> get entries =>
       throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
@@ -4993,9 +5002,7 @@ class _$MoodTrackingDashboardImpl implements _MoodTrackingDashboard {
   factory _$MoodTrackingDashboardImpl.fromJson(Map<String, dynamic> json) =>
       _$$MoodTrackingDashboardImplFromJson(json);
 
-//required DateTime dateTime,
   final List<MoodTrackingDashboardEntry> _entries;
-//required DateTime dateTime,
   @override
   List<MoodTrackingDashboardEntry> get entries {
     if (_entries is EqualUnmodifiableListView) return _entries;
@@ -5057,7 +5064,6 @@ abstract class _MoodTrackingDashboard implements MoodTrackingDashboard {
   factory _MoodTrackingDashboard.fromJson(Map<String, dynamic> json) =
       _$MoodTrackingDashboardImpl.fromJson;
 
-//required DateTime dateTime,
   @override
   List<MoodTrackingDashboardEntry> get entries;
   @override
@@ -5325,7 +5331,6 @@ AwakeTimeAllocationDashboard _$AwakeTimeAllocationDashboardFromJson(
 
 /// @nodoc
 mixin _$AwakeTimeAllocationDashboard {
-//required DateTime dateTime,
   List<AwakeTimeAllocationDashboardEntry> get entries =>
       throw _privateConstructorUsedError;
   List<String> get insights => throw _privateConstructorUsedError;
@@ -5442,9 +5447,7 @@ class _$AwakeTimeAllocationDashboardImpl
           Map<String, dynamic> json) =>
       _$$AwakeTimeAllocationDashboardImplFromJson(json);
 
-//required DateTime dateTime,
   final List<AwakeTimeAllocationDashboardEntry> _entries;
-//required DateTime dateTime,
   @override
   List<AwakeTimeAllocationDashboardEntry> get entries {
     if (_entries is EqualUnmodifiableListView) return _entries;
@@ -5509,7 +5512,6 @@ abstract class _AwakeTimeAllocationDashboard
   factory _AwakeTimeAllocationDashboard.fromJson(Map<String, dynamic> json) =
       _$AwakeTimeAllocationDashboardImpl.fromJson;
 
-//required DateTime dateTime,
   @override
   List<AwakeTimeAllocationDashboardEntry> get entries;
   @override

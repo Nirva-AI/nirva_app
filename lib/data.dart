@@ -247,30 +247,10 @@ class Journal with _$Journal {
       _$JournalFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _Journal).toJson();
-
-  static Journal createEmpty() {
-    return Journal(
-      id: "",
-      dateTime: DateTime.now(),
-      summary: '',
-      diaryEntries: [],
-      quotes: [],
-      selfReflections: [],
-      detailedInsights: [],
-      goals: [],
-      moodScore: MoodScore(value: 0.0, change: 0.0),
-      stressLevel: StressLevel(value: 0.0, change: 0.0),
-      highlights: [],
-      energyLevels: [],
-      moodTrackings: [],
-      awakeTimeActions: [],
-      socialMap: SocialMap(id: "", socialEntities: []),
-    );
-  }
 }
 
 extension JournalExtensions on Journal {
-  Map<MoodTracking, double> get moodTrackingData {
+  Map<MoodTracking, double> get moodTrackingMap {
     double totalValue = 0.0;
     for (var mood in moodTrackings) {
       totalValue += mood.value;
@@ -289,7 +269,6 @@ extension JournalExtensions on Journal {
 @freezed
 class MoodScoreDashboard with _$MoodScoreDashboard {
   const factory MoodScoreDashboard({
-    //required DateTime dateTime,
     required List<String> insights,
     required List<double> scores,
     required List<double> day,
@@ -306,7 +285,6 @@ class MoodScoreDashboard with _$MoodScoreDashboard {
 @freezed
 class StressLevelDashboard with _$StressLevelDashboard {
   const factory StressLevelDashboard({
-    //required DateTime dateTime,
     required List<String> insights,
     required List<double> scores,
     required List<double> day,
@@ -323,7 +301,6 @@ class StressLevelDashboard with _$StressLevelDashboard {
 @freezed
 class EnergyLevelDashboard with _$EnergyLevelDashboard {
   const factory EnergyLevelDashboard({
-    //required DateTime dateTime,
     required List<String> insights,
     required List<double> scores,
     required List<double> day,
@@ -340,7 +317,7 @@ class EnergyLevelDashboard with _$EnergyLevelDashboard {
 @freezed
 class MoodTrackingDashboardEntry with _$MoodTrackingDashboardEntry {
   const factory MoodTrackingDashboardEntry({
-    required String name,
+    required MoodTracking moodTracking,
     required List<double> day,
     required List<double> week,
     required List<double> month,
@@ -356,7 +333,6 @@ class MoodTrackingDashboardEntry with _$MoodTrackingDashboardEntry {
 @freezed
 class MoodTrackingDashboard with _$MoodTrackingDashboard {
   const factory MoodTrackingDashboard({
-    //required DateTime dateTime,
     required List<MoodTrackingDashboardEntry> entries,
     required List<String> insights,
   }) = _MoodTrackingDashboard;
@@ -365,6 +341,16 @@ class MoodTrackingDashboard with _$MoodTrackingDashboard {
       _$MoodTrackingDashboardFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _MoodTrackingDashboard).toJson();
+}
+
+extension MoodTrackingDashboardExtensions on MoodTrackingDashboard {
+  Map<String, MoodTrackingDashboardEntry> get moodTrackingMap {
+    final Map<String, MoodTrackingDashboardEntry> moodMap = {};
+    for (var entry in entries) {
+      moodMap[entry.moodTracking.name] = entry;
+    }
+    return moodMap;
+  }
 }
 
 @freezed
@@ -388,7 +374,6 @@ class AwakeTimeAllocationDashboardEntry
 @freezed
 class AwakeTimeAllocationDashboard with _$AwakeTimeAllocationDashboard {
   const factory AwakeTimeAllocationDashboard({
-    //required DateTime dateTime,
     required List<AwakeTimeAllocationDashboardEntry> entries,
     required List<String> insights,
   }) = _AwakeTimeAllocationDashboard;
