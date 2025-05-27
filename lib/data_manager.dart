@@ -63,7 +63,23 @@ class DataManager {
     if (journals.isNotEmpty) {
       return journals.last;
     } else {
-      return Journal.createEmpty();
+      return Journal(
+        id: "",
+        dateTime: DateTime.now(),
+        summary: '',
+        diaryEntries: [],
+        quotes: [],
+        selfReflections: [],
+        detailedInsights: [],
+        goals: [],
+        moodScore: MoodScore(value: 0.0, change: 0.0),
+        stressLevel: StressLevel(value: 0.0, change: 0.0),
+        highlights: [],
+        energyLevels: [],
+        moodTrackings: [],
+        awakeTimeActions: [],
+        socialMap: SocialMap(id: "", socialEntities: []),
+      );
     }
   }
 

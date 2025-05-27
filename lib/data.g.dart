@@ -398,7 +398,8 @@ Map<String, dynamic> _$$EnergyLevelDashboardImplToJson(
 _$MoodTrackingDashboardEntryImpl _$$MoodTrackingDashboardEntryImplFromJson(
         Map<String, dynamic> json) =>
     _$MoodTrackingDashboardEntryImpl(
-      name: json['name'] as String,
+      moodTracking:
+          MoodTracking.fromJson(json['moodTracking'] as Map<String, dynamic>),
       day: (json['day'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
@@ -413,7 +414,7 @@ _$MoodTrackingDashboardEntryImpl _$$MoodTrackingDashboardEntryImplFromJson(
 Map<String, dynamic> _$$MoodTrackingDashboardEntryImplToJson(
         _$MoodTrackingDashboardEntryImpl instance) =>
     <String, dynamic>{
-      'name': instance.name,
+      'moodTracking': instance.moodTracking,
       'day': instance.day,
       'week': instance.week,
       'month': instance.month,
