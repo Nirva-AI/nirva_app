@@ -3,70 +3,17 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/utils.dart';
 
-enum EnergyLevelChartType { day, week, month }
-
-// 数据管理器
-class EnergyLevelChartDataManager {
-  final double minY = 0; // 最小值
-  final double maxY = 10; // 最大值
-  final double interval = 2; // 刻度间隔
-
-  final List<double> day;
-  final List<double> week;
-  final List<double> month;
-
-  EnergyLevelChartDataManager({
-    required this.day,
-    required this.week,
-    required this.month,
-  }) {
-    assert(day.length == 7, 'Day data should have 7 values');
-    assert(week.length == 4, 'Week data should have 4 values');
-    assert(month.length == 5, 'Month data should have 5 values');
-  }
-
-  List<double> get yAxisValues {
-    return List.generate(
-      ((maxY - minY) / interval).toInt() + 1,
-      (index) => minY + index * interval,
-    );
-  }
-
-  String convertYValueToString(double value) {
-    if (yAxisValues.contains(value)) {
-      return value.toInt().toString();
-    }
-    return '';
-  }
-
-  double getScore(EnergyLevelChartType type) {
-    // 解析分数的逻辑
-    if (type == EnergyLevelChartType.day) {
-      return 8.3;
-    } else if (type == EnergyLevelChartType.week) {
-      return 8.1;
-    } else if (type == EnergyLevelChartType.month) {
-      return 8.0;
-    }
-    return 0.0; // 默认值
-  }
-}
+enum EnergyLevelChartTab { day, week, month }
 
 class EnergyLevelDetailsPage extends StatefulWidget {
-  EnergyLevelDetailsPage({super.key});
-
-  final EnergyLevelChartDataManager dataManager = EnergyLevelChartDataManager(
-    day: [7.0, 6.0, 8.0, 7.0, 7.0, 6.0, 8.3],
-    week: [6.8, 7.2, 7.5, 7.9],
-    month: [6.2, 6.7, 7.3, 7.8, 8.1],
-  );
+  const EnergyLevelDetailsPage({super.key});
 
   @override
   State<EnergyLevelDetailsPage> createState() => _EnergyLevelDetailsPageState();
 }
 
 class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
-  EnergyLevelChartType _selectedType = EnergyLevelChartType.day; // 默认选中类型
+  EnergyLevelChartTab _selectedType = EnergyLevelChartTab.day; // 默认选中类型
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +47,9 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildTab('Day', EnergyLevelChartType.day),
-                        _buildTab('Week', EnergyLevelChartType.week),
-                        _buildTab('Month', EnergyLevelChartType.month),
+                        _buildTab('Day', EnergyLevelChartTab.day),
+                        _buildTab('Week', EnergyLevelChartTab.week),
+                        _buildTab('Month', EnergyLevelChartTab.month),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -110,7 +57,10 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
                     // Energy Level
                     Center(
                       child: Text(
-                        widget.dataManager.getScore(_selectedType).toString(),
+                        _getScore(
+                          _selectedType,
+                          DataManager().currentDashboard.energyLevel.scores,
+                        ).toString(),
                         style: const TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -122,10 +72,7 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
                     // 折线图
                     SizedBox(
                       height: 200, // 为图表提供明确的高度
-                      child: EnergyLevelChart(
-                        type: _selectedType,
-                        dataManager: widget.dataManager,
-                      ),
+                      child: EnergyLevelChart(type: _selectedType),
                     ),
                   ],
                 ),
@@ -143,8 +90,19 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
     );
   }
 
+  double _getScore(EnergyLevelChartTab type, List<double> scores) {
+    if (scores.length != 3) {
+      return 0; // 如果分数列表长度不正确，返回 0
+    }
+    return switch (type) {
+      EnergyLevelChartTab.day => scores[0],
+      EnergyLevelChartTab.week => scores[1],
+      EnergyLevelChartTab.month => scores[2],
+    };
+  }
+
   /// 构建按钮
-  Widget _buildTab(String title, EnergyLevelChartType type) {
+  Widget _buildTab(String title, EnergyLevelChartTab type) {
     final bool isSelected = _selectedType == type;
     return ElevatedButton(
       onPressed: () {
@@ -205,14 +163,27 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
 }
 
 class EnergyLevelChart extends StatelessWidget {
-  final EnergyLevelChartType type;
-  final EnergyLevelChartDataManager dataManager;
+  static const double _minY = 0; // 最小值
+  static const double _maxY = 10; // 最大值
+  static const double _interval = 2; // 刻度间隔
 
-  const EnergyLevelChart({
-    super.key,
-    required this.type,
-    required this.dataManager,
-  });
+  final EnergyLevelChartTab type;
+
+  const EnergyLevelChart({super.key, required this.type});
+
+  List<double> get yAxisValues {
+    return List.generate(
+      ((_maxY - _minY) / _interval).toInt() + 1,
+      (index) => _minY + index * _interval,
+    );
+  }
+
+  String _convertYValueToString(double value) {
+    if (yAxisValues.contains(value)) {
+      return value.toInt().toString();
+    }
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,19 +194,17 @@ class EnergyLevelChart extends StatelessWidget {
         heightFactor: 1.0,
         child: LineChart(
           LineChartData(
-            minY: dataManager.minY,
-            maxY: dataManager.maxY,
+            minY: _minY,
+            maxY: _maxY,
             gridData: FlGridData(show: false),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: dataManager.interval,
+                  interval: _interval,
                   reservedSize: 40,
                   getTitlesWidget: (value, meta) {
-                    var valueToString = dataManager.convertYValueToString(
-                      value,
-                    );
+                    var valueToString = _convertYValueToString(value);
                     if (valueToString.isNotEmpty) {
                       return Text(
                         valueToString,
@@ -265,9 +234,9 @@ class EnergyLevelChart extends StatelessWidget {
   }
 
   /// 构建底部标题的逻辑
-  SideTitles _buildBottomTitles(EnergyLevelChartType type) {
+  SideTitles _buildBottomTitles(EnergyLevelChartTab type) {
     switch (type) {
-      case EnergyLevelChartType.day:
+      case EnergyLevelChartTab.day:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -279,7 +248,7 @@ class EnergyLevelChart extends StatelessWidget {
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.weekday,
-                  dataManager.day.length,
+                  DataManager().currentDashboard.energyLevel.day.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -289,7 +258,7 @@ class EnergyLevelChart extends StatelessWidget {
             );
           },
         );
-      case EnergyLevelChartType.week:
+      case EnergyLevelChartTab.week:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -307,7 +276,7 @@ class EnergyLevelChart extends StatelessWidget {
             );
           },
         );
-      case EnergyLevelChartType.month:
+      case EnergyLevelChartTab.month:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -319,7 +288,7 @@ class EnergyLevelChart extends StatelessWidget {
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.month,
-                  dataManager.month.length,
+                  DataManager().currentDashboard.energyLevel.month.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -333,23 +302,23 @@ class EnergyLevelChart extends StatelessWidget {
   }
 
   /// 构建 lineBarsData 的逻辑
-  List<LineChartBarData> _buildLineBarsData(EnergyLevelChartType type) {
+  List<LineChartBarData> _buildLineBarsData(EnergyLevelChartTab type) {
     // 选择颜色和数据
     Color lineColor;
     List<double> data;
 
     switch (type) {
-      case EnergyLevelChartType.day:
+      case EnergyLevelChartTab.day:
         lineColor = Colors.purple;
-        data = dataManager.day;
+        data = DataManager().currentDashboard.energyLevel.day;
         break;
-      case EnergyLevelChartType.week:
+      case EnergyLevelChartTab.week:
         lineColor = Colors.blue;
-        data = dataManager.week;
+        data = DataManager().currentDashboard.energyLevel.week;
         break;
-      case EnergyLevelChartType.month:
+      case EnergyLevelChartTab.month:
         lineColor = Colors.green;
-        data = dataManager.month;
+        data = DataManager().currentDashboard.energyLevel.month;
         break;
     }
 
