@@ -5084,7 +5084,8 @@ AwakeTimeAllocationDashboardEntry _$AwakeTimeAllocationDashboardEntryFromJson(
 
 /// @nodoc
 mixin _$AwakeTimeAllocationDashboardEntry {
-  String get name => throw _privateConstructorUsedError;
+  AwakeTimeAllocation get awakeTimeAllocation =>
+      throw _privateConstructorUsedError;
   List<double> get day => throw _privateConstructorUsedError;
   List<double> get week => throw _privateConstructorUsedError;
   List<double> get month => throw _privateConstructorUsedError;
@@ -5108,7 +5109,12 @@ abstract class $AwakeTimeAllocationDashboardEntryCopyWith<$Res> {
           AwakeTimeAllocationDashboardEntry>;
   @useResult
   $Res call(
-      {String name, List<double> day, List<double> week, List<double> month});
+      {AwakeTimeAllocation awakeTimeAllocation,
+      List<double> day,
+      List<double> week,
+      List<double> month});
+
+  $AwakeTimeAllocationCopyWith<$Res> get awakeTimeAllocation;
 }
 
 /// @nodoc
@@ -5127,16 +5133,16 @@ class _$AwakeTimeAllocationDashboardEntryCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
+    Object? awakeTimeAllocation = null,
     Object? day = null,
     Object? week = null,
     Object? month = null,
   }) {
     return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
+      awakeTimeAllocation: null == awakeTimeAllocation
+          ? _value.awakeTimeAllocation
+          : awakeTimeAllocation // ignore: cast_nullable_to_non_nullable
+              as AwakeTimeAllocation,
       day: null == day
           ? _value.day
           : day // ignore: cast_nullable_to_non_nullable
@@ -5151,6 +5157,17 @@ class _$AwakeTimeAllocationDashboardEntryCopyWithImpl<$Res,
               as List<double>,
     ) as $Val);
   }
+
+  /// Create a copy of AwakeTimeAllocationDashboardEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $AwakeTimeAllocationCopyWith<$Res> get awakeTimeAllocation {
+    return $AwakeTimeAllocationCopyWith<$Res>(_value.awakeTimeAllocation,
+        (value) {
+      return _then(_value.copyWith(awakeTimeAllocation: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -5163,7 +5180,13 @@ abstract class _$$AwakeTimeAllocationDashboardEntryImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String name, List<double> day, List<double> week, List<double> month});
+      {AwakeTimeAllocation awakeTimeAllocation,
+      List<double> day,
+      List<double> week,
+      List<double> month});
+
+  @override
+  $AwakeTimeAllocationCopyWith<$Res> get awakeTimeAllocation;
 }
 
 /// @nodoc
@@ -5181,16 +5204,16 @@ class __$$AwakeTimeAllocationDashboardEntryImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
+    Object? awakeTimeAllocation = null,
     Object? day = null,
     Object? week = null,
     Object? month = null,
   }) {
     return _then(_$AwakeTimeAllocationDashboardEntryImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
+      awakeTimeAllocation: null == awakeTimeAllocation
+          ? _value.awakeTimeAllocation
+          : awakeTimeAllocation // ignore: cast_nullable_to_non_nullable
+              as AwakeTimeAllocation,
       day: null == day
           ? _value._day
           : day // ignore: cast_nullable_to_non_nullable
@@ -5212,7 +5235,7 @@ class __$$AwakeTimeAllocationDashboardEntryImplCopyWithImpl<$Res>
 class _$AwakeTimeAllocationDashboardEntryImpl
     implements _AwakeTimeAllocationDashboardEntry {
   const _$AwakeTimeAllocationDashboardEntryImpl(
-      {required this.name,
+      {required this.awakeTimeAllocation,
       required final List<double> day,
       required final List<double> week,
       required final List<double> month})
@@ -5225,7 +5248,7 @@ class _$AwakeTimeAllocationDashboardEntryImpl
       _$$AwakeTimeAllocationDashboardEntryImplFromJson(json);
 
   @override
-  final String name;
+  final AwakeTimeAllocation awakeTimeAllocation;
   final List<double> _day;
   @override
   List<double> get day {
@@ -5252,7 +5275,7 @@ class _$AwakeTimeAllocationDashboardEntryImpl
 
   @override
   String toString() {
-    return 'AwakeTimeAllocationDashboardEntry(name: $name, day: $day, week: $week, month: $month)';
+    return 'AwakeTimeAllocationDashboardEntry(awakeTimeAllocation: $awakeTimeAllocation, day: $day, week: $week, month: $month)';
   }
 
   @override
@@ -5260,7 +5283,8 @@ class _$AwakeTimeAllocationDashboardEntryImpl
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AwakeTimeAllocationDashboardEntryImpl &&
-            (identical(other.name, name) || other.name == name) &&
+            (identical(other.awakeTimeAllocation, awakeTimeAllocation) ||
+                other.awakeTimeAllocation == awakeTimeAllocation) &&
             const DeepCollectionEquality().equals(other._day, _day) &&
             const DeepCollectionEquality().equals(other._week, _week) &&
             const DeepCollectionEquality().equals(other._month, _month));
@@ -5270,7 +5294,7 @@ class _$AwakeTimeAllocationDashboardEntryImpl
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      name,
+      awakeTimeAllocation,
       const DeepCollectionEquality().hash(_day),
       const DeepCollectionEquality().hash(_week),
       const DeepCollectionEquality().hash(_month));
@@ -5296,7 +5320,7 @@ class _$AwakeTimeAllocationDashboardEntryImpl
 abstract class _AwakeTimeAllocationDashboardEntry
     implements AwakeTimeAllocationDashboardEntry {
   const factory _AwakeTimeAllocationDashboardEntry(
-          {required final String name,
+          {required final AwakeTimeAllocation awakeTimeAllocation,
           required final List<double> day,
           required final List<double> week,
           required final List<double> month}) =
@@ -5307,7 +5331,7 @@ abstract class _AwakeTimeAllocationDashboardEntry
       _$AwakeTimeAllocationDashboardEntryImpl.fromJson;
 
   @override
-  String get name;
+  AwakeTimeAllocation get awakeTimeAllocation;
   @override
   List<double> get day;
   @override

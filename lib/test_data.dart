@@ -720,9 +720,9 @@ class TestData {
       moodTrackingEntries.add(
         MoodTrackingDashboardEntry(
           moodTracking: moodTracking,
-          day: createDaySamples(),
-          week: createWeekSamples(),
-          month: createMonthSamples(),
+          day: createDaySamples(100),
+          week: createWeekSamples(100),
+          month: createMonthSamples(100),
         ),
       );
     }
@@ -737,9 +737,22 @@ class TestData {
       ],
     );
 
+    // 创建醒着的时间分配仪表盘条目
+    List<AwakeTimeAllocationDashboardEntry> awakeTimeAllocationEntries = [];
+    for (var awakeTimeAllocation in journal.awakeTimeActions) {
+      awakeTimeAllocationEntries.add(
+        AwakeTimeAllocationDashboardEntry(
+          awakeTimeAllocation: awakeTimeAllocation,
+          day: createDaySamples(8),
+          week: createWeekSamples(8),
+          month: createMonthSamples(8),
+        ),
+      );
+    }
+
     // 创建醒着的时间分配仪表盘
     final awakeTimeAllocation = AwakeTimeAllocationDashboard(
-      entries: [],
+      entries: awakeTimeAllocationEntries,
       insights: [
         //'Work takes up the majority of your awake hours this week.',
         'Self-care and exercise time has increased compared to previous periods.',
@@ -757,24 +770,23 @@ class TestData {
     );
   }
 
-  static double randomRange100() {
-    //用math.Random() , 随机返回一个0～100之间的值
+  static double randomRange(double maxValue) {
     final random = Random();
-    return random.nextDouble() * 100;
+    return random.nextDouble() * maxValue;
   }
 
   // 生成最近的7天数据
-  static List<double> createDaySamples() {
-    return List.generate(7, (index) => randomRange100());
+  static List<double> createDaySamples(double maxValue) {
+    return List.generate(7, (index) => randomRange(maxValue));
   }
 
   // 生成最近的4周数据
-  static List<double> createWeekSamples() {
-    return List.generate(4, (index) => randomRange100());
+  static List<double> createWeekSamples(double maxValue) {
+    return List.generate(4, (index) => randomRange(maxValue));
   }
 
   // 生成最近的5个月数据
-  static List<double> createMonthSamples() {
-    return List.generate(5, (index) => randomRange100());
+  static List<double> createMonthSamples(double maxValue) {
+    return List.generate(5, (index) => randomRange(maxValue));
   }
 }

@@ -357,7 +357,7 @@ extension MoodTrackingDashboardExtensions on MoodTrackingDashboard {
 class AwakeTimeAllocationDashboardEntry
     with _$AwakeTimeAllocationDashboardEntry {
   const factory AwakeTimeAllocationDashboardEntry({
-    required String name,
+    required AwakeTimeAllocation awakeTimeAllocation,
     required List<double> day,
     required List<double> week,
     required List<double> month,
@@ -385,6 +385,17 @@ class AwakeTimeAllocationDashboard with _$AwakeTimeAllocationDashboard {
       (this as _AwakeTimeAllocationDashboard).toJson();
 }
 
+extension AwakeTimeAllocationDashboardExtensions
+    on AwakeTimeAllocationDashboard {
+  Map<String, AwakeTimeAllocationDashboardEntry> get awakeTimeAllocationMap {
+    final Map<String, AwakeTimeAllocationDashboardEntry> allocationMap = {};
+    for (var entry in entries) {
+      allocationMap[entry.awakeTimeAllocation.name] = entry;
+    }
+    return allocationMap;
+  }
+}
+
 @freezed
 class Dashboard with _$Dashboard {
   const factory Dashboard({
@@ -405,7 +416,6 @@ class Dashboard with _$Dashboard {
     return Dashboard(
       dateTime: DateTime.now(),
       moodScore: MoodScoreDashboard(
-        // dateTime: DateTime.now(),
         insights: [],
         scores: [],
         day: [],
@@ -413,7 +423,6 @@ class Dashboard with _$Dashboard {
         month: [],
       ),
       stressLevel: StressLevelDashboard(
-        // dateTime: DateTime.now(),
         insights: [],
         scores: [],
         day: [],
@@ -421,20 +430,14 @@ class Dashboard with _$Dashboard {
         month: [],
       ),
       energyLevel: EnergyLevelDashboard(
-        //dateTime: DateTime.now(),
         insights: [],
         scores: [],
         day: [],
         week: [],
         month: [],
       ),
-      moodTracking: MoodTrackingDashboard(
-        //dateTime: DateTime.now(),
-        entries: [],
-        insights: [],
-      ),
+      moodTracking: MoodTrackingDashboard(entries: [], insights: []),
       awakeTimeAllocation: AwakeTimeAllocationDashboard(
-        //dateTime: DateTime.now(),
         entries: [],
         insights: [],
       ),
