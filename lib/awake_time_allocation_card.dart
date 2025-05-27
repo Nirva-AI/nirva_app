@@ -19,8 +19,8 @@ class AwakeTimeAllocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final awakeTimeAllocationDataList =
-        DataManager().currentJournal.awakeTimeActions;
+    final awakeTimeAllocations =
+        DataManager().currentJournal.awakeTimeAllocations;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -83,10 +83,9 @@ class AwakeTimeAllocationCard extends StatelessWidget {
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
                           if (value.toInt() >= 0 &&
-                              value.toInt() <
-                                  awakeTimeAllocationDataList.length) {
+                              value.toInt() < awakeTimeAllocations.length) {
                             return Text(
-                              awakeTimeAllocationDataList[value.toInt()].name,
+                              awakeTimeAllocations[value.toInt()].name,
                               style: const TextStyle(fontSize: 10),
                             );
                           }
@@ -102,7 +101,7 @@ class AwakeTimeAllocationCard extends StatelessWidget {
                     ),
                   ),
                   barGroups:
-                      awakeTimeAllocationDataList
+                      awakeTimeAllocations
                           .asMap()
                           .entries
                           .map(

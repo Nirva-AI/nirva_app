@@ -239,7 +239,7 @@ class Journal with _$Journal {
     required List<Highlight> highlights,
     required List<EnergyLevel> energyLevels,
     required List<MoodTracking> moodTrackings,
-    required List<AwakeTimeAllocation> awakeTimeActions,
+    required List<AwakeTimeAllocation> awakeTimeAllocations,
     required SocialMap socialMap,
   }) = _Journal;
 

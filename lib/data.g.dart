@@ -283,7 +283,7 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
       moodTrackings: (json['moodTrackings'] as List<dynamic>)
           .map((e) => MoodTracking.fromJson(e as Map<String, dynamic>))
           .toList(),
-      awakeTimeActions: (json['awakeTimeActions'] as List<dynamic>)
+      awakeTimeAllocations: (json['awakeTimeAllocations'] as List<dynamic>)
           .map((e) => AwakeTimeAllocation.fromJson(e as Map<String, dynamic>))
           .toList(),
       socialMap: SocialMap.fromJson(json['socialMap'] as Map<String, dynamic>),
@@ -304,7 +304,7 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
       'highlights': instance.highlights,
       'energyLevels': instance.energyLevels,
       'moodTrackings': instance.moodTrackings,
-      'awakeTimeActions': instance.awakeTimeActions,
+      'awakeTimeAllocations': instance.awakeTimeAllocations,
       'socialMap': instance.socialMap,
     };
 

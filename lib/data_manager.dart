@@ -77,7 +77,7 @@ class DataManager {
         highlights: [],
         energyLevels: [],
         moodTrackings: [],
-        awakeTimeActions: [],
+        awakeTimeAllocations: [],
         socialMap: SocialMap(id: "", socialEntities: []),
       );
     }
