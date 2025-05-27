@@ -673,25 +673,27 @@ class TestData {
   static Dashboard createTestDashboard(DateTime dateTime) {
     // 创建情绪分数仪表盘
     final moodScore = MoodScoreDashboard(
-      dateTime: dateTime,
+      //dateTime: dateTime,
       insights: [
         // 'Your mood has been generally trending upward this week.',
         'Morning periods seem to have higher scores than evenings.',
         'Consider activities that boost your mood during lower periods.',
       ],
-      day: [],
-      week: [],
-      month: [],
+      scores: [83, 85, 85],
+      day: [81, 85, 76, 82, 80, 85, 83],
+      week: [78, 82, 79, 85],
+      month: [70, 78, 80, 82, 85],
     );
 
     // 创建压力水平仪表盘
     final stressLevel = StressLevelDashboard(
-      dateTime: dateTime,
+      //dateTime: dateTime,
       insights: [
         //'Your stress levels have decreased over this week.',
         'Meditation sessions appear to reduce stress levels significantly.',
         'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
       ],
+      scores: [],
       day: [],
       week: [],
       month: [],
@@ -699,12 +701,13 @@ class TestData {
 
     // 创建能量水平仪表盘
     final energyLevel = EnergyLevelDashboard(
-      dateTime: dateTime,
+      //dateTime: dateTime,
       insights: [
         //'Your energy levels peak in the late morning and early afternoon.',
         'Social interactions appear to boost your energy significantly.',
         'Consider scheduling important tasks during your high-energy periods.',
       ],
+      scores: [],
       day: [],
       week: [],
       month: [],
@@ -712,7 +715,7 @@ class TestData {
 
     // 创建情绪追踪仪表盘
     final moodTracking = MoodTrackingDashboard(
-      dateTime: dateTime,
+      //dateTime: dateTime,
       entries: [],
       insights: [
         //'Happiness and calmness are your dominant emotions this week.',
@@ -723,7 +726,7 @@ class TestData {
 
     // 创建醒着的时间分配仪表盘
     final awakeTimeAllocation = AwakeTimeAllocationDashboard(
-      dateTime: dateTime,
+      //dateTime: dateTime,
       entries: [],
       insights: [
         //'Work takes up the majority of your awake hours this week.',

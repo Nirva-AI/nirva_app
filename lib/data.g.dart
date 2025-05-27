@@ -311,9 +311,11 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
 _$MoodScoreDashboardImpl _$$MoodScoreDashboardImplFromJson(
         Map<String, dynamic> json) =>
     _$MoodScoreDashboardImpl(
-      dateTime: DateTime.parse(json['dateTime'] as String),
       insights:
           (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+      scores: (json['scores'] as List<dynamic>)
+          .map((e) => (e as num).toDouble())
+          .toList(),
       day: (json['day'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
@@ -328,8 +330,8 @@ _$MoodScoreDashboardImpl _$$MoodScoreDashboardImplFromJson(
 Map<String, dynamic> _$$MoodScoreDashboardImplToJson(
         _$MoodScoreDashboardImpl instance) =>
     <String, dynamic>{
-      'dateTime': instance.dateTime.toIso8601String(),
       'insights': instance.insights,
+      'scores': instance.scores,
       'day': instance.day,
       'week': instance.week,
       'month': instance.month,
@@ -338,9 +340,11 @@ Map<String, dynamic> _$$MoodScoreDashboardImplToJson(
 _$StressLevelDashboardImpl _$$StressLevelDashboardImplFromJson(
         Map<String, dynamic> json) =>
     _$StressLevelDashboardImpl(
-      dateTime: DateTime.parse(json['dateTime'] as String),
       insights:
           (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+      scores: (json['scores'] as List<dynamic>)
+          .map((e) => (e as num).toDouble())
+          .toList(),
       day: (json['day'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
@@ -355,8 +359,8 @@ _$StressLevelDashboardImpl _$$StressLevelDashboardImplFromJson(
 Map<String, dynamic> _$$StressLevelDashboardImplToJson(
         _$StressLevelDashboardImpl instance) =>
     <String, dynamic>{
-      'dateTime': instance.dateTime.toIso8601String(),
       'insights': instance.insights,
+      'scores': instance.scores,
       'day': instance.day,
       'week': instance.week,
       'month': instance.month,
@@ -365,9 +369,11 @@ Map<String, dynamic> _$$StressLevelDashboardImplToJson(
 _$EnergyLevelDashboardImpl _$$EnergyLevelDashboardImplFromJson(
         Map<String, dynamic> json) =>
     _$EnergyLevelDashboardImpl(
-      dateTime: DateTime.parse(json['dateTime'] as String),
       insights:
           (json['insights'] as List<dynamic>).map((e) => e as String).toList(),
+      scores: (json['scores'] as List<dynamic>)
+          .map((e) => (e as num).toDouble())
+          .toList(),
       day: (json['day'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
@@ -382,8 +388,8 @@ _$EnergyLevelDashboardImpl _$$EnergyLevelDashboardImplFromJson(
 Map<String, dynamic> _$$EnergyLevelDashboardImplToJson(
         _$EnergyLevelDashboardImpl instance) =>
     <String, dynamic>{
-      'dateTime': instance.dateTime.toIso8601String(),
       'insights': instance.insights,
+      'scores': instance.scores,
       'day': instance.day,
       'week': instance.week,
       'month': instance.month,
@@ -416,7 +422,6 @@ Map<String, dynamic> _$$MoodTrackingDashboardEntryImplToJson(
 _$MoodTrackingDashboardImpl _$$MoodTrackingDashboardImplFromJson(
         Map<String, dynamic> json) =>
     _$MoodTrackingDashboardImpl(
-      dateTime: DateTime.parse(json['dateTime'] as String),
       entries: (json['entries'] as List<dynamic>)
           .map((e) =>
               MoodTrackingDashboardEntry.fromJson(e as Map<String, dynamic>))
@@ -428,7 +433,6 @@ _$MoodTrackingDashboardImpl _$$MoodTrackingDashboardImplFromJson(
 Map<String, dynamic> _$$MoodTrackingDashboardImplToJson(
         _$MoodTrackingDashboardImpl instance) =>
     <String, dynamic>{
-      'dateTime': instance.dateTime.toIso8601String(),
       'entries': instance.entries,
       'insights': instance.insights,
     };
@@ -461,7 +465,6 @@ Map<String, dynamic> _$$AwakeTimeAllocationDashboardEntryImplToJson(
 _$AwakeTimeAllocationDashboardImpl _$$AwakeTimeAllocationDashboardImplFromJson(
         Map<String, dynamic> json) =>
     _$AwakeTimeAllocationDashboardImpl(
-      dateTime: DateTime.parse(json['dateTime'] as String),
       entries: (json['entries'] as List<dynamic>)
           .map((e) => AwakeTimeAllocationDashboardEntry.fromJson(
               e as Map<String, dynamic>))
@@ -473,7 +476,6 @@ _$AwakeTimeAllocationDashboardImpl _$$AwakeTimeAllocationDashboardImplFromJson(
 Map<String, dynamic> _$$AwakeTimeAllocationDashboardImplToJson(
         _$AwakeTimeAllocationDashboardImpl instance) =>
     <String, dynamic>{
-      'dateTime': instance.dateTime.toIso8601String(),
       'entries': instance.entries,
       'insights': instance.insights,
     };
