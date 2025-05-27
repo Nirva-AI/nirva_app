@@ -279,7 +279,7 @@ class StressLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().stressLevelDashboard.dateTime.weekday,
+                  DataManager().currentDashboard.dateTime.weekday,
                   dataManager.day.length,
                 ),
                 style: const TextStyle(
@@ -319,7 +319,7 @@ class StressLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().stressLevelDashboard.dateTime.month,
+                  DataManager().currentDashboard.dateTime.month,
                   dataManager.month.length,
                 ),
                 style: const TextStyle(

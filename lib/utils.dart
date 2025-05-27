@@ -103,7 +103,7 @@ class Utils {
     return Utils.weekDayNames[targetWeekDay];
   }
 
-  /// 写死，就显示最近的4个周 formateWeekTitleForDashboardChart
+  /// 先写死，就显示最近的4个周 formateWeekTitleForDashboardChart
   static String formateWeekTitleForDashboardChart(int widgetIndexValue) {
     List<String> weekNames = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
     return weekNames[widgetIndexValue];
