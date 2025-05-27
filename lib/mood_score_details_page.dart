@@ -3,70 +3,17 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/utils.dart';
 
-enum MoodScoreChartType { day, week, month }
-
-// 数据管理器
-class MoodScoreChartDataManager {
-  final double minY = 40; // 最小值
-  final double maxY = 100; // 最大值
-  final double interval = 20; // 刻度间隔
-
-  final List<double> day;
-  final List<double> week;
-  final List<double> month;
-
-  MoodScoreChartDataManager({
-    required this.day,
-    required this.week,
-    required this.month,
-  }) {
-    assert(day.length == 7, 'Day data should have 7 values');
-    assert(week.length == 4, 'Week data should have 4 values');
-    assert(month.length == 5, 'Month data should have 5 values');
-  }
-
-  List<double> get yAxisValues {
-    return List.generate(
-      ((maxY - minY) / interval).toInt() + 1,
-      (index) => minY + index * interval,
-    );
-  }
-
-  String convertYValueToString(double value) {
-    if (yAxisValues.contains(value)) {
-      return value.toInt().toString();
-    }
-    return '';
-  }
-
-  double getScore(MoodScoreChartType type) {
-    // 解析分数的逻辑
-    if (type == MoodScoreChartType.day) {
-      return 83; // 示例分数
-    } else if (type == MoodScoreChartType.week) {
-      return 85; // 示例分数
-    } else if (type == MoodScoreChartType.month) {
-      return 85; // 示例分数
-    }
-    return 0; // 默认值
-  }
-}
+enum MoodScoreChartTab { day, week, month }
 
 class MoodScoreDetailsPage extends StatefulWidget {
-  MoodScoreDetailsPage({super.key});
-
-  final MoodScoreChartDataManager dataManager = MoodScoreChartDataManager(
-    day: [81, 85, 76, 82, 80, 85, 83],
-    week: [78, 82, 79, 85],
-    month: [70, 78, 80, 82, 85],
-  );
+  const MoodScoreDetailsPage({super.key});
 
   @override
   State<MoodScoreDetailsPage> createState() => _MoodScoreDetailsPageState();
 }
 
 class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
-  MoodScoreChartType _selectedType = MoodScoreChartType.day; // 默认选中类型
+  MoodScoreChartTab _selectedType = MoodScoreChartTab.day; // 默认选中类型
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +47,9 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildTab('Day', MoodScoreChartType.day),
-                        _buildTab('Week', MoodScoreChartType.week),
-                        _buildTab('Month', MoodScoreChartType.month),
+                        _buildTab('Day', MoodScoreChartTab.day),
+                        _buildTab('Week', MoodScoreChartTab.week),
+                        _buildTab('Month', MoodScoreChartTab.month),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -110,10 +57,10 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
                     // Mood Score
                     Center(
                       child: Text(
-                        widget.dataManager
-                            .getScore(_selectedType)
-                            .toInt()
-                            .toString(),
+                        _getScore(
+                          _selectedType,
+                          DataManager().currentDashboard.moodScore.scores,
+                        ).toInt().toString(),
                         style: TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -127,7 +74,7 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
                       height: 200, // 为图表提供明确的高度
                       child: MoodScoreChart(
                         type: _selectedType,
-                        dataManager: widget.dataManager,
+                        //dataManager: widget.dataManager,
                       ),
                     ),
                   ],
@@ -146,8 +93,20 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
     );
   }
 
+  double _getScore(MoodScoreChartTab type, List<double> scores) {
+    if (scores.length != 3) {
+      return 0; // 如果分数列表长度不正确，返回 0
+    }
+
+    return switch (type) {
+      MoodScoreChartTab.day => scores[0],
+      MoodScoreChartTab.week => scores[1],
+      MoodScoreChartTab.month => scores[2],
+    };
+  }
+
   /// 构建按钮
-  Widget _buildTab(String title, MoodScoreChartType type) {
+  Widget _buildTab(String title, MoodScoreChartTab type) {
     final bool isSelected = _selectedType == type;
     return ElevatedButton(
       onPressed: () {
@@ -208,14 +167,27 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
 }
 
 class MoodScoreChart extends StatelessWidget {
-  final MoodScoreChartType type;
-  final MoodScoreChartDataManager dataManager;
+  static const double _minY = 40; // 最小值
+  static const double _maxY = 100; // 最大值
+  static const double _interval = 20; // 刻度间隔
 
-  const MoodScoreChart({
-    super.key,
-    required this.type,
-    required this.dataManager,
-  });
+  final MoodScoreChartTab type;
+
+  const MoodScoreChart({super.key, required this.type});
+
+  List<double> get yAxisValues {
+    return List.generate(
+      ((_maxY - _minY) / _interval).toInt() + 1,
+      (index) => _minY + index * _interval,
+    );
+  }
+
+  String _convertYValueToString(double value) {
+    if (yAxisValues.contains(value)) {
+      return value.toInt().toString();
+    }
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,19 +198,17 @@ class MoodScoreChart extends StatelessWidget {
         heightFactor: 1.0,
         child: LineChart(
           LineChartData(
-            minY: dataManager.minY, // 修改最小值为 40
-            maxY: dataManager.maxY, // 最大值保持为 100
+            minY: _minY, // 修改最小值为 40
+            maxY: _maxY, // 最大值保持为 100
             gridData: FlGridData(show: false),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true, // 确保左侧标题显示
-                  interval: dataManager.interval, // 设置刻度间隔为 20
+                  interval: _interval, // 设置刻度间隔为 20
                   reservedSize: 40, // 增加刻度区域的宽度
                   getTitlesWidget: (value, meta) {
-                    var valueToString = dataManager.convertYValueToString(
-                      value,
-                    );
+                    var valueToString = _convertYValueToString(value);
                     if (valueToString.isNotEmpty) {
                       return Text(
                         valueToString,
@@ -268,9 +238,9 @@ class MoodScoreChart extends StatelessWidget {
   }
 
   /// 构建底部标题的逻辑
-  SideTitles _buildBottomTitles(MoodScoreChartType type) {
+  SideTitles _buildBottomTitles(MoodScoreChartTab type) {
     switch (type) {
-      case MoodScoreChartType.day:
+      case MoodScoreChartTab.day:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -282,7 +252,7 @@ class MoodScoreChart extends StatelessWidget {
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.weekday,
-                  dataManager.day.length,
+                  DataManager().currentDashboard.moodScore.day.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -292,7 +262,7 @@ class MoodScoreChart extends StatelessWidget {
             );
           },
         );
-      case MoodScoreChartType.week:
+      case MoodScoreChartTab.week:
         // 暂时留空
         return SideTitles(
           showTitles: true,
@@ -311,7 +281,7 @@ class MoodScoreChart extends StatelessWidget {
             );
           },
         );
-      case MoodScoreChartType.month:
+      case MoodScoreChartTab.month:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -323,7 +293,7 @@ class MoodScoreChart extends StatelessWidget {
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.month,
-                  dataManager.month.length,
+                  DataManager().currentDashboard.moodScore.month.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -337,13 +307,13 @@ class MoodScoreChart extends StatelessWidget {
   }
 
   /// 构建 lineBarsData 的逻辑
-  List<LineChartBarData> _buildLineBarsData(MoodScoreChartType type) {
+  List<LineChartBarData> _buildLineBarsData(MoodScoreChartTab type) {
     switch (type) {
-      case MoodScoreChartType.day:
+      case MoodScoreChartTab.day:
         return [
           LineChartBarData(
             spots:
-                dataManager.day
+                DataManager().currentDashboard.moodScore.day
                     .asMap()
                     .entries
                     .map(
@@ -359,11 +329,11 @@ class MoodScoreChart extends StatelessWidget {
             dotData: FlDotData(show: true),
           ),
         ];
-      case MoodScoreChartType.week:
+      case MoodScoreChartTab.week:
         return [
           LineChartBarData(
             spots:
-                dataManager.week
+                DataManager().currentDashboard.moodScore.week
                     .asMap()
                     .entries
                     .map(
@@ -379,11 +349,11 @@ class MoodScoreChart extends StatelessWidget {
             dotData: FlDotData(show: true),
           ),
         ];
-      case MoodScoreChartType.month:
+      case MoodScoreChartTab.month:
         return [
           LineChartBarData(
             spots:
-                dataManager.month
+                DataManager().currentDashboard.moodScore.month
                     .asMap()
                     .entries
                     .map(

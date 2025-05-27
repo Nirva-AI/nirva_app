@@ -289,8 +289,9 @@ extension JournalExtensions on Journal {
 @freezed
 class MoodScoreDashboard with _$MoodScoreDashboard {
   const factory MoodScoreDashboard({
-    required DateTime dateTime,
+    //required DateTime dateTime,
     required List<String> insights,
+    required List<double> scores,
     required List<double> day,
     required List<double> week,
     required List<double> month,
@@ -305,8 +306,9 @@ class MoodScoreDashboard with _$MoodScoreDashboard {
 @freezed
 class StressLevelDashboard with _$StressLevelDashboard {
   const factory StressLevelDashboard({
-    required DateTime dateTime,
+    //required DateTime dateTime,
     required List<String> insights,
+    required List<double> scores,
     required List<double> day,
     required List<double> week,
     required List<double> month,
@@ -321,8 +323,9 @@ class StressLevelDashboard with _$StressLevelDashboard {
 @freezed
 class EnergyLevelDashboard with _$EnergyLevelDashboard {
   const factory EnergyLevelDashboard({
-    required DateTime dateTime,
+    //required DateTime dateTime,
     required List<String> insights,
+    required List<double> scores,
     required List<double> day,
     required List<double> week,
     required List<double> month,
@@ -353,7 +356,7 @@ class MoodTrackingDashboardEntry with _$MoodTrackingDashboardEntry {
 @freezed
 class MoodTrackingDashboard with _$MoodTrackingDashboard {
   const factory MoodTrackingDashboard({
-    required DateTime dateTime,
+    //required DateTime dateTime,
     required List<MoodTrackingDashboardEntry> entries,
     required List<String> insights,
   }) = _MoodTrackingDashboard;
@@ -385,7 +388,7 @@ class AwakeTimeAllocationDashboardEntry
 @freezed
 class AwakeTimeAllocationDashboard with _$AwakeTimeAllocationDashboard {
   const factory AwakeTimeAllocationDashboard({
-    required DateTime dateTime,
+    //required DateTime dateTime,
     required List<AwakeTimeAllocationDashboardEntry> entries,
     required List<String> insights,
   }) = _AwakeTimeAllocationDashboard;
@@ -417,33 +420,36 @@ class Dashboard with _$Dashboard {
     return Dashboard(
       dateTime: DateTime.now(),
       moodScore: MoodScoreDashboard(
-        dateTime: DateTime.now(),
+        // dateTime: DateTime.now(),
         insights: [],
+        scores: [],
         day: [],
         week: [],
         month: [],
       ),
       stressLevel: StressLevelDashboard(
-        dateTime: DateTime.now(),
+        // dateTime: DateTime.now(),
         insights: [],
+        scores: [],
         day: [],
         week: [],
         month: [],
       ),
       energyLevel: EnergyLevelDashboard(
-        dateTime: DateTime.now(),
+        //dateTime: DateTime.now(),
         insights: [],
+        scores: [],
         day: [],
         week: [],
         month: [],
       ),
       moodTracking: MoodTrackingDashboard(
-        dateTime: DateTime.now(),
+        //dateTime: DateTime.now(),
         entries: [],
         insights: [],
       ),
       awakeTimeAllocation: AwakeTimeAllocationDashboard(
-        dateTime: DateTime.now(),
+        //dateTime: DateTime.now(),
         entries: [],
         insights: [],
       ),
