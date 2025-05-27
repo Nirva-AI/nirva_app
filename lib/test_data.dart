@@ -693,10 +693,10 @@ class TestData {
         'Meditation sessions appear to reduce stress levels significantly.',
         'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
       ],
-      scores: [],
-      day: [],
-      week: [],
-      month: [],
+      scores: [3.3, 2.9, 3.2],
+      day: [4.2, 3.5, 5.3, 4.1, 3.2, 2.9, 3.3],
+      week: [4.5, 3.8, 3.2, 2.9],
+      month: [5.2, 4.8, 4.3, 3.7, 3.2],
     );
 
     // 创建能量水平仪表盘

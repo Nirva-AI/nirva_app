@@ -3,70 +3,17 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/data_manager.dart';
 import 'package:nirva_app/utils.dart';
 
-enum StressLevelChartType { day, week, month }
-
-// 数据管理器
-class StressLevelChartDataManager {
-  final double minY = 0; // 最小值
-  final double maxY = 10; // 最大值
-  final double interval = 2; // 刻度间隔
-
-  final List<double> day;
-  final List<double> week;
-  final List<double> month;
-
-  StressLevelChartDataManager({
-    required this.day,
-    required this.week,
-    required this.month,
-  }) {
-    assert(day.length == 7, 'Day data should have 7 values');
-    assert(week.length == 4, 'Week data should have 4 values');
-    assert(month.length == 5, 'Month data should have 5 values');
-  }
-
-  List<double> get yAxisValues {
-    return List.generate(
-      ((maxY - minY) / interval).toInt() + 1,
-      (index) => minY + index * interval,
-    );
-  }
-
-  String convertYValueToString(double value) {
-    if (yAxisValues.contains(value)) {
-      return value.toInt().toString();
-    }
-    return '';
-  }
-
-  double getScore(StressLevelChartType type) {
-    // 解析分数的逻辑
-    if (type == StressLevelChartType.day) {
-      return 3.3;
-    } else if (type == StressLevelChartType.week) {
-      return 2.9;
-    } else if (type == StressLevelChartType.month) {
-      return 3.2;
-    }
-    return 0; // 默认值
-  }
-}
+enum StressLevelChartTab { day, week, month }
 
 class StressLevelDetailsPage extends StatefulWidget {
-  StressLevelDetailsPage({super.key});
-
-  final StressLevelChartDataManager dataManager = StressLevelChartDataManager(
-    day: [4.2, 3.5, 5.3, 4.1, 3.2, 2.9, 3.3],
-    week: [4.5, 3.8, 3.2, 2.9],
-    month: [5.2, 4.8, 4.3, 3.7, 3.2],
-  );
+  const StressLevelDetailsPage({super.key});
 
   @override
   State<StressLevelDetailsPage> createState() => _StressLevelDetailsPageState();
 }
 
 class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
-  StressLevelChartType _selectedType = StressLevelChartType.day; // 默认选中类型
+  StressLevelChartTab _selectedType = StressLevelChartTab.day; // 默认选中类型
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +47,9 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildTab('Day', StressLevelChartType.day),
-                        _buildTab('Week', StressLevelChartType.week),
-                        _buildTab('Month', StressLevelChartType.month),
+                        _buildTab('Day', StressLevelChartTab.day),
+                        _buildTab('Week', StressLevelChartTab.week),
+                        _buildTab('Month', StressLevelChartTab.month),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -110,7 +57,10 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
                     // Stress Level
                     Center(
                       child: Text(
-                        widget.dataManager.getScore(_selectedType).toString(),
+                        _getScore(
+                          _selectedType,
+                          DataManager().currentDashboard.stressLevel.scores,
+                        ).toString(),
                         style: const TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -124,7 +74,7 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
                       height: 200, // 为图表提供明确的高度
                       child: StressLevelChart(
                         type: _selectedType,
-                        dataManager: widget.dataManager,
+                        //dataManager: widget.dataManager,
                       ),
                     ),
                   ],
@@ -144,7 +94,7 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
   }
 
   /// 构建按钮
-  Widget _buildTab(String title, StressLevelChartType type) {
+  Widget _buildTab(String title, StressLevelChartTab type) {
     final bool isSelected = _selectedType == type;
     return ElevatedButton(
       onPressed: () {
@@ -203,17 +153,41 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
       ),
     );
   }
+
+  double _getScore(StressLevelChartTab type, List<double> scores) {
+    if (scores.length != 3) {
+      return 0; // 如果分数列表长度不正确，返回 0
+    }
+    return switch (type) {
+      StressLevelChartTab.day => scores[0],
+      StressLevelChartTab.week => scores[1],
+      StressLevelChartTab.month => scores[2],
+    };
+  }
 }
 
 class StressLevelChart extends StatelessWidget {
-  final StressLevelChartType type;
-  final StressLevelChartDataManager dataManager;
+  static const double _minY = 0; // 最小值
+  static const double _maxY = 10; // 最大值
+  static const double _interval = 2; // 刻度间隔
 
-  const StressLevelChart({
-    super.key,
-    required this.type,
-    required this.dataManager,
-  });
+  final StressLevelChartTab type;
+
+  const StressLevelChart({super.key, required this.type});
+
+  List<double> get yAxisValues {
+    return List.generate(
+      ((_maxY - _minY) / _interval).toInt() + 1,
+      (index) => _minY + index * _interval,
+    );
+  }
+
+  String _convertYValueToString(double value) {
+    if (yAxisValues.contains(value)) {
+      return value.toInt().toString();
+    }
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -224,19 +198,17 @@ class StressLevelChart extends StatelessWidget {
         heightFactor: 1.0,
         child: LineChart(
           LineChartData(
-            minY: dataManager.minY,
-            maxY: dataManager.maxY,
+            minY: _minY,
+            maxY: _maxY,
             gridData: FlGridData(show: false),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: dataManager.interval,
+                  interval: _interval,
                   reservedSize: 40,
                   getTitlesWidget: (value, meta) {
-                    var valueToString = dataManager.convertYValueToString(
-                      value,
-                    );
+                    var valueToString = _convertYValueToString(value);
                     if (valueToString.isNotEmpty) {
                       return Text(
                         valueToString,
@@ -266,9 +238,9 @@ class StressLevelChart extends StatelessWidget {
   }
 
   /// 构建底部标题的逻辑
-  SideTitles _buildBottomTitles(StressLevelChartType type) {
+  SideTitles _buildBottomTitles(StressLevelChartTab type) {
     switch (type) {
-      case StressLevelChartType.day:
+      case StressLevelChartTab.day:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -280,7 +252,7 @@ class StressLevelChart extends StatelessWidget {
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.weekday,
-                  dataManager.day.length,
+                  DataManager().currentDashboard.stressLevel.day.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -290,7 +262,7 @@ class StressLevelChart extends StatelessWidget {
             );
           },
         );
-      case StressLevelChartType.week:
+      case StressLevelChartTab.week:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -308,7 +280,7 @@ class StressLevelChart extends StatelessWidget {
             );
           },
         );
-      case StressLevelChartType.month:
+      case StressLevelChartTab.month:
         return SideTitles(
           showTitles: true,
           reservedSize: 32, // 为底部标题预留空间
@@ -320,7 +292,7 @@ class StressLevelChart extends StatelessWidget {
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
                   DataManager().currentDashboard.dateTime.month,
-                  dataManager.month.length,
+                  DataManager().currentDashboard.stressLevel.month.length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -334,23 +306,23 @@ class StressLevelChart extends StatelessWidget {
   }
 
   /// 构建 lineBarsData 的逻辑
-  List<LineChartBarData> _buildLineBarsData(StressLevelChartType type) {
+  List<LineChartBarData> _buildLineBarsData(StressLevelChartTab type) {
     // 选择颜色
     Color lineColor;
     List<double> data;
 
     switch (type) {
-      case StressLevelChartType.day:
+      case StressLevelChartTab.day:
         lineColor = Colors.red;
-        data = dataManager.day;
+        data = DataManager().currentDashboard.stressLevel.day;
         break;
-      case StressLevelChartType.week:
+      case StressLevelChartTab.week:
         lineColor = Colors.orange;
-        data = dataManager.week;
+        data = DataManager().currentDashboard.stressLevel.week;
         break;
-      case StressLevelChartType.month:
+      case StressLevelChartTab.month:
         lineColor = Colors.amber;
-        data = dataManager.month;
+        data = DataManager().currentDashboard.stressLevel.month;
         break;
     }
 
