@@ -673,7 +673,6 @@ class TestData {
   static Dashboard createTestDashboard(DateTime dateTime) {
     // 创建情绪分数仪表盘
     final moodScore = MoodScoreDashboard(
-      //dateTime: dateTime,
       insights: [
         // 'Your mood has been generally trending upward this week.',
         'Morning periods seem to have higher scores than evenings.',
@@ -687,7 +686,6 @@ class TestData {
 
     // 创建压力水平仪表盘
     final stressLevel = StressLevelDashboard(
-      //dateTime: dateTime,
       insights: [
         //'Your stress levels have decreased over this week.',
         'Meditation sessions appear to reduce stress levels significantly.',
@@ -701,16 +699,15 @@ class TestData {
 
     // 创建能量水平仪表盘
     final energyLevel = EnergyLevelDashboard(
-      //dateTime: dateTime,
       insights: [
         //'Your energy levels peak in the late morning and early afternoon.',
         'Social interactions appear to boost your energy significantly.',
         'Consider scheduling important tasks during your high-energy periods.',
       ],
-      scores: [],
-      day: [],
-      week: [],
-      month: [],
+      scores: [8.3, 8.1, 8.0],
+      day: [7.0, 6.0, 8.0, 7.0, 7.0, 6.0, 8.3],
+      week: [6.8, 7.2, 7.5, 7.9],
+      month: [6.2, 6.7, 7.3, 7.8, 8.1],
     );
 
     // 创建情绪追踪仪表盘
