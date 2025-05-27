@@ -442,7 +442,8 @@ _$AwakeTimeAllocationDashboardEntryImpl
     _$$AwakeTimeAllocationDashboardEntryImplFromJson(
             Map<String, dynamic> json) =>
         _$AwakeTimeAllocationDashboardEntryImpl(
-          name: json['name'] as String,
+          awakeTimeAllocation: AwakeTimeAllocation.fromJson(
+              json['awakeTimeAllocation'] as Map<String, dynamic>),
           day: (json['day'] as List<dynamic>)
               .map((e) => (e as num).toDouble())
               .toList(),
@@ -457,7 +458,7 @@ _$AwakeTimeAllocationDashboardEntryImpl
 Map<String, dynamic> _$$AwakeTimeAllocationDashboardEntryImplToJson(
         _$AwakeTimeAllocationDashboardEntryImpl instance) =>
     <String, dynamic>{
-      'name': instance.name,
+      'awakeTimeAllocation': instance.awakeTimeAllocation,
       'day': instance.day,
       'week': instance.week,
       'month': instance.month,
