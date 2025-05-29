@@ -244,89 +244,108 @@ abstract class _URLConfigurationResponse implements URLConfigurationResponse {
       get copyWith => throw _privateConstructorUsedError;
 }
 
-LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) {
-  return _LoginRequest.fromJson(json);
+Token _$TokenFromJson(Map<String, dynamic> json) {
+  return _Token.fromJson(json);
 }
 
 /// @nodoc
-mixin _$LoginRequest {
-  String get user_name => throw _privateConstructorUsedError;
+mixin _$Token {
+  String get access_token => throw _privateConstructorUsedError;
+  String get token_type => throw _privateConstructorUsedError;
+  String get refresh_token => throw _privateConstructorUsedError;
 
-  /// Serializes this LoginRequest to a JSON map.
+  /// Serializes this Token to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of LoginRequest
+  /// Create a copy of Token
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $LoginRequestCopyWith<LoginRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  $TokenCopyWith<Token> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $LoginRequestCopyWith<$Res> {
-  factory $LoginRequestCopyWith(
-          LoginRequest value, $Res Function(LoginRequest) then) =
-      _$LoginRequestCopyWithImpl<$Res, LoginRequest>;
+abstract class $TokenCopyWith<$Res> {
+  factory $TokenCopyWith(Token value, $Res Function(Token) then) =
+      _$TokenCopyWithImpl<$Res, Token>;
   @useResult
-  $Res call({String user_name});
+  $Res call({String access_token, String token_type, String refresh_token});
 }
 
 /// @nodoc
-class _$LoginRequestCopyWithImpl<$Res, $Val extends LoginRequest>
-    implements $LoginRequestCopyWith<$Res> {
-  _$LoginRequestCopyWithImpl(this._value, this._then);
+class _$TokenCopyWithImpl<$Res, $Val extends Token>
+    implements $TokenCopyWith<$Res> {
+  _$TokenCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of LoginRequest
+  /// Create a copy of Token
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? user_name = null,
+    Object? access_token = null,
+    Object? token_type = null,
+    Object? refresh_token = null,
   }) {
     return _then(_value.copyWith(
-      user_name: null == user_name
-          ? _value.user_name
-          : user_name // ignore: cast_nullable_to_non_nullable
+      access_token: null == access_token
+          ? _value.access_token
+          : access_token // ignore: cast_nullable_to_non_nullable
+              as String,
+      token_type: null == token_type
+          ? _value.token_type
+          : token_type // ignore: cast_nullable_to_non_nullable
+              as String,
+      refresh_token: null == refresh_token
+          ? _value.refresh_token
+          : refresh_token // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$LoginRequestImplCopyWith<$Res>
-    implements $LoginRequestCopyWith<$Res> {
-  factory _$$LoginRequestImplCopyWith(
-          _$LoginRequestImpl value, $Res Function(_$LoginRequestImpl) then) =
-      __$$LoginRequestImplCopyWithImpl<$Res>;
+abstract class _$$TokenImplCopyWith<$Res> implements $TokenCopyWith<$Res> {
+  factory _$$TokenImplCopyWith(
+          _$TokenImpl value, $Res Function(_$TokenImpl) then) =
+      __$$TokenImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String user_name});
+  $Res call({String access_token, String token_type, String refresh_token});
 }
 
 /// @nodoc
-class __$$LoginRequestImplCopyWithImpl<$Res>
-    extends _$LoginRequestCopyWithImpl<$Res, _$LoginRequestImpl>
-    implements _$$LoginRequestImplCopyWith<$Res> {
-  __$$LoginRequestImplCopyWithImpl(
-      _$LoginRequestImpl _value, $Res Function(_$LoginRequestImpl) _then)
+class __$$TokenImplCopyWithImpl<$Res>
+    extends _$TokenCopyWithImpl<$Res, _$TokenImpl>
+    implements _$$TokenImplCopyWith<$Res> {
+  __$$TokenImplCopyWithImpl(
+      _$TokenImpl _value, $Res Function(_$TokenImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of LoginRequest
+  /// Create a copy of Token
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? user_name = null,
+    Object? access_token = null,
+    Object? token_type = null,
+    Object? refresh_token = null,
   }) {
-    return _then(_$LoginRequestImpl(
-      user_name: null == user_name
-          ? _value.user_name
-          : user_name // ignore: cast_nullable_to_non_nullable
+    return _then(_$TokenImpl(
+      access_token: null == access_token
+          ? _value.access_token
+          : access_token // ignore: cast_nullable_to_non_nullable
+              as String,
+      token_type: null == token_type
+          ? _value.token_type
+          : token_type // ignore: cast_nullable_to_non_nullable
+              as String,
+      refresh_token: null == refresh_token
+          ? _value.refresh_token
+          : refresh_token // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -334,550 +353,81 @@ class __$$LoginRequestImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$LoginRequestImpl implements _LoginRequest {
-  const _$LoginRequestImpl({required this.user_name});
+class _$TokenImpl implements _Token {
+  const _$TokenImpl(
+      {required this.access_token,
+      required this.token_type,
+      required this.refresh_token});
 
-  factory _$LoginRequestImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LoginRequestImplFromJson(json);
+  factory _$TokenImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TokenImplFromJson(json);
 
   @override
-  final String user_name;
+  final String access_token;
+  @override
+  final String token_type;
+  @override
+  final String refresh_token;
 
   @override
   String toString() {
-    return 'LoginRequest(user_name: $user_name)';
+    return 'Token(access_token: $access_token, token_type: $token_type, refresh_token: $refresh_token)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LoginRequestImpl &&
-            (identical(other.user_name, user_name) ||
-                other.user_name == user_name));
+            other is _$TokenImpl &&
+            (identical(other.access_token, access_token) ||
+                other.access_token == access_token) &&
+            (identical(other.token_type, token_type) ||
+                other.token_type == token_type) &&
+            (identical(other.refresh_token, refresh_token) ||
+                other.refresh_token == refresh_token));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, user_name);
+  int get hashCode =>
+      Object.hash(runtimeType, access_token, token_type, refresh_token);
 
-  /// Create a copy of LoginRequest
+  /// Create a copy of Token
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$LoginRequestImplCopyWith<_$LoginRequestImpl> get copyWith =>
-      __$$LoginRequestImplCopyWithImpl<_$LoginRequestImpl>(this, _$identity);
+  _$$TokenImplCopyWith<_$TokenImpl> get copyWith =>
+      __$$TokenImplCopyWithImpl<_$TokenImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LoginRequestImplToJson(
+    return _$$TokenImplToJson(
       this,
     );
   }
 }
 
-abstract class _LoginRequest implements LoginRequest {
-  const factory _LoginRequest({required final String user_name}) =
-      _$LoginRequestImpl;
+abstract class _Token implements Token {
+  const factory _Token(
+      {required final String access_token,
+      required final String token_type,
+      required final String refresh_token}) = _$TokenImpl;
 
-  factory _LoginRequest.fromJson(Map<String, dynamic> json) =
-      _$LoginRequestImpl.fromJson;
+  factory _Token.fromJson(Map<String, dynamic> json) = _$TokenImpl.fromJson;
 
   @override
-  String get user_name;
+  String get access_token;
+  @override
+  String get token_type;
+  @override
+  String get refresh_token;
 
-  /// Create a copy of LoginRequest
+  /// Create a copy of Token
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LoginRequestImplCopyWith<_$LoginRequestImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) {
-  return _LoginResponse.fromJson(json);
-}
-
-/// @nodoc
-mixin _$LoginResponse {
-  int get error => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
-
-  /// Serializes this LoginResponse to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of LoginResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $LoginResponseCopyWith<LoginResponse> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $LoginResponseCopyWith<$Res> {
-  factory $LoginResponseCopyWith(
-          LoginResponse value, $Res Function(LoginResponse) then) =
-      _$LoginResponseCopyWithImpl<$Res, LoginResponse>;
-  @useResult
-  $Res call({int error, String message});
-}
-
-/// @nodoc
-class _$LoginResponseCopyWithImpl<$Res, $Val extends LoginResponse>
-    implements $LoginResponseCopyWith<$Res> {
-  _$LoginResponseCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of LoginResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? error = null,
-    Object? message = null,
-  }) {
-    return _then(_value.copyWith(
-      error: null == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as int,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$LoginResponseImplCopyWith<$Res>
-    implements $LoginResponseCopyWith<$Res> {
-  factory _$$LoginResponseImplCopyWith(
-          _$LoginResponseImpl value, $Res Function(_$LoginResponseImpl) then) =
-      __$$LoginResponseImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int error, String message});
-}
-
-/// @nodoc
-class __$$LoginResponseImplCopyWithImpl<$Res>
-    extends _$LoginResponseCopyWithImpl<$Res, _$LoginResponseImpl>
-    implements _$$LoginResponseImplCopyWith<$Res> {
-  __$$LoginResponseImplCopyWithImpl(
-      _$LoginResponseImpl _value, $Res Function(_$LoginResponseImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of LoginResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? error = null,
-    Object? message = null,
-  }) {
-    return _then(_$LoginResponseImpl(
-      error: null == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as int,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$LoginResponseImpl implements _LoginResponse {
-  const _$LoginResponseImpl({required this.error, required this.message});
-
-  factory _$LoginResponseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LoginResponseImplFromJson(json);
-
-  @override
-  final int error;
-  @override
-  final String message;
-
-  @override
-  String toString() {
-    return 'LoginResponse(error: $error, message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LoginResponseImpl &&
-            (identical(other.error, error) || other.error == error) &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, error, message);
-
-  /// Create a copy of LoginResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LoginResponseImplCopyWith<_$LoginResponseImpl> get copyWith =>
-      __$$LoginResponseImplCopyWithImpl<_$LoginResponseImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$LoginResponseImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _LoginResponse implements LoginResponse {
-  const factory _LoginResponse(
-      {required final int error,
-      required final String message}) = _$LoginResponseImpl;
-
-  factory _LoginResponse.fromJson(Map<String, dynamic> json) =
-      _$LoginResponseImpl.fromJson;
-
-  @override
-  int get error;
-  @override
-  String get message;
-
-  /// Create a copy of LoginResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LoginResponseImplCopyWith<_$LoginResponseImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-LogoutRequest _$LogoutRequestFromJson(Map<String, dynamic> json) {
-  return _LogoutRequest.fromJson(json);
-}
-
-/// @nodoc
-mixin _$LogoutRequest {
-  String get user_name => throw _privateConstructorUsedError;
-
-  /// Serializes this LogoutRequest to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of LogoutRequest
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $LogoutRequestCopyWith<LogoutRequest> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $LogoutRequestCopyWith<$Res> {
-  factory $LogoutRequestCopyWith(
-          LogoutRequest value, $Res Function(LogoutRequest) then) =
-      _$LogoutRequestCopyWithImpl<$Res, LogoutRequest>;
-  @useResult
-  $Res call({String user_name});
-}
-
-/// @nodoc
-class _$LogoutRequestCopyWithImpl<$Res, $Val extends LogoutRequest>
-    implements $LogoutRequestCopyWith<$Res> {
-  _$LogoutRequestCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of LogoutRequest
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? user_name = null,
-  }) {
-    return _then(_value.copyWith(
-      user_name: null == user_name
-          ? _value.user_name
-          : user_name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$LogoutRequestImplCopyWith<$Res>
-    implements $LogoutRequestCopyWith<$Res> {
-  factory _$$LogoutRequestImplCopyWith(
-          _$LogoutRequestImpl value, $Res Function(_$LogoutRequestImpl) then) =
-      __$$LogoutRequestImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String user_name});
-}
-
-/// @nodoc
-class __$$LogoutRequestImplCopyWithImpl<$Res>
-    extends _$LogoutRequestCopyWithImpl<$Res, _$LogoutRequestImpl>
-    implements _$$LogoutRequestImplCopyWith<$Res> {
-  __$$LogoutRequestImplCopyWithImpl(
-      _$LogoutRequestImpl _value, $Res Function(_$LogoutRequestImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of LogoutRequest
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? user_name = null,
-  }) {
-    return _then(_$LogoutRequestImpl(
-      user_name: null == user_name
-          ? _value.user_name
-          : user_name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$LogoutRequestImpl implements _LogoutRequest {
-  const _$LogoutRequestImpl({required this.user_name});
-
-  factory _$LogoutRequestImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LogoutRequestImplFromJson(json);
-
-  @override
-  final String user_name;
-
-  @override
-  String toString() {
-    return 'LogoutRequest(user_name: $user_name)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LogoutRequestImpl &&
-            (identical(other.user_name, user_name) ||
-                other.user_name == user_name));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, user_name);
-
-  /// Create a copy of LogoutRequest
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LogoutRequestImplCopyWith<_$LogoutRequestImpl> get copyWith =>
-      __$$LogoutRequestImplCopyWithImpl<_$LogoutRequestImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$LogoutRequestImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _LogoutRequest implements LogoutRequest {
-  const factory _LogoutRequest({required final String user_name}) =
-      _$LogoutRequestImpl;
-
-  factory _LogoutRequest.fromJson(Map<String, dynamic> json) =
-      _$LogoutRequestImpl.fromJson;
-
-  @override
-  String get user_name;
-
-  /// Create a copy of LogoutRequest
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LogoutRequestImplCopyWith<_$LogoutRequestImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-LogoutResponse _$LogoutResponseFromJson(Map<String, dynamic> json) {
-  return _LogoutResponse.fromJson(json);
-}
-
-/// @nodoc
-mixin _$LogoutResponse {
-  int get error => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
-
-  /// Serializes this LogoutResponse to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of LogoutResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $LogoutResponseCopyWith<LogoutResponse> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $LogoutResponseCopyWith<$Res> {
-  factory $LogoutResponseCopyWith(
-          LogoutResponse value, $Res Function(LogoutResponse) then) =
-      _$LogoutResponseCopyWithImpl<$Res, LogoutResponse>;
-  @useResult
-  $Res call({int error, String message});
-}
-
-/// @nodoc
-class _$LogoutResponseCopyWithImpl<$Res, $Val extends LogoutResponse>
-    implements $LogoutResponseCopyWith<$Res> {
-  _$LogoutResponseCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of LogoutResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? error = null,
-    Object? message = null,
-  }) {
-    return _then(_value.copyWith(
-      error: null == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as int,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$LogoutResponseImplCopyWith<$Res>
-    implements $LogoutResponseCopyWith<$Res> {
-  factory _$$LogoutResponseImplCopyWith(_$LogoutResponseImpl value,
-          $Res Function(_$LogoutResponseImpl) then) =
-      __$$LogoutResponseImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int error, String message});
-}
-
-/// @nodoc
-class __$$LogoutResponseImplCopyWithImpl<$Res>
-    extends _$LogoutResponseCopyWithImpl<$Res, _$LogoutResponseImpl>
-    implements _$$LogoutResponseImplCopyWith<$Res> {
-  __$$LogoutResponseImplCopyWithImpl(
-      _$LogoutResponseImpl _value, $Res Function(_$LogoutResponseImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of LogoutResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? error = null,
-    Object? message = null,
-  }) {
-    return _then(_$LogoutResponseImpl(
-      error: null == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as int,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$LogoutResponseImpl implements _LogoutResponse {
-  const _$LogoutResponseImpl({required this.error, required this.message});
-
-  factory _$LogoutResponseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LogoutResponseImplFromJson(json);
-
-  @override
-  final int error;
-  @override
-  final String message;
-
-  @override
-  String toString() {
-    return 'LogoutResponse(error: $error, message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LogoutResponseImpl &&
-            (identical(other.error, error) || other.error == error) &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, error, message);
-
-  /// Create a copy of LogoutResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LogoutResponseImplCopyWith<_$LogoutResponseImpl> get copyWith =>
-      __$$LogoutResponseImplCopyWithImpl<_$LogoutResponseImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$LogoutResponseImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _LogoutResponse implements LogoutResponse {
-  const factory _LogoutResponse(
-      {required final int error,
-      required final String message}) = _$LogoutResponseImpl;
-
-  factory _LogoutResponse.fromJson(Map<String, dynamic> json) =
-      _$LogoutResponseImpl.fromJson;
-
-  @override
-  int get error;
-  @override
-  String get message;
-
-  /// Create a copy of LogoutResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LogoutResponseImplCopyWith<_$LogoutResponseImpl> get copyWith =>
+  _$$TokenImplCopyWith<_$TokenImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

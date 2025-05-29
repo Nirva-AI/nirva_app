@@ -20,48 +20,17 @@ class URLConfigurationResponse with _$URLConfigurationResponse {
   Map<String, dynamic> toJson() => (this as _URLConfigurationResponse).toJson();
 }
 
-//登录请求
 @freezed
-class LoginRequest with _$LoginRequest {
-  const factory LoginRequest({required String user_name}) = _LoginRequest;
+class Token with _$Token {
+  const factory Token({
+    required String access_token,
+    required String token_type,
+    required String refresh_token, // 新增字段
+  }) = _Token;
 
-  factory LoginRequest.fromJson(Map<String, dynamic> json) =>
-      _$LoginRequestFromJson(json);
+  factory Token.fromJson(Map<String, dynamic> json) => _$TokenFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _LoginRequest).toJson();
-}
-
-@freezed
-class LoginResponse with _$LoginResponse {
-  const factory LoginResponse({required int error, required String message}) =
-      _LoginResponse;
-
-  factory LoginResponse.fromJson(Map<String, dynamic> json) =>
-      _$LoginResponseFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _LoginResponse).toJson();
-}
-
-//登出请求
-@freezed
-class LogoutRequest with _$LogoutRequest {
-  const factory LogoutRequest({required String user_name}) = _LogoutRequest;
-
-  factory LogoutRequest.fromJson(Map<String, dynamic> json) =>
-      _$LogoutRequestFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _LogoutRequest).toJson();
-}
-
-@freezed
-class LogoutResponse with _$LogoutResponse {
-  const factory LogoutResponse({required int error, required String message}) =
-      _LogoutResponse;
-
-  factory LogoutResponse.fromJson(Map<String, dynamic> json) =>
-      _$LogoutResponseFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _LogoutResponse).toJson();
+  Map<String, dynamic> toJson() => (this as _Token).toJson();
 }
 
 //聊天请求
