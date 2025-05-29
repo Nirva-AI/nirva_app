@@ -24,49 +24,17 @@ Map<String, dynamic> _$$URLConfigurationResponseImplToJson(
       'notice': instance.notice,
     };
 
-_$LoginRequestImpl _$$LoginRequestImplFromJson(Map<String, dynamic> json) =>
-    _$LoginRequestImpl(
-      user_name: json['user_name'] as String,
+_$TokenImpl _$$TokenImplFromJson(Map<String, dynamic> json) => _$TokenImpl(
+      access_token: json['access_token'] as String,
+      token_type: json['token_type'] as String,
+      refresh_token: json['refresh_token'] as String,
     );
 
-Map<String, dynamic> _$$LoginRequestImplToJson(_$LoginRequestImpl instance) =>
+Map<String, dynamic> _$$TokenImplToJson(_$TokenImpl instance) =>
     <String, dynamic>{
-      'user_name': instance.user_name,
-    };
-
-_$LoginResponseImpl _$$LoginResponseImplFromJson(Map<String, dynamic> json) =>
-    _$LoginResponseImpl(
-      error: (json['error'] as num).toInt(),
-      message: json['message'] as String,
-    );
-
-Map<String, dynamic> _$$LoginResponseImplToJson(_$LoginResponseImpl instance) =>
-    <String, dynamic>{
-      'error': instance.error,
-      'message': instance.message,
-    };
-
-_$LogoutRequestImpl _$$LogoutRequestImplFromJson(Map<String, dynamic> json) =>
-    _$LogoutRequestImpl(
-      user_name: json['user_name'] as String,
-    );
-
-Map<String, dynamic> _$$LogoutRequestImplToJson(_$LogoutRequestImpl instance) =>
-    <String, dynamic>{
-      'user_name': instance.user_name,
-    };
-
-_$LogoutResponseImpl _$$LogoutResponseImplFromJson(Map<String, dynamic> json) =>
-    _$LogoutResponseImpl(
-      error: (json['error'] as num).toInt(),
-      message: json['message'] as String,
-    );
-
-Map<String, dynamic> _$$LogoutResponseImplToJson(
-        _$LogoutResponseImpl instance) =>
-    <String, dynamic>{
-      'error': instance.error,
-      'message': instance.message,
+      'access_token': instance.access_token,
+      'token_type': instance.token_type,
+      'refresh_token': instance.refresh_token,
     };
 
 _$ChatActionRequestImpl _$$ChatActionRequestImplFromJson(

@@ -4,7 +4,8 @@ part 'data.g.dart';
 
 @freezed
 class User with _$User {
-  const factory User({required String name}) = _User;
+  const factory User({required String name, @Default("") String password}) =
+      _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   @override

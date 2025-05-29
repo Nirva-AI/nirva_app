@@ -37,12 +37,10 @@ class ServiceManager {
     notice: '',
   );
 
+  Token _token = Token(access_token: '', token_type: '', refresh_token: '');
+
   String get loginUrl {
     return _urlConfig.endpoints['login'] ?? '';
-  }
-
-  String get logoutUrl {
-    return _urlConfig.endpoints['logout'] ?? '';
   }
 
   String get chatActionUrl {
@@ -96,53 +94,16 @@ class ServiceManager {
   }
 
   // 登录请求
-  Future<bool> login(String userName) async {
+  Future<bool> login(String userName, String password) async {
     try {
-      final response = await _dioService.safePost(
-        loginUrl,
-        data: LoginRequest(user_name: userName).toJson(),
-      );
-
-      final loginResponse = LoginResponse.fromJson(response.data!);
-
-      if (loginResponse.error == 0) {
-        Logger().d('Login successful: ${loginResponse.message}');
-        return true;
-      } else {
-        Logger().e('Login failed: ${loginResponse.message}');
-        return false;
-      }
+      _token = await _dioService.login(loginUrl, userName, password);
+      Logger().d('Login successful: Token=${jsonEncode(_token.toJson())}');
+      return true; // 假设登录成功
     } on DioException catch (e) {
       debugPrint('Caught a DioException during login: ${e.message}');
       return false;
     } catch (e) {
       debugPrint('Caught an unknown error during login: $e');
-      return false;
-    }
-  }
-
-  // 登出请求
-  Future<bool> logout(String userName) async {
-    try {
-      final response = await _dioService.safePost(
-        logoutUrl,
-        data: LogoutRequest(user_name: userName).toJson(),
-      );
-
-      final logoutResponse = LogoutResponse.fromJson(response.data!);
-
-      if (logoutResponse.error == 0) {
-        Logger().d('Logout successful: ${logoutResponse.message}');
-        return true;
-      } else {
-        Logger().e('Logout failed: ${logoutResponse.message}');
-        return false;
-      }
-    } on DioException catch (e) {
-      debugPrint('Caught a DioException during logout: ${e.message}');
-      return false;
-    } catch (e) {
-      debugPrint('Caught an unknown error during logout: $e');
       return false;
     }
   }

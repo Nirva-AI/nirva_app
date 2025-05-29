@@ -10,8 +10,8 @@ class TestData {
   //
   static void initializeTestData() {
     DataManager.clear();
-    // 添加用户信息
-    DataManager().user = User(name: 'Weiwei');
+    // 添加用户信息, 目前必须和服务器对上，否则无法登录。
+    DataManager().user = User(name: 'wei', password: 'secret');
 
     // 添加todo数据
     DataManager().tasks = TestData.createTestTasks();

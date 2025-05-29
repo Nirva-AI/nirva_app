@@ -37,6 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // 如果配置成功，调用 login 方法
       final bool loginSuccess = await _serviceManager.login(
         DataManager().user.name,
+        DataManager().user.password,
       );
       debugPrint('Login: $loginSuccess');
     }
