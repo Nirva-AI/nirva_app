@@ -10,16 +10,16 @@ import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 
 // 管理全局数据的类
-class ServiceManager {
-  static ServiceManager? _instance;
+class ServiceProvider {
+  static ServiceProvider? _instance;
 
-  static ServiceManager get instance {
-    _instance ??= ServiceManager._internal();
+  static ServiceProvider get instance {
+    _instance ??= ServiceProvider._internal();
     return _instance!;
   }
 
-  factory ServiceManager() => instance;
-  ServiceManager._internal();
+  factory ServiceProvider() => instance;
+  ServiceProvider._internal();
 
   // Dio 实例和配置（从DioService合并过来）
   final Dio _dio = Dio(
