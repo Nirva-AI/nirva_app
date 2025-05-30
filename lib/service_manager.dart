@@ -9,13 +9,6 @@ import 'package:dio/dio.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/hive_manager.dart';
 
-class ChatActionResult {
-  final bool success;
-  final String message;
-
-  ChatActionResult({required this.success, required this.message});
-}
-
 // 管理全局数据的类
 class ServiceManager {
   static ServiceManager? _instance;
@@ -31,7 +24,7 @@ class ServiceManager {
   // Dio 实例和配置（从DioService合并过来）
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.22.108:8000',
+        baseUrl: 'http://192.168.2.67:8000',
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -65,14 +58,18 @@ class ServiceManager {
     return _urlConfig.endpoints['chat'] ?? '';
   }
 
+  String get refreshUrl {
+    return _urlConfig.endpoints['refresh'] ?? '';
+  }
+
   Token get userToken {
     // 从Hive中获取Token
     return HiveManager().getToken() ??
         Token(access_token: '', token_type: '', refresh_token: '');
   }
 
-  // 从DioService合并过来的通用POST方法
-  Future<Response<T>?> safePost<T>(
+  // 安全的POST请求方法
+  Future<Response<T>?> _safePost<T>(
     String path,
     Token token, {
     Object? data,
@@ -81,7 +78,8 @@ class ServiceManager {
     Logger().d('POST Request - URL: $path, Data: $data');
 
     try {
-      final response = await _dio.post<T>(
+      // 初始请求
+      var response = await _dio.post<T>(
         path,
         data: data,
         queryParameters: query,
@@ -101,11 +99,141 @@ class ServiceManager {
         return null;
       }
     } on DioException catch (e) {
+      // 处理401错误（令牌过期）
+      if (e.response?.statusCode == 401 && token.refresh_token.isNotEmpty) {
+        Logger().i("令牌已过期，尝试刷新...");
+
+        // 尝试刷新令牌
+        bool refreshSuccess = await _refreshToken();
+
+        if (refreshSuccess) {
+          Logger().i("令牌刷新成功，重新尝试请求");
+          // 获取刷新后的令牌
+          Token newToken = userToken;
+
+          // 使用新令牌重新发送请求
+          try {
+            var newResponse = await _dio.post<T>(
+              path,
+              data: data,
+              queryParameters: query,
+              options: Options(
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ${newToken.access_token}',
+                },
+              ),
+            );
+
+            if (newResponse.statusCode == 200) {
+              Logger().d('使用新令牌的 POST Response: ${newResponse.data}');
+              return newResponse;
+            } else {
+              Logger().e(
+                '使用新令牌请求仍然失败: ${newResponse.statusCode}, ${newResponse.statusMessage}',
+              );
+              return null;
+            }
+          } catch (retryError) {
+            Logger().e('使用新令牌重试失败: $retryError');
+            return null;
+          }
+        } else {
+          Logger().e("令牌刷新失败");
+          return null;
+        }
+      }
+
+      // 其他类型的错误
       Logger().e('POST Error: ${e.type}, ${e.message}');
       debugPrint('Response data: ${e.response?.data}');
       return null;
     } catch (e) {
       Logger().e('Unknown error during POST request: $e');
+      return null;
+    }
+  }
+
+  // 安全的GET请求方法
+  // ignore: unused_element
+  Future<Response<T>?> _safeGet<T>(
+    String path,
+    Token token, {
+    Map<String, dynamic>? query,
+  }) async {
+    Logger().d('GET Request - URL: $path, Query: $query');
+
+    try {
+      // 初始请求
+      var response = await _dio.get<T>(
+        path,
+        queryParameters: query,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${token.access_token}',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        Logger().d('GET Response: ${response.data}');
+        return response;
+      } else {
+        Logger().e('Error: ${response.statusCode}, ${response.statusMessage}');
+        return null;
+      }
+    } on DioException catch (e) {
+      // 处理401错误（令牌过期）
+      if (e.response?.statusCode == 401 && token.refresh_token.isNotEmpty) {
+        Logger().i("令牌已过期，尝试刷新...");
+
+        // 尝试刷新令牌
+        bool refreshSuccess = await _refreshToken();
+
+        if (refreshSuccess) {
+          Logger().i("令牌刷新成功，重新尝试请求");
+          // 获取刷新后的令牌
+          Token newToken = userToken;
+
+          // 使用新令牌重新发送请求
+          try {
+            var newResponse = await _dio.get<T>(
+              path,
+              queryParameters: query,
+              options: Options(
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ${newToken.access_token}',
+                },
+              ),
+            );
+
+            if (newResponse.statusCode == 200) {
+              Logger().d('使用新令牌的 GET Response: ${newResponse.data}');
+              return newResponse;
+            } else {
+              Logger().e(
+                '使用新令牌请求仍然失败: ${newResponse.statusCode}, ${newResponse.statusMessage}',
+              );
+              return null;
+            }
+          } catch (retryError) {
+            Logger().e('使用新令牌重试失败: $retryError');
+            return null;
+          }
+        } else {
+          Logger().e("令牌刷新失败");
+          return null;
+        }
+      }
+
+      // 其他类型的错误
+      Logger().e('GET Error: ${e.type}, ${e.message}');
+      debugPrint('Response data: ${e.response?.data}');
+      return null;
+    } catch (e) {
+      Logger().e('Unknown error during GET request: $e');
       return null;
     }
   }
@@ -197,35 +325,6 @@ class ServiceManager {
     }
   }
 
-  // 聊天请求
-  Future<ChatActionResult> chatAction(String userName, String content) async {
-    try {
-      // 更改泛型参数为 Map<String, dynamic>
-      final response = await safePost<Map<String, dynamic>>(
-        chatActionUrl,
-        userToken,
-        data: ChatActionRequest(content: content).toJson(),
-      );
-
-      if (response == null || response.data == null) {
-        Logger().e('Chat action failed: No response data');
-        return ChatActionResult(success: false, message: '聊天请求失败，请稍后重试。');
-      }
-
-      // 手动将 Map 转换为 ChatActionResponse 对象
-      final chatResponse = ChatActionResponse.fromJson(response.data!);
-
-      Logger().d('Chat action response: ${jsonEncode(chatResponse.toJson())}');
-      return ChatActionResult(success: true, message: chatResponse.message);
-    } on DioException catch (e) {
-      debugPrint('Caught a DioException during chat action: ${e.message}');
-      return ChatActionResult(success: false, message: '网络错误，请稍后重试。');
-    } catch (e) {
-      debugPrint('Caught an unknown error during chat action: $e');
-      return ChatActionResult(success: false, message: '未知错误，请稍后重试。');
-    }
-  }
-
   Future<bool> logout() async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -253,6 +352,78 @@ class ServiceManager {
     } catch (e) {
       debugPrint('Caught an unknown error during logout: $e');
       return false;
+    }
+  }
+
+  // 刷新访问令牌
+  Future<bool> _refreshToken() async {
+    try {
+      // 检查是否有可用的刷新令牌
+      if (userToken.refresh_token.isEmpty) {
+        Logger().e("没有可用的刷新令牌，无法刷新访问令牌。");
+        return false;
+      }
+
+      // 发送刷新令牌请求
+      final response = await _dio.post<Map<String, dynamic>>(
+        refreshUrl,
+        data: {"refresh_token": userToken.refresh_token},
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        // 创建新的 Token 实例并保存到 Hive
+        final newToken = Token(
+          access_token: response.data!["access_token"],
+          token_type: userToken.token_type, // 保持原有的 token_type
+          refresh_token: response.data!["refresh_token"],
+        );
+
+        // 保存更新后的令牌
+        await HiveManager().saveToken(newToken);
+        Logger().i("令牌刷新成功！");
+        return true;
+      } else {
+        Logger().e("令牌刷新失败：${response.statusCode}");
+        return false;
+      }
+    } on DioException catch (e) {
+      Logger().e("令牌刷新失败：${e.message}");
+      debugPrint('Caught a DioException during token refresh: ${e.message}');
+      return false;
+    } catch (e) {
+      Logger().e("令牌刷新过程中出现未知错误：$e");
+      debugPrint('Caught an unknown error during token refresh: $e');
+      return false;
+    }
+  }
+
+  // 聊天请求?
+  Future<ChatActionResponse?> chat(String userName, String content) async {
+    try {
+      // 更改泛型参数为 Map<String, dynamic>
+      final response = await _safePost<Map<String, dynamic>>(
+        chatActionUrl,
+        userToken,
+        data: ChatActionRequest(content: content).toJson(),
+      );
+
+      if (response == null || response.data == null) {
+        Logger().e('Chat action failed: No response data');
+        return null;
+      }
+
+      // 手动将 Map 转换为 ChatActionResponse 对象
+      final chatResponse = ChatActionResponse.fromJson(response.data!);
+
+      Logger().d('Chat action response: ${jsonEncode(chatResponse.toJson())}');
+      return chatResponse;
+    } on DioException catch (e) {
+      debugPrint('Caught a DioException during chat action: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Caught an unknown error during chat action: $e');
+      return null;
     }
   }
 }
