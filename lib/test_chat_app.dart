@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
-//import 'package:nirva_app/chat_manager.dart';
-import 'package:nirva_app/service_manager.dart';
+import 'package:nirva_app/service_provider.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 
 class TestChatApp extends StatelessWidget {
   TestChatApp({super.key});
 
   // 缓存初始化结果
-  final Future<bool> _initFuture = ServiceManager().getUrlConfig().then((
+  final Future<bool> _initFuture = ServiceProvider().getUrlConfig().then((
     isApiConfigurationSuccessful,
   ) async {
     if (!isApiConfigurationSuccessful) {
       return false;
     }
-    return await ServiceManager().login(
+    return await ServiceProvider().login(
       AppRuntimeContext().data.user.name,
       AppRuntimeContext().data.user.password,
     );
