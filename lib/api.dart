@@ -20,19 +20,6 @@ class URLConfigurationResponse with _$URLConfigurationResponse {
   Map<String, dynamic> toJson() => (this as _URLConfigurationResponse).toJson();
 }
 
-@freezed
-class Token with _$Token {
-  const factory Token({
-    required String access_token,
-    required String token_type,
-    required String refresh_token, // 新增字段
-  }) = _Token;
-
-  factory Token.fromJson(Map<String, dynamic> json) => _$TokenFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _Token).toJson();
-}
-
 //聊天请求
 @freezed
 class ChatActionRequest with _$ChatActionRequest {

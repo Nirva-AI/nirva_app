@@ -244,200 +244,12 @@ abstract class _URLConfigurationResponse implements URLConfigurationResponse {
       get copyWith => throw _privateConstructorUsedError;
 }
 
-Token _$TokenFromJson(Map<String, dynamic> json) {
-  return _Token.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Token {
-  String get access_token => throw _privateConstructorUsedError;
-  String get token_type => throw _privateConstructorUsedError;
-  String get refresh_token => throw _privateConstructorUsedError;
-
-  /// Serializes this Token to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Token
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $TokenCopyWith<Token> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $TokenCopyWith<$Res> {
-  factory $TokenCopyWith(Token value, $Res Function(Token) then) =
-      _$TokenCopyWithImpl<$Res, Token>;
-  @useResult
-  $Res call({String access_token, String token_type, String refresh_token});
-}
-
-/// @nodoc
-class _$TokenCopyWithImpl<$Res, $Val extends Token>
-    implements $TokenCopyWith<$Res> {
-  _$TokenCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of Token
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? access_token = null,
-    Object? token_type = null,
-    Object? refresh_token = null,
-  }) {
-    return _then(_value.copyWith(
-      access_token: null == access_token
-          ? _value.access_token
-          : access_token // ignore: cast_nullable_to_non_nullable
-              as String,
-      token_type: null == token_type
-          ? _value.token_type
-          : token_type // ignore: cast_nullable_to_non_nullable
-              as String,
-      refresh_token: null == refresh_token
-          ? _value.refresh_token
-          : refresh_token // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$TokenImplCopyWith<$Res> implements $TokenCopyWith<$Res> {
-  factory _$$TokenImplCopyWith(
-          _$TokenImpl value, $Res Function(_$TokenImpl) then) =
-      __$$TokenImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String access_token, String token_type, String refresh_token});
-}
-
-/// @nodoc
-class __$$TokenImplCopyWithImpl<$Res>
-    extends _$TokenCopyWithImpl<$Res, _$TokenImpl>
-    implements _$$TokenImplCopyWith<$Res> {
-  __$$TokenImplCopyWithImpl(
-      _$TokenImpl _value, $Res Function(_$TokenImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of Token
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? access_token = null,
-    Object? token_type = null,
-    Object? refresh_token = null,
-  }) {
-    return _then(_$TokenImpl(
-      access_token: null == access_token
-          ? _value.access_token
-          : access_token // ignore: cast_nullable_to_non_nullable
-              as String,
-      token_type: null == token_type
-          ? _value.token_type
-          : token_type // ignore: cast_nullable_to_non_nullable
-              as String,
-      refresh_token: null == refresh_token
-          ? _value.refresh_token
-          : refresh_token // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$TokenImpl implements _Token {
-  const _$TokenImpl(
-      {required this.access_token,
-      required this.token_type,
-      required this.refresh_token});
-
-  factory _$TokenImpl.fromJson(Map<String, dynamic> json) =>
-      _$$TokenImplFromJson(json);
-
-  @override
-  final String access_token;
-  @override
-  final String token_type;
-  @override
-  final String refresh_token;
-
-  @override
-  String toString() {
-    return 'Token(access_token: $access_token, token_type: $token_type, refresh_token: $refresh_token)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$TokenImpl &&
-            (identical(other.access_token, access_token) ||
-                other.access_token == access_token) &&
-            (identical(other.token_type, token_type) ||
-                other.token_type == token_type) &&
-            (identical(other.refresh_token, refresh_token) ||
-                other.refresh_token == refresh_token));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, access_token, token_type, refresh_token);
-
-  /// Create a copy of Token
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$TokenImplCopyWith<_$TokenImpl> get copyWith =>
-      __$$TokenImplCopyWithImpl<_$TokenImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$TokenImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Token implements Token {
-  const factory _Token(
-      {required final String access_token,
-      required final String token_type,
-      required final String refresh_token}) = _$TokenImpl;
-
-  factory _Token.fromJson(Map<String, dynamic> json) = _$TokenImpl.fromJson;
-
-  @override
-  String get access_token;
-  @override
-  String get token_type;
-  @override
-  String get refresh_token;
-
-  /// Create a copy of Token
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$TokenImplCopyWith<_$TokenImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 ChatActionRequest _$ChatActionRequestFromJson(Map<String, dynamic> json) {
   return _ChatActionRequest.fromJson(json);
 }
 
 /// @nodoc
 mixin _$ChatActionRequest {
-//required String user_name,
   String get content => throw _privateConstructorUsedError;
 
   /// Serializes this ChatActionRequest to a JSON map.
@@ -528,7 +340,6 @@ class _$ChatActionRequestImpl implements _ChatActionRequest {
   factory _$ChatActionRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChatActionRequestImplFromJson(json);
 
-//required String user_name,
   @override
   final String content;
 
@@ -573,7 +384,6 @@ abstract class _ChatActionRequest implements ChatActionRequest {
   factory _ChatActionRequest.fromJson(Map<String, dynamic> json) =
       _$ChatActionRequestImpl.fromJson;
 
-//required String user_name,
   @override
   String get content;
 
@@ -591,7 +401,6 @@ ChatActionResponse _$ChatActionResponseFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ChatActionResponse {
-//required int error,
   String get message => throw _privateConstructorUsedError;
 
   /// Serializes this ChatActionResponse to a JSON map.
@@ -682,7 +491,6 @@ class _$ChatActionResponseImpl implements _ChatActionResponse {
   factory _$ChatActionResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChatActionResponseImplFromJson(json);
 
-//required int error,
   @override
   final String message;
 
@@ -727,7 +535,6 @@ abstract class _ChatActionResponse implements ChatActionResponse {
   factory _ChatActionResponse.fromJson(Map<String, dynamic> json) =
       _$ChatActionResponseImpl.fromJson;
 
-//required int error,
   @override
   String get message;
 

@@ -24,19 +24,6 @@ Map<String, dynamic> _$$URLConfigurationResponseImplToJson(
       'notice': instance.notice,
     };
 
-_$TokenImpl _$$TokenImplFromJson(Map<String, dynamic> json) => _$TokenImpl(
-      access_token: json['access_token'] as String,
-      token_type: json['token_type'] as String,
-      refresh_token: json['refresh_token'] as String,
-    );
-
-Map<String, dynamic> _$$TokenImplToJson(_$TokenImpl instance) =>
-    <String, dynamic>{
-      'access_token': instance.access_token,
-      'token_type': instance.token_type,
-      'refresh_token': instance.refresh_token,
-    };
-
 _$ChatActionRequestImpl _$$ChatActionRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$ChatActionRequestImpl(
