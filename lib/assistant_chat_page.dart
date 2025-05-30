@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/message.dart';
-import 'package:nirva_app/service_provider.dart';
+import 'package:nirva_app/apis.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 
 class AssistantChatPage extends StatefulWidget {
@@ -45,8 +45,8 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
 
     AppRuntimeContext().chat.addUserMessage(message);
 
-    final response = await ServiceProvider().chat(
-      AppRuntimeContext().data.user.name,
+    final response = await APIs.chat(
+      //AppRuntimeContext().data.user.name,
       message,
     );
 

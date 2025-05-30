@@ -1,22 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
-import 'package:nirva_app/service_provider.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/apis.dart';
+//import 'package:nirva_app/app_runtime_context.dart';
+import 'package:logger/logger.dart';
 
 class TestChatApp extends StatelessWidget {
   TestChatApp({super.key});
 
   // 缓存初始化结果
-  final Future<bool> _initFuture = ServiceProvider().getUrlConfig().then((
-    isApiConfigurationSuccessful,
-  ) async {
-    if (!isApiConfigurationSuccessful) {
+  final Future<bool> _initFuture = Future(() async {
+    try {
+      // 使用 APIs.getUrlConfig() 替代 ServiceProvider().getUrlConfig()
+      final urlConfig = await APIs.getUrlConfig();
+      if (urlConfig == null) {
+        Logger().e('获取 URL 配置失败');
+        return false;
+      }
+
+      Logger().i('API 初始化成功');
+
+      final token = await APIs.login();
+      if (token == null) {
+        Logger().e('登录失败，未获取到 token');
+        return false;
+      }
+
+      // final refreshToken = await APIs.refreshToken();
+      // if (!refreshToken) {
+      //   Logger().e('刷新 token 失败');
+      //   return false;
+      // }
+
+      // Logger().i('刷新 token 成功');
+
+      // final logout = await APIs.logout();
+      // if (!logout) {
+      //   Logger().e('登出失败');
+      //   return false;
+      // }
+      // Logger().i('登出成功');
+
+      return true;
+    } catch (e) {
+      Logger().e('API 初始化失败: $e');
       return false;
     }
-    return await ServiceProvider().login(
-      AppRuntimeContext().data.user.name,
-      AppRuntimeContext().data.user.password,
-    );
   });
 
   @override
