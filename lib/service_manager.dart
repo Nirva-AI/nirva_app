@@ -3,7 +3,6 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
-import 'package:nirva_app/dio_service.dart';
 import 'package:nirva_app/api.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
@@ -26,9 +25,25 @@ class ServiceManager {
 
   factory ServiceManager() => instance;
 
-  ServiceManager._internal();
+  // Dio 实例和配置（从DioService合并过来）
+  final Dio _dio = Dio(
+      BaseOptions(
+        baseUrl: 'http://192.168.22.108:8000',
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    )
+    ..interceptors.addAll([
+      LogInterceptor(request: true, requestHeader: true, responseHeader: true),
+      InterceptorsWrapper(
+        onError: (error, handler) {
+          Logger().e('Dio Error: ${error.message}');
+          return handler.next(error);
+        },
+      ),
+    ]);
 
-  final DioService _dioService = DioService();
+  ServiceManager._internal();
 
   URLConfigurationResponse _urlConfig = URLConfigurationResponse(
     api_version: '',
@@ -47,10 +62,38 @@ class ServiceManager {
     return _urlConfig.endpoints['chat'] ?? '';
   }
 
+  // 从DioService合并过来的通用POST方法
+  Future<Response<T>> safePost<T>(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? query,
+  }) async {
+    try {
+      return await _dio.post<T>(path, data: data, queryParameters: query);
+    } on DioException catch (e) {
+      Logger().e('POST Error: ${e.type}');
+      rethrow;
+    }
+  }
+
+  // 从DioService合并过来的通用GET方法
+  Future<Response<T>> safeGet<T>(
+    String path, {
+    Map<String, dynamic>? query,
+  }) async {
+    try {
+      return await _dio.get<T>(path, queryParameters: query);
+    } on DioException catch (e) {
+      Logger().e('GET Error: ${e.type}');
+      rethrow;
+    }
+  }
+
   // 配置 API 端点, 后续可以写的复杂一些。
   Future<bool> getUrlConfig() async {
     try {
-      final response = await _dioService.safeGet("/config");
+      // 将safeGet的实现直接合并到这里
+      final response = await _dio.get<dynamic>("/config");
       _urlConfig = URLConfigurationResponse.fromJson(response.data!);
 
       Logger().d(
@@ -59,6 +102,7 @@ class ServiceManager {
       return true;
     } on DioException catch (e) {
       // 处理 DioException
+      Logger().e('GET Error: ${e.type}');
       debugPrint('Caught a DioException: ${e.message}');
       debugPrint('Response data: ${e.response?.data}');
 
@@ -96,10 +140,30 @@ class ServiceManager {
   // 登录请求
   Future<bool> login(String userName, String password) async {
     try {
-      _token = await _dioService.login(loginUrl, userName, password);
-      Logger().d('Login successful: Token=${jsonEncode(_token.toJson())}');
-      return true; // 假设登录成功
+      // 直接将_performLogin的逻辑合并到login方法中
+      final response = await _dio.post<Map<String, dynamic>>(
+        loginUrl,
+        data: {
+          'username': userName,
+          'password': password,
+          'grant_type': 'password',
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType, // OAuth2默认表单格式
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        _token = Token.fromJson(response.data!);
+        Logger().i('登录成功！令牌已获取');
+        Logger().d('Login successful: Token=${jsonEncode(_token.toJson())}');
+        return true;
+      } else {
+        Logger().e('登录失败，请检查用户名和密码');
+        return false;
+      }
     } on DioException catch (e) {
+      Logger().e('登录失败: ${e.message}');
       debugPrint('Caught a DioException during login: ${e.message}');
       return false;
     } catch (e) {
@@ -111,7 +175,7 @@ class ServiceManager {
   // 聊天请求
   Future<ChatActionResult> chatAction(String userName, String content) async {
     try {
-      final response = await _dioService.safePost(
+      final response = await safePost(
         chatActionUrl,
         data: ChatActionRequest(user_name: userName, content: content).toJson(),
       );
