@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/utils.dart';
 
 enum EnergyLevelChartTab { day, week, month }
@@ -59,7 +59,11 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
                       child: Text(
                         _getScore(
                           _selectedType,
-                          DataManager().currentDashboard.energyLevel.scores,
+                          AppRuntimeContext()
+                              .data
+                              .currentDashboard
+                              .energyLevel
+                              .scores,
                         ).toString(),
                         style: const TextStyle(
                           fontSize: 48,
@@ -82,7 +86,7 @@ class _EnergyLevelDetailsPageState extends State<EnergyLevelDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().currentDashboard.energyLevel.insights,
+              AppRuntimeContext().data.currentDashboard.energyLevel.insights,
             ), // 传入数据
           ],
         ),
@@ -247,8 +251,13 @@ class EnergyLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.weekday,
-                  DataManager().currentDashboard.energyLevel.day.length,
+                  AppRuntimeContext().data.currentDashboard.dateTime.weekday,
+                  AppRuntimeContext()
+                      .data
+                      .currentDashboard
+                      .energyLevel
+                      .day
+                      .length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -287,8 +296,13 @@ class EnergyLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.month,
-                  DataManager().currentDashboard.energyLevel.month.length,
+                  AppRuntimeContext().data.currentDashboard.dateTime.month,
+                  AppRuntimeContext()
+                      .data
+                      .currentDashboard
+                      .energyLevel
+                      .month
+                      .length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -310,15 +324,15 @@ class EnergyLevelChart extends StatelessWidget {
     switch (type) {
       case EnergyLevelChartTab.day:
         lineColor = Colors.purple;
-        data = DataManager().currentDashboard.energyLevel.day;
+        data = AppRuntimeContext().data.currentDashboard.energyLevel.day;
         break;
       case EnergyLevelChartTab.week:
         lineColor = Colors.blue;
-        data = DataManager().currentDashboard.energyLevel.week;
+        data = AppRuntimeContext().data.currentDashboard.energyLevel.week;
         break;
       case EnergyLevelChartTab.month:
         lineColor = Colors.green;
-        data = DataManager().currentDashboard.energyLevel.month;
+        data = AppRuntimeContext().data.currentDashboard.energyLevel.month;
         break;
     }
 

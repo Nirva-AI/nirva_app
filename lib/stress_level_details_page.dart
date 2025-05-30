@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/utils.dart';
 
 enum StressLevelChartTab { day, week, month }
@@ -59,7 +59,11 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
                       child: Text(
                         _getScore(
                           _selectedType,
-                          DataManager().currentDashboard.stressLevel.scores,
+                          AppRuntimeContext()
+                              .data
+                              .currentDashboard
+                              .stressLevel
+                              .scores,
                         ).toString(),
                         style: const TextStyle(
                           fontSize: 48,
@@ -85,7 +89,7 @@ class _StressLevelDetailsPageState extends State<StressLevelDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().currentDashboard.stressLevel.insights,
+              AppRuntimeContext().data.currentDashboard.stressLevel.insights,
             ), // 传入数据
           ],
         ),
@@ -251,8 +255,13 @@ class StressLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.weekday,
-                  DataManager().currentDashboard.stressLevel.day.length,
+                  AppRuntimeContext().data.currentDashboard.dateTime.weekday,
+                  AppRuntimeContext()
+                      .data
+                      .currentDashboard
+                      .stressLevel
+                      .day
+                      .length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -291,8 +300,13 @@ class StressLevelChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.month,
-                  DataManager().currentDashboard.stressLevel.month.length,
+                  AppRuntimeContext().data.currentDashboard.dateTime.month,
+                  AppRuntimeContext()
+                      .data
+                      .currentDashboard
+                      .stressLevel
+                      .month
+                      .length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -314,15 +328,15 @@ class StressLevelChart extends StatelessWidget {
     switch (type) {
       case StressLevelChartTab.day:
         lineColor = Colors.red;
-        data = DataManager().currentDashboard.stressLevel.day;
+        data = AppRuntimeContext().data.currentDashboard.stressLevel.day;
         break;
       case StressLevelChartTab.week:
         lineColor = Colors.orange;
-        data = DataManager().currentDashboard.stressLevel.week;
+        data = AppRuntimeContext().data.currentDashboard.stressLevel.week;
         break;
       case StressLevelChartTab.month:
         lineColor = Colors.amber;
-        data = DataManager().currentDashboard.stressLevel.month;
+        data = AppRuntimeContext().data.currentDashboard.stressLevel.month;
         break;
     }
 

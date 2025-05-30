@@ -3,19 +3,7 @@ import 'package:nirva_app/data.dart';
 import 'package:flutter/foundation.dart';
 
 // 管理全局数据的类
-class DataManager {
-  // 可重置的单例模式
-  static DataManager? _instance;
-
-  static DataManager get instance {
-    _instance ??= DataManager._internal();
-    return _instance!;
-  }
-
-  factory DataManager() => instance;
-
-  DataManager._internal();
-
+class RuntimeData {
   // 用户信息
   User user = User(name: '');
 
@@ -40,11 +28,6 @@ class DataManager {
 
   //
   SocialMap globalSocialMap = SocialMap(id: "", socialEntities: []);
-
-  // 清空数据
-  static void clear() {
-    _instance = DataManager._internal();
-  }
 
   //
   Map<String, List<Task>> get groupedTasks {

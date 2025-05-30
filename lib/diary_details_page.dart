@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart';
 import 'package:nirva_app/utils.dart';
@@ -15,12 +15,12 @@ class DiaryDetailsPage extends StatefulWidget {
 
 class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
   bool get isFavoriteDiaryEntry {
-    return DataManager().isFavoriteDiary(widget.diaryData);
+    return AppRuntimeContext().data.isFavoriteDiary(widget.diaryData);
   }
 
   void _toggleFavorite() {
     setState(() {
-      DataManager().toggleFavoriteDiary(widget.diaryData);
+      AppRuntimeContext().data.toggleFavoriteDiary(widget.diaryData);
       debugPrint(
         'Star button pressed: ${isFavoriteDiaryEntry ? "Added to favorites" : "Removed from favorites"}',
       );
@@ -40,7 +40,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final fullDateTime = Utils.fullDiaryDateTime(
-      DataManager().currentJournal.dateTime,
+      AppRuntimeContext().data.currentJournal.dateTime,
     );
     return Scaffold(
       appBar: PreferredSize(
@@ -140,7 +140,8 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     ValueListenableBuilder(
-                      valueListenable: DataManager().diaryNotesNotifier,
+                      valueListenable:
+                          AppRuntimeContext().data.diaryNotesNotifier,
                       builder: (context, List<DiaryEntryNote> notes, _) {
                         final note = notes.firstWhere(
                           (element) => element.id == widget.diaryData.id,

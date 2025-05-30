@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:nirva_app/custom_fruchterman_reingold_algorithm.dart';
 import 'package:nirva_app/social_map_page.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 
 class SocialMapGraphCard extends StatefulWidget {
@@ -48,11 +48,11 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
   Graph createGraph() {
     final newGraph = Graph();
 
-    User user = DataManager().user;
+    User user = AppRuntimeContext().data.user;
     Node userNode = Node.Id(user.name);
     newGraph.addNode(userNode);
 
-    Journal currentJournal = DataManager().currentJournal;
+    Journal currentJournal = AppRuntimeContext().data.currentJournal;
 
     for (var socialEntity in currentJournal.socialMap.socialEntities) {
       Node node = Node.Id(socialEntity.name);

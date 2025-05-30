@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class UserProfilePage extends StatelessWidget {
   const UserProfilePage({super.key});
@@ -54,7 +54,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        DataManager().user.name,
+                        AppRuntimeContext().data.user.name,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(

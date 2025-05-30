@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/user_profile_page.dart';
 import 'package:nirva_app/update_data_page.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -32,7 +32,7 @@ class _MePageState extends State<MePage> {
                     child: const Icon(Icons.person, color: Colors.white),
                   ),
                   title: Text(
-                    DataManager().user.name,
+                    AppRuntimeContext().data.user.name,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),

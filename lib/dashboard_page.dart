@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/stress_level_card.dart';
 import 'package:nirva_app/energy_level_card.dart';
 import 'package:nirva_app/mood_tracking_card.dart';
@@ -43,8 +43,10 @@ class DashboardPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        MoodScoreCard(data: DataManager().currentJournal.moodScore),
-        StressLevelCard(data: DataManager().currentJournal.stressLevel),
+        MoodScoreCard(data: AppRuntimeContext().data.currentJournal.moodScore),
+        StressLevelCard(
+          data: AppRuntimeContext().data.currentJournal.stressLevel,
+        ),
       ],
     );
   }

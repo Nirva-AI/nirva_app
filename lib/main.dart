@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/main_app.dart';
 import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -42,7 +42,8 @@ Future<void> testHive() async {
   final retrievedFavorites = HiveManager().getDiaryFavorites();
   if (retrievedFavorites != null && retrievedFavorites.favoriteIds.isNotEmpty) {
     debugPrint('DiaryFavorites 测试通过: 收藏夹数据存在');
-    DataManager().diaryFavoritesNotifier.value = retrievedFavorites.favoriteIds;
+    AppRuntimeContext().data.diaryFavoritesNotifier.value =
+        retrievedFavorites.favoriteIds;
   } else {
     debugPrint('DiaryFavorites 测试失败: 收藏夹数据不存在或为空');
   }

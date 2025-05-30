@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/utils.dart';
 
 enum ArchivedHighlightsType { weekly, monthly }
@@ -78,8 +78,8 @@ class _ArchivedHighlightsPageState extends State<ArchivedHighlightsPage> {
 
   List<ArchivedHighlights> get selectedArchivedHighlights {
     return _selectedType == ArchivedHighlightsType.weekly
-        ? DataManager().weeklyArchivedHighlights
-        : DataManager().monthlyArchivedHighlights;
+        ? AppRuntimeContext().data.weeklyArchivedHighlights
+        : AppRuntimeContext().data.monthlyArchivedHighlights;
   }
 
   Widget _buildTab(String title, bool isSelected, VoidCallback onTap) {

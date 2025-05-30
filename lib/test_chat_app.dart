@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
 //import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/service_manager.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class TestChatApp extends StatelessWidget {
   TestChatApp({super.key});
@@ -15,8 +15,8 @@ class TestChatApp extends StatelessWidget {
       return false;
     }
     return await ServiceManager().login(
-      DataManager().user.name,
-      DataManager().user.password,
+      AppRuntimeContext().data.user.name,
+      AppRuntimeContext().data.user.password,
     );
   });
 

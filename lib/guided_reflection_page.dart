@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/data_manager.dart'; // 确保导入 DataManager
+import 'package:nirva_app/app_runtime_context.dart'; // 确保导入 DataManager
 
 class GuidedReflectionPage extends StatelessWidget {
   final DiaryEntry diaryData; // 新增参数
@@ -72,7 +72,7 @@ class GuidedReflectionPage extends StatelessWidget {
                 onPressed: () {
                   // 保存按钮点击事件
                   final content = _textController.text; // 获取输入框内容
-                  DataManager().modifyDiaryNote(
+                  AppRuntimeContext().data.modifyDiaryNote(
                     diaryData,
                     content,
                   ); // 保存到 DataManager

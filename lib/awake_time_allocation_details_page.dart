@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/data.dart';
 
@@ -77,7 +77,11 @@ class _AwakeTimeAllocationDetailsPageState
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().currentDashboard.awakeTimeAllocation.insights,
+              AppRuntimeContext()
+                  .data
+                  .currentDashboard
+                  .awakeTimeAllocation
+                  .insights,
             ),
           ],
         ),
@@ -94,7 +98,8 @@ class _AwakeTimeAllocationDetailsPageState
         spacing: 16,
         runSpacing: 8,
         children:
-            DataManager()
+            AppRuntimeContext()
+                .data
                 .currentDashboard
                 .awakeTimeAllocation
                 .awakeTimeAllocationMap
@@ -250,7 +255,7 @@ class AwakeTimeChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.weekday,
+                  AppRuntimeContext().data.currentDashboard.dateTime.weekday,
                   dayCount,
                 ),
                 style: const TextStyle(
@@ -290,7 +295,7 @@ class AwakeTimeChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.month,
+                  AppRuntimeContext().data.currentDashboard.dateTime.month,
                   monthCount,
                 ),
                 style: const TextStyle(
@@ -326,7 +331,8 @@ class AwakeTimeChart extends StatelessWidget {
     List<LineChartBarData> ret = [];
 
     final awakeTimeAllocationMap =
-        DataManager()
+        AppRuntimeContext()
+            .data
             .currentDashboard
             .awakeTimeAllocation
             .awakeTimeAllocationMap;

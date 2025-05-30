@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/diary_details_page.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/hive_manager.dart';
 import 'package:nirva_app/hive_object.dart';
 
@@ -20,7 +20,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
   @override
   void initState() {
     super.initState();
-    favoriteNotifier = DataManager().diaryFavoritesNotifier;
+    favoriteNotifier = AppRuntimeContext().data.diaryFavoritesNotifier;
     favoriteNotifier.addListener(_onFavoriteChanged);
   }
 
@@ -45,7 +45,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
   }
 
   bool get isFavoriteDiaryEntry {
-    return DataManager().isFavoriteDiary(widget.diaryData);
+    return AppRuntimeContext().data.isFavoriteDiary(widget.diaryData);
   }
 
   @override
@@ -94,7 +94,9 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                             isFavoriteDiaryEntry ? Colors.amber : Colors.grey,
                       ),
                       onPressed: () {
-                        DataManager().toggleFavoriteDiary(widget.diaryData);
+                        AppRuntimeContext().data.toggleFavoriteDiary(
+                          widget.diaryData,
+                        );
                       },
                     ),
                   ],
