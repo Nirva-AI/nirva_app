@@ -69,9 +69,17 @@ class HiveStorage {
   }
 
   // 新增: 获取 Token 数据
-  Token? getToken() {
+  Token getToken() {
     final box = Hive.box<Token>(_tokenBox);
-    return box.get(_tokenKey); // 使用固定的 key 获取
+    final res = box.get(_tokenKey); // 使用固定的 key 获取
+    if (res == null) {
+      return Token(
+        access_token: '',
+        token_type: '',
+        refresh_token: '',
+      ); // 返回一个默认的 Token 对象
+    }
+    return res;
   }
 
   // 新增: 删除 Token 数据 (登出时使用)
@@ -81,8 +89,8 @@ class HiveStorage {
   }
 
   // 新增: 检查是否存在有效的 Token
-  bool hasValidToken() {
-    final token = getToken();
-    return token != null && token.access_token.isNotEmpty;
-  }
+  // bool hasValidToken() {
+  //   final token = getToken();
+  //   return token != null && token.access_token.isNotEmpty;
+  // }
 }
