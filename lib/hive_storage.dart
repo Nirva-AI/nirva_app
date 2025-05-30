@@ -3,18 +3,8 @@ import 'package:path_provider/path_provider.dart'; // 用于获取平台相关�
 import 'package:hive/hive.dart';
 import 'package:nirva_app/hive_object.dart';
 
-class HiveManager {
-  static HiveManager? _instance;
-
-  static HiveManager get instance {
-    _instance ??= HiveManager._internal();
-    return _instance!;
-  }
-
-  factory HiveManager() => instance;
-
-  HiveManager._internal();
-
+class HiveStorage {
+  //hive_storage_controller.dart
   // 现有的常量定义
   static const String _diaryFavoritesBox = 'diaryFavoritesBox';
   static const String _diaryFavoritesKey = 'favorites';
@@ -23,13 +13,13 @@ class HiveManager {
   static const String _tokenBox = 'tokenBox';
   static const String _tokenKey = 'userToken';
 
-  // 清空所有 Box 的数据并关闭所有 Box
+  //清空所有 Box 的数据并关闭所有 Box
   Future<void> deleteFromDisk() async {
     await Hive.deleteFromDisk();
   }
 
   // 初始化 Hive
-  Future<void> initHive() async {
+  Future<void> initialize() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
     Hive.init(directory.path); // 初始化 Hive 并设置存储路径
