@@ -53,17 +53,19 @@ class ServiceManager {
     notice: '',
   );
 
-  //Token _token = Token(access_token: '', token_type: '', refresh_token: '');
-
   String get loginUrl {
     return _urlConfig.endpoints['login'] ?? '';
+  }
+
+  String get logoutUrl {
+    return _urlConfig.endpoints['logout'] ?? '';
   }
 
   String get chatActionUrl {
     return _urlConfig.endpoints['chat'] ?? '';
   }
 
-  Token get _token {
+  Token get userToken {
     // 从Hive中获取Token
     return HiveManager().getToken() ??
         Token(access_token: '', token_type: '', refresh_token: '');
@@ -201,7 +203,7 @@ class ServiceManager {
       // 更改泛型参数为 Map<String, dynamic>
       final response = await safePost<Map<String, dynamic>>(
         chatActionUrl,
-        _token,
+        userToken,
         data: ChatActionRequest(content: content).toJson(),
       );
 
@@ -221,6 +223,36 @@ class ServiceManager {
     } catch (e) {
       debugPrint('Caught an unknown error during chat action: $e');
       return ChatActionResult(success: false, message: '未知错误，请稍后重试。');
+    }
+  }
+
+  Future<bool> logout() async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        logoutUrl,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${userToken.access_token}',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        await HiveManager().deleteToken(); // 清除本地令牌
+        Logger().i('登出成功！令牌已清除');
+        return true;
+      } else {
+        Logger().e('登出失败，请稍后重试');
+        return false;
+      }
+    } on DioException catch (e) {
+      Logger().e('登出失败: ${e.message}');
+      debugPrint('Caught a DioException during logout: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Caught an unknown error during logout: $e');
+      return false;
     }
   }
 }

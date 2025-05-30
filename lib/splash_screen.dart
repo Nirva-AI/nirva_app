@@ -40,6 +40,23 @@ class _SplashScreenState extends State<SplashScreen> {
         DataManager().user.password,
       );
       debugPrint('Login: $loginSuccess');
+
+      if (loginSuccess) {
+        // 登录成功，执行其他初始化逻辑
+        debugPrint('Login successful, proceeding with initialization...');
+        // 这里可以添加其他初始化逻辑
+        final logoutSuccess = await _serviceManager.logout();
+        if (logoutSuccess) {
+          debugPrint('Logout successful, proceeding with next steps...');
+        } else {
+          debugPrint('Logout failed, handling failure...');
+          // 这里可以添加登出失败的处理逻辑，例如显示错误消息或重试
+        }
+      } else {
+        // 登录失败，处理登录失败的情况
+        debugPrint('Login failed, handling failure...');
+        // 这里可以添加登录失败的处理逻辑，例如显示错误消息或重试
+      }
     }
 
     // 计算剩余时间
