@@ -7,7 +7,7 @@ import 'package:nirva_app/api.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:nirva_app/hive_object.dart';
-import 'package:nirva_app/hive_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 // 管理全局数据的类
 class ServiceManager {
@@ -64,7 +64,7 @@ class ServiceManager {
 
   Token get userToken {
     // 从Hive中获取Token
-    return HiveManager().getToken() ??
+    return AppRuntimeContext().storage.getToken() ??
         Token(access_token: '', token_type: '', refresh_token: '');
   }
 
@@ -308,7 +308,7 @@ class ServiceManager {
           token_type: response.data!['token_type'] ?? '',
           refresh_token: response.data!['refresh_token'] ?? '', // 新增字段
         );
-        HiveManager().saveToken(token); // 保存到Hive中
+        AppRuntimeContext().storage.saveToken(token); // 保存到Hive中
         Logger().i('登录成功！令牌已获取');
         return true;
       } else {
@@ -338,7 +338,7 @@ class ServiceManager {
       );
 
       if (response.statusCode == 200) {
-        await HiveManager().deleteToken(); // 清除本地令牌
+        await AppRuntimeContext().storage.deleteToken(); // 清除本地令牌
         Logger().i('登出成功！令牌已清除');
         return true;
       } else {
@@ -380,7 +380,7 @@ class ServiceManager {
         );
 
         // 保存更新后的令牌
-        await HiveManager().saveToken(newToken);
+        await AppRuntimeContext().storage.saveToken(newToken);
         Logger().i("令牌刷新成功！");
         return true;
       } else {

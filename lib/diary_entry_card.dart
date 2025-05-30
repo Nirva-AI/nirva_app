@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/diary_details_page.dart';
 import 'package:nirva_app/app_runtime_context.dart';
-import 'package:nirva_app/hive_manager.dart';
 import 'package:nirva_app/hive_object.dart';
 
 class DiaryEntryCard extends StatefulWidget {
@@ -39,7 +38,9 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
     final diaryFavorites = DiaryFavorites(favoriteIds: favoriteNotifier.value);
 
     // 异步保存，不阻塞当前线程
-    HiveManager().saveDiaryFavorites(diaryFavorites).catchError((error) {
+    AppRuntimeContext().storage.saveDiaryFavorites(diaryFavorites).catchError((
+      error,
+    ) {
       debugPrint('保存收藏夹数据失败: $error');
     });
   }

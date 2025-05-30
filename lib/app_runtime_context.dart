@@ -3,6 +3,7 @@
 // import 'package:flutter/foundation.dart';
 import 'package:nirva_app/runtime_data.dart';
 import 'package:nirva_app/nirva_chat.dart';
+import 'package:nirva_app/hive_storage.dart';
 
 // 管理全局数据的类
 class AppRuntimeContext {
@@ -26,6 +27,8 @@ class AppRuntimeContext {
   final RuntimeData _data = RuntimeData();
   // 聊天管理器实例
   final NirvaChat _chat = NirvaChat();
+  // Hive 存储实例
+  final HiveStorage _storage = HiveStorage();
 
   RuntimeData get data {
     return _data;
@@ -33,5 +36,9 @@ class AppRuntimeContext {
 
   NirvaChat get chat {
     return _chat;
+  }
+
+  HiveStorage get storage {
+    return _storage;
   }
 }

@@ -5,7 +5,6 @@ import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
 //import 'package:nirva_app/test_calendar_app.dart';
-import 'package:nirva_app/hive_manager.dart';
 //import 'package:nirva_app/hive_data.dart';
 
 void main() async {
@@ -36,10 +35,10 @@ Future<void> initializeApp() async {
 
 Future<void> testHive() async {
   // 初始化 Hive
-  //await HiveManager().deleteFromDisk(); // 清空之前的数据
-  await HiveManager().initHive();
+  await AppRuntimeContext().storage.deleteFromDisk(); // 清空之前的数据
+  await AppRuntimeContext().storage.initialize();
 
-  final retrievedFavorites = HiveManager().getDiaryFavorites();
+  final retrievedFavorites = AppRuntimeContext().storage.getDiaryFavorites();
   if (retrievedFavorites != null && retrievedFavorites.favoriteIds.isNotEmpty) {
     debugPrint('DiaryFavorites 测试通过: 收藏夹数据存在');
     AppRuntimeContext().data.diaryFavoritesNotifier.value =
