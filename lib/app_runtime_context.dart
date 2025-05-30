@@ -2,6 +2,7 @@
 // import 'package:nirva_app/data.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:nirva_app/runtime_data.dart';
+import 'package:nirva_app/nirva_chat.dart';
 
 // 管理全局数据的类
 class AppRuntimeContext {
@@ -22,5 +23,15 @@ class AppRuntimeContext {
   }
 
   // 数据管理器实例
-  RuntimeData data = RuntimeData();
+  final RuntimeData _data = RuntimeData();
+  // 聊天管理器实例
+  final NirvaChat _chat = NirvaChat();
+
+  RuntimeData get data {
+    return _data;
+  }
+
+  NirvaChat get chat {
+    return _chat;
+  }
 }

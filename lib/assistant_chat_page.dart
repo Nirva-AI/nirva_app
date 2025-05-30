@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/message.dart';
 import 'package:nirva_app/service_manager.dart';
 import 'package:nirva_app/app_runtime_context.dart';
@@ -44,7 +43,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
       _isSending = true;
     });
 
-    ChatManager().addUserMessage(message);
+    AppRuntimeContext().chat.addUserMessage(message);
 
     final response = await ServiceManager().chat(
       AppRuntimeContext().data.user.name,
@@ -52,9 +51,9 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     );
 
     if (response != null) {
-      ChatManager().addAIMessage('AI 回复: ${response.message}');
+      AppRuntimeContext().chat.addAIMessage('AI 回复: ${response.message}');
     } else {
-      ChatManager().addAIMessage('错误: 无法获取回复');
+      AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复');
     }
 
     widget.textController.clear();
@@ -81,7 +80,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
         children: [
           Expanded(
             child: ValueListenableBuilder<List<BaseMessage>>(
-              valueListenable: ChatManager().getChatMessageNotifier(),
+              valueListenable: AppRuntimeContext().chat.messages,
               builder: (context, chatMessagesValue, _) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();

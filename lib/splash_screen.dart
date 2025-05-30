@@ -68,11 +68,6 @@ class _SplashScreenState extends State<SplashScreen> {
       await Future.delayed(Duration(milliseconds: remainingTime));
     }
 
-    //if (!success) {
-
-    //ChatManager().fillTestData();
-    //}
-
     // 跳转到下一个场景
     if (mounted) {
       Navigator.of(context).pushReplacement(
