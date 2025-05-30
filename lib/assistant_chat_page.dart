@@ -46,15 +46,15 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
 
     ChatManager().addUserMessage(message);
 
-    final result = await ServiceManager().chatAction(
+    final response = await ServiceManager().chat(
       DataManager().user.name,
       message,
     );
 
-    if (result.success) {
-      ChatManager().addAIMessage('AI 回复: ${result.message}');
+    if (response != null) {
+      ChatManager().addAIMessage('AI 回复: ${response.message}');
     } else {
-      ChatManager().addAIMessage('错误: ${result.message}');
+      ChatManager().addAIMessage('错误: 无法获取回复');
     }
 
     widget.textController.clear();
