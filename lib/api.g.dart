@@ -40,27 +40,23 @@ Map<String, dynamic> _$$TokenImplToJson(_$TokenImpl instance) =>
 _$ChatActionRequestImpl _$$ChatActionRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$ChatActionRequestImpl(
-      user_name: json['user_name'] as String,
       content: json['content'] as String,
     );
 
 Map<String, dynamic> _$$ChatActionRequestImplToJson(
         _$ChatActionRequestImpl instance) =>
     <String, dynamic>{
-      'user_name': instance.user_name,
       'content': instance.content,
     };
 
 _$ChatActionResponseImpl _$$ChatActionResponseImplFromJson(
         Map<String, dynamic> json) =>
     _$ChatActionResponseImpl(
-      error: (json['error'] as num).toInt(),
       message: json['message'] as String,
     );
 
 Map<String, dynamic> _$$ChatActionResponseImplToJson(
         _$ChatActionResponseImpl instance) =>
     <String, dynamic>{
-      'error': instance.error,
       'message': instance.message,
     };
