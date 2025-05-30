@@ -22,9 +22,7 @@ class TestChatApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final chatMessages = ChatManager().getChatMessageNotifier();
     final textController = TextEditingController();
-
     return MaterialApp(
       title: 'Test Chat App',
       theme: ThemeData(
