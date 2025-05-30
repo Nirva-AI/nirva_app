@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class TodoListView extends StatefulWidget {
   const TodoListView({super.key});
@@ -51,7 +51,9 @@ class _TodoListViewState extends State<TodoListView> {
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
                   children:
-                      DataManager().groupedTasks.entries.map((entry) {
+                      AppRuntimeContext().data.groupedTasks.entries.map((
+                        entry,
+                      ) {
                         final category = entry.key;
                         final tasks = entry.value;
 
@@ -70,7 +72,8 @@ class _TodoListViewState extends State<TodoListView> {
                               return InkWell(
                                 onTap: () {
                                   setState(() {
-                                    DataManager().toggleTaskCompletion(task);
+                                    AppRuntimeContext().data
+                                        .toggleTaskCompletion(task);
                                   });
                                   debugPrint(
                                     'Task tapped: ${task.description}',

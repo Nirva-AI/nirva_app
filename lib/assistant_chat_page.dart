@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/message.dart';
 import 'package:nirva_app/service_manager.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class AssistantChatPage extends StatefulWidget {
   final TextEditingController textController;
@@ -47,7 +47,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     ChatManager().addUserMessage(message);
 
     final response = await ServiceManager().chat(
-      DataManager().user.name,
+      AppRuntimeContext().data.user.name,
       message,
     );
 

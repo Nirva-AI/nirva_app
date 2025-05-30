@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/social_map_page.dart'; // 添加导入
 
@@ -36,7 +36,7 @@ class _SocialMapNormalCardState extends State<SocialMapNormalCard> {
   @override
   Widget build(BuildContext context) {
     final List<SocialEntity> socialEntities =
-        DataManager().currentJournal.socialMap.socialEntities;
+        AppRuntimeContext().data.currentJournal.socialMap.socialEntities;
 
     if (selectedEntityIndex >= 0 &&
         selectedEntityIndex < socialEntities.length) {

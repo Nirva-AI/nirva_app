@@ -1,7 +1,7 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'dart:math';
 
 // 管理全局数据的类
@@ -9,40 +9,40 @@ class TestData {
   static final random = Random();
   //
   static void initializeTestData() {
-    DataManager.clear();
+    AppRuntimeContext.clear();
     // 添加用户信息, 目前必须和服务器对上，否则无法登录。
-    DataManager().user = User(name: 'wei', password: 'secret');
+    AppRuntimeContext().data.user = User(name: 'wei', password: 'secret');
 
     // 添加todo数据
-    DataManager().tasks = TestData.createTestTasks();
+    AppRuntimeContext().data.tasks = TestData.createTestTasks();
 
     // 添加日记数据
-    DataManager().journals.add(
+    AppRuntimeContext().data.journals.add(
       TestData.createTestJournal(DateTime(2025, 5, 22)),
     );
 
     // 添加高亮数据
-    DataManager().weeklyArchivedHighlights =
+    AppRuntimeContext().data.weeklyArchivedHighlights =
         TestData.createTestWeeklyArchivedHighlights();
 
-    DataManager().monthlyArchivedHighlights =
+    AppRuntimeContext().data.monthlyArchivedHighlights =
         TestData.createTestMonthlyArchivedHighlights();
 
     // 添加日记的最爱数据
-    //initializeTestFavorites(DataManager().currentJournal);
+    //initializeTestFavorites(AppRuntimeContext().data.currentJournal);
 
     // 添加日记的笔记数据
-    initializeTestMyNotes(DataManager().currentJournal);
+    initializeTestMyNotes(AppRuntimeContext().data.currentJournal);
 
     //
     initializeTestSocalMap();
 
     //
-    DataManager().dashboards.add(
+    AppRuntimeContext().data.dashboards.add(
       TestData.createTestDashboard(
-        DataManager().currentJournal.dateTime,
-        DataManager().currentJournal.moodTrackings,
-        DataManager().currentJournal.awakeTimeAllocations,
+        AppRuntimeContext().data.currentJournal.dateTime,
+        AppRuntimeContext().data.currentJournal.moodTrackings,
+        AppRuntimeContext().data.currentJournal.awakeTimeAllocations,
       ),
     );
   }
@@ -58,7 +58,9 @@ class TestData {
       DiaryEntry randomDiaryEntry =
           diaryEntries[random.nextInt(diaryEntries.length)];
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
-      DataManager().diaryFavoritesNotifier.value = [randomDiaryEntry.id];
+      AppRuntimeContext().data.diaryFavoritesNotifier.value = [
+        randomDiaryEntry.id,
+      ];
       debugPrint('已添加到最爱: ${randomDiaryEntry.id}');
     } else {
       debugPrint('diaryEntries 列表为空');
@@ -76,7 +78,7 @@ class TestData {
       DiaryEntry randomDiaryEntry =
           diaryEntries[random.nextInt(diaryEntries.length)];
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
-      DataManager().diaryNotesNotifier.value = [
+      AppRuntimeContext().data.diaryNotesNotifier.value = [
         DiaryEntryNote(
           id: randomDiaryEntry.id,
           content:
@@ -100,7 +102,7 @@ class TestData {
   static void initializeTestSocalMap() {
     Map<String, SocialEntity> globalSocialMap = {};
 
-    for (var journal in DataManager().journals) {
+    for (var journal in AppRuntimeContext().data.journals) {
       // 设置测试数据
       for (var socialEntity in journal.socialMap.socialEntities) {
         debugPrint('社交实体: ${socialEntity.name}');
@@ -123,7 +125,7 @@ class TestData {
 
     // 把 globalSocialMap 的value合成一个list
     List<SocialEntity> socialEntities = globalSocialMap.values.toList();
-    DataManager().globalSocialMap = SocialMap(
+    AppRuntimeContext().data.globalSocialMap = SocialMap(
       id: "",
       socialEntities: socialEntities,
     );

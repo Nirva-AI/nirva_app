@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/data.dart';
 
@@ -78,7 +78,7 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().currentDashboard.moodTracking.insights,
+              AppRuntimeContext().data.currentDashboard.moodTracking.insights,
             ),
           ],
         ),
@@ -152,7 +152,12 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
         spacing: 16,
         runSpacing: 8,
         children:
-            DataManager().currentDashboard.moodTracking.moodTrackingMap.values
+            AppRuntimeContext()
+                .data
+                .currentDashboard
+                .moodTracking
+                .moodTrackingMap
+                .values
                 .map((data) {
                   return Row(
                     mainAxisSize: MainAxisSize.min, // 设置为最小宽度
@@ -247,7 +252,7 @@ class MoodTrackingChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.weekday,
+                  AppRuntimeContext().data.currentDashboard.dateTime.weekday,
                   dayCount,
                 ),
                 style: const TextStyle(
@@ -287,7 +292,7 @@ class MoodTrackingChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.month,
+                  AppRuntimeContext().data.currentDashboard.dateTime.month,
                   monthCount,
                 ),
                 style: const TextStyle(
@@ -325,7 +330,7 @@ class MoodTrackingChart extends StatelessWidget {
     List<LineChartBarData> ret = [];
 
     final moodTrackingMap =
-        DataManager().currentDashboard.moodTracking.moodTrackingMap;
+        AppRuntimeContext().data.currentDashboard.moodTracking.moodTrackingMap;
 
     switch (type) {
       case MoodTrackingChartTab.day:

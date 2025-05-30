@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/archived_highlights_page.dart'; // 导入新页面
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class TodayHighlightsCard extends StatelessWidget {
   const TodayHighlightsCard({super.key});
@@ -41,7 +41,7 @@ class TodayHighlightsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final highlights = DataManager().currentJournal.highlights;
+    final highlights = AppRuntimeContext().data.currentJournal.highlights;
 
     return Card(
       elevation: 2,

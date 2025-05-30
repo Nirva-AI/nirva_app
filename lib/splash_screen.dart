@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/home_page.dart';
 import 'package:nirva_app/service_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -36,8 +36,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
       // 如果配置成功，调用 login 方法
       final bool loginSuccess = await _serviceManager.login(
-        DataManager().user.name,
-        DataManager().user.password,
+        AppRuntimeContext().data.user.name,
+        AppRuntimeContext().data.user.password,
       );
       debugPrint('Login: $loginSuccess');
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/date_and_summary.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 
 class ReflectionCard extends StatefulWidget {
@@ -206,7 +206,8 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildPersonalReflections() {
-    final personalReflections = DataManager().currentJournal.selfReflections;
+    final personalReflections =
+        AppRuntimeContext().data.currentJournal.selfReflections;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,7 +228,8 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildDetailedInsights() {
-    final detailedInsights = DataManager().currentJournal.detailedInsights;
+    final detailedInsights =
+        AppRuntimeContext().data.currentJournal.detailedInsights;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,7 +250,7 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildGoals() {
-    final goals = DataManager().currentJournal.goals;
+    final goals = AppRuntimeContext().data.currentJournal.goals;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

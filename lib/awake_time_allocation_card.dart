@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/awake_time_allocation_details_page.dart';
 
 class AwakeTimeAllocationCard extends StatelessWidget {
@@ -20,7 +20,7 @@ class AwakeTimeAllocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final awakeTimeAllocations =
-        DataManager().currentJournal.awakeTimeAllocations;
+        AppRuntimeContext().data.currentJournal.awakeTimeAllocations;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

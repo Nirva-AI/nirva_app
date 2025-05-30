@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/utils.dart';
 
 enum MoodScoreChartTab { day, week, month }
@@ -59,7 +59,11 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
                       child: Text(
                         _getScore(
                           _selectedType,
-                          DataManager().currentDashboard.moodScore.scores,
+                          AppRuntimeContext()
+                              .data
+                              .currentDashboard
+                              .moodScore
+                              .scores,
                         ).toInt().toString(),
                         style: TextStyle(
                           fontSize: 48,
@@ -85,7 +89,7 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
 
             // Insights 卡片
             _buildInsightsCard(
-              DataManager().currentDashboard.moodScore.insights,
+              AppRuntimeContext().data.currentDashboard.moodScore.insights,
             ), // 传入数据
           ],
         ),
@@ -251,8 +255,13 @@ class MoodScoreChart extends StatelessWidget {
               child: Text(
                 Utils.formatDayTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.weekday,
-                  DataManager().currentDashboard.moodScore.day.length,
+                  AppRuntimeContext().data.currentDashboard.dateTime.weekday,
+                  AppRuntimeContext()
+                      .data
+                      .currentDashboard
+                      .moodScore
+                      .day
+                      .length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -292,8 +301,13 @@ class MoodScoreChart extends StatelessWidget {
               child: Text(
                 Utils.formatMonthTitleForDashboardChart(
                   value.toInt(),
-                  DataManager().currentDashboard.dateTime.month,
-                  DataManager().currentDashboard.moodScore.month.length,
+                  AppRuntimeContext().data.currentDashboard.dateTime.month,
+                  AppRuntimeContext()
+                      .data
+                      .currentDashboard
+                      .moodScore
+                      .month
+                      .length,
                 ),
                 style: const TextStyle(
                   fontSize: 12,
@@ -313,7 +327,7 @@ class MoodScoreChart extends StatelessWidget {
         return [
           LineChartBarData(
             spots:
-                DataManager().currentDashboard.moodScore.day
+                AppRuntimeContext().data.currentDashboard.moodScore.day
                     .asMap()
                     .entries
                     .map(
@@ -333,7 +347,7 @@ class MoodScoreChart extends StatelessWidget {
         return [
           LineChartBarData(
             spots:
-                DataManager().currentDashboard.moodScore.week
+                AppRuntimeContext().data.currentDashboard.moodScore.week
                     .asMap()
                     .entries
                     .map(
@@ -353,7 +367,7 @@ class MoodScoreChart extends StatelessWidget {
         return [
           LineChartBarData(
             spots:
-                DataManager().currentDashboard.moodScore.month
+                AppRuntimeContext().data.currentDashboard.moodScore.month
                     .asMap()
                     .entries
                     .map(

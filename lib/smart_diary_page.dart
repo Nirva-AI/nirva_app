@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/diary_entry_card.dart';
-import 'package:nirva_app/data_manager.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/quote_carousel.dart';
 import 'package:nirva_app/week_calendar_widget.dart';
 import 'package:nirva_app/month_calendar_page.dart';
@@ -22,8 +22,8 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   void initState() {
     super.initState();
     var nowDate = DateTime.now();
-    _focusedDay = nowDate; //DataManager().currentJournal.dateTime;
-    _selectedDay = nowDate; //DataManager().currentJournal.dateTime;
+    _focusedDay = nowDate; //AppRuntimeContext().data.currentJournal.dateTime;
+    _selectedDay = nowDate; //AppRuntimeContext().data.currentJournal.dateTime;
   }
 
   @override
@@ -35,7 +35,9 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
           // 顶部引言卡片轮播
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: QuoteCarousel(quotes: DataManager().currentJournal.quotes),
+            child: QuoteCarousel(
+              quotes: AppRuntimeContext().data.currentJournal.quotes,
+            ),
           ),
 
           // 添加日期标题栏组件
@@ -52,7 +54,9 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
           ),
 
           // 动态展示日记条目
-          _buildDiaryEntriesList(DataManager().currentJournal.diaryEntries),
+          _buildDiaryEntriesList(
+            AppRuntimeContext().data.currentJournal.diaryEntries,
+          ),
         ],
       ),
     );
@@ -146,7 +150,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     List<DiaryEntry> finalDiaryEntries = [];
     if (_isFavorite) {
       for (var entry in diaryEntriesRange) {
-        if (DataManager().isFavoriteDiary(entry)) {
+        if (AppRuntimeContext().data.isFavoriteDiary(entry)) {
           finalDiaryEntries.add(entry);
         }
       }
