@@ -36,10 +36,8 @@ class Token with _$Token {
 //聊天请求
 @freezed
 class ChatActionRequest with _$ChatActionRequest {
-  const factory ChatActionRequest({
-    required String user_name,
-    required String content,
-  }) = _ChatActionRequest;
+  const factory ChatActionRequest({required String content}) =
+      _ChatActionRequest;
 
   factory ChatActionRequest.fromJson(Map<String, dynamic> json) =>
       _$ChatActionRequestFromJson(json);
@@ -49,10 +47,8 @@ class ChatActionRequest with _$ChatActionRequest {
 
 @freezed
 class ChatActionResponse with _$ChatActionResponse {
-  const factory ChatActionResponse({
-    required int error,
-    required String message,
-  }) = _ChatActionResponse;
+  const factory ChatActionResponse({required String message}) =
+      _ChatActionResponse;
 
   factory ChatActionResponse.fromJson(Map<String, dynamic> json) =>
       _$ChatActionResponseFromJson(json);

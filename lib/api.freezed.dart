@@ -437,7 +437,7 @@ ChatActionRequest _$ChatActionRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ChatActionRequest {
-  String get user_name => throw _privateConstructorUsedError;
+//required String user_name,
   String get content => throw _privateConstructorUsedError;
 
   /// Serializes this ChatActionRequest to a JSON map.
@@ -456,7 +456,7 @@ abstract class $ChatActionRequestCopyWith<$Res> {
           ChatActionRequest value, $Res Function(ChatActionRequest) then) =
       _$ChatActionRequestCopyWithImpl<$Res, ChatActionRequest>;
   @useResult
-  $Res call({String user_name, String content});
+  $Res call({String content});
 }
 
 /// @nodoc
@@ -474,14 +474,9 @@ class _$ChatActionRequestCopyWithImpl<$Res, $Val extends ChatActionRequest>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? user_name = null,
     Object? content = null,
   }) {
     return _then(_value.copyWith(
-      user_name: null == user_name
-          ? _value.user_name
-          : user_name // ignore: cast_nullable_to_non_nullable
-              as String,
       content: null == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
@@ -498,7 +493,7 @@ abstract class _$$ChatActionRequestImplCopyWith<$Res>
       __$$ChatActionRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String user_name, String content});
+  $Res call({String content});
 }
 
 /// @nodoc
@@ -514,14 +509,9 @@ class __$$ChatActionRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? user_name = null,
     Object? content = null,
   }) {
     return _then(_$ChatActionRequestImpl(
-      user_name: null == user_name
-          ? _value.user_name
-          : user_name // ignore: cast_nullable_to_non_nullable
-              as String,
       content: null == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
@@ -533,20 +523,18 @@ class __$$ChatActionRequestImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ChatActionRequestImpl implements _ChatActionRequest {
-  const _$ChatActionRequestImpl(
-      {required this.user_name, required this.content});
+  const _$ChatActionRequestImpl({required this.content});
 
   factory _$ChatActionRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChatActionRequestImplFromJson(json);
 
-  @override
-  final String user_name;
+//required String user_name,
   @override
   final String content;
 
   @override
   String toString() {
-    return 'ChatActionRequest(user_name: $user_name, content: $content)';
+    return 'ChatActionRequest(content: $content)';
   }
 
   @override
@@ -554,14 +542,12 @@ class _$ChatActionRequestImpl implements _ChatActionRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatActionRequestImpl &&
-            (identical(other.user_name, user_name) ||
-                other.user_name == user_name) &&
             (identical(other.content, content) || other.content == content));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, user_name, content);
+  int get hashCode => Object.hash(runtimeType, content);
 
   /// Create a copy of ChatActionRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -581,15 +567,13 @@ class _$ChatActionRequestImpl implements _ChatActionRequest {
 }
 
 abstract class _ChatActionRequest implements ChatActionRequest {
-  const factory _ChatActionRequest(
-      {required final String user_name,
-      required final String content}) = _$ChatActionRequestImpl;
+  const factory _ChatActionRequest({required final String content}) =
+      _$ChatActionRequestImpl;
 
   factory _ChatActionRequest.fromJson(Map<String, dynamic> json) =
       _$ChatActionRequestImpl.fromJson;
 
-  @override
-  String get user_name;
+//required String user_name,
   @override
   String get content;
 
@@ -607,7 +591,7 @@ ChatActionResponse _$ChatActionResponseFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ChatActionResponse {
-  int get error => throw _privateConstructorUsedError;
+//required int error,
   String get message => throw _privateConstructorUsedError;
 
   /// Serializes this ChatActionResponse to a JSON map.
@@ -626,7 +610,7 @@ abstract class $ChatActionResponseCopyWith<$Res> {
           ChatActionResponse value, $Res Function(ChatActionResponse) then) =
       _$ChatActionResponseCopyWithImpl<$Res, ChatActionResponse>;
   @useResult
-  $Res call({int error, String message});
+  $Res call({String message});
 }
 
 /// @nodoc
@@ -644,14 +628,9 @@ class _$ChatActionResponseCopyWithImpl<$Res, $Val extends ChatActionResponse>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = null,
     Object? message = null,
   }) {
     return _then(_value.copyWith(
-      error: null == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as int,
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -668,7 +647,7 @@ abstract class _$$ChatActionResponseImplCopyWith<$Res>
       __$$ChatActionResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int error, String message});
+  $Res call({String message});
 }
 
 /// @nodoc
@@ -684,14 +663,9 @@ class __$$ChatActionResponseImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = null,
     Object? message = null,
   }) {
     return _then(_$ChatActionResponseImpl(
-      error: null == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as int,
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -703,19 +677,18 @@ class __$$ChatActionResponseImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ChatActionResponseImpl implements _ChatActionResponse {
-  const _$ChatActionResponseImpl({required this.error, required this.message});
+  const _$ChatActionResponseImpl({required this.message});
 
   factory _$ChatActionResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChatActionResponseImplFromJson(json);
 
-  @override
-  final int error;
+//required int error,
   @override
   final String message;
 
   @override
   String toString() {
-    return 'ChatActionResponse(error: $error, message: $message)';
+    return 'ChatActionResponse(message: $message)';
   }
 
   @override
@@ -723,13 +696,12 @@ class _$ChatActionResponseImpl implements _ChatActionResponse {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatActionResponseImpl &&
-            (identical(other.error, error) || other.error == error) &&
             (identical(other.message, message) || other.message == message));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, error, message);
+  int get hashCode => Object.hash(runtimeType, message);
 
   /// Create a copy of ChatActionResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -749,15 +721,13 @@ class _$ChatActionResponseImpl implements _ChatActionResponse {
 }
 
 abstract class _ChatActionResponse implements ChatActionResponse {
-  const factory _ChatActionResponse(
-      {required final int error,
-      required final String message}) = _$ChatActionResponseImpl;
+  const factory _ChatActionResponse({required final String message}) =
+      _$ChatActionResponseImpl;
 
   factory _ChatActionResponse.fromJson(Map<String, dynamic> json) =
       _$ChatActionResponseImpl.fromJson;
 
-  @override
-  int get error;
+//required int error,
   @override
   String get message;
 

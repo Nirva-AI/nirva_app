@@ -24,6 +24,7 @@ class ServiceManager {
   }
 
   factory ServiceManager() => instance;
+  ServiceManager._internal();
 
   // Dio 实例和配置（从DioService合并过来）
   final Dio _dio = Dio(
@@ -43,8 +44,6 @@ class ServiceManager {
       ),
     ]);
 
-  ServiceManager._internal();
-
   URLConfigurationResponse _urlConfig = URLConfigurationResponse(
     api_version: '',
     endpoints: {},
@@ -63,29 +62,41 @@ class ServiceManager {
   }
 
   // 从DioService合并过来的通用POST方法
-  Future<Response<T>> safePost<T>(
-    String path, {
+  Future<Response<T>?> safePost<T>(
+    String path,
+    Token token, {
     Object? data,
     Map<String, dynamic>? query,
   }) async {
-    try {
-      return await _dio.post<T>(path, data: data, queryParameters: query);
-    } on DioException catch (e) {
-      Logger().e('POST Error: ${e.type}');
-      rethrow;
-    }
-  }
+    Logger().d('POST Request - URL: $path, Data: $data');
 
-  // 从DioService合并过来的通用GET方法
-  Future<Response<T>> safeGet<T>(
-    String path, {
-    Map<String, dynamic>? query,
-  }) async {
     try {
-      return await _dio.get<T>(path, queryParameters: query);
+      final response = await _dio.post<T>(
+        path,
+        data: data,
+        queryParameters: query,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${token.access_token}',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        Logger().d('POST Response: ${response.data}');
+        return response;
+      } else {
+        Logger().e('Error: ${response.statusCode}, ${response.statusMessage}');
+        return null;
+      }
     } on DioException catch (e) {
-      Logger().e('GET Error: ${e.type}');
-      rethrow;
+      Logger().e('POST Error: ${e.type}, ${e.message}');
+      debugPrint('Response data: ${e.response?.data}');
+      return null;
+    } catch (e) {
+      Logger().e('Unknown error during POST request: $e');
+      return null;
     }
   }
 
@@ -175,26 +186,23 @@ class ServiceManager {
   // 聊天请求
   Future<ChatActionResult> chatAction(String userName, String content) async {
     try {
-      final response = await safePost(
+      // 更改泛型参数为 Map<String, dynamic>
+      final response = await safePost<Map<String, dynamic>>(
         chatActionUrl,
-        data: ChatActionRequest(user_name: userName, content: content).toJson(),
+        _token,
+        data: ChatActionRequest(content: content).toJson(),
       );
 
-      final chatActionResponse = ChatActionResponse.fromJson(response.data!);
-
-      if (chatActionResponse.error == 0) {
-        Logger().d('Chat action successful: ${chatActionResponse.message}');
-        return ChatActionResult(
-          success: true,
-          message: chatActionResponse.message,
-        );
-      } else {
-        Logger().e('Chat action failed: ${chatActionResponse.message}');
-        return ChatActionResult(
-          success: false,
-          message: chatActionResponse.message,
-        );
+      if (response == null || response.data == null) {
+        Logger().e('Chat action failed: No response data');
+        return ChatActionResult(success: false, message: '聊天请求失败，请稍后重试。');
       }
+
+      // 手动将 Map 转换为 ChatActionResponse 对象
+      final chatResponse = ChatActionResponse.fromJson(response.data!);
+
+      Logger().d('Chat action response: ${jsonEncode(chatResponse.toJson())}');
+      return ChatActionResult(success: true, message: chatResponse.message);
     } on DioException catch (e) {
       debugPrint('Caught a DioException during chat action: ${e.message}');
       return ChatActionResult(success: false, message: '网络错误，请稍后重试。');
