@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:nirva_app/api.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
+import 'package:nirva_app/hive_object.dart';
+import 'package:nirva_app/hive_manager.dart';
 
 class ChatActionResult {
   final bool success;
@@ -51,7 +53,7 @@ class ServiceManager {
     notice: '',
   );
 
-  Token _token = Token(access_token: '', token_type: '', refresh_token: '');
+  //Token _token = Token(access_token: '', token_type: '', refresh_token: '');
 
   String get loginUrl {
     return _urlConfig.endpoints['login'] ?? '';
@@ -59,6 +61,12 @@ class ServiceManager {
 
   String get chatActionUrl {
     return _urlConfig.endpoints['chat'] ?? '';
+  }
+
+  Token get _token {
+    // 从Hive中获取Token
+    return HiveManager().getToken() ??
+        Token(access_token: '', token_type: '', refresh_token: '');
   }
 
   // 从DioService合并过来的通用POST方法
@@ -165,9 +173,13 @@ class ServiceManager {
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        _token = Token.fromJson(response.data!);
+        final token = Token(
+          access_token: response.data!['access_token'] ?? '',
+          token_type: response.data!['token_type'] ?? '',
+          refresh_token: response.data!['refresh_token'] ?? '', // 新增字段
+        );
+        HiveManager().saveToken(token); // 保存到Hive中
         Logger().i('登录成功！令牌已获取');
-        Logger().d('Login successful: Token=${jsonEncode(_token.toJson())}');
         return true;
       } else {
         Logger().e('登录失败，请检查用户名和密码');
