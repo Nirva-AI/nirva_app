@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/message.dart';
-import 'package:nirva_app/apis.dart';
+import 'package:nirva_app/api.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 
 class AssistantChatPage extends StatefulWidget {
