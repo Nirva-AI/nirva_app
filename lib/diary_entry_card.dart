@@ -19,7 +19,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
   @override
   void initState() {
     super.initState();
-    favoriteNotifier = AppRuntimeContext().data.diaryFavoritesNotifier;
+    favoriteNotifier = AppRuntimeContext().data.diaryFavorites;
     favoriteNotifier.addListener(_onFavoriteChanged);
   }
 
@@ -46,7 +46,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
   }
 
   bool get isFavoriteDiaryEntry {
-    return AppRuntimeContext().data.isFavoriteDiary(widget.diaryData);
+    return AppRuntimeContext().data.checkIfDiaryIsFavorite(widget.diaryData);
   }
 
   @override
@@ -95,7 +95,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
                             isFavoriteDiaryEntry ? Colors.amber : Colors.grey,
                       ),
                       onPressed: () {
-                        AppRuntimeContext().data.toggleFavoriteDiary(
+                        AppRuntimeContext().data.switchDiaryFavoriteStatus(
                           widget.diaryData,
                         );
                       },

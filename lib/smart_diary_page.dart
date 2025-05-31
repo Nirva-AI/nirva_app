@@ -150,7 +150,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     List<DiaryEntry> finalDiaryEntries = [];
     if (_isFavorite) {
       for (var entry in diaryEntriesRange) {
-        if (AppRuntimeContext().data.isFavoriteDiary(entry)) {
+        if (AppRuntimeContext().data.checkIfDiaryIsFavorite(entry)) {
           finalDiaryEntries.add(entry);
         }
       }

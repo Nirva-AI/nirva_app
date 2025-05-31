@@ -58,9 +58,7 @@ class TestData {
       DiaryEntry randomDiaryEntry =
           diaryEntries[random.nextInt(diaryEntries.length)];
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
-      AppRuntimeContext().data.diaryFavoritesNotifier.value = [
-        randomDiaryEntry.id,
-      ];
+      AppRuntimeContext().data.diaryFavorites.value = [randomDiaryEntry.id];
       debugPrint('已添加到最爱: ${randomDiaryEntry.id}');
     } else {
       debugPrint('diaryEntries 列表为空');
@@ -78,7 +76,7 @@ class TestData {
       DiaryEntry randomDiaryEntry =
           diaryEntries[random.nextInt(diaryEntries.length)];
       debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
-      AppRuntimeContext().data.diaryNotesNotifier.value = [
+      AppRuntimeContext().data.diaryNotes.value = [
         DiaryEntryNote(
           id: randomDiaryEntry.id,
           content:

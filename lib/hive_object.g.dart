@@ -40,17 +40,17 @@ class DiaryFavoritesAdapter extends TypeAdapter<DiaryFavorites> {
           typeId == other.typeId;
 }
 
-class TokenAdapter extends TypeAdapter<Token> {
+class UserTokenAdapter extends TypeAdapter<UserToken> {
   @override
   final int typeId = 2;
 
   @override
-  Token read(BinaryReader reader) {
+  UserToken read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Token(
+    return UserToken(
       access_token: fields[0] as String,
       token_type: fields[1] as String,
       refresh_token: fields[2] as String,
@@ -58,7 +58,7 @@ class TokenAdapter extends TypeAdapter<Token> {
   }
 
   @override
-  void write(BinaryWriter writer, Token obj) {
+  void write(BinaryWriter writer, UserToken obj) {
     writer
       ..writeByte(3)
       ..writeByte(0)
@@ -75,7 +75,7 @@ class TokenAdapter extends TypeAdapter<Token> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TokenAdapter &&
+      other is UserTokenAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/home_page.dart';
-//import 'package:nirva_app/service_provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 //import 'package:nirva_app/app_runtime_context.dart';
+import 'package:logger/logger.dart';
+import 'package:nirva_app/api.dart'; // 确保导入了 API 类
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,8 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  //final ServiceProvider _serviceManager = ServiceProvider();
-
   @override
   void initState() {
     super.initState();
@@ -27,37 +26,23 @@ class _SplashScreenState extends State<SplashScreen> {
     //检查网络状态，临时先这么写。
     await checkNetworkStatus();
 
-    // 调用 configureApiEndpoint 并等待返回
-    // final bool apiConfigurationSuccess = await _serviceManager.getUrlConfig();
+    try {
+      final urlConfig = await APIs.getUrlConfig();
+      if (urlConfig == null) {
+        Logger().e('获取 URL 配置失败');
+        return;
+      }
 
-    // //
-    // if (apiConfigurationSuccess) {
-    //   debugPrint('API Endpoint Configuration: $apiConfigurationSuccess');
+      Logger().i('API 初始化成功');
 
-    //   // 如果配置成功，调用 login 方法
-    //   final bool loginSuccess = await _serviceManager.login(
-    //     AppRuntimeContext().data.user.name,
-    //     AppRuntimeContext().data.user.password,
-    //   );
-    //   debugPrint('Login: $loginSuccess');
-
-    //   if (loginSuccess) {
-    //     // 登录成功，执行其他初始化逻辑
-    //     debugPrint('Login successful, proceeding with initialization...');
-    //     // 这里可以添加其他初始化逻辑
-    //     final logoutSuccess = await _serviceManager.logout();
-    //     if (logoutSuccess) {
-    //       debugPrint('Logout successful, proceeding with next steps...');
-    //     } else {
-    //       debugPrint('Logout failed, handling failure...');
-    //       // 这里可以添加登出失败的处理逻辑，例如显示错误消息或重试
-    //     }
-    //   } else {
-    //     // 登录失败，处理登录失败的情况
-    //     debugPrint('Login failed, handling failure...');
-    //     // 这里可以添加登录失败的处理逻辑，例如显示错误消息或重试
-    //   }
-    // }
+      final token = await APIs.login();
+      if (token == null) {
+        Logger().e('登录失败，未获取到 token');
+        return;
+      }
+    } catch (e) {
+      Logger().e('登录流程出现错误: $e');
+    }
 
     // 计算剩余时间
     final int elapsed = stopwatch.elapsedMilliseconds;
