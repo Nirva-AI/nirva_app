@@ -72,8 +72,9 @@ class _TodoListViewState extends State<TodoListView> {
                               return InkWell(
                                 onTap: () {
                                   setState(() {
-                                    AppRuntimeContext().data
-                                        .toggleTaskCompletion(task);
+                                    AppRuntimeContext().data.switchTaskStatus(
+                                      task,
+                                    );
                                   });
                                   debugPrint(
                                     'Task tapped: ${task.description}',

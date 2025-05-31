@@ -11,22 +11,9 @@ class DiaryFavorites extends HiveObject {
   DiaryFavorites({required this.favoriteIds});
 }
 
-// @freezed
-// class Token with _$Token {
-//   const factory Token({
-//     required String access_token,
-//     required String token_type,
-//     required String refresh_token, // 新增字段
-//   }) = _Token;
-
-//   factory Token.fromJson(Map<String, dynamic> json) => _$TokenFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _Token).toJson();
-// }
-
-// 本机存储Token
+// 本机存储UserToken
 @HiveType(typeId: 2)
-class Token extends HiveObject {
+class UserToken extends HiveObject {
   @HiveField(0)
   String access_token;
 
@@ -36,7 +23,7 @@ class Token extends HiveObject {
   @HiveField(2)
   String refresh_token; // 新增字段
 
-  Token({
+  UserToken({
     required this.access_token,
     required this.token_type,
     required this.refresh_token,

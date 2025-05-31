@@ -25,13 +25,13 @@ class TestChatApp extends StatelessWidget {
         return false;
       }
 
-      // final refreshToken = await APIs.refreshToken();
-      // if (!refreshToken) {
-      //   Logger().e('刷新 token 失败');
-      //   return false;
-      // }
+      final refreshToken = await APIs.refreshToken();
+      if (!refreshToken) {
+        Logger().e('刷新 token 失败');
+        return false;
+      }
 
-      // Logger().i('刷新 token 成功');
+      Logger().i('刷新 token 成功');
 
       // final logout = await APIs.logout();
       // if (!logout) {

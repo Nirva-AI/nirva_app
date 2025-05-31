@@ -51,7 +51,7 @@ class APIs {
   }
 
   // 登录方法
-  static Future<Token?> login() async {
+  static Future<UserToken?> login() async {
     final appRuntimeContext = AppRuntimeContext();
     try {
       // 直接将_performLogin的逻辑合并到login方法中
@@ -68,12 +68,12 @@ class APIs {
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        final token = Token(
+        final token = UserToken(
           access_token: response.data!['access_token'] ?? '',
           token_type: response.data!['token_type'] ?? '',
           refresh_token: response.data!['refresh_token'] ?? '', // 新增字段
         );
-        appRuntimeContext.storage.saveToken(token); // 保存到Hive中
+        appRuntimeContext.storage.saveUserToken(token); // 保存到Hive中
         Logger().i('登录成功！令牌已获取');
         return token;
       } else {
@@ -100,13 +100,13 @@ class APIs {
           headers: {
             'Content-Type': 'application/json',
             'Authorization':
-                'Bearer ${appRuntimeContext.storage.getToken().access_token}',
+                'Bearer ${appRuntimeContext.storage.getUserToken().access_token}',
           },
         ),
       );
 
       if (response.statusCode == 200) {
-        await appRuntimeContext.storage.deleteToken(); // 清除本地令牌
+        await appRuntimeContext.storage.deleteUserToken(); // 清除本地令牌
         Logger().i('登出成功！令牌已清除');
         return true;
       } else {
@@ -128,7 +128,7 @@ class APIs {
     final appRuntimeContext = AppRuntimeContext();
     try {
       // 检查是否有可用的刷新令牌
-      if (appRuntimeContext.storage.getToken().refresh_token.isEmpty) {
+      if (appRuntimeContext.storage.getUserToken().refresh_token.isEmpty) {
         Logger().e("没有可用的刷新令牌，无法刷新访问令牌。");
         return false;
       }
@@ -136,25 +136,27 @@ class APIs {
       // 发送刷新令牌请求
       final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
         appRuntimeContext.urlConfig.refreshUrl,
-        data: {
-          "refresh_token": appRuntimeContext.storage.getToken().refresh_token,
-        },
-        options: Options(headers: {'Content-Type': 'application/json'}),
+        // 使用表单数据格式发送
+        data: FormData.fromMap({
+          'refresh_token':
+              appRuntimeContext.storage.getUserToken().refresh_token,
+        }),
+        options: Options(contentType: Headers.formUrlEncodedContentType),
       );
 
       if (response.statusCode == 200 && response.data != null) {
         // 创建新的 Token 实例并保存到 Hive
-        final newToken = Token(
+        final newToken = UserToken(
           access_token: response.data!["access_token"],
           token_type:
               appRuntimeContext.storage
-                  .getToken()
+                  .getUserToken()
                   .token_type, // 保持原有的 token_type
           refresh_token: response.data!["refresh_token"],
         );
 
         // 保存更新后的令牌
-        await appRuntimeContext.storage.saveToken(newToken);
+        await appRuntimeContext.storage.saveUserToken(newToken);
         Logger().i("令牌刷新成功！");
         return true;
       } else {
@@ -190,7 +192,7 @@ class APIs {
           headers: {
             'Content-Type': 'application/json',
             'Authorization':
-                'Bearer ${appRuntimeContext.storage.getToken().access_token}',
+                'Bearer ${appRuntimeContext.storage.getUserToken().access_token}',
           },
         ),
       );
@@ -205,7 +207,7 @@ class APIs {
     } on DioException catch (e) {
       // 处理401错误（令牌过期）
       if (e.response?.statusCode == 401 &&
-          appRuntimeContext.storage.getToken().refresh_token.isNotEmpty) {
+          appRuntimeContext.storage.getUserToken().refresh_token.isNotEmpty) {
         Logger().i("令牌已过期，尝试刷新...");
 
         // 尝试刷新令牌
@@ -214,7 +216,7 @@ class APIs {
         if (refreshSuccess) {
           Logger().i("令牌刷新成功，重新尝试请求");
           // 获取刷新后的令牌
-          Token newToken = appRuntimeContext.storage.getToken();
+          UserToken newToken = appRuntimeContext.storage.getUserToken();
 
           // 使用新令牌重新发送请求
           try {
@@ -276,7 +278,7 @@ class APIs {
           headers: {
             'Content-Type': 'application/json',
             'Authorization':
-                'Bearer ${appRuntimeContext.storage.getToken().access_token}',
+                'Bearer ${appRuntimeContext.storage.getUserToken().access_token}',
           },
         ),
       );
@@ -291,7 +293,7 @@ class APIs {
     } on DioException catch (e) {
       // 处理401错误（令牌过期）
       if (e.response?.statusCode == 401 &&
-          appRuntimeContext.storage.getToken().refresh_token.isNotEmpty) {
+          appRuntimeContext.storage.getUserToken().refresh_token.isNotEmpty) {
         Logger().i("令牌已过期，尝试刷新...");
 
         // 尝试刷新令牌
@@ -300,7 +302,7 @@ class APIs {
         if (refreshSuccess) {
           Logger().i("令牌刷新成功，重新尝试请求");
           // 获取刷新后的令牌
-          Token newToken = appRuntimeContext.storage.getToken();
+          UserToken newToken = appRuntimeContext.storage.getUserToken();
 
           // 使用新令牌重新发送请求
           try {

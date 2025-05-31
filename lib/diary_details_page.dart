@@ -15,12 +15,12 @@ class DiaryDetailsPage extends StatefulWidget {
 
 class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
   bool get isFavoriteDiaryEntry {
-    return AppRuntimeContext().data.isFavoriteDiary(widget.diaryData);
+    return AppRuntimeContext().data.checkIfDiaryIsFavorite(widget.diaryData);
   }
 
   void _toggleFavorite() {
     setState(() {
-      AppRuntimeContext().data.toggleFavoriteDiary(widget.diaryData);
+      AppRuntimeContext().data.switchDiaryFavoriteStatus(widget.diaryData);
       debugPrint(
         'Star button pressed: ${isFavoriteDiaryEntry ? "Added to favorites" : "Removed from favorites"}',
       );
@@ -140,8 +140,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     ValueListenableBuilder(
-                      valueListenable:
-                          AppRuntimeContext().data.diaryNotesNotifier,
+                      valueListenable: AppRuntimeContext().data.diaryNotes,
                       builder: (context, List<DiaryEntryNote> notes, _) {
                         final note = notes.firstWhere(
                           (element) => element.id == widget.diaryData.id,

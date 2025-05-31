@@ -4,13 +4,12 @@ import 'package:hive/hive.dart';
 import 'package:nirva_app/hive_object.dart';
 
 class HiveStorage {
-  //hive_storage_controller.dart
   // 现有的常量定义
   static const String _diaryFavoritesBox = 'diaryFavoritesBox';
   static const String _diaryFavoritesKey = 'favorites';
 
   // 新增 Token 相关的常量定义
-  static const String _tokenBox = 'tokenBox';
+  static const String _tokenBox = 'userTokenBox';
   static const String _tokenKey = 'userToken';
 
   //清空所有 Box 的数据并关闭所有 Box
@@ -25,7 +24,7 @@ class HiveStorage {
     Hive.init(directory.path); // 初始化 Hive 并设置存储路径
 
     // 并发初始化所有 Box
-    await Future.wait([_initDiaryFavorites(), _initToken()]);
+    await Future.wait([_initDiaryFavorites(), _initUserToken()]);
   }
 
   // 初始化 DiaryFavorites 的 Box
@@ -40,13 +39,13 @@ class HiveStorage {
   }
 
   // 新增: 初始化 Token 的 Box
-  Future<void> _initToken() async {
+  Future<void> _initUserToken() async {
     // 确保 Hive 已经初始化
     if (!Hive.isAdapterRegistered(2)) {
-      Hive.registerAdapter(TokenAdapter());
+      Hive.registerAdapter(UserTokenAdapter());
     }
     if (!Hive.isBoxOpen(_tokenBox)) {
-      await Hive.openBox<Token>(_tokenBox);
+      await Hive.openBox<UserToken>(_tokenBox);
     }
   }
 
@@ -63,17 +62,17 @@ class HiveStorage {
   }
 
   // 新增: 保存 Token 数据
-  Future<void> saveToken(Token token) async {
-    final box = Hive.box<Token>(_tokenBox);
+  Future<void> saveUserToken(UserToken token) async {
+    final box = Hive.box<UserToken>(_tokenBox);
     await box.put(_tokenKey, token); // 使用固定的 key 保存
   }
 
   // 新增: 获取 Token 数据
-  Token getToken() {
-    final box = Hive.box<Token>(_tokenBox);
+  UserToken getUserToken() {
+    final box = Hive.box<UserToken>(_tokenBox);
     final res = box.get(_tokenKey); // 使用固定的 key 获取
     if (res == null) {
-      return Token(
+      return UserToken(
         access_token: '',
         token_type: '',
         refresh_token: '',
@@ -83,14 +82,8 @@ class HiveStorage {
   }
 
   // 新增: 删除 Token 数据 (登出时使用)
-  Future<void> deleteToken() async {
-    final box = Hive.box<Token>(_tokenBox);
+  Future<void> deleteUserToken() async {
+    final box = Hive.box<UserToken>(_tokenBox);
     await box.delete(_tokenKey);
   }
-
-  // 新增: 检查是否存在有效的 Token
-  // bool hasValidToken() {
-  //   final token = getToken();
-  //   return token != null && token.access_token.isNotEmpty;
-  // }
 }
