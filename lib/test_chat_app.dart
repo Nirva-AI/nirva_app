@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
-import 'package:nirva_app/api.dart';
+import 'package:nirva_app/apis.dart';
 //import 'package:nirva_app/app_runtime_context.dart';
 import 'package:logger/logger.dart';
 
@@ -26,7 +26,7 @@ class TestChatApp extends StatelessWidget {
       }
 
       final refreshToken = await APIs.refreshToken();
-      if (!refreshToken) {
+      if (refreshToken == null) {
         Logger().e('刷新 token 失败');
         return false;
       }
