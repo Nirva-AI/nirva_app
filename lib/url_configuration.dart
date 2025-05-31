@@ -2,7 +2,7 @@
 // 请注意，本页是为了对接python fastapi服务器的数据定义的代码，命名风格完全和服务器一致，所以关警告。不要修改命名风格。
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'dart:convert';
-import 'package:nirva_app/api.dart';
+import 'package:nirva_app/api_models.dart';
 import 'package:logger/logger.dart';
 
 class URLConfiguration {
