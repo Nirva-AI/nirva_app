@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/message.dart';
-import 'package:nirva_app/api.dart';
+import 'package:nirva_app/apis.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 
 class AssistantChatPage extends StatefulWidget {
@@ -43,17 +43,16 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
       _isSending = true;
     });
 
-    AppRuntimeContext().chat.addUserMessage(message);
-
-    final response = await APIs.chat(
-      //AppRuntimeContext().data.user.name,
-      message,
-    );
-
-    if (response != null) {
-      AppRuntimeContext().chat.addAIMessage('AI 回复: ${response.message}');
-    } else {
-      AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复');
+    try {
+      final response = await APIs.chat(message);
+      if (response != null) {
+        AppRuntimeContext().chat.addUserMessage(message);
+        AppRuntimeContext().chat.addAIMessage('AI 回复: ${response.message}');
+      } else {
+        AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复1');
+      }
+    } catch (e) {
+      AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复2');
     }
 
     widget.textController.clear();

@@ -3,7 +3,7 @@ import 'package:nirva_app/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 //import 'package:nirva_app/app_runtime_context.dart';
 import 'package:logger/logger.dart';
-import 'package:nirva_app/api.dart'; // 确保导入了 API 类
+import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
