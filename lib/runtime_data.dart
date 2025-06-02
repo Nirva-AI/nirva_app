@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 // 管理全局数据的类
 class RuntimeData {
   // 用户信息
-  User user = User(name: '');
+  User user = User(username: "", password: "", displayName: "");
 
   // 当前的日记和仪表板数据
   List<Journal> journals = [];

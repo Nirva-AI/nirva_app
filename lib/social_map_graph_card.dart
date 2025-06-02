@@ -49,7 +49,7 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
     final newGraph = Graph();
 
     User user = AppRuntimeContext().data.user;
-    Node userNode = Node.Id(user.name);
+    Node userNode = Node.Id(user.displayName);
     newGraph.addNode(userNode);
 
     Journal currentJournal = AppRuntimeContext().data.currentJournal;
