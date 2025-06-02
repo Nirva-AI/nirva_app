@@ -54,7 +54,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppRuntimeContext().data.user.name,
+                        AppRuntimeContext().data.user.displayName,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(

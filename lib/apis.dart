@@ -24,7 +24,7 @@ class APIs {
     final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
       appRuntimeContext.urlConfig.loginUrl,
       data: {
-        'username': appRuntimeContext.data.user.name,
+        'username': appRuntimeContext.data.user.username,
         'password': appRuntimeContext.data.user.password,
         'grant_type': 'password',
       },

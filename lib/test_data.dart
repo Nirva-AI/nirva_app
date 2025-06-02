@@ -11,7 +11,11 @@ class TestData {
   static void initializeTestData() {
     AppRuntimeContext.clear();
     // 添加用户信息, 目前必须和服务器对上，否则无法登录。
-    AppRuntimeContext().data.user = User(name: 'wei', password: 'secret');
+    AppRuntimeContext().data.user = User(
+      username: 'weilyupku@gmail.com',
+      password: 'secret',
+      displayName: 'wei',
+    );
 
     // 添加todo数据
     AppRuntimeContext().data.tasks = TestData.createTestTasks();
