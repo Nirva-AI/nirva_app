@@ -27,7 +27,7 @@ Future<void> initializeApp() async {
   // 在这里执行任何需要的初始化操作，例如加载配置文件
   // 例如：await loadConfig();
   // 或者其他异步操作
-  TestData.initializeTestData();
+  await TestData.initializeTestData();
 
   // 测试 Hive 数据库
   await testHive();

@@ -1,3 +1,4 @@
+// ignore_for_file: non_constant_identifier_names
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'data.freezed.dart';
 part 'data.g.dart';
@@ -14,6 +15,124 @@ class User with _$User {
   @override
   Map<String, dynamic> toJson() => (this as _User).toJson();
 }
+
+@freezed
+class Event with _$Event {
+  const factory Event({
+    required String event_id,
+    required String event_title,
+    required String time_range,
+    required int duration_minutes,
+    required String location,
+    required List<String> mood_labels,
+    required int mood_score,
+    required int stress_level,
+    required int energy_level,
+    required String activity_type,
+    required List<String> people_involved,
+    required String interaction_dynamic,
+    required String inferred_impact_on_user_name,
+    required List<String> topic_labels,
+    required String one_sentence_summary,
+    required String first_person_narrative,
+    required String action_item,
+  }) = _Event;
+
+  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _Event).toJson();
+}
+
+// 日常反思中的感恩部分
+@freezed
+class Gratitude with _$Gratitude {
+  const factory Gratitude({
+    required List<String> gratitude_summary,
+    required String gratitude_details,
+    required List<String> win_summary,
+    required String win_details,
+    required String feel_alive_moments,
+  }) = _Gratitude;
+
+  factory Gratitude.fromJson(Map<String, dynamic> json) =>
+      _$GratitudeFromJson(json);
+}
+
+// 日常反思中的挑战与成长部分
+@freezed
+class ChallengesAndGrowth with _$ChallengesAndGrowth {
+  const factory ChallengesAndGrowth({
+    required List<String> growth_summary,
+    required String obstacles_faced,
+    required String unfinished_intentions,
+    required String contributing_factors,
+  }) = _ChallengesAndGrowth;
+
+  factory ChallengesAndGrowth.fromJson(Map<String, dynamic> json) =>
+      _$ChallengesAndGrowthFromJson(json);
+}
+
+// 日常反思中的学习与洞察部分
+@freezed
+class LearningAndInsights with _$LearningAndInsights {
+  const factory LearningAndInsights({
+    required String new_knowledge,
+    required String self_discovery,
+    required String insights_about_others,
+    required String broader_lessons,
+  }) = _LearningAndInsights;
+
+  factory LearningAndInsights.fromJson(Map<String, dynamic> json) =>
+      _$LearningAndInsightsFromJson(json);
+}
+
+// 日常反思中的连接与关系部分
+@freezed
+class ConnectionsAndRelationships with _$ConnectionsAndRelationships {
+  const factory ConnectionsAndRelationships({
+    required String meaningful_interactions,
+    required String notable_about_people,
+    required String follow_up_needed,
+  }) = _ConnectionsAndRelationships;
+
+  factory ConnectionsAndRelationships.fromJson(Map<String, dynamic> json) =>
+      _$ConnectionsAndRelationshipsFromJson(json);
+}
+
+// 日常反思中的展望未来部分
+@freezed
+class LookingForward with _$LookingForward {
+  const factory LookingForward({
+    required String do_differently_tomorrow,
+    required String continue_what_worked,
+    required List<String> top_3_priorities_tomorrow,
+  }) = _LookingForward;
+
+  factory LookingForward.fromJson(Map<String, dynamic> json) =>
+      _$LookingForwardFromJson(json);
+}
+
+// 完整的日常反思数据结构
+@freezed
+class DailyReflection with _$DailyReflection {
+  const factory DailyReflection({
+    required String reflection_summary,
+    required Gratitude gratitude,
+    required ChallengesAndGrowth challenges_and_growth,
+    required LearningAndInsights learning_and_insights,
+    required ConnectionsAndRelationships connections_and_relationships,
+    required LookingForward looking_forward,
+  }) = _DailyReflection;
+
+  factory DailyReflection.fromJson(Map<String, dynamic> json) =>
+      _$DailyReflectionFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _DailyReflection).toJson();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @freezed
 class Quote with _$Quote {
@@ -447,4 +566,37 @@ class Dashboard with _$Dashboard {
       ),
     );
   }
+}
+
+@freezed
+class LabelExtraction with _$LabelExtraction {
+  const factory LabelExtraction({required List<Event> events}) =
+      _LabelExtraction;
+
+  factory LabelExtraction.fromJson(Map<String, dynamic> json) =>
+      _$LabelExtractionFromJson(json);
+}
+
+@freezed
+class ReflectionData with _$ReflectionData {
+  const factory ReflectionData({required DailyReflection daily_reflection}) =
+      _ReflectionData;
+
+  factory ReflectionData.fromJson(Map<String, dynamic> json) =>
+      _$ReflectionDataFromJson(json);
+}
+
+@freezed
+class JournalFile with _$JournalFile {
+  const factory JournalFile({
+    required LabelExtraction label_extraction,
+    required ReflectionData reflection,
+    required String message,
+  }) = _JournalFile;
+
+  factory JournalFile.fromJson(Map<String, dynamic> json) =>
+      _$JournalFileFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
 }

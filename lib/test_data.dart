@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'dart:math';
+import 'package:nirva_app/utils.dart';
 
 // 管理全局数据的类
 class TestData {
   static final random = Random();
   //
-  static void initializeTestData() {
+  static Future<void> initializeTestData() async {
     AppRuntimeContext.clear();
     // 添加用户信息, 目前必须和服务器对上，否则无法登录。
     AppRuntimeContext().data.user = User(
@@ -49,6 +50,23 @@ class TestData {
         AppRuntimeContext().data.currentJournal.awakeTimeAllocations,
       ),
     );
+
+    // 这里读取日记。
+    await loadTestJournalFile('assets/analyze_result_2025-04-19-01.txt.json');
+    await loadTestJournalFile('assets/analyze_result_2025-05-09-01.txt.json');
+  }
+
+  // 加载测试日记文件 Future<void> initializeTestData() async
+  static Future<void> loadTestJournalFile(String path) async {
+    try {
+      final jsonData = await Utils.loadJsonAsset(path);
+      final journalFile = JournalFile.fromJson(jsonData);
+      AppRuntimeContext().data.journalFiles.add(journalFile);
+      debugPrint('成功加载日记文件: ${journalFile.message}');
+      debugPrint('事件数量: ${journalFile.label_extraction.events.length}');
+    } catch (error) {
+      debugPrint('加载日记文件时出错: $error');
+    }
   }
 
   // 添加日记的最爱数据
@@ -659,6 +677,8 @@ class TestData {
         hours: 4,
       ),
     ];
+
+    //analyze_result_2025-04-19-01.txt.json
 
     return Journal(
       id: dateTime.toIso8601String(),
