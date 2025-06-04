@@ -19,10 +19,10 @@ class RuntimeData {
   List<ArchivedHighlights> monthlyArchivedHighlights = [];
 
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
-  ValueNotifier<List<String>> diaryFavorites = ValueNotifier([]);
+  ValueNotifier<List<String>> favorites = ValueNotifier([]);
 
   // 日记条目笔记
-  ValueNotifier<List<DiaryEntryNote>> diaryNotes = ValueNotifier([]);
+  ValueNotifier<List<Note>> notes = ValueNotifier([]);
 
   //
   List<Dashboard> dashboards = [];
@@ -51,7 +51,7 @@ class RuntimeData {
         id: "",
         dateTime: DateTime.now(),
         summary: '',
-        diaryEntries: [],
+        //diaryEntries: [],
         quotes: [],
         selfReflections: [],
         detailedInsights: [],
@@ -133,46 +133,60 @@ class RuntimeData {
   }
 
   // 切换日记条目的收藏状态
-  void switchDiaryFavoriteStatus(DiaryEntry diaryEntry) {
-    if (diaryFavorites.value.contains(diaryEntry.id)) {
-      diaryFavorites.value.remove(diaryEntry.id);
+  // void switchDiaryFavoriteStatus(DiaryEntry diaryEntry) {
+  //   if (favorites.value.contains(diaryEntry.id)) {
+  //     favorites.value.remove(diaryEntry.id);
+  //   } else {
+  //     favorites.value.add(diaryEntry.id);
+  //   }
+  //   // 更新收藏列表
+  //   favorites.value = List.from(favorites.value); // 通知监听者
+  // }
+
+  void switchEventFavoriteStatus(Event event) {
+    if (favorites.value.contains(event.event_id)) {
+      favorites.value.remove(event.event_id);
     } else {
-      diaryFavorites.value.add(diaryEntry.id);
+      favorites.value.add(event.event_id);
     }
     // 更新收藏列表
-    diaryFavorites.value = List.from(diaryFavorites.value); // 通知监听者
+    favorites.value = List.from(favorites.value); // 通知监听者
   }
 
   // 检查日记条目是否被标记为最爱
-  bool checkIfDiaryIsFavorite(DiaryEntry diaryEntry) {
-    return diaryFavorites.value.contains(diaryEntry.id);
+  // bool checkIfDiaryIsFavorite(DiaryEntry diaryEntry) {
+  //   return favorites.value.contains(diaryEntry.id);
+  // }
+
+  bool checkFavorite(Event event) {
+    return favorites.value.contains(event.event_id);
   }
 
   // 修改日记条目笔记
-  void updateDiaryNote(DiaryEntry diaryEntry, String content) {
+  void updateNote(Event event, String content) {
     // 保存日记条目笔记
-    final note = DiaryEntryNote(id: diaryEntry.id, content: content);
-    if (diaryNotes.value.any((element) => element.id == diaryEntry.id)) {
+    final note = Note(id: event.event_id, content: content);
+    if (notes.value.any((element) => element.id == event.event_id)) {
       // 如果已经存在，则更新
-      final index = diaryNotes.value.indexWhere(
-        (element) => element.id == diaryEntry.id,
+      final index = notes.value.indexWhere(
+        (element) => element.id == event.event_id,
       );
-      diaryNotes.value[index] = note;
+      notes.value[index] = note;
     } else {
       // 如果不存在，则添加
-      diaryNotes.value.add(note);
+      notes.value.add(note);
     }
     // 通知监听者
-    diaryNotes.value = List.from(diaryNotes.value);
+    notes.value = List.from(notes.value);
   }
 
   // 获取日记条目笔记
-  String getDiaryNote(DiaryEntry diaryEntry) {
-    // 获取日记条目笔记
-    final note = diaryNotes.value.firstWhere(
-      (element) => element.id == diaryEntry.id,
-      orElse: () => DiaryEntryNote(id: '', content: ''),
-    );
-    return note.content;
-  }
+  // String getDiaryNote(DiaryEntry diaryEntry) {
+  //   // 获取日记条目笔记
+  //   final note = notes.value.firstWhere(
+  //     (element) => element.id == diaryEntry.id,
+  //     orElse: () => Note(id: '', content: ''),
+  //   );
+  //   return note.content;
+  // }
 }

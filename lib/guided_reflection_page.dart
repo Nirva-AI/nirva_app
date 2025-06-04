@@ -3,11 +3,17 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/app_runtime_context.dart'; // 确保导入 DataManager
 
 class GuidedReflectionPage extends StatelessWidget {
-  final DiaryEntry diaryData; // 新增参数
+  //final DiaryEntry diaryData; // 新增参数
+  final Event eventData; // 新增参数
+
   final TextEditingController _textController =
       TextEditingController(); // 添加控制器
 
-  GuidedReflectionPage({super.key, required this.diaryData}); // 修改构造函数
+  GuidedReflectionPage({
+    super.key,
+    //required this.diaryData,
+    required this.eventData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +78,8 @@ class GuidedReflectionPage extends StatelessWidget {
                 onPressed: () {
                   // 保存按钮点击事件
                   final content = _textController.text; // 获取输入框内容
-                  AppRuntimeContext().data.updateDiaryNote(
-                    diaryData,
+                  AppRuntimeContext().data.updateNote(
+                    eventData, // 使用 eventData
                     content,
                   ); // 保存到 DataManager
                   debugPrint('Save button pressed: $content'); // 打印保存内容

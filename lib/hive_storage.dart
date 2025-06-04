@@ -24,17 +24,17 @@ class HiveStorage {
     Hive.init(directory.path); // 初始化 Hive 并设置存储路径
 
     // 并发初始化所有 Box
-    await Future.wait([_initDiaryFavorites(), _initUserToken()]);
+    await Future.wait([_initFavorites(), _initUserToken()]);
   }
 
   // 初始化 DiaryFavorites 的 Box
-  Future<void> _initDiaryFavorites() async {
+  Future<void> _initFavorites() async {
     // 确保 Hive 已经初始化
     if (!Hive.isAdapterRegistered(1)) {
-      Hive.registerAdapter(DiaryFavoritesAdapter());
+      Hive.registerAdapter(FavoritesAdapter());
     }
     if (!Hive.isBoxOpen(_diaryFavoritesBox)) {
-      await Hive.openBox<DiaryFavorites>(_diaryFavoritesBox);
+      await Hive.openBox<Favorites>(_diaryFavoritesBox);
     }
   }
 
@@ -50,14 +50,14 @@ class HiveStorage {
   }
 
   // 保存 DiaryFavorites 数据
-  Future<void> saveDiaryFavorites(DiaryFavorites diaryFavorites) async {
-    final box = Hive.box<DiaryFavorites>(_diaryFavoritesBox);
+  Future<void> saveFavorites(Favorites diaryFavorites) async {
+    final box = Hive.box<Favorites>(_diaryFavoritesBox);
     await box.put(_diaryFavoritesKey, diaryFavorites); // 使用固定的 key 保存
   }
 
   // 获取 DiaryFavorites 数据
-  DiaryFavorites? getDiaryFavorites() {
-    final box = Hive.box<DiaryFavorites>(_diaryFavoritesBox);
+  Favorites? getFavorites() {
+    final box = Hive.box<Favorites>(_diaryFavoritesBox);
     return box.get(_diaryFavoritesKey); // 使用固定的 key 获取
   }
 

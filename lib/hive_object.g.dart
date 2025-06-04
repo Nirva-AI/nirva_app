@@ -6,23 +6,23 @@ part of 'hive_object.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class DiaryFavoritesAdapter extends TypeAdapter<DiaryFavorites> {
+class FavoritesAdapter extends TypeAdapter<Favorites> {
   @override
   final int typeId = 1;
 
   @override
-  DiaryFavorites read(BinaryReader reader) {
+  Favorites read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DiaryFavorites(
+    return Favorites(
       favoriteIds: (fields[0] as List).cast<String>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, DiaryFavorites obj) {
+  void write(BinaryWriter writer, Favorites obj) {
     writer
       ..writeByte(1)
       ..writeByte(0)
@@ -35,7 +35,7 @@ class DiaryFavoritesAdapter extends TypeAdapter<DiaryFavorites> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DiaryFavoritesAdapter &&
+      other is FavoritesAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
