@@ -4639,8 +4639,8 @@ Journal _$JournalFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Journal {
   String get id => throw _privateConstructorUsedError;
-  DateTime get dateTime => throw _privateConstructorUsedError;
-  String get summary => throw _privateConstructorUsedError;
+  DateTime get dateTime =>
+      throw _privateConstructorUsedError; //required String summary,
   List<Quote> get quotes => throw _privateConstructorUsedError;
   List<Reflection> get selfReflections => throw _privateConstructorUsedError;
   List<Reflection> get detailedInsights => throw _privateConstructorUsedError;
@@ -4671,7 +4671,6 @@ abstract class $JournalCopyWith<$Res> {
   $Res call(
       {String id,
       DateTime dateTime,
-      String summary,
       List<Quote> quotes,
       List<Reflection> selfReflections,
       List<Reflection> detailedInsights,
@@ -4706,7 +4705,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
   $Res call({
     Object? id = null,
     Object? dateTime = null,
-    Object? summary = null,
     Object? quotes = null,
     Object? selfReflections = null,
     Object? detailedInsights = null,
@@ -4728,10 +4726,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      summary: null == summary
-          ? _value.summary
-          : summary // ignore: cast_nullable_to_non_nullable
-              as String,
       quotes: null == quotes
           ? _value.quotes
           : quotes // ignore: cast_nullable_to_non_nullable
@@ -4820,7 +4814,6 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
   $Res call(
       {String id,
       DateTime dateTime,
-      String summary,
       List<Quote> quotes,
       List<Reflection> selfReflections,
       List<Reflection> detailedInsights,
@@ -4856,7 +4849,6 @@ class __$$JournalImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? dateTime = null,
-    Object? summary = null,
     Object? quotes = null,
     Object? selfReflections = null,
     Object? detailedInsights = null,
@@ -4878,10 +4870,6 @@ class __$$JournalImplCopyWithImpl<$Res>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      summary: null == summary
-          ? _value.summary
-          : summary // ignore: cast_nullable_to_non_nullable
-              as String,
       quotes: null == quotes
           ? _value._quotes
           : quotes // ignore: cast_nullable_to_non_nullable
@@ -4936,7 +4924,6 @@ class _$JournalImpl implements _Journal {
   const _$JournalImpl(
       {required this.id,
       required this.dateTime,
-      required this.summary,
       required final List<Quote> quotes,
       required final List<Reflection> selfReflections,
       required final List<Reflection> detailedInsights,
@@ -4964,9 +4951,9 @@ class _$JournalImpl implements _Journal {
   final String id;
   @override
   final DateTime dateTime;
-  @override
-  final String summary;
+//required String summary,
   final List<Quote> _quotes;
+//required String summary,
   @override
   List<Quote> get quotes {
     if (_quotes is EqualUnmodifiableListView) return _quotes;
@@ -5041,7 +5028,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, summary: $summary, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
   }
 
   @override
@@ -5052,7 +5039,6 @@ class _$JournalImpl implements _Journal {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
-            (identical(other.summary, summary) || other.summary == summary) &&
             const DeepCollectionEquality().equals(other._quotes, _quotes) &&
             const DeepCollectionEquality()
                 .equals(other._selfReflections, _selfReflections) &&
@@ -5081,7 +5067,6 @@ class _$JournalImpl implements _Journal {
       runtimeType,
       id,
       dateTime,
-      summary,
       const DeepCollectionEquality().hash(_quotes),
       const DeepCollectionEquality().hash(_selfReflections),
       const DeepCollectionEquality().hash(_detailedInsights),
@@ -5114,7 +5099,6 @@ abstract class _Journal implements Journal {
   const factory _Journal(
       {required final String id,
       required final DateTime dateTime,
-      required final String summary,
       required final List<Quote> quotes,
       required final List<Reflection> selfReflections,
       required final List<Reflection> detailedInsights,
@@ -5132,9 +5116,7 @@ abstract class _Journal implements Journal {
   @override
   String get id;
   @override
-  DateTime get dateTime;
-  @override
-  String get summary;
+  DateTime get dateTime; //required String summary,
   @override
   List<Quote> get quotes;
   @override

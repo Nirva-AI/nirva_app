@@ -20,8 +20,14 @@ class TestData {
     );
 
     // 这里读取日记。
-    await loadTestJournalFile('assets/analyze_result_2025-04-19-01.txt.json');
-    await loadTestJournalFile('assets/analyze_result_2025-05-09-01.txt.json');
+    await loadTestJournalFile(
+      'assets/analyze_result_2025-04-19-01.txt.json',
+      DateTime(2025, 4, 19),
+    );
+    await loadTestJournalFile(
+      'assets/analyze_result_2025-05-09-01.txt.json',
+      DateTime(2025, 5, 9),
+    );
 
     // 添加todo数据
     AppRuntimeContext().data.tasks = TestData.createTestTasks();
@@ -58,11 +64,15 @@ class TestData {
   }
 
   // 加载测试日记文件 Future<void> initializeTestData() async
-  static Future<void> loadTestJournalFile(String path) async {
+  static Future<void> loadTestJournalFile(
+    String path,
+    DateTime dateTime,
+  ) async {
     try {
       final jsonData = await Utils.loadJsonAsset(path);
       final journalFile = JournalFile.fromJson(jsonData);
       AppRuntimeContext().data.journalFiles.add(journalFile);
+      AppRuntimeContext().data.journalFilesMap[dateTime] = journalFile;
       debugPrint('成功加载日记文件: ${journalFile.message}');
       debugPrint('事件数量: ${journalFile.label_extraction.events.length}');
     } catch (error) {
@@ -252,8 +262,8 @@ class TestData {
 
   // 测试数据： 初始化个人数据
   static Journal createTestJournal(DateTime dateTime) {
-    final String summary =
-        'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
+    // final String summary =
+    //     'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
     // 引言卡片数据
     final List<Quote> quotes = [
@@ -499,7 +509,7 @@ class TestData {
     return Journal(
       id: dateTime.toIso8601String(),
       dateTime: dateTime,
-      summary: summary,
+      //summary: summary,
       //diaryEntries: diaryEntries,
       quotes: quotes,
       selfReflections: selfReflections,
