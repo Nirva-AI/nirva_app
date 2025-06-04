@@ -245,18 +245,6 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'isCompleted': instance.isCompleted,
     };
 
-_$EnergyLevelImpl _$$EnergyLevelImplFromJson(Map<String, dynamic> json) =>
-    _$EnergyLevelImpl(
-      dateTime: DateTime.parse(json['dateTime'] as String),
-      value: (json['value'] as num).toDouble(),
-    );
-
-Map<String, dynamic> _$$EnergyLevelImplToJson(_$EnergyLevelImpl instance) =>
-    <String, dynamic>{
-      'dateTime': instance.dateTime.toIso8601String(),
-      'value': instance.value,
-    };
-
 _$MoodTrackingImpl _$$MoodTrackingImplFromJson(Map<String, dynamic> json) =>
     _$MoodTrackingImpl(
       name: json['name'] as String,
@@ -328,9 +316,6 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
       highlights: (json['highlights'] as List<dynamic>)
           .map((e) => Highlight.fromJson(e as Map<String, dynamic>))
           .toList(),
-      energyLevels: (json['energyLevels'] as List<dynamic>)
-          .map((e) => EnergyLevel.fromJson(e as Map<String, dynamic>))
-          .toList(),
       moodTrackings: (json['moodTrackings'] as List<dynamic>)
           .map((e) => MoodTracking.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -345,7 +330,6 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
       'id': instance.id,
       'dateTime': instance.dateTime.toIso8601String(),
       'highlights': instance.highlights,
-      'energyLevels': instance.energyLevels,
       'moodTrackings': instance.moodTrackings,
       'awakeTimeAllocations': instance.awakeTimeAllocations,
       'socialMap': instance.socialMap,

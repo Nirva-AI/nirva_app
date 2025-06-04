@@ -9,7 +9,6 @@ class RuntimeData {
 
   // 当前的日记和仪表板数据
   List<Journal> journals = [];
-  //List<JournalFile> journalFiles = [];
   Map<String, JournalFile> journalFiles = {};
   DateTime currentJournalDate = DateTime.now();
 
@@ -52,16 +51,8 @@ class RuntimeData {
       return Journal(
         id: "",
         dateTime: DateTime.now(),
-        //summary: '',
-        //diaryEntries: [],
-        // quotes: [],
-        // selfReflections: [],
-        // detailedInsights: [],
-        // goals: [],
-        //moodScore: MoodScore(value: 0.0, change: 0.0),
-        //stressLevel: StressLevel(value: 0.0, change: 0.0),
         highlights: [],
-        energyLevels: [],
+        //energyLevels: [],
         moodTrackings: [],
         awakeTimeAllocations: [],
         socialMap: SocialMap(id: "", socialEntities: []),
@@ -69,21 +60,24 @@ class RuntimeData {
     }
   }
 
+  String _journalFileKey(DateTime dateTime) {
+    // 获取日记文件的键
+    return dateTime.toIso8601String().split('T')[0];
+  }
+
   JournalFile get currentJournalFile {
-    final key = currentJournalDate.toIso8601String().split('T')[0];
+    final key = _journalFileKey(currentJournalDate);
     if (journalFiles.containsKey(key)) {
       // 如果当前日期的日记文件存在，则返回该文件
       return journalFiles[key]!;
     }
 
     return createEmptyJournalFile();
+  }
 
-    // 获取当前的日记文件
-    // if (journalFilesMap.isNotEmpty) {
-    //   return journalFilesMap[currentJournalDate];
-    // } else {
-
-    // }
+  void setJournalFile(JournalFile journalFile, DateTime dateTime) {
+    final key = _journalFileKey(dateTime);
+    journalFiles[key] = journalFile;
   }
 
   JournalFile createEmptyJournalFile() {
@@ -127,16 +121,6 @@ class RuntimeData {
       message: "",
     );
   }
-
-  // DateTime get currentJournalFileDate {
-  //   // 便利 journalFilesMap 如果 value 是 currentJournalFile，则返回 key
-  //   for (final entry in journalFilesMap.entries) {
-  //     if (entry.value == currentJournalFile) {
-  //       return entry.key;
-  //     }
-  //   }
-  //   return DateTime.now();
-  // }
 
   Dashboard get currentDashboard {
     // 获取当前的仪表板

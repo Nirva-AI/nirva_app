@@ -186,19 +186,6 @@ class Task with _$Task {
 }
 
 @freezed
-class EnergyLevel with _$EnergyLevel {
-  const factory EnergyLevel({
-    required DateTime dateTime,
-    required double value,
-  }) = _EnergyLevel;
-
-  factory EnergyLevel.fromJson(Map<String, dynamic> json) =>
-      _$EnergyLevelFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _EnergyLevel).toJson();
-}
-
-@freezed
 class MoodTracking with _$MoodTracking {
   const factory MoodTracking({
     required String name,
@@ -265,7 +252,7 @@ class Journal with _$Journal {
     //required MoodScore moodScore,
     //required StressLevel stressLevel,
     required List<Highlight> highlights,
-    required List<EnergyLevel> energyLevels,
+    //required List<EnergyLevel> energyLevels,
     required List<MoodTracking> moodTrackings,
     required List<AwakeTimeAllocation> awakeTimeAllocations,
     required SocialMap socialMap,

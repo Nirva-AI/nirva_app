@@ -19,17 +19,17 @@ class TestData {
       displayName: 'wei',
     );
 
+    AppRuntimeContext().data.currentJournalDate = DateTime(2025, 4, 19);
+
     // 这里读取日记。
     await loadTestJournalFile(
       'assets/analyze_result_2025-04-19-01.txt.json',
-      DateTime(2025, 4, 19),
+      AppRuntimeContext().data.currentJournalDate,
     );
     await loadTestJournalFile(
       'assets/analyze_result_2025-05-09-01.txt.json',
       DateTime(2025, 5, 9),
     );
-
-    AppRuntimeContext().data.currentJournalDate = DateTime(2025, 4, 19);
 
     // 添加todo数据
     AppRuntimeContext().data.tasks = TestData.createTestTasks();
@@ -72,12 +72,13 @@ class TestData {
   ) async {
     try {
       final jsonData = await Utils.loadJsonAsset(path);
-      final journalFile = JournalFile.fromJson(jsonData);
+      final loadJournalFile = JournalFile.fromJson(jsonData);
       //AppRuntimeContext().data.journalFiles.add(journalFile);
-      final key = dateTime.toIso8601String().split('T')[0];
-      AppRuntimeContext().data.journalFiles[key] = journalFile;
-      debugPrint('成功加载日记文件: ${journalFile.message}');
-      debugPrint('事件数量: ${journalFile.label_extraction.events.length}');
+      //final key = dateTime.toIso8601String().split('T')[0];
+      //AppRuntimeContext().data.journalFiles[key] = journalFile;
+      AppRuntimeContext().data.setJournalFile(loadJournalFile, dateTime);
+      debugPrint('成功加载日记文件: ${loadJournalFile.message}');
+      debugPrint('事件数量: ${loadJournalFile.label_extraction.events.length}');
     } catch (error) {
       debugPrint('加载日记文件时出错: $error');
     }
@@ -283,19 +284,6 @@ class TestData {
       ),
     ];
 
-    final List<EnergyLevel> energyLevels = [
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 10, 0), value: 1.0),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 10, 30), value: 2.0),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 11, 30), value: 1.5),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 13, 0), value: 2.8),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 13, 30), value: 2.0),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 14, 30), value: 3.0),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 15, 10), value: 1.5),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 16, 30), value: 2.5),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 18, 30), value: 3.2),
-      EnergyLevel(dateTime: DateTime(2025, 5, 6, 19, 0), value: 2.8),
-    ];
-
     final List<MoodTracking> moodTrackings = [
       MoodTracking(name: 'Happy', value: 50, color: 0xFF2196F3),
       MoodTracking(name: 'Calm', value: 30, color: 0xFF4CAF50),
@@ -367,7 +355,7 @@ class TestData {
       id: dateTime.toIso8601String(),
       dateTime: dateTime,
       highlights: highlights,
-      energyLevels: energyLevels,
+      //energyLevels: energyLevels,
       moodTrackings: moodTrackings,
       awakeTimeAllocations: awakeTimeAllocations,
       socialMap: SocialMap(id: "", socialEntities: socialEntities),

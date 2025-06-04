@@ -3,7 +3,9 @@ import 'dart:io'; // 用于文件操作
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tuple/tuple.dart';
 
+//flutter pub add tuple
 class Utils {
   // 计算对应的月份标签
   static const List<String> shortMonthNames = [
@@ -107,5 +109,40 @@ class Utils {
   static String formateWeekTitleForDashboardChart(int widgetIndexValue) {
     List<String> weekNames = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
     return weekNames[widgetIndexValue];
+  }
+
+  static Tuple2<DateTime, DateTime> parseTimeRange(
+    DateTime referenceDateTime,
+    String timeRange,
+  ) {
+    final times = timeRange.split('-');
+    if (times.length != 2) {
+      throw FormatException('Invalid time range format: $timeRange');
+    }
+
+    final startTimeParts = times[0].trim().split(':');
+    final endTimeParts = times[1].trim().split(':');
+
+    if (startTimeParts.length != 2 || endTimeParts.length != 2) {
+      throw FormatException('Invalid time format in range: $timeRange');
+    }
+
+    final startDateTime = DateTime(
+      referenceDateTime.year,
+      referenceDateTime.month,
+      referenceDateTime.day,
+      int.parse(startTimeParts[0]),
+      int.parse(startTimeParts[1]),
+    );
+
+    final endDateTime = DateTime(
+      referenceDateTime.year,
+      referenceDateTime.month,
+      referenceDateTime.day,
+      int.parse(endTimeParts[0]),
+      int.parse(endTimeParts[1]),
+    );
+
+    return Tuple2(startDateTime, endDateTime);
   }
 }

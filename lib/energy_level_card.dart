@@ -3,17 +3,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/energy_level_details_page.dart'; // 导入新页面
+import 'package:nirva_app/utils.dart';
 
 class EnergyLabel {
-  final String label;
-  final double measurementValue;
-
-  const EnergyLabel({required this.label, required this.measurementValue});
-}
-
-class EnergyLevelCard extends StatelessWidget {
-  const EnergyLevelCard({super.key});
-
   static const lowMinus = EnergyLabel(label: '', measurementValue: 0.0);
   static const low = EnergyLabel(label: 'Low', measurementValue: 1.0);
   static const neutral = EnergyLabel(label: 'Neutral', measurementValue: 2.0);
@@ -21,11 +13,62 @@ class EnergyLevelCard extends StatelessWidget {
   static const highPlus = EnergyLabel(label: '', measurementValue: 4.0);
   static const double energyLabelTitlesInterval = 1;
 
+  final String label;
+  final double measurementValue;
+
+  const EnergyLabel({required this.label, required this.measurementValue});
+}
+
+class EnergyLevel {
+  final DateTime dateTime;
+  final double energyLevel;
+
+  EnergyLevel({required this.dateTime, required this.energyLevel});
+
+  double get measuredEnergy {
+    final clampedEnergyLevel = energyLevel.clamp(1.0, 10.0);
+    final normalizedEnergyLevel =
+        (clampedEnergyLevel - 1.0) / 9.0; // 将1-10映射到0-1
+    final mappedEnergyLevel =
+        normalizedEnergyLevel *
+        EnergyLabel.highPlus.measurementValue; // 将0-1映射到0-4
+    return mappedEnergyLevel;
+  }
+}
+
+class EnergyLevelCard extends StatelessWidget {
+  const EnergyLevelCard({super.key});
+
+  List<EnergyLevel> get energyLevels {
+    List<EnergyLevel> ret = [];
+    final events = AppRuntimeContext().data.currentJournalFile.events;
+    final currentJournalDate = AppRuntimeContext().data.currentJournalDate;
+    for (var event in events) {
+      try {
+        final parseTimeRange = Utils.parseTimeRange(
+          currentJournalDate,
+          event.time_range,
+        );
+
+        ret.add(
+          EnergyLevel(
+            dateTime: parseTimeRange.item2,
+            energyLevel: event.energy_level.toDouble(),
+          ),
+        );
+      } catch (e) {
+        // 如果时间格式不正确，跳过这个事件
+        continue;
+      }
+    }
+    return ret;
+  }
+
   List<FlSpot> _generateSpots(List<EnergyLevel> data) {
     return data.asMap().entries.map((entry) {
       int index = entry.key;
       EnergyLevel energy = entry.value;
-      return FlSpot(index.toDouble(), energy.value);
+      return FlSpot(index.toDouble(), energy.measuredEnergy);
     }).toList();
   }
 
@@ -50,25 +93,25 @@ class EnergyLevelCard extends StatelessWidget {
   }
 
   String _formatEnergyLevelString(double value) {
-    if (value <= EnergyLevelCard.lowMinus.measurementValue) {
-      return EnergyLevelCard.lowMinus.label;
+    if (value <= EnergyLabel.lowMinus.measurementValue) {
+      return EnergyLabel.lowMinus.label;
     }
-    if (value <= EnergyLevelCard.low.measurementValue) {
-      return EnergyLevelCard.low.label;
+    if (value <= EnergyLabel.low.measurementValue) {
+      return EnergyLabel.low.label;
     }
-    if (value <= EnergyLevelCard.neutral.measurementValue) {
-      return EnergyLevelCard.neutral.label;
+    if (value <= EnergyLabel.neutral.measurementValue) {
+      return EnergyLabel.neutral.label;
     }
-    if (value <= EnergyLevelCard.high.measurementValue) {
-      return EnergyLevelCard.high.label;
+    if (value <= EnergyLabel.high.measurementValue) {
+      return EnergyLabel.high.label;
     }
-    return EnergyLevelCard.highPlus.label;
+    return EnergyLabel.highPlus.label;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<EnergyLevel> energyLevels =
-        AppRuntimeContext().data.currentJournal.energyLevels;
+    // List<EnergyLevel> energyLevels =
+    //     AppRuntimeContext().data.currentJournal.energyLevels;
     final spots = _generateSpots(energyLevels);
 
     return Card(
@@ -109,8 +152,8 @@ class EnergyLevelCard extends StatelessWidget {
               height: 200,
               child: LineChart(
                 LineChartData(
-                  minY: EnergyLevelCard.lowMinus.measurementValue,
-                  maxY: EnergyLevelCard.highPlus.measurementValue,
+                  minY: EnergyLabel.lowMinus.measurementValue,
+                  maxY: EnergyLabel.highPlus.measurementValue,
                   minX: 0,
                   maxX: (energyLevels.length - 1).toDouble(),
                   // gridData: FlGridData(
@@ -134,7 +177,7 @@ class EnergyLevelCard extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 40,
-                        interval: EnergyLevelCard.energyLabelTitlesInterval,
+                        interval: EnergyLabel.energyLabelTitlesInterval,
                         getTitlesWidget: (value, meta) {
                           return Text(
                             _formatEnergyLevelString(value),
