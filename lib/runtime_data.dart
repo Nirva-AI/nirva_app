@@ -53,7 +53,7 @@ class RuntimeData {
         dateTime: DateTime.now(),
         //summary: '',
         //diaryEntries: [],
-        quotes: [],
+        // quotes: [],
         // selfReflections: [],
         // detailedInsights: [],
         // goals: [],
