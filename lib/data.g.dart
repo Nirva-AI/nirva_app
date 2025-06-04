@@ -187,17 +187,6 @@ Map<String, dynamic> _$$DailyReflectionImplToJson(
       'looking_forward': instance.looking_forward,
     };
 
-_$QuoteImpl _$$QuoteImplFromJson(Map<String, dynamic> json) => _$QuoteImpl(
-      text: json['text'] as String,
-      mood: json['mood'] as String,
-    );
-
-Map<String, dynamic> _$$QuoteImplToJson(_$QuoteImpl instance) =>
-    <String, dynamic>{
-      'text': instance.text,
-      'mood': instance.mood,
-    };
-
 _$NoteImpl _$$NoteImplFromJson(Map<String, dynamic> json) => _$NoteImpl(
       id: json['id'] as String,
       content: json['content'] as String,
@@ -360,9 +349,6 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
     _$JournalImpl(
       id: json['id'] as String,
       dateTime: DateTime.parse(json['dateTime'] as String),
-      quotes: (json['quotes'] as List<dynamic>)
-          .map((e) => Quote.fromJson(e as Map<String, dynamic>))
-          .toList(),
       moodScore: MoodScore.fromJson(json['moodScore'] as Map<String, dynamic>),
       stressLevel:
           StressLevel.fromJson(json['stressLevel'] as Map<String, dynamic>),
@@ -385,7 +371,6 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'dateTime': instance.dateTime.toIso8601String(),
-      'quotes': instance.quotes,
       'moodScore': instance.moodScore,
       'stressLevel': instance.stressLevel,
       'highlights': instance.highlights,

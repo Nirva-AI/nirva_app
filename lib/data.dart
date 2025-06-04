@@ -134,14 +134,14 @@ class DailyReflection with _$DailyReflection {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@freezed
-class Quote with _$Quote {
-  const factory Quote({required String text, required String mood}) = _Quote;
+// @freezed
+// class Quote with _$Quote {
+//   const factory Quote({required String text}) = _Quote;
 
-  factory Quote.fromJson(Map<String, dynamic> json) => _$QuoteFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _Quote).toJson();
-}
+//   factory Quote.fromJson(Map<String, dynamic> json) => _$QuoteFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _Quote).toJson();
+// }
 
 @freezed
 class Note with _$Note {
@@ -292,7 +292,7 @@ class Journal with _$Journal {
   const factory Journal({
     required String id,
     required DateTime dateTime,
-    required List<Quote> quotes,
+    //required List<Quote> quotes,
     required MoodScore moodScore,
     required StressLevel stressLevel,
     required List<Highlight> highlights,

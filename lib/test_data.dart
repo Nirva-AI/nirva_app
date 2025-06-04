@@ -266,23 +266,23 @@ class TestData {
     //     'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
     // 引言卡片数据
-    final List<Quote> quotes = [
-      Quote(
-        text:
-            '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
-        mood: 'reflective',
-      ),
-      Quote(
-        text:
-            '"Meaningful connections with others help me understand myself better and grow as a person."',
-        mood: 'calm',
-      ),
-      Quote(
-        text:
-            '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
-        mood: 'focused',
-      ),
-    ];
+    // final List<Quote> quotes = [
+    //   Quote(
+    //     text:
+    //         '"Today was a day of deep conversations with friends, self-reflection, and cultural experiences."',
+    //     //mood: 'reflective',
+    //   ),
+    //   Quote(
+    //     text:
+    //         '"Meaningful connections with others help me understand myself better and grow as a person."',
+    //     //mood: 'calm',
+    //   ),
+    //   Quote(
+    //     text:
+    //         '"I am grateful for friends who share their wisdom and provide space for authentic expression."',
+    //     //mood: 'focused',
+    //   ),
+    // ];
 
     // 个人反思
     // final List<Reflection> selfReflections = [
@@ -511,7 +511,7 @@ class TestData {
       dateTime: dateTime,
       //summary: summary,
       //diaryEntries: diaryEntries,
-      quotes: quotes,
+      //quotes: quotes,
       // selfReflections: selfReflections,
       // detailedInsights: detailedInsights,
       // goals: goals,

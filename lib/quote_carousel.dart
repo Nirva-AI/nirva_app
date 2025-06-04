@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 //import 'package:nirva_app/app_runtime_context.dart';
-import 'package:nirva_app/data.dart';
+//import 'package:nirva_app/data.dart';
 
 class QuoteCarousel extends StatefulWidget {
-  final List<Quote> quotes;
+  final List<String> quotes;
 
   const QuoteCarousel({super.key, required this.quotes});
 
@@ -13,29 +13,41 @@ class QuoteCarousel extends StatefulWidget {
 
 class _QuoteCarouselState extends State<QuoteCarousel> {
   int _currentPage = 0;
-  final Map<int, LinearGradient> gradientMap = {};
+  // final Map<int, LinearGradient> gradientMap = {};
 
-  LinearGradient _randomGradient(Quote quote) {
-    if (!gradientMap.containsKey(quote.text.hashCode)) {
-      final colors = [
-        Colors.red,
-        Colors.green,
-        Colors.blue,
-        Colors.yellow,
-        Colors.purple,
-        Colors.orange,
-      ];
-      gradientMap[quote.text.hashCode] = LinearGradient(
-        colors: [
-          colors[quote.text.hashCode % colors.length],
-          colors[(quote.text.hashCode ~/ 2) % colors.length],
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-    }
+  // LinearGradient _randomGradient(String quote) {
+  //   if (!gradientMap.containsKey(quote.hashCode)) {
+  //     final colors = [
+  //       Colors.red,
+  //       Colors.green,
+  //       Colors.blue,
+  //       Colors.yellow,
+  //       Colors.purple,
+  //       Colors.orange,
+  //     ];
+  //     gradientMap[quote.hashCode] = LinearGradient(
+  //       colors: [
+  //         colors[quote.hashCode % colors.length],
+  //         colors[(quote.hashCode ~/ 2) % colors.length],
+  //       ],
+  //       begin: Alignment.topLeft,
+  //       end: Alignment.bottomRight,
+  //     );
+  //   }
 
-    return gradientMap[quote.text.hashCode]!;
+  //   return gradientMap[quote.hashCode]!;
+  // }
+
+  // 返回固定的明亮渐变色
+  LinearGradient _getGradient() {
+    return const LinearGradient(
+      colors: [
+        Color(0xFF64B5F6), // 明亮的浅蓝色
+        Color(0xFFBA68C8), // 明亮的浅紫色
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
   }
 
   @override
@@ -58,11 +70,11 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  gradient: _randomGradient(quote),
+                  gradient: _getGradient(),
                 ),
                 child: Center(
                   child: Text(
-                    quote.text,
+                    quote,
                     style: const TextStyle(
                       fontSize: 16,
                       fontStyle: FontStyle.italic,

@@ -2197,168 +2197,6 @@ abstract class _DailyReflection implements DailyReflection {
       throw _privateConstructorUsedError;
 }
 
-Quote _$QuoteFromJson(Map<String, dynamic> json) {
-  return _Quote.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Quote {
-  String get text => throw _privateConstructorUsedError;
-  String get mood => throw _privateConstructorUsedError;
-
-  /// Serializes this Quote to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Quote
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $QuoteCopyWith<Quote> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $QuoteCopyWith<$Res> {
-  factory $QuoteCopyWith(Quote value, $Res Function(Quote) then) =
-      _$QuoteCopyWithImpl<$Res, Quote>;
-  @useResult
-  $Res call({String text, String mood});
-}
-
-/// @nodoc
-class _$QuoteCopyWithImpl<$Res, $Val extends Quote>
-    implements $QuoteCopyWith<$Res> {
-  _$QuoteCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of Quote
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? text = null,
-    Object? mood = null,
-  }) {
-    return _then(_value.copyWith(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
-      mood: null == mood
-          ? _value.mood
-          : mood // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$QuoteImplCopyWith<$Res> implements $QuoteCopyWith<$Res> {
-  factory _$$QuoteImplCopyWith(
-          _$QuoteImpl value, $Res Function(_$QuoteImpl) then) =
-      __$$QuoteImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String text, String mood});
-}
-
-/// @nodoc
-class __$$QuoteImplCopyWithImpl<$Res>
-    extends _$QuoteCopyWithImpl<$Res, _$QuoteImpl>
-    implements _$$QuoteImplCopyWith<$Res> {
-  __$$QuoteImplCopyWithImpl(
-      _$QuoteImpl _value, $Res Function(_$QuoteImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of Quote
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? text = null,
-    Object? mood = null,
-  }) {
-    return _then(_$QuoteImpl(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String,
-      mood: null == mood
-          ? _value.mood
-          : mood // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$QuoteImpl implements _Quote {
-  const _$QuoteImpl({required this.text, required this.mood});
-
-  factory _$QuoteImpl.fromJson(Map<String, dynamic> json) =>
-      _$$QuoteImplFromJson(json);
-
-  @override
-  final String text;
-  @override
-  final String mood;
-
-  @override
-  String toString() {
-    return 'Quote(text: $text, mood: $mood)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$QuoteImpl &&
-            (identical(other.text, text) || other.text == text) &&
-            (identical(other.mood, mood) || other.mood == mood));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, text, mood);
-
-  /// Create a copy of Quote
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$QuoteImplCopyWith<_$QuoteImpl> get copyWith =>
-      __$$QuoteImplCopyWithImpl<_$QuoteImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$QuoteImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Quote implements Quote {
-  const factory _Quote(
-      {required final String text, required final String mood}) = _$QuoteImpl;
-
-  factory _Quote.fromJson(Map<String, dynamic> json) = _$QuoteImpl.fromJson;
-
-  @override
-  String get text;
-  @override
-  String get mood;
-
-  /// Create a copy of Quote
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$QuoteImplCopyWith<_$QuoteImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 Note _$NoteFromJson(Map<String, dynamic> json) {
   return _Note.fromJson(json);
 }
@@ -4426,8 +4264,8 @@ Journal _$JournalFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Journal {
   String get id => throw _privateConstructorUsedError;
-  DateTime get dateTime => throw _privateConstructorUsedError;
-  List<Quote> get quotes => throw _privateConstructorUsedError;
+  DateTime get dateTime =>
+      throw _privateConstructorUsedError; //required List<Quote> quotes,
   MoodScore get moodScore => throw _privateConstructorUsedError;
   StressLevel get stressLevel => throw _privateConstructorUsedError;
   List<Highlight> get highlights => throw _privateConstructorUsedError;
@@ -4454,7 +4292,6 @@ abstract class $JournalCopyWith<$Res> {
   $Res call(
       {String id,
       DateTime dateTime,
-      List<Quote> quotes,
       MoodScore moodScore,
       StressLevel stressLevel,
       List<Highlight> highlights,
@@ -4485,7 +4322,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
   $Res call({
     Object? id = null,
     Object? dateTime = null,
-    Object? quotes = null,
     Object? moodScore = null,
     Object? stressLevel = null,
     Object? highlights = null,
@@ -4503,10 +4339,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      quotes: null == quotes
-          ? _value.quotes
-          : quotes // ignore: cast_nullable_to_non_nullable
-              as List<Quote>,
       moodScore: null == moodScore
           ? _value.moodScore
           : moodScore // ignore: cast_nullable_to_non_nullable
@@ -4579,7 +4411,6 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
   $Res call(
       {String id,
       DateTime dateTime,
-      List<Quote> quotes,
       MoodScore moodScore,
       StressLevel stressLevel,
       List<Highlight> highlights,
@@ -4611,7 +4442,6 @@ class __$$JournalImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? dateTime = null,
-    Object? quotes = null,
     Object? moodScore = null,
     Object? stressLevel = null,
     Object? highlights = null,
@@ -4629,10 +4459,6 @@ class __$$JournalImplCopyWithImpl<$Res>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      quotes: null == quotes
-          ? _value._quotes
-          : quotes // ignore: cast_nullable_to_non_nullable
-              as List<Quote>,
       moodScore: null == moodScore
           ? _value.moodScore
           : moodScore // ignore: cast_nullable_to_non_nullable
@@ -4671,7 +4497,6 @@ class _$JournalImpl implements _Journal {
   const _$JournalImpl(
       {required this.id,
       required this.dateTime,
-      required final List<Quote> quotes,
       required this.moodScore,
       required this.stressLevel,
       required final List<Highlight> highlights,
@@ -4679,8 +4504,7 @@ class _$JournalImpl implements _Journal {
       required final List<MoodTracking> moodTrackings,
       required final List<AwakeTimeAllocation> awakeTimeAllocations,
       required this.socialMap})
-      : _quotes = quotes,
-        _highlights = highlights,
+      : _highlights = highlights,
         _energyLevels = energyLevels,
         _moodTrackings = moodTrackings,
         _awakeTimeAllocations = awakeTimeAllocations;
@@ -4692,14 +4516,7 @@ class _$JournalImpl implements _Journal {
   final String id;
   @override
   final DateTime dateTime;
-  final List<Quote> _quotes;
-  @override
-  List<Quote> get quotes {
-    if (_quotes is EqualUnmodifiableListView) return _quotes;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_quotes);
-  }
-
+//required List<Quote> quotes,
   @override
   final MoodScore moodScore;
   @override
@@ -4742,7 +4559,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, quotes: $quotes, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
   }
 
   @override
@@ -4753,7 +4570,6 @@ class _$JournalImpl implements _Journal {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
-            const DeepCollectionEquality().equals(other._quotes, _quotes) &&
             (identical(other.moodScore, moodScore) ||
                 other.moodScore == moodScore) &&
             (identical(other.stressLevel, stressLevel) ||
@@ -4776,7 +4592,6 @@ class _$JournalImpl implements _Journal {
       runtimeType,
       id,
       dateTime,
-      const DeepCollectionEquality().hash(_quotes),
       moodScore,
       stressLevel,
       const DeepCollectionEquality().hash(_highlights),
@@ -4805,7 +4620,6 @@ abstract class _Journal implements Journal {
   const factory _Journal(
       {required final String id,
       required final DateTime dateTime,
-      required final List<Quote> quotes,
       required final MoodScore moodScore,
       required final StressLevel stressLevel,
       required final List<Highlight> highlights,
@@ -4819,9 +4633,7 @@ abstract class _Journal implements Journal {
   @override
   String get id;
   @override
-  DateTime get dateTime;
-  @override
-  List<Quote> get quotes;
+  DateTime get dateTime; //required List<Quote> quotes,
   @override
   MoodScore get moodScore;
   @override
