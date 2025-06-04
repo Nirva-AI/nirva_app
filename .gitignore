@@ -46,3 +46,6 @@ app.*.map.json
 
 #
 .VSCodeCounter/
+
+# 添加assets下的 *json 一律忽略
+assets/**/*.json
