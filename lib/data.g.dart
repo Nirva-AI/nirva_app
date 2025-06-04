@@ -209,22 +209,6 @@ Map<String, dynamic> _$$NoteImplToJson(_$NoteImpl instance) =>
       'content': instance.content,
     };
 
-_$ReflectionImpl _$$ReflectionImplFromJson(Map<String, dynamic> json) =>
-    _$ReflectionImpl(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      items: (json['items'] as List<dynamic>).map((e) => e as String).toList(),
-      content: json['content'] as String,
-    );
-
-Map<String, dynamic> _$$ReflectionImplToJson(_$ReflectionImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'title': instance.title,
-      'items': instance.items,
-      'content': instance.content,
-    };
-
 _$MoodScoreImpl _$$MoodScoreImplFromJson(Map<String, dynamic> json) =>
     _$MoodScoreImpl(
       value: (json['value'] as num).toDouble(),
@@ -379,15 +363,6 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
       quotes: (json['quotes'] as List<dynamic>)
           .map((e) => Quote.fromJson(e as Map<String, dynamic>))
           .toList(),
-      selfReflections: (json['selfReflections'] as List<dynamic>)
-          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      detailedInsights: (json['detailedInsights'] as List<dynamic>)
-          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      goals: (json['goals'] as List<dynamic>)
-          .map((e) => Reflection.fromJson(e as Map<String, dynamic>))
-          .toList(),
       moodScore: MoodScore.fromJson(json['moodScore'] as Map<String, dynamic>),
       stressLevel:
           StressLevel.fromJson(json['stressLevel'] as Map<String, dynamic>),
@@ -411,9 +386,6 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
       'id': instance.id,
       'dateTime': instance.dateTime.toIso8601String(),
       'quotes': instance.quotes,
-      'selfReflections': instance.selfReflections,
-      'detailedInsights': instance.detailedInsights,
-      'goals': instance.goals,
       'moodScore': instance.moodScore,
       'stressLevel': instance.stressLevel,
       'highlights': instance.highlights,

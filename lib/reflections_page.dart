@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/app_runtime_context.dart';
-import 'package:nirva_app/data.dart';
 import 'package:nirva_app/utils.dart';
 
 class ReflectionSummary extends StatelessWidget {
@@ -40,16 +39,17 @@ class ReflectionSummary extends StatelessWidget {
 }
 
 class ReflectionCard extends StatefulWidget {
-  final Reflection reflection;
+  final String title;
+  final String content;
 
-  const ReflectionCard({super.key, required this.reflection});
+  const ReflectionCard({super.key, required this.title, required this.content});
 
   @override
   State<ReflectionCard> createState() => _ReflectionCardState();
 }
 
 class _ReflectionCardState extends State<ReflectionCard> {
-  bool _isExpanded = false; // 控制卡片是否展开
+  bool _isExpanded = true; // 控制卡片是否展开
 
   @override
   Widget build(BuildContext context) {
@@ -62,23 +62,15 @@ class _ReflectionCardState extends State<ReflectionCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.reflection.title,
+              widget.title,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            ...widget.reflection.items.map(
-              (item) => Row(
-                children: [
-                  const Icon(Icons.circle, size: 8, color: Colors.grey),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(item)),
-                ],
-              ),
-            ),
+
             if (_isExpanded) ...[
               const SizedBox(height: 16),
               Text(
-                widget.reflection.content,
+                widget.content,
                 style: const TextStyle(fontSize: 14, color: Colors.black87),
               ),
             ],
@@ -110,10 +102,11 @@ class _ReflectionCardState extends State<ReflectionCard> {
   }
 }
 
-class GoalReflectionCard extends StatelessWidget {
-  final Reflection reflection;
+class GoalCard extends StatelessWidget {
+  final String title;
+  final String content;
 
-  const GoalReflectionCard({super.key, required this.reflection});
+  const GoalCard({super.key, required this.title, required this.content});
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +123,7 @@ class GoalReflectionCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    reflection.title,
+                    title,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -140,20 +133,18 @@ class GoalReflectionCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.checklist, color: Colors.purple),
                   onPressed: () {
-                    _showTopOverlay(context, reflection);
+                    _showTopOverlay(context, title, content);
                   },
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            ...reflection.items.map(
-              (item) => Row(
-                children: [
-                  const Icon(Icons.circle, size: 8, color: Colors.grey),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(item)),
-                ],
-              ),
+
+            Row(
+              children: [
+                const SizedBox(width: 8),
+                Expanded(child: Text(content)),
+              ],
             ),
           ],
         ),
@@ -162,7 +153,7 @@ class GoalReflectionCard extends StatelessWidget {
   }
 
   // 封装的 _showTopOverlay 函数
-  void _showTopOverlay(BuildContext context, Reflection data) {
+  void _showTopOverlay(BuildContext context, String title, String content) {
     final overlay = Overlay.of(context);
     final overlayEntry = OverlayEntry(
       builder:
@@ -197,7 +188,7 @@ class GoalReflectionCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '"${data.title}" and ${data.items.length} tasks have been added to your todo list.',
+                      '"$title" and $content tasks have been added to your todo list.',
                       style: const TextStyle(color: Colors.black),
                     ),
                   ],
@@ -230,79 +221,78 @@ class ReflectionsPage extends StatelessWidget {
           children: [
             const ReflectionSummary(),
             const SizedBox(height: 16),
-            _buildPersonalReflections(),
+            _buildReflectionCards(),
             const SizedBox(height: 16),
-            _buildDetailedInsights(),
-            const SizedBox(height: 16),
-            _buildGoals(),
+            _buildGoalCards(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPersonalReflections() {
-    final personalReflections =
-        AppRuntimeContext().data.currentJournal.selfReflections;
+  Widget _buildReflectionCards() {
+    final dailyReflection =
+        AppRuntimeContext().data.currentJournalFile.reflection.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // const Text(
-        //   'Personal Reflections',
-        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        // ),
-        // const SizedBox(height: 8),
-        ...personalReflections.map(
-          (reflection) => Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: ReflectionCard(reflection: reflection),
-          ),
+        _buildReflectionCard('Gratitude', dailyReflection.gratitude.toString()),
+        _buildReflectionCard(
+          'Challenges and Growth',
+          dailyReflection.challenges_and_growth.toString(),
+        ),
+        _buildReflectionCard(
+          'Learning and Insights',
+          dailyReflection.learning_and_insights.toString(),
+        ),
+        _buildReflectionCard(
+          'Connections and Relationships',
+          dailyReflection.connections_and_relationships.toString(),
         ),
       ],
     );
   }
 
-  Widget _buildDetailedInsights() {
-    final detailedInsights =
-        AppRuntimeContext().data.currentJournal.detailedInsights;
+  Widget _buildReflectionCard(String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: ReflectionCard(title: title, content: content),
+    );
+  }
+
+  Widget _buildGoalCards() {
+    final dailyReflection =
+        AppRuntimeContext().data.currentJournalFile.reflection.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Detailed Insights',
+          'Looking Forward',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ...detailedInsights.map(
-          (insight) => Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: ReflectionCard(reflection: insight),
-          ),
+        _buildGoalCard(
+          'Do Differently Tomorrow',
+          dailyReflection.looking_forward.do_differently_tomorrow,
+        ),
+        _buildGoalCard(
+          'Continue What Worked',
+          dailyReflection.looking_forward.continue_what_worked,
+        ),
+        _buildGoalCard(
+          "Top 3 Priorities Tomorrow",
+          dailyReflection.looking_forward.top_3_priorities_tomorrow.join(', '),
         ),
       ],
     );
   }
 
-  Widget _buildGoals() {
-    final goals = AppRuntimeContext().data.currentJournal.goals;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'I can consider pursuing the following goals:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        ...goals.map(
-          (goal) => Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: GoalReflectionCard(reflection: goal),
-          ),
-        ),
-      ],
+  Widget _buildGoalCard(String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: GoalCard(title: title, content: content),
     );
   }
 }
