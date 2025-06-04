@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 //import 'package:nirva_app/app_runtime_context.dart';
-import 'package:logger/logger.dart';
-import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
+//import 'package:logger/logger.dart';
+//import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,23 +26,23 @@ class _SplashScreenState extends State<SplashScreen> {
     //检查网络状态，临时先这么写。
     await checkNetworkStatus();
 
-    try {
-      final urlConfig = await APIs.getUrlConfig();
-      if (urlConfig == null) {
-        Logger().e('获取 URL 配置失败');
-        return;
-      }
+    // try {
+    //   final urlConfig = await APIs.getUrlConfig();
+    //   if (urlConfig == null) {
+    //     Logger().e('获取 URL 配置失败');
+    //     return;
+    //   }
 
-      Logger().i('API 初始化成功');
+    //   Logger().i('API 初始化成功');
 
-      final token = await APIs.login();
-      if (token == null) {
-        Logger().e('登录失败，未获取到 token');
-        return;
-      }
-    } catch (e) {
-      Logger().e('登录流程出现错误: $e');
-    }
+    //   final token = await APIs.login();
+    //   if (token == null) {
+    //     Logger().e('登录失败，未获取到 token');
+    //     return;
+    //   }
+    // } catch (e) {
+    //   Logger().e('登录流程出现错误: $e');
+    // }
 
     // 计算剩余时间
     final int elapsed = stopwatch.elapsedMilliseconds;

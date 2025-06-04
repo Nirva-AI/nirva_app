@@ -134,15 +134,6 @@ class DailyReflection with _$DailyReflection {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// @freezed
-// class Quote with _$Quote {
-//   const factory Quote({required String text}) = _Quote;
-
-//   factory Quote.fromJson(Map<String, dynamic> json) => _$QuoteFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _Quote).toJson();
-// }
-
 @freezed
 class Note with _$Note {
   const factory Note({required String id, required String content}) = _Note;
@@ -150,28 +141,6 @@ class Note with _$Note {
   factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _Note).toJson();
-}
-
-@freezed
-class MoodScore with _$MoodScore {
-  const factory MoodScore({required double value, required double change}) =
-      _MoodScore;
-
-  factory MoodScore.fromJson(Map<String, dynamic> json) =>
-      _$MoodScoreFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _MoodScore).toJson();
-}
-
-@freezed
-class StressLevel with _$StressLevel {
-  const factory StressLevel({required double value, required double change}) =
-      _StressLevel;
-
-  factory StressLevel.fromJson(Map<String, dynamic> json) =>
-      _$StressLevelFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _StressLevel).toJson();
 }
 
 @freezed
@@ -293,8 +262,8 @@ class Journal with _$Journal {
     required String id,
     required DateTime dateTime,
     //required List<Quote> quotes,
-    required MoodScore moodScore,
-    required StressLevel stressLevel,
+    //required MoodScore moodScore,
+    //required StressLevel stressLevel,
     required List<Highlight> highlights,
     required List<EnergyLevel> energyLevels,
     required List<MoodTracking> moodTrackings,
@@ -535,4 +504,57 @@ class JournalFile with _$JournalFile {
 
   @override
   Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
+}
+
+extension JournalFileExtensions on JournalFile {
+  List<Event> get events {
+    // 返回 LabelExtraction 中的事件列表
+    return label_extraction.events;
+  }
+
+  DailyReflection get dailyReflection {
+    // 返回 ReflectionData 中的日常反思
+    return reflection.daily_reflection;
+  }
+
+  Gratitude get gratitude {
+    // 返回日常反思中的感恩部分
+    return reflection.daily_reflection.gratitude;
+  }
+
+  ChallengesAndGrowth get challengesAndGrowth {
+    // 返回日常反思中的挑战与成长部分
+    return reflection.daily_reflection.challenges_and_growth;
+  }
+
+  LearningAndInsights get learningAndInsights {
+    // 返回日常反思中的学习与洞察部分
+    return reflection.daily_reflection.learning_and_insights;
+  }
+
+  ConnectionsAndRelationships get connectionsAndRelationships {
+    // 返回日常反思中的连接与关系部分
+    return reflection.daily_reflection.connections_and_relationships;
+  }
+
+  LookingForward get lookingForward {
+    // 返回日常反思中的展望未来部分
+    return reflection.daily_reflection.looking_forward;
+  }
+
+  double get moodScoreAverage {
+    double totalMoodScore = 0;
+    for (var event in events) {
+      totalMoodScore += event.mood_score;
+    }
+    return totalMoodScore / events.length;
+  }
+
+  double get stressLevelAverage {
+    double totalStressLevel = 0;
+    for (var event in events) {
+      totalStressLevel += event.stress_level;
+    }
+    return totalStressLevel / events.length;
+  }
 }

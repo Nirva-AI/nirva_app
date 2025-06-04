@@ -2358,339 +2358,6 @@ abstract class _Note implements Note {
       throw _privateConstructorUsedError;
 }
 
-MoodScore _$MoodScoreFromJson(Map<String, dynamic> json) {
-  return _MoodScore.fromJson(json);
-}
-
-/// @nodoc
-mixin _$MoodScore {
-  double get value => throw _privateConstructorUsedError;
-  double get change => throw _privateConstructorUsedError;
-
-  /// Serializes this MoodScore to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of MoodScore
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $MoodScoreCopyWith<MoodScore> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $MoodScoreCopyWith<$Res> {
-  factory $MoodScoreCopyWith(MoodScore value, $Res Function(MoodScore) then) =
-      _$MoodScoreCopyWithImpl<$Res, MoodScore>;
-  @useResult
-  $Res call({double value, double change});
-}
-
-/// @nodoc
-class _$MoodScoreCopyWithImpl<$Res, $Val extends MoodScore>
-    implements $MoodScoreCopyWith<$Res> {
-  _$MoodScoreCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of MoodScore
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-    Object? change = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as double,
-      change: null == change
-          ? _value.change
-          : change // ignore: cast_nullable_to_non_nullable
-              as double,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$MoodScoreImplCopyWith<$Res>
-    implements $MoodScoreCopyWith<$Res> {
-  factory _$$MoodScoreImplCopyWith(
-          _$MoodScoreImpl value, $Res Function(_$MoodScoreImpl) then) =
-      __$$MoodScoreImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({double value, double change});
-}
-
-/// @nodoc
-class __$$MoodScoreImplCopyWithImpl<$Res>
-    extends _$MoodScoreCopyWithImpl<$Res, _$MoodScoreImpl>
-    implements _$$MoodScoreImplCopyWith<$Res> {
-  __$$MoodScoreImplCopyWithImpl(
-      _$MoodScoreImpl _value, $Res Function(_$MoodScoreImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of MoodScore
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-    Object? change = null,
-  }) {
-    return _then(_$MoodScoreImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as double,
-      change: null == change
-          ? _value.change
-          : change // ignore: cast_nullable_to_non_nullable
-              as double,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$MoodScoreImpl implements _MoodScore {
-  const _$MoodScoreImpl({required this.value, required this.change});
-
-  factory _$MoodScoreImpl.fromJson(Map<String, dynamic> json) =>
-      _$$MoodScoreImplFromJson(json);
-
-  @override
-  final double value;
-  @override
-  final double change;
-
-  @override
-  String toString() {
-    return 'MoodScore(value: $value, change: $change)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$MoodScoreImpl &&
-            (identical(other.value, value) || other.value == value) &&
-            (identical(other.change, change) || other.change == change));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, value, change);
-
-  /// Create a copy of MoodScore
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$MoodScoreImplCopyWith<_$MoodScoreImpl> get copyWith =>
-      __$$MoodScoreImplCopyWithImpl<_$MoodScoreImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$MoodScoreImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _MoodScore implements MoodScore {
-  const factory _MoodScore(
-      {required final double value,
-      required final double change}) = _$MoodScoreImpl;
-
-  factory _MoodScore.fromJson(Map<String, dynamic> json) =
-      _$MoodScoreImpl.fromJson;
-
-  @override
-  double get value;
-  @override
-  double get change;
-
-  /// Create a copy of MoodScore
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$MoodScoreImplCopyWith<_$MoodScoreImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-StressLevel _$StressLevelFromJson(Map<String, dynamic> json) {
-  return _StressLevel.fromJson(json);
-}
-
-/// @nodoc
-mixin _$StressLevel {
-  double get value => throw _privateConstructorUsedError;
-  double get change => throw _privateConstructorUsedError;
-
-  /// Serializes this StressLevel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of StressLevel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $StressLevelCopyWith<StressLevel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $StressLevelCopyWith<$Res> {
-  factory $StressLevelCopyWith(
-          StressLevel value, $Res Function(StressLevel) then) =
-      _$StressLevelCopyWithImpl<$Res, StressLevel>;
-  @useResult
-  $Res call({double value, double change});
-}
-
-/// @nodoc
-class _$StressLevelCopyWithImpl<$Res, $Val extends StressLevel>
-    implements $StressLevelCopyWith<$Res> {
-  _$StressLevelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of StressLevel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-    Object? change = null,
-  }) {
-    return _then(_value.copyWith(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as double,
-      change: null == change
-          ? _value.change
-          : change // ignore: cast_nullable_to_non_nullable
-              as double,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$StressLevelImplCopyWith<$Res>
-    implements $StressLevelCopyWith<$Res> {
-  factory _$$StressLevelImplCopyWith(
-          _$StressLevelImpl value, $Res Function(_$StressLevelImpl) then) =
-      __$$StressLevelImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({double value, double change});
-}
-
-/// @nodoc
-class __$$StressLevelImplCopyWithImpl<$Res>
-    extends _$StressLevelCopyWithImpl<$Res, _$StressLevelImpl>
-    implements _$$StressLevelImplCopyWith<$Res> {
-  __$$StressLevelImplCopyWithImpl(
-      _$StressLevelImpl _value, $Res Function(_$StressLevelImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of StressLevel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = null,
-    Object? change = null,
-  }) {
-    return _then(_$StressLevelImpl(
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as double,
-      change: null == change
-          ? _value.change
-          : change // ignore: cast_nullable_to_non_nullable
-              as double,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$StressLevelImpl implements _StressLevel {
-  const _$StressLevelImpl({required this.value, required this.change});
-
-  factory _$StressLevelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$StressLevelImplFromJson(json);
-
-  @override
-  final double value;
-  @override
-  final double change;
-
-  @override
-  String toString() {
-    return 'StressLevel(value: $value, change: $change)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$StressLevelImpl &&
-            (identical(other.value, value) || other.value == value) &&
-            (identical(other.change, change) || other.change == change));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, value, change);
-
-  /// Create a copy of StressLevel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$StressLevelImplCopyWith<_$StressLevelImpl> get copyWith =>
-      __$$StressLevelImplCopyWithImpl<_$StressLevelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$StressLevelImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _StressLevel implements StressLevel {
-  const factory _StressLevel(
-      {required final double value,
-      required final double change}) = _$StressLevelImpl;
-
-  factory _StressLevel.fromJson(Map<String, dynamic> json) =
-      _$StressLevelImpl.fromJson;
-
-  @override
-  double get value;
-  @override
-  double get change;
-
-  /// Create a copy of StressLevel
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$StressLevelImplCopyWith<_$StressLevelImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 Highlight _$HighlightFromJson(Map<String, dynamic> json) {
   return _Highlight.fromJson(json);
 }
@@ -4266,8 +3933,8 @@ mixin _$Journal {
   String get id => throw _privateConstructorUsedError;
   DateTime get dateTime =>
       throw _privateConstructorUsedError; //required List<Quote> quotes,
-  MoodScore get moodScore => throw _privateConstructorUsedError;
-  StressLevel get stressLevel => throw _privateConstructorUsedError;
+//required MoodScore moodScore,
+//required StressLevel stressLevel,
   List<Highlight> get highlights => throw _privateConstructorUsedError;
   List<EnergyLevel> get energyLevels => throw _privateConstructorUsedError;
   List<MoodTracking> get moodTrackings => throw _privateConstructorUsedError;
@@ -4292,16 +3959,12 @@ abstract class $JournalCopyWith<$Res> {
   $Res call(
       {String id,
       DateTime dateTime,
-      MoodScore moodScore,
-      StressLevel stressLevel,
       List<Highlight> highlights,
       List<EnergyLevel> energyLevels,
       List<MoodTracking> moodTrackings,
       List<AwakeTimeAllocation> awakeTimeAllocations,
       SocialMap socialMap});
 
-  $MoodScoreCopyWith<$Res> get moodScore;
-  $StressLevelCopyWith<$Res> get stressLevel;
   $SocialMapCopyWith<$Res> get socialMap;
 }
 
@@ -4322,8 +3985,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
   $Res call({
     Object? id = null,
     Object? dateTime = null,
-    Object? moodScore = null,
-    Object? stressLevel = null,
     Object? highlights = null,
     Object? energyLevels = null,
     Object? moodTrackings = null,
@@ -4339,14 +4000,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      moodScore: null == moodScore
-          ? _value.moodScore
-          : moodScore // ignore: cast_nullable_to_non_nullable
-              as MoodScore,
-      stressLevel: null == stressLevel
-          ? _value.stressLevel
-          : stressLevel // ignore: cast_nullable_to_non_nullable
-              as StressLevel,
       highlights: null == highlights
           ? _value.highlights
           : highlights // ignore: cast_nullable_to_non_nullable
@@ -4374,26 +4027,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $MoodScoreCopyWith<$Res> get moodScore {
-    return $MoodScoreCopyWith<$Res>(_value.moodScore, (value) {
-      return _then(_value.copyWith(moodScore: value) as $Val);
-    });
-  }
-
-  /// Create a copy of Journal
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $StressLevelCopyWith<$Res> get stressLevel {
-    return $StressLevelCopyWith<$Res>(_value.stressLevel, (value) {
-      return _then(_value.copyWith(stressLevel: value) as $Val);
-    });
-  }
-
-  /// Create a copy of Journal
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
   $SocialMapCopyWith<$Res> get socialMap {
     return $SocialMapCopyWith<$Res>(_value.socialMap, (value) {
       return _then(_value.copyWith(socialMap: value) as $Val);
@@ -4411,18 +4044,12 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
   $Res call(
       {String id,
       DateTime dateTime,
-      MoodScore moodScore,
-      StressLevel stressLevel,
       List<Highlight> highlights,
       List<EnergyLevel> energyLevels,
       List<MoodTracking> moodTrackings,
       List<AwakeTimeAllocation> awakeTimeAllocations,
       SocialMap socialMap});
 
-  @override
-  $MoodScoreCopyWith<$Res> get moodScore;
-  @override
-  $StressLevelCopyWith<$Res> get stressLevel;
   @override
   $SocialMapCopyWith<$Res> get socialMap;
 }
@@ -4442,8 +4069,6 @@ class __$$JournalImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? dateTime = null,
-    Object? moodScore = null,
-    Object? stressLevel = null,
     Object? highlights = null,
     Object? energyLevels = null,
     Object? moodTrackings = null,
@@ -4459,14 +4084,6 @@ class __$$JournalImplCopyWithImpl<$Res>
           ? _value.dateTime
           : dateTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      moodScore: null == moodScore
-          ? _value.moodScore
-          : moodScore // ignore: cast_nullable_to_non_nullable
-              as MoodScore,
-      stressLevel: null == stressLevel
-          ? _value.stressLevel
-          : stressLevel // ignore: cast_nullable_to_non_nullable
-              as StressLevel,
       highlights: null == highlights
           ? _value._highlights
           : highlights // ignore: cast_nullable_to_non_nullable
@@ -4497,8 +4114,6 @@ class _$JournalImpl implements _Journal {
   const _$JournalImpl(
       {required this.id,
       required this.dateTime,
-      required this.moodScore,
-      required this.stressLevel,
       required final List<Highlight> highlights,
       required final List<EnergyLevel> energyLevels,
       required final List<MoodTracking> moodTrackings,
@@ -4517,11 +4132,12 @@ class _$JournalImpl implements _Journal {
   @override
   final DateTime dateTime;
 //required List<Quote> quotes,
-  @override
-  final MoodScore moodScore;
-  @override
-  final StressLevel stressLevel;
+//required MoodScore moodScore,
+//required StressLevel stressLevel,
   final List<Highlight> _highlights;
+//required List<Quote> quotes,
+//required MoodScore moodScore,
+//required StressLevel stressLevel,
   @override
   List<Highlight> get highlights {
     if (_highlights is EqualUnmodifiableListView) return _highlights;
@@ -4559,7 +4175,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
   }
 
   @override
@@ -4570,10 +4186,6 @@ class _$JournalImpl implements _Journal {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
-            (identical(other.moodScore, moodScore) ||
-                other.moodScore == moodScore) &&
-            (identical(other.stressLevel, stressLevel) ||
-                other.stressLevel == stressLevel) &&
             const DeepCollectionEquality()
                 .equals(other._highlights, _highlights) &&
             const DeepCollectionEquality()
@@ -4592,8 +4204,6 @@ class _$JournalImpl implements _Journal {
       runtimeType,
       id,
       dateTime,
-      moodScore,
-      stressLevel,
       const DeepCollectionEquality().hash(_highlights),
       const DeepCollectionEquality().hash(_energyLevels),
       const DeepCollectionEquality().hash(_moodTrackings),
@@ -4620,8 +4230,6 @@ abstract class _Journal implements Journal {
   const factory _Journal(
       {required final String id,
       required final DateTime dateTime,
-      required final MoodScore moodScore,
-      required final StressLevel stressLevel,
       required final List<Highlight> highlights,
       required final List<EnergyLevel> energyLevels,
       required final List<MoodTracking> moodTrackings,
@@ -4634,10 +4242,8 @@ abstract class _Journal implements Journal {
   String get id;
   @override
   DateTime get dateTime; //required List<Quote> quotes,
-  @override
-  MoodScore get moodScore;
-  @override
-  StressLevel get stressLevel;
+//required MoodScore moodScore,
+//required StressLevel stressLevel,
   @override
   List<Highlight> get highlights;
   @override

@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/mood_score_details_page.dart';
 
 class MoodScoreCard extends StatelessWidget {
-  final MoodScore data;
-
-  const MoodScoreCard({super.key, required this.data});
-
-  // 根据变化值获取颜色
-  Color _getChangeColor(double change) {
-    return change >= 0 ? Colors.green : Colors.red;
-  }
-
-  // 写一个函数 根据change 返回一个string. 可以使用.toStringAsFixed(1),的方法，注意如果是正数要加上+号
-  String _formatChange(double change) {
-    return change >= 0
-        ? '+${change.toStringAsFixed(1)}'
-        : change.toStringAsFixed(1);
-  }
+  const MoodScoreCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Color changeColor = _getChangeColor(data.change);
+    final moodScore =
+        AppRuntimeContext().data.currentJournalFile.moodScoreAverage;
+
     return Expanded(
       child: Card(
         elevation: 2,
@@ -50,28 +39,28 @@ class MoodScoreCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                data.value.toStringAsFixed(1),
+                moodScore.toStringAsFixed(1), // 显示分数，保留一位小数
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    changeColor == Colors.green
-                        ? Icons.arrow_upward
-                        : Icons.arrow_downward,
-                    color: changeColor,
-                    size: 16,
-                  ),
-                  Text(
-                    _formatChange(data.change),
-                    style: TextStyle(color: changeColor),
-                  ),
-                ],
-              ),
+              //const SizedBox(height: 8),
+              // Row(
+              //   children: [
+              //     Icon(
+              //       changeColor == Colors.green
+              //           ? Icons.arrow_upward
+              //           : Icons.arrow_downward,
+              //       color: changeColor,
+              //       size: 16,
+              //     ),
+              //     Text(
+              //       _formatChange(data.change),
+              //       style: TextStyle(color: changeColor),
+              //     ),
+              //   ],
+              // ),
             ],
           ),
         ),
