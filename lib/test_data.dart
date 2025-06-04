@@ -45,10 +45,10 @@ class TestData {
         TestData.createTestMonthlyArchivedHighlights();
 
     // 添加日记的最爱数据
-    initializeTestFavorites(AppRuntimeContext().data.currentJournalFile);
+    //initializeTestFavorites(AppRuntimeContext().data.currentJournalFile);
 
     // 添加日记的笔记数据
-    initializeTestMyNotes(AppRuntimeContext().data.currentJournalFile);
+    //initializeTestMyNotes(AppRuntimeContext().data.currentJournalFile);
 
     //
     initializeTestSocalMap();

@@ -176,7 +176,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
       itemBuilder: (context, index) {
         return EventCard(
           //diaryData: finalDiaryEntries[index],
-          eventData: events[index],
+          eventData: finalEvents[index],
         );
       },
     );
