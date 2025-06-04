@@ -2520,219 +2520,6 @@ abstract class _Note implements Note {
       throw _privateConstructorUsedError;
 }
 
-Reflection _$ReflectionFromJson(Map<String, dynamic> json) {
-  return _Reflection.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Reflection {
-  String get id => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  List<String> get items => throw _privateConstructorUsedError;
-  String get content => throw _privateConstructorUsedError;
-
-  /// Serializes this Reflection to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Reflection
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ReflectionCopyWith<Reflection> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ReflectionCopyWith<$Res> {
-  factory $ReflectionCopyWith(
-          Reflection value, $Res Function(Reflection) then) =
-      _$ReflectionCopyWithImpl<$Res, Reflection>;
-  @useResult
-  $Res call({String id, String title, List<String> items, String content});
-}
-
-/// @nodoc
-class _$ReflectionCopyWithImpl<$Res, $Val extends Reflection>
-    implements $ReflectionCopyWith<$Res> {
-  _$ReflectionCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of Reflection
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? title = null,
-    Object? items = null,
-    Object? content = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      items: null == items
-          ? _value.items
-          : items // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      content: null == content
-          ? _value.content
-          : content // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$ReflectionImplCopyWith<$Res>
-    implements $ReflectionCopyWith<$Res> {
-  factory _$$ReflectionImplCopyWith(
-          _$ReflectionImpl value, $Res Function(_$ReflectionImpl) then) =
-      __$$ReflectionImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String id, String title, List<String> items, String content});
-}
-
-/// @nodoc
-class __$$ReflectionImplCopyWithImpl<$Res>
-    extends _$ReflectionCopyWithImpl<$Res, _$ReflectionImpl>
-    implements _$$ReflectionImplCopyWith<$Res> {
-  __$$ReflectionImplCopyWithImpl(
-      _$ReflectionImpl _value, $Res Function(_$ReflectionImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of Reflection
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? title = null,
-    Object? items = null,
-    Object? content = null,
-  }) {
-    return _then(_$ReflectionImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      items: null == items
-          ? _value._items
-          : items // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      content: null == content
-          ? _value.content
-          : content // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$ReflectionImpl implements _Reflection {
-  const _$ReflectionImpl(
-      {required this.id,
-      required this.title,
-      required final List<String> items,
-      required this.content})
-      : _items = items;
-
-  factory _$ReflectionImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ReflectionImplFromJson(json);
-
-  @override
-  final String id;
-  @override
-  final String title;
-  final List<String> _items;
-  @override
-  List<String> get items {
-    if (_items is EqualUnmodifiableListView) return _items;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_items);
-  }
-
-  @override
-  final String content;
-
-  @override
-  String toString() {
-    return 'Reflection(id: $id, title: $title, items: $items, content: $content)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ReflectionImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.title, title) || other.title == title) &&
-            const DeepCollectionEquality().equals(other._items, _items) &&
-            (identical(other.content, content) || other.content == content));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, title,
-      const DeepCollectionEquality().hash(_items), content);
-
-  /// Create a copy of Reflection
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ReflectionImplCopyWith<_$ReflectionImpl> get copyWith =>
-      __$$ReflectionImplCopyWithImpl<_$ReflectionImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ReflectionImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Reflection implements Reflection {
-  const factory _Reflection(
-      {required final String id,
-      required final String title,
-      required final List<String> items,
-      required final String content}) = _$ReflectionImpl;
-
-  factory _Reflection.fromJson(Map<String, dynamic> json) =
-      _$ReflectionImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  String get title;
-  @override
-  List<String> get items;
-  @override
-  String get content;
-
-  /// Create a copy of Reflection
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ReflectionImplCopyWith<_$ReflectionImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 MoodScore _$MoodScoreFromJson(Map<String, dynamic> json) {
   return _MoodScore.fromJson(json);
 }
@@ -4639,12 +4426,8 @@ Journal _$JournalFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Journal {
   String get id => throw _privateConstructorUsedError;
-  DateTime get dateTime =>
-      throw _privateConstructorUsedError; //required String summary,
+  DateTime get dateTime => throw _privateConstructorUsedError;
   List<Quote> get quotes => throw _privateConstructorUsedError;
-  List<Reflection> get selfReflections => throw _privateConstructorUsedError;
-  List<Reflection> get detailedInsights => throw _privateConstructorUsedError;
-  List<Reflection> get goals => throw _privateConstructorUsedError;
   MoodScore get moodScore => throw _privateConstructorUsedError;
   StressLevel get stressLevel => throw _privateConstructorUsedError;
   List<Highlight> get highlights => throw _privateConstructorUsedError;
@@ -4672,9 +4455,6 @@ abstract class $JournalCopyWith<$Res> {
       {String id,
       DateTime dateTime,
       List<Quote> quotes,
-      List<Reflection> selfReflections,
-      List<Reflection> detailedInsights,
-      List<Reflection> goals,
       MoodScore moodScore,
       StressLevel stressLevel,
       List<Highlight> highlights,
@@ -4706,9 +4486,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
     Object? id = null,
     Object? dateTime = null,
     Object? quotes = null,
-    Object? selfReflections = null,
-    Object? detailedInsights = null,
-    Object? goals = null,
     Object? moodScore = null,
     Object? stressLevel = null,
     Object? highlights = null,
@@ -4730,18 +4507,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
           ? _value.quotes
           : quotes // ignore: cast_nullable_to_non_nullable
               as List<Quote>,
-      selfReflections: null == selfReflections
-          ? _value.selfReflections
-          : selfReflections // ignore: cast_nullable_to_non_nullable
-              as List<Reflection>,
-      detailedInsights: null == detailedInsights
-          ? _value.detailedInsights
-          : detailedInsights // ignore: cast_nullable_to_non_nullable
-              as List<Reflection>,
-      goals: null == goals
-          ? _value.goals
-          : goals // ignore: cast_nullable_to_non_nullable
-              as List<Reflection>,
       moodScore: null == moodScore
           ? _value.moodScore
           : moodScore // ignore: cast_nullable_to_non_nullable
@@ -4815,9 +4580,6 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
       {String id,
       DateTime dateTime,
       List<Quote> quotes,
-      List<Reflection> selfReflections,
-      List<Reflection> detailedInsights,
-      List<Reflection> goals,
       MoodScore moodScore,
       StressLevel stressLevel,
       List<Highlight> highlights,
@@ -4850,9 +4612,6 @@ class __$$JournalImplCopyWithImpl<$Res>
     Object? id = null,
     Object? dateTime = null,
     Object? quotes = null,
-    Object? selfReflections = null,
-    Object? detailedInsights = null,
-    Object? goals = null,
     Object? moodScore = null,
     Object? stressLevel = null,
     Object? highlights = null,
@@ -4874,18 +4633,6 @@ class __$$JournalImplCopyWithImpl<$Res>
           ? _value._quotes
           : quotes // ignore: cast_nullable_to_non_nullable
               as List<Quote>,
-      selfReflections: null == selfReflections
-          ? _value._selfReflections
-          : selfReflections // ignore: cast_nullable_to_non_nullable
-              as List<Reflection>,
-      detailedInsights: null == detailedInsights
-          ? _value._detailedInsights
-          : detailedInsights // ignore: cast_nullable_to_non_nullable
-              as List<Reflection>,
-      goals: null == goals
-          ? _value._goals
-          : goals // ignore: cast_nullable_to_non_nullable
-              as List<Reflection>,
       moodScore: null == moodScore
           ? _value.moodScore
           : moodScore // ignore: cast_nullable_to_non_nullable
@@ -4925,9 +4672,6 @@ class _$JournalImpl implements _Journal {
       {required this.id,
       required this.dateTime,
       required final List<Quote> quotes,
-      required final List<Reflection> selfReflections,
-      required final List<Reflection> detailedInsights,
-      required final List<Reflection> goals,
       required this.moodScore,
       required this.stressLevel,
       required final List<Highlight> highlights,
@@ -4936,9 +4680,6 @@ class _$JournalImpl implements _Journal {
       required final List<AwakeTimeAllocation> awakeTimeAllocations,
       required this.socialMap})
       : _quotes = quotes,
-        _selfReflections = selfReflections,
-        _detailedInsights = detailedInsights,
-        _goals = goals,
         _highlights = highlights,
         _energyLevels = energyLevels,
         _moodTrackings = moodTrackings,
@@ -4951,39 +4692,12 @@ class _$JournalImpl implements _Journal {
   final String id;
   @override
   final DateTime dateTime;
-//required String summary,
   final List<Quote> _quotes;
-//required String summary,
   @override
   List<Quote> get quotes {
     if (_quotes is EqualUnmodifiableListView) return _quotes;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_quotes);
-  }
-
-  final List<Reflection> _selfReflections;
-  @override
-  List<Reflection> get selfReflections {
-    if (_selfReflections is EqualUnmodifiableListView) return _selfReflections;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_selfReflections);
-  }
-
-  final List<Reflection> _detailedInsights;
-  @override
-  List<Reflection> get detailedInsights {
-    if (_detailedInsights is EqualUnmodifiableListView)
-      return _detailedInsights;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_detailedInsights);
-  }
-
-  final List<Reflection> _goals;
-  @override
-  List<Reflection> get goals {
-    if (_goals is EqualUnmodifiableListView) return _goals;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_goals);
   }
 
   @override
@@ -5028,7 +4742,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, quotes: $quotes, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
   }
 
   @override
@@ -5040,11 +4754,6 @@ class _$JournalImpl implements _Journal {
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
             const DeepCollectionEquality().equals(other._quotes, _quotes) &&
-            const DeepCollectionEquality()
-                .equals(other._selfReflections, _selfReflections) &&
-            const DeepCollectionEquality()
-                .equals(other._detailedInsights, _detailedInsights) &&
-            const DeepCollectionEquality().equals(other._goals, _goals) &&
             (identical(other.moodScore, moodScore) ||
                 other.moodScore == moodScore) &&
             (identical(other.stressLevel, stressLevel) ||
@@ -5068,9 +4777,6 @@ class _$JournalImpl implements _Journal {
       id,
       dateTime,
       const DeepCollectionEquality().hash(_quotes),
-      const DeepCollectionEquality().hash(_selfReflections),
-      const DeepCollectionEquality().hash(_detailedInsights),
-      const DeepCollectionEquality().hash(_goals),
       moodScore,
       stressLevel,
       const DeepCollectionEquality().hash(_highlights),
@@ -5100,9 +4806,6 @@ abstract class _Journal implements Journal {
       {required final String id,
       required final DateTime dateTime,
       required final List<Quote> quotes,
-      required final List<Reflection> selfReflections,
-      required final List<Reflection> detailedInsights,
-      required final List<Reflection> goals,
       required final MoodScore moodScore,
       required final StressLevel stressLevel,
       required final List<Highlight> highlights,
@@ -5116,15 +4819,9 @@ abstract class _Journal implements Journal {
   @override
   String get id;
   @override
-  DateTime get dateTime; //required String summary,
+  DateTime get dateTime;
   @override
   List<Quote> get quotes;
-  @override
-  List<Reflection> get selfReflections;
-  @override
-  List<Reflection> get detailedInsights;
-  @override
-  List<Reflection> get goals;
   @override
   MoodScore get moodScore;
   @override

@@ -153,21 +153,6 @@ class Note with _$Note {
 }
 
 @freezed
-class Reflection with _$Reflection {
-  const factory Reflection({
-    required String id,
-    required String title,
-    required List<String> items,
-    required String content,
-  }) = _Reflection;
-
-  factory Reflection.fromJson(Map<String, dynamic> json) =>
-      _$ReflectionFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _Reflection).toJson();
-}
-
-@freezed
 class MoodScore with _$MoodScore {
   const factory MoodScore({required double value, required double change}) =
       _MoodScore;
@@ -307,11 +292,7 @@ class Journal with _$Journal {
   const factory Journal({
     required String id,
     required DateTime dateTime,
-    //required String summary,
     required List<Quote> quotes,
-    required List<Reflection> selfReflections,
-    required List<Reflection> detailedInsights,
-    required List<Reflection> goals,
     required MoodScore moodScore,
     required StressLevel stressLevel,
     required List<Highlight> highlights,
