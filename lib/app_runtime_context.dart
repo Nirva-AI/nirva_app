@@ -38,9 +38,9 @@ class AppRuntimeContext {
   final URLConfiguration _urlConfig = URLConfiguration();
 
   // Dio 实例和配置（从DioService合并过来）
-  final Dio _dio = Dio(
+  final Dio _appserviceDio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.2.70:8000',
+        baseUrl: 'http://192.168.22.108:8000',
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -71,7 +71,7 @@ class AppRuntimeContext {
     return _urlConfig;
   }
 
-  Dio get dio {
-    return _dio;
+  Dio get appserviceDio {
+    return _appserviceDio;
   }
 }

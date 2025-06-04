@@ -35,4 +35,8 @@ class URLConfiguration {
   String get refreshUrl {
     return _urlConfig.endpoints['refresh'] ?? '';
   }
+
+  String get analyzeActionUrl {
+    return _urlConfig.endpoints['analyze'] ?? '';
+  }
 }
