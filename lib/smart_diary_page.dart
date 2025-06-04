@@ -1,6 +1,6 @@
 //import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:nirva_app/diary_entry_card.dart';
+import 'package:nirva_app/event_card.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/quote_carousel.dart';
 import 'package:nirva_app/week_calendar_widget.dart';
@@ -55,7 +55,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
           ),
 
           // 动态展示日记条目
-          _buildDiaryEntriesList(
+          _buildEventList(
             //AppRuntimeContext().data.currentJournal.diaryEntries,
             AppRuntimeContext().data.currentJournalFile.label_extraction.events,
           ),
@@ -147,11 +147,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     );
   }
 
-  // 封装 ListView.builder 的实现 List<DiaryEntry> get diaryEntries
-  Widget _buildDiaryEntriesList(
-    //List<DiaryEntry> diaryEntriesRange,
-    List<Event> events,
-  ) {
+  Widget _buildEventList(List<Event> events) {
     List<Event> finalEvents = [];
     if (_isFavorite) {
       for (var entry in events) {
@@ -164,15 +160,13 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
       finalEvents = events;
     }
 
-    //final minItemCount = min(finalDiaryEntries.length, events.length);
-
     return ListView.builder(
       key: UniqueKey(), // 强制刷新 ListView.builder
       shrinkWrap: true, // 使 ListView 适应父组件高度
       physics: const NeverScrollableScrollPhysics(), // 禁用内部滚动
       itemCount: finalEvents.length,
       itemBuilder: (context, index) {
-        return DiaryEntryCard(
+        return EventCard(
           //diaryData: finalDiaryEntries[index],
           eventData: events[index],
         );
