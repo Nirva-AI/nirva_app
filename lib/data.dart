@@ -143,57 +143,55 @@ class Quote with _$Quote {
   Map<String, dynamic> toJson() => (this as _Quote).toJson();
 }
 
+// @freezed
+// class EventTag with _$EventTag {
+//   const factory EventTag({
+//     required String name,
+//     @Default(0xFFDFE7FF) int color,
+//   }) = _EventTag;
+
+//   factory EventTag.fromJson(Map<String, dynamic> json) =>
+//       _$EventTagFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _EventTag).toJson();
+// }
+
+// @freezed
+// class EventLocation with _$EventLocation {
+//   const factory EventLocation({required String name}) = _EventLocation;
+
+//   factory EventLocation.fromJson(Map<String, dynamic> json) =>
+//       _$EventLocationFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _EventLocation).toJson();
+// }
+
+// @freezed
+// class DiaryEntry with _$DiaryEntry {
+//   const factory DiaryEntry({
+//     required String id,
+//     required DateTime beginTime,
+//     required DateTime endTime,
+//     required String title,
+//     required String summary,
+//     required String content,
+//     required List<EventTag> tags,
+//     required EventLocation location,
+//   }) = _DiaryEntry;
+
+//   factory DiaryEntry.fromJson(Map<String, dynamic> json) =>
+//       _$DiaryEntryFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _DiaryEntry).toJson();
+// }
+
 @freezed
-class EventTag with _$EventTag {
-  const factory EventTag({
-    required String name,
-    @Default(0xFFDFE7FF) int color,
-  }) = _EventTag;
+class Note with _$Note {
+  const factory Note({required String id, required String content}) = _Note;
 
-  factory EventTag.fromJson(Map<String, dynamic> json) =>
-      _$EventTagFromJson(json);
+  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _EventTag).toJson();
-}
-
-@freezed
-class EventLocation with _$EventLocation {
-  const factory EventLocation({required String name}) = _EventLocation;
-
-  factory EventLocation.fromJson(Map<String, dynamic> json) =>
-      _$EventLocationFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _EventLocation).toJson();
-}
-
-@freezed
-class DiaryEntry with _$DiaryEntry {
-  const factory DiaryEntry({
-    required String id,
-    required DateTime beginTime,
-    required DateTime endTime,
-    required String title,
-    required String summary,
-    required String content,
-    required List<EventTag> tags,
-    required EventLocation location,
-  }) = _DiaryEntry;
-
-  factory DiaryEntry.fromJson(Map<String, dynamic> json) =>
-      _$DiaryEntryFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _DiaryEntry).toJson();
-}
-
-@freezed
-class DiaryEntryNote with _$DiaryEntryNote {
-  const factory DiaryEntryNote({required String id, required String content}) =
-      _DiaryEntryNote;
-
-  factory DiaryEntryNote.fromJson(Map<String, dynamic> json) =>
-      _$DiaryEntryNoteFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _DiaryEntryNote).toJson();
+  Map<String, dynamic> toJson() => (this as _Note).toJson();
 }
 
 @freezed
@@ -352,7 +350,7 @@ class Journal with _$Journal {
     required String id,
     required DateTime dateTime,
     required String summary,
-    required List<DiaryEntry> diaryEntries,
+    //required List<DiaryEntry> diaryEntries,
     required List<Quote> quotes,
     required List<Reflection> selfReflections,
     required List<Reflection> detailedInsights,

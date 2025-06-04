@@ -38,11 +38,10 @@ Future<void> testHive() async {
   await AppRuntimeContext().storage.deleteFromDisk(); // 清空之前的数据
   await AppRuntimeContext().storage.initialize();
 
-  final retrievedFavorites = AppRuntimeContext().storage.getDiaryFavorites();
+  final retrievedFavorites = AppRuntimeContext().storage.getFavorites();
   if (retrievedFavorites != null && retrievedFavorites.favoriteIds.isNotEmpty) {
     debugPrint('DiaryFavorites 测试通过: 收藏夹数据存在');
-    AppRuntimeContext().data.diaryFavorites.value =
-        retrievedFavorites.favoriteIds;
+    AppRuntimeContext().data.favorites.value = retrievedFavorites.favoriteIds;
   } else {
     debugPrint('DiaryFavorites 测试失败: 收藏夹数据不存在或为空');
   }

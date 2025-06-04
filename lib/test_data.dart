@@ -11,12 +11,17 @@ class TestData {
   //
   static Future<void> initializeTestData() async {
     AppRuntimeContext.clear();
+
     // 添加用户信息, 目前必须和服务器对上，否则无法登录。
     AppRuntimeContext().data.user = User(
       username: 'weilyupku@gmail.com',
       password: 'secret',
       displayName: 'wei',
     );
+
+    // 这里读取日记。
+    await loadTestJournalFile('assets/analyze_result_2025-04-19-01.txt.json');
+    await loadTestJournalFile('assets/analyze_result_2025-05-09-01.txt.json');
 
     // 添加todo数据
     AppRuntimeContext().data.tasks = TestData.createTestTasks();
@@ -34,10 +39,10 @@ class TestData {
         TestData.createTestMonthlyArchivedHighlights();
 
     // 添加日记的最爱数据
-    //initializeTestFavorites(AppRuntimeContext().data.currentJournal);
+    initializeTestFavorites(AppRuntimeContext().data.currentJournalFile);
 
     // 添加日记的笔记数据
-    initializeTestMyNotes(AppRuntimeContext().data.currentJournal);
+    initializeTestMyNotes(AppRuntimeContext().data.currentJournalFile);
 
     //
     initializeTestSocalMap();
@@ -50,10 +55,6 @@ class TestData {
         AppRuntimeContext().data.currentJournal.awakeTimeAllocations,
       ),
     );
-
-    // 这里读取日记。
-    await loadTestJournalFile('assets/analyze_result_2025-04-19-01.txt.json');
-    await loadTestJournalFile('assets/analyze_result_2025-05-09-01.txt.json');
   }
 
   // 加载测试日记文件 Future<void> initializeTestData() async
@@ -70,42 +71,39 @@ class TestData {
   }
 
   // 添加日记的最爱数据
-  static void initializeTestFavorites(Journal journal) {
+  static void initializeTestFavorites(JournalFile journalFile) {
     // 设置测试数据
-    List<DiaryEntry> diaryEntries = journal.diaryEntries;
+    List<Event> events = journalFile.label_extraction.events;
 
     //
-    if (diaryEntries.isNotEmpty) {
-      //final random = Random();
-      DiaryEntry randomDiaryEntry =
-          diaryEntries[random.nextInt(diaryEntries.length)];
-      debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
-      AppRuntimeContext().data.diaryFavorites.value = [randomDiaryEntry.id];
-      debugPrint('已添加到最爱: ${randomDiaryEntry.id}');
+    if (events.isNotEmpty) {
+      Event randomEvent = events[random.nextInt(events.length)];
+      debugPrint('随机选中的日记: ${randomEvent.event_title}');
+      AppRuntimeContext().data.favorites.value = [randomEvent.event_id];
+      debugPrint('已添加到最爱: ${randomEvent.event_id}');
     } else {
       debugPrint('diaryEntries 列表为空');
     }
   }
 
   // 添加日记的笔记数据
-  static void initializeTestMyNotes(Journal journal) {
+  static void initializeTestMyNotes(JournalFile journalFile) {
     // 设置测试数据
-    List<DiaryEntry> diaryEntries = journal.diaryEntries;
+    List<Event> events = journalFile.label_extraction.events;
 
     //
-    if (diaryEntries.isNotEmpty) {
+    if (events.isNotEmpty) {
       //final random = Random();
-      DiaryEntry randomDiaryEntry =
-          diaryEntries[random.nextInt(diaryEntries.length)];
-      debugPrint('随机选中的日记: ${randomDiaryEntry.title}');
-      AppRuntimeContext().data.diaryNotes.value = [
-        DiaryEntryNote(
-          id: randomDiaryEntry.id,
+      Event randomEvent = events[random.nextInt(events.length)];
+      debugPrint('随机选中的日记: ${randomEvent.event_title}');
+      AppRuntimeContext().data.notes.value = [
+        Note(
+          id: randomEvent.event_id,
           content:
-              'This is a test note for diary entry ${randomDiaryEntry.id}.',
+              'This is a test note for diary entry ${randomEvent.event_id}.',
         ),
       ];
-      debugPrint('已添加到笔记: ${randomDiaryEntry.id}');
+      debugPrint('已添加到笔记: ${randomEvent.event_id}');
     } else {
       debugPrint('diaryEntries 列表为空');
     }
@@ -258,186 +256,186 @@ class TestData {
         'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.';
 
     // 日记条目列表
-    final List<DiaryEntry> diaryEntries = [
-      DiaryEntry(
-        id: "1",
-        //time: '10:00 AM - 1:00 PM',
-        beginTime: DateTime(2025, 4, 19, 10, 0),
-        endTime: DateTime(2025, 4, 19, 13, 0),
-        title: 'Morning in the Park with Ashley',
-        summary:
-            'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
-        content:
-            'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
-        tags: [
-          EventTag(name: 'peaceful'),
-          EventTag(name: 'outdoor'),
-          EventTag(name: 'conversation'),
-        ],
-        //location: 'Park',
-        location: EventLocation(name: 'Park'),
-      ),
-      DiaryEntry(
-        id: "2",
-        //time: '1:00 PM - 1:30 PM',
-        beginTime: DateTime(2025, 4, 19, 13, 0),
-        endTime: DateTime(2025, 4, 19, 13, 30),
-        title: 'Departure from Park',
-        summary:
-            'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
-        content:
-            'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
-        tags: [
-          EventTag(name: 'calm'),
-          EventTag(name: 'outdoor'),
-          EventTag(name: 'transportation'),
-        ],
-        //location: 'Park',
-        location: EventLocation(name: 'Park'),
-      ),
-      DiaryEntry(
-        id: "3",
-        //time: '1:30 PM - 2:50 PM',
-        beginTime: DateTime(2025, 4, 19, 13, 30),
-        endTime: DateTime(2025, 4, 19, 14, 50),
-        title: 'Drive to San Francisco with Trent',
-        summary:
-            'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
-        content:
-            'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
-        tags: [
-          EventTag(name: 'engaged'),
-          EventTag(name: 'transportation'),
-          EventTag(name: 'conversation'),
-        ],
-        //location: 'In the car',
-        location: EventLocation(name: 'In the car'),
-      ),
-      // 添加更多测试数据
-      DiaryEntry(
-        id: "4",
-        //time: '3:00 PM - 4:00 PM',
-        beginTime: DateTime(2025, 4, 19, 15, 0),
-        endTime: DateTime(2025, 4, 19, 16, 0),
-        title: 'Coffee Break with Sarah',
-        summary: 'Discussed future plans and shared some laughs over coffee.',
-        content:
-            'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
-        tags: [
-          EventTag(name: 'relaxing'),
-          EventTag(name: 'indoor'),
-          EventTag(name: 'conversation'),
-        ],
-        //location: 'Cafe',
-        location: EventLocation(name: 'Cafe'),
-      ),
-      DiaryEntry(
-        id: "5",
-        //time: '4:30 PM - 6:00 PM',
-        beginTime: DateTime(2025, 4, 19, 16, 30),
-        endTime: DateTime(2025, 4, 19, 18, 0),
-        title: 'Evening Walk',
-        summary: 'A peaceful walk in the park to clear my mind.',
-        content:
-            'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
-        tags: [
-          EventTag(name: 'peaceful'),
-          EventTag(name: 'outdoor'),
-          EventTag(name: 'exercise'),
-        ],
-        //location: 'Park',
-        location: EventLocation(name: 'Park'),
-      ),
-      DiaryEntry(
-        id: "6",
-        //time: '10:00 AM - 1:00 PM',
-        beginTime: DateTime(2025, 4, 19, 10, 0),
-        endTime: DateTime(2025, 4, 19, 13, 0),
-        title: 'Morning in the Park with Ashley',
-        summary:
-            'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
-        content:
-            'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
-        tags: [
-          EventTag(name: 'peaceful'),
-          EventTag(name: 'outdoor'),
-          EventTag(name: 'conversation'),
-        ],
-        //location: 'Park',
-        location: EventLocation(name: 'Park'),
-      ),
-      DiaryEntry(
-        id: "7",
-        //time: '1:00 PM - 1:30 PM',
-        beginTime: DateTime(2025, 4, 19, 13, 0),
-        endTime: DateTime(2025, 4, 19, 13, 30),
-        title: 'Departure from Park',
-        summary:
-            'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
-        content:
-            'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
-        tags: [
-          EventTag(name: 'calm'),
-          EventTag(name: 'outdoor'),
-          EventTag(name: 'transportation'),
-        ],
-        //location: 'Park',
-        location: EventLocation(name: 'Park'),
-      ),
-      DiaryEntry(
-        id: "8",
-        //time: '1:30 PM - 2:50 PM',
-        beginTime: DateTime(2025, 4, 19, 13, 30),
-        endTime: DateTime(2025, 4, 19, 14, 50),
-        title: 'Drive to San Francisco with Trent',
-        summary:
-            'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
-        content:
-            'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
-        tags: [
-          EventTag(name: 'engaged'),
-          EventTag(name: 'transportation'),
-          EventTag(name: 'conversation'),
-        ],
-        //location: 'In the car',
-        location: EventLocation(name: 'In the car'),
-      ),
-      // 添加更多测试数据
-      DiaryEntry(
-        id: "9",
-        //time: '3:00 PM - 4:00 PM',
-        beginTime: DateTime(2025, 4, 19, 15, 0),
-        endTime: DateTime(2025, 4, 19, 16, 0),
-        title: 'Coffee Break with Sarah',
-        summary: 'Discussed future plans and shared some laughs over coffee.',
-        content:
-            'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
-        tags: [
-          EventTag(name: 'relaxing'),
-          EventTag(name: 'indoor'),
-          EventTag(name: 'conversation'),
-        ],
-        //location: 'Cafe',
-        location: EventLocation(name: 'Cafe'),
-      ),
-      DiaryEntry(
-        id: "10",
-        //time: '4:30 PM - 6:00 PM',
-        beginTime: DateTime(2025, 4, 19, 16, 30),
-        endTime: DateTime(2025, 4, 19, 18, 0),
-        title: 'Evening Walk',
-        summary: 'A peaceful walk in the park to clear my mind.',
-        content:
-            'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
-        tags: [
-          EventTag(name: 'peaceful'),
-          EventTag(name: 'outdoor'),
-          EventTag(name: 'exercise'),
-        ],
-        //location: 'Park',
-        location: EventLocation(name: 'Park'),
-      ),
-    ];
+    // final List<DiaryEntry> diaryEntries = [
+    //   DiaryEntry(
+    //     id: "1",
+    //     //time: '10:00 AM - 1:00 PM',
+    //     beginTime: DateTime(2025, 4, 19, 10, 0),
+    //     endTime: DateTime(2025, 4, 19, 13, 0),
+    //     title: 'Morning in the Park with Ashley',
+    //     summary:
+    //         'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
+    //     content:
+    //         'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
+    //     tags: [
+    //       EventTag(name: 'peaceful'),
+    //       EventTag(name: 'outdoor'),
+    //       EventTag(name: 'conversation'),
+    //     ],
+    //     //location: 'Park',
+    //     location: EventLocation(name: 'Park'),
+    //   ),
+    //   DiaryEntry(
+    //     id: "2",
+    //     //time: '1:00 PM - 1:30 PM',
+    //     beginTime: DateTime(2025, 4, 19, 13, 0),
+    //     endTime: DateTime(2025, 4, 19, 13, 30),
+    //     title: 'Departure from Park',
+    //     summary:
+    //         'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
+    //     content:
+    //         'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
+    //     tags: [
+    //       EventTag(name: 'calm'),
+    //       EventTag(name: 'outdoor'),
+    //       EventTag(name: 'transportation'),
+    //     ],
+    //     //location: 'Park',
+    //     location: EventLocation(name: 'Park'),
+    //   ),
+    //   DiaryEntry(
+    //     id: "3",
+    //     //time: '1:30 PM - 2:50 PM',
+    //     beginTime: DateTime(2025, 4, 19, 13, 30),
+    //     endTime: DateTime(2025, 4, 19, 14, 50),
+    //     title: 'Drive to San Francisco with Trent',
+    //     summary:
+    //         'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
+    //     content:
+    //         'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
+    //     tags: [
+    //       EventTag(name: 'engaged'),
+    //       EventTag(name: 'transportation'),
+    //       EventTag(name: 'conversation'),
+    //     ],
+    //     //location: 'In the car',
+    //     location: EventLocation(name: 'In the car'),
+    //   ),
+    //   // 添加更多测试数据
+    //   DiaryEntry(
+    //     id: "4",
+    //     //time: '3:00 PM - 4:00 PM',
+    //     beginTime: DateTime(2025, 4, 19, 15, 0),
+    //     endTime: DateTime(2025, 4, 19, 16, 0),
+    //     title: 'Coffee Break with Sarah',
+    //     summary: 'Discussed future plans and shared some laughs over coffee.',
+    //     content:
+    //         'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
+    //     tags: [
+    //       EventTag(name: 'relaxing'),
+    //       EventTag(name: 'indoor'),
+    //       EventTag(name: 'conversation'),
+    //     ],
+    //     //location: 'Cafe',
+    //     location: EventLocation(name: 'Cafe'),
+    //   ),
+    //   DiaryEntry(
+    //     id: "5",
+    //     //time: '4:30 PM - 6:00 PM',
+    //     beginTime: DateTime(2025, 4, 19, 16, 30),
+    //     endTime: DateTime(2025, 4, 19, 18, 0),
+    //     title: 'Evening Walk',
+    //     summary: 'A peaceful walk in the park to clear my mind.',
+    //     content:
+    //         'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
+    //     tags: [
+    //       EventTag(name: 'peaceful'),
+    //       EventTag(name: 'outdoor'),
+    //       EventTag(name: 'exercise'),
+    //     ],
+    //     //location: 'Park',
+    //     location: EventLocation(name: 'Park'),
+    //   ),
+    //   DiaryEntry(
+    //     id: "6",
+    //     //time: '10:00 AM - 1:00 PM',
+    //     beginTime: DateTime(2025, 4, 19, 10, 0),
+    //     endTime: DateTime(2025, 4, 19, 13, 0),
+    //     title: 'Morning in the Park with Ashley',
+    //     summary:
+    //         'Deep conversations about life, dating experiences, and exploring crystals and tarot cards.',
+    //     content:
+    //         'Ashley and I spent the morning in the park, discussing our lives and sharing insights. We explored crystals and tarot cards, which added a mystical touch to our conversations.',
+    //     tags: [
+    //       EventTag(name: 'peaceful'),
+    //       EventTag(name: 'outdoor'),
+    //       EventTag(name: 'conversation'),
+    //     ],
+    //     //location: 'Park',
+    //     location: EventLocation(name: 'Park'),
+    //   ),
+    //   DiaryEntry(
+    //     id: "7",
+    //     //time: '1:00 PM - 1:30 PM',
+    //     beginTime: DateTime(2025, 4, 19, 13, 0),
+    //     endTime: DateTime(2025, 4, 19, 13, 30),
+    //     title: 'Departure from Park',
+    //     summary:
+    //         'Said goodbye to Ashley and prepared to meet Trent for our trip to San Francisco.',
+    //     content:
+    //         'After a fulfilling morning, I bid farewell to Ashley. We shared a warm hug and promised to meet again soon. I felt a mix of calmness and anticipation as I prepared for my next adventure.',
+    //     tags: [
+    //       EventTag(name: 'calm'),
+    //       EventTag(name: 'outdoor'),
+    //       EventTag(name: 'transportation'),
+    //     ],
+    //     //location: 'Park',
+    //     location: EventLocation(name: 'Park'),
+    //   ),
+    //   DiaryEntry(
+    //     id: "8",
+    //     //time: '1:30 PM - 2:50 PM',
+    //     beginTime: DateTime(2025, 4, 19, 13, 30),
+    //     endTime: DateTime(2025, 4, 19, 14, 50),
+    //     title: 'Drive to San Francisco with Trent',
+    //     summary:
+    //         'Philosophical discussions about work, life perspectives, and AI companionship during our drive.',
+    //     content:
+    //         'The drive to San Francisco with Trent was filled with deep discussions. We talked about our work, life perspectives, and even the role of AI in our lives. It was an engaging conversation that made the drive feel shorter.',
+    //     tags: [
+    //       EventTag(name: 'engaged'),
+    //       EventTag(name: 'transportation'),
+    //       EventTag(name: 'conversation'),
+    //     ],
+    //     //location: 'In the car',
+    //     location: EventLocation(name: 'In the car'),
+    //   ),
+    //   // 添加更多测试数据
+    //   DiaryEntry(
+    //     id: "9",
+    //     //time: '3:00 PM - 4:00 PM',
+    //     beginTime: DateTime(2025, 4, 19, 15, 0),
+    //     endTime: DateTime(2025, 4, 19, 16, 0),
+    //     title: 'Coffee Break with Sarah',
+    //     summary: 'Discussed future plans and shared some laughs over coffee.',
+    //     content:
+    //         'Sarah and I took a break at a cozy cafe. We discussed our future plans, shared some laughs, and enjoyed the warm ambiance. It was a relaxing moment that allowed us to unwind.',
+    //     tags: [
+    //       EventTag(name: 'relaxing'),
+    //       EventTag(name: 'indoor'),
+    //       EventTag(name: 'conversation'),
+    //     ],
+    //     //location: 'Cafe',
+    //     location: EventLocation(name: 'Cafe'),
+    //   ),
+    //   DiaryEntry(
+    //     id: "10",
+    //     //time: '4:30 PM - 6:00 PM',
+    //     beginTime: DateTime(2025, 4, 19, 16, 30),
+    //     endTime: DateTime(2025, 4, 19, 18, 0),
+    //     title: 'Evening Walk',
+    //     summary: 'A peaceful walk in the park to clear my mind.',
+    //     content:
+    //         'I took a peaceful walk in the park to clear my mind. The fresh air and nature around me provided a calming effect. I reflected on the day and felt grateful for the meaningful connections I made.',
+    //     tags: [
+    //       EventTag(name: 'peaceful'),
+    //       EventTag(name: 'outdoor'),
+    //       EventTag(name: 'exercise'),
+    //     ],
+    //     //location: 'Park',
+    //     location: EventLocation(name: 'Park'),
+    //   ),
+    // ];
 
     // 引言卡片数据
     final List<Quote> quotes = [
@@ -684,7 +682,7 @@ class TestData {
       id: dateTime.toIso8601String(),
       dateTime: dateTime,
       summary: summary,
-      diaryEntries: diaryEntries,
+      //diaryEntries: diaryEntries,
       quotes: quotes,
       selfReflections: selfReflections,
       detailedInsights: detailedInsights,

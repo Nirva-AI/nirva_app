@@ -2359,679 +2359,43 @@ abstract class _Quote implements Quote {
       throw _privateConstructorUsedError;
 }
 
-EventTag _$EventTagFromJson(Map<String, dynamic> json) {
-  return _EventTag.fromJson(json);
+Note _$NoteFromJson(Map<String, dynamic> json) {
+  return _Note.fromJson(json);
 }
 
 /// @nodoc
-mixin _$EventTag {
-  String get name => throw _privateConstructorUsedError;
-  int get color => throw _privateConstructorUsedError;
-
-  /// Serializes this EventTag to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of EventTag
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $EventTagCopyWith<EventTag> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $EventTagCopyWith<$Res> {
-  factory $EventTagCopyWith(EventTag value, $Res Function(EventTag) then) =
-      _$EventTagCopyWithImpl<$Res, EventTag>;
-  @useResult
-  $Res call({String name, int color});
-}
-
-/// @nodoc
-class _$EventTagCopyWithImpl<$Res, $Val extends EventTag>
-    implements $EventTagCopyWith<$Res> {
-  _$EventTagCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of EventTag
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? color = null,
-  }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      color: null == color
-          ? _value.color
-          : color // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$EventTagImplCopyWith<$Res>
-    implements $EventTagCopyWith<$Res> {
-  factory _$$EventTagImplCopyWith(
-          _$EventTagImpl value, $Res Function(_$EventTagImpl) then) =
-      __$$EventTagImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String name, int color});
-}
-
-/// @nodoc
-class __$$EventTagImplCopyWithImpl<$Res>
-    extends _$EventTagCopyWithImpl<$Res, _$EventTagImpl>
-    implements _$$EventTagImplCopyWith<$Res> {
-  __$$EventTagImplCopyWithImpl(
-      _$EventTagImpl _value, $Res Function(_$EventTagImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of EventTag
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? color = null,
-  }) {
-    return _then(_$EventTagImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      color: null == color
-          ? _value.color
-          : color // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$EventTagImpl implements _EventTag {
-  const _$EventTagImpl({required this.name, this.color = 0xFFDFE7FF});
-
-  factory _$EventTagImpl.fromJson(Map<String, dynamic> json) =>
-      _$$EventTagImplFromJson(json);
-
-  @override
-  final String name;
-  @override
-  @JsonKey()
-  final int color;
-
-  @override
-  String toString() {
-    return 'EventTag(name: $name, color: $color)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$EventTagImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.color, color) || other.color == color));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, name, color);
-
-  /// Create a copy of EventTag
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$EventTagImplCopyWith<_$EventTagImpl> get copyWith =>
-      __$$EventTagImplCopyWithImpl<_$EventTagImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$EventTagImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _EventTag implements EventTag {
-  const factory _EventTag({required final String name, final int color}) =
-      _$EventTagImpl;
-
-  factory _EventTag.fromJson(Map<String, dynamic> json) =
-      _$EventTagImpl.fromJson;
-
-  @override
-  String get name;
-  @override
-  int get color;
-
-  /// Create a copy of EventTag
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$EventTagImplCopyWith<_$EventTagImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-EventLocation _$EventLocationFromJson(Map<String, dynamic> json) {
-  return _EventLocation.fromJson(json);
-}
-
-/// @nodoc
-mixin _$EventLocation {
-  String get name => throw _privateConstructorUsedError;
-
-  /// Serializes this EventLocation to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of EventLocation
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $EventLocationCopyWith<EventLocation> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $EventLocationCopyWith<$Res> {
-  factory $EventLocationCopyWith(
-          EventLocation value, $Res Function(EventLocation) then) =
-      _$EventLocationCopyWithImpl<$Res, EventLocation>;
-  @useResult
-  $Res call({String name});
-}
-
-/// @nodoc
-class _$EventLocationCopyWithImpl<$Res, $Val extends EventLocation>
-    implements $EventLocationCopyWith<$Res> {
-  _$EventLocationCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of EventLocation
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-  }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$EventLocationImplCopyWith<$Res>
-    implements $EventLocationCopyWith<$Res> {
-  factory _$$EventLocationImplCopyWith(
-          _$EventLocationImpl value, $Res Function(_$EventLocationImpl) then) =
-      __$$EventLocationImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String name});
-}
-
-/// @nodoc
-class __$$EventLocationImplCopyWithImpl<$Res>
-    extends _$EventLocationCopyWithImpl<$Res, _$EventLocationImpl>
-    implements _$$EventLocationImplCopyWith<$Res> {
-  __$$EventLocationImplCopyWithImpl(
-      _$EventLocationImpl _value, $Res Function(_$EventLocationImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of EventLocation
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-  }) {
-    return _then(_$EventLocationImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$EventLocationImpl implements _EventLocation {
-  const _$EventLocationImpl({required this.name});
-
-  factory _$EventLocationImpl.fromJson(Map<String, dynamic> json) =>
-      _$$EventLocationImplFromJson(json);
-
-  @override
-  final String name;
-
-  @override
-  String toString() {
-    return 'EventLocation(name: $name)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$EventLocationImpl &&
-            (identical(other.name, name) || other.name == name));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, name);
-
-  /// Create a copy of EventLocation
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$EventLocationImplCopyWith<_$EventLocationImpl> get copyWith =>
-      __$$EventLocationImplCopyWithImpl<_$EventLocationImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$EventLocationImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _EventLocation implements EventLocation {
-  const factory _EventLocation({required final String name}) =
-      _$EventLocationImpl;
-
-  factory _EventLocation.fromJson(Map<String, dynamic> json) =
-      _$EventLocationImpl.fromJson;
-
-  @override
-  String get name;
-
-  /// Create a copy of EventLocation
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$EventLocationImplCopyWith<_$EventLocationImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-DiaryEntry _$DiaryEntryFromJson(Map<String, dynamic> json) {
-  return _DiaryEntry.fromJson(json);
-}
-
-/// @nodoc
-mixin _$DiaryEntry {
-  String get id => throw _privateConstructorUsedError;
-  DateTime get beginTime => throw _privateConstructorUsedError;
-  DateTime get endTime => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  String get summary => throw _privateConstructorUsedError;
-  String get content => throw _privateConstructorUsedError;
-  List<EventTag> get tags => throw _privateConstructorUsedError;
-  EventLocation get location => throw _privateConstructorUsedError;
-
-  /// Serializes this DiaryEntry to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of DiaryEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $DiaryEntryCopyWith<DiaryEntry> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $DiaryEntryCopyWith<$Res> {
-  factory $DiaryEntryCopyWith(
-          DiaryEntry value, $Res Function(DiaryEntry) then) =
-      _$DiaryEntryCopyWithImpl<$Res, DiaryEntry>;
-  @useResult
-  $Res call(
-      {String id,
-      DateTime beginTime,
-      DateTime endTime,
-      String title,
-      String summary,
-      String content,
-      List<EventTag> tags,
-      EventLocation location});
-
-  $EventLocationCopyWith<$Res> get location;
-}
-
-/// @nodoc
-class _$DiaryEntryCopyWithImpl<$Res, $Val extends DiaryEntry>
-    implements $DiaryEntryCopyWith<$Res> {
-  _$DiaryEntryCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of DiaryEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? beginTime = null,
-    Object? endTime = null,
-    Object? title = null,
-    Object? summary = null,
-    Object? content = null,
-    Object? tags = null,
-    Object? location = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      beginTime: null == beginTime
-          ? _value.beginTime
-          : beginTime // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      endTime: null == endTime
-          ? _value.endTime
-          : endTime // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      summary: null == summary
-          ? _value.summary
-          : summary // ignore: cast_nullable_to_non_nullable
-              as String,
-      content: null == content
-          ? _value.content
-          : content // ignore: cast_nullable_to_non_nullable
-              as String,
-      tags: null == tags
-          ? _value.tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as List<EventTag>,
-      location: null == location
-          ? _value.location
-          : location // ignore: cast_nullable_to_non_nullable
-              as EventLocation,
-    ) as $Val);
-  }
-
-  /// Create a copy of DiaryEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $EventLocationCopyWith<$Res> get location {
-    return $EventLocationCopyWith<$Res>(_value.location, (value) {
-      return _then(_value.copyWith(location: value) as $Val);
-    });
-  }
-}
-
-/// @nodoc
-abstract class _$$DiaryEntryImplCopyWith<$Res>
-    implements $DiaryEntryCopyWith<$Res> {
-  factory _$$DiaryEntryImplCopyWith(
-          _$DiaryEntryImpl value, $Res Function(_$DiaryEntryImpl) then) =
-      __$$DiaryEntryImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      DateTime beginTime,
-      DateTime endTime,
-      String title,
-      String summary,
-      String content,
-      List<EventTag> tags,
-      EventLocation location});
-
-  @override
-  $EventLocationCopyWith<$Res> get location;
-}
-
-/// @nodoc
-class __$$DiaryEntryImplCopyWithImpl<$Res>
-    extends _$DiaryEntryCopyWithImpl<$Res, _$DiaryEntryImpl>
-    implements _$$DiaryEntryImplCopyWith<$Res> {
-  __$$DiaryEntryImplCopyWithImpl(
-      _$DiaryEntryImpl _value, $Res Function(_$DiaryEntryImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of DiaryEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? beginTime = null,
-    Object? endTime = null,
-    Object? title = null,
-    Object? summary = null,
-    Object? content = null,
-    Object? tags = null,
-    Object? location = null,
-  }) {
-    return _then(_$DiaryEntryImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      beginTime: null == beginTime
-          ? _value.beginTime
-          : beginTime // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      endTime: null == endTime
-          ? _value.endTime
-          : endTime // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      summary: null == summary
-          ? _value.summary
-          : summary // ignore: cast_nullable_to_non_nullable
-              as String,
-      content: null == content
-          ? _value.content
-          : content // ignore: cast_nullable_to_non_nullable
-              as String,
-      tags: null == tags
-          ? _value._tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as List<EventTag>,
-      location: null == location
-          ? _value.location
-          : location // ignore: cast_nullable_to_non_nullable
-              as EventLocation,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$DiaryEntryImpl implements _DiaryEntry {
-  const _$DiaryEntryImpl(
-      {required this.id,
-      required this.beginTime,
-      required this.endTime,
-      required this.title,
-      required this.summary,
-      required this.content,
-      required final List<EventTag> tags,
-      required this.location})
-      : _tags = tags;
-
-  factory _$DiaryEntryImpl.fromJson(Map<String, dynamic> json) =>
-      _$$DiaryEntryImplFromJson(json);
-
-  @override
-  final String id;
-  @override
-  final DateTime beginTime;
-  @override
-  final DateTime endTime;
-  @override
-  final String title;
-  @override
-  final String summary;
-  @override
-  final String content;
-  final List<EventTag> _tags;
-  @override
-  List<EventTag> get tags {
-    if (_tags is EqualUnmodifiableListView) return _tags;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_tags);
-  }
-
-  @override
-  final EventLocation location;
-
-  @override
-  String toString() {
-    return 'DiaryEntry(id: $id, beginTime: $beginTime, endTime: $endTime, title: $title, summary: $summary, content: $content, tags: $tags, location: $location)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DiaryEntryImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.beginTime, beginTime) ||
-                other.beginTime == beginTime) &&
-            (identical(other.endTime, endTime) || other.endTime == endTime) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.summary, summary) || other.summary == summary) &&
-            (identical(other.content, content) || other.content == content) &&
-            const DeepCollectionEquality().equals(other._tags, _tags) &&
-            (identical(other.location, location) ||
-                other.location == location));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, beginTime, endTime, title,
-      summary, content, const DeepCollectionEquality().hash(_tags), location);
-
-  /// Create a copy of DiaryEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$DiaryEntryImplCopyWith<_$DiaryEntryImpl> get copyWith =>
-      __$$DiaryEntryImplCopyWithImpl<_$DiaryEntryImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$DiaryEntryImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _DiaryEntry implements DiaryEntry {
-  const factory _DiaryEntry(
-      {required final String id,
-      required final DateTime beginTime,
-      required final DateTime endTime,
-      required final String title,
-      required final String summary,
-      required final String content,
-      required final List<EventTag> tags,
-      required final EventLocation location}) = _$DiaryEntryImpl;
-
-  factory _DiaryEntry.fromJson(Map<String, dynamic> json) =
-      _$DiaryEntryImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  DateTime get beginTime;
-  @override
-  DateTime get endTime;
-  @override
-  String get title;
-  @override
-  String get summary;
-  @override
-  String get content;
-  @override
-  List<EventTag> get tags;
-  @override
-  EventLocation get location;
-
-  /// Create a copy of DiaryEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DiaryEntryImplCopyWith<_$DiaryEntryImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-DiaryEntryNote _$DiaryEntryNoteFromJson(Map<String, dynamic> json) {
-  return _DiaryEntryNote.fromJson(json);
-}
-
-/// @nodoc
-mixin _$DiaryEntryNote {
+mixin _$Note {
   String get id => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
 
-  /// Serializes this DiaryEntryNote to a JSON map.
+  /// Serializes this Note to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of DiaryEntryNote
+  /// Create a copy of Note
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $DiaryEntryNoteCopyWith<DiaryEntryNote> get copyWith =>
-      throw _privateConstructorUsedError;
+  $NoteCopyWith<Note> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $DiaryEntryNoteCopyWith<$Res> {
-  factory $DiaryEntryNoteCopyWith(
-          DiaryEntryNote value, $Res Function(DiaryEntryNote) then) =
-      _$DiaryEntryNoteCopyWithImpl<$Res, DiaryEntryNote>;
+abstract class $NoteCopyWith<$Res> {
+  factory $NoteCopyWith(Note value, $Res Function(Note) then) =
+      _$NoteCopyWithImpl<$Res, Note>;
   @useResult
   $Res call({String id, String content});
 }
 
 /// @nodoc
-class _$DiaryEntryNoteCopyWithImpl<$Res, $Val extends DiaryEntryNote>
-    implements $DiaryEntryNoteCopyWith<$Res> {
-  _$DiaryEntryNoteCopyWithImpl(this._value, this._then);
+class _$NoteCopyWithImpl<$Res, $Val extends Note>
+    implements $NoteCopyWith<$Res> {
+  _$NoteCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of DiaryEntryNote
+  /// Create a copy of Note
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -3053,25 +2417,23 @@ class _$DiaryEntryNoteCopyWithImpl<$Res, $Val extends DiaryEntryNote>
 }
 
 /// @nodoc
-abstract class _$$DiaryEntryNoteImplCopyWith<$Res>
-    implements $DiaryEntryNoteCopyWith<$Res> {
-  factory _$$DiaryEntryNoteImplCopyWith(_$DiaryEntryNoteImpl value,
-          $Res Function(_$DiaryEntryNoteImpl) then) =
-      __$$DiaryEntryNoteImplCopyWithImpl<$Res>;
+abstract class _$$NoteImplCopyWith<$Res> implements $NoteCopyWith<$Res> {
+  factory _$$NoteImplCopyWith(
+          _$NoteImpl value, $Res Function(_$NoteImpl) then) =
+      __$$NoteImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, String content});
 }
 
 /// @nodoc
-class __$$DiaryEntryNoteImplCopyWithImpl<$Res>
-    extends _$DiaryEntryNoteCopyWithImpl<$Res, _$DiaryEntryNoteImpl>
-    implements _$$DiaryEntryNoteImplCopyWith<$Res> {
-  __$$DiaryEntryNoteImplCopyWithImpl(
-      _$DiaryEntryNoteImpl _value, $Res Function(_$DiaryEntryNoteImpl) _then)
+class __$$NoteImplCopyWithImpl<$Res>
+    extends _$NoteCopyWithImpl<$Res, _$NoteImpl>
+    implements _$$NoteImplCopyWith<$Res> {
+  __$$NoteImplCopyWithImpl(_$NoteImpl _value, $Res Function(_$NoteImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of DiaryEntryNote
+  /// Create a copy of Note
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -3079,7 +2441,7 @@ class __$$DiaryEntryNoteImplCopyWithImpl<$Res>
     Object? id = null,
     Object? content = null,
   }) {
-    return _then(_$DiaryEntryNoteImpl(
+    return _then(_$NoteImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -3094,11 +2456,11 @@ class __$$DiaryEntryNoteImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$DiaryEntryNoteImpl implements _DiaryEntryNote {
-  const _$DiaryEntryNoteImpl({required this.id, required this.content});
+class _$NoteImpl implements _Note {
+  const _$NoteImpl({required this.id, required this.content});
 
-  factory _$DiaryEntryNoteImpl.fromJson(Map<String, dynamic> json) =>
-      _$$DiaryEntryNoteImplFromJson(json);
+  factory _$NoteImpl.fromJson(Map<String, dynamic> json) =>
+      _$$NoteImplFromJson(json);
 
   @override
   final String id;
@@ -3107,14 +2469,14 @@ class _$DiaryEntryNoteImpl implements _DiaryEntryNote {
 
   @override
   String toString() {
-    return 'DiaryEntryNote(id: $id, content: $content)';
+    return 'Note(id: $id, content: $content)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DiaryEntryNoteImpl &&
+            other is _$NoteImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.content, content) || other.content == content));
   }
@@ -3123,41 +2485,38 @@ class _$DiaryEntryNoteImpl implements _DiaryEntryNote {
   @override
   int get hashCode => Object.hash(runtimeType, id, content);
 
-  /// Create a copy of DiaryEntryNote
+  /// Create a copy of Note
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$DiaryEntryNoteImplCopyWith<_$DiaryEntryNoteImpl> get copyWith =>
-      __$$DiaryEntryNoteImplCopyWithImpl<_$DiaryEntryNoteImpl>(
-          this, _$identity);
+  _$$NoteImplCopyWith<_$NoteImpl> get copyWith =>
+      __$$NoteImplCopyWithImpl<_$NoteImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DiaryEntryNoteImplToJson(
+    return _$$NoteImplToJson(
       this,
     );
   }
 }
 
-abstract class _DiaryEntryNote implements DiaryEntryNote {
-  const factory _DiaryEntryNote(
-      {required final String id,
-      required final String content}) = _$DiaryEntryNoteImpl;
+abstract class _Note implements Note {
+  const factory _Note(
+      {required final String id, required final String content}) = _$NoteImpl;
 
-  factory _DiaryEntryNote.fromJson(Map<String, dynamic> json) =
-      _$DiaryEntryNoteImpl.fromJson;
+  factory _Note.fromJson(Map<String, dynamic> json) = _$NoteImpl.fromJson;
 
   @override
   String get id;
   @override
   String get content;
 
-  /// Create a copy of DiaryEntryNote
+  /// Create a copy of Note
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DiaryEntryNoteImplCopyWith<_$DiaryEntryNoteImpl> get copyWith =>
+  _$$NoteImplCopyWith<_$NoteImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -5281,8 +4640,8 @@ Journal _$JournalFromJson(Map<String, dynamic> json) {
 mixin _$Journal {
   String get id => throw _privateConstructorUsedError;
   DateTime get dateTime => throw _privateConstructorUsedError;
-  String get summary => throw _privateConstructorUsedError;
-  List<DiaryEntry> get diaryEntries => throw _privateConstructorUsedError;
+  String get summary =>
+      throw _privateConstructorUsedError; //required List<DiaryEntry> diaryEntries,
   List<Quote> get quotes => throw _privateConstructorUsedError;
   List<Reflection> get selfReflections => throw _privateConstructorUsedError;
   List<Reflection> get detailedInsights => throw _privateConstructorUsedError;
@@ -5314,7 +4673,6 @@ abstract class $JournalCopyWith<$Res> {
       {String id,
       DateTime dateTime,
       String summary,
-      List<DiaryEntry> diaryEntries,
       List<Quote> quotes,
       List<Reflection> selfReflections,
       List<Reflection> detailedInsights,
@@ -5350,7 +4708,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
     Object? id = null,
     Object? dateTime = null,
     Object? summary = null,
-    Object? diaryEntries = null,
     Object? quotes = null,
     Object? selfReflections = null,
     Object? detailedInsights = null,
@@ -5376,10 +4733,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
           ? _value.summary
           : summary // ignore: cast_nullable_to_non_nullable
               as String,
-      diaryEntries: null == diaryEntries
-          ? _value.diaryEntries
-          : diaryEntries // ignore: cast_nullable_to_non_nullable
-              as List<DiaryEntry>,
       quotes: null == quotes
           ? _value.quotes
           : quotes // ignore: cast_nullable_to_non_nullable
@@ -5469,7 +4822,6 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
       {String id,
       DateTime dateTime,
       String summary,
-      List<DiaryEntry> diaryEntries,
       List<Quote> quotes,
       List<Reflection> selfReflections,
       List<Reflection> detailedInsights,
@@ -5506,7 +4858,6 @@ class __$$JournalImplCopyWithImpl<$Res>
     Object? id = null,
     Object? dateTime = null,
     Object? summary = null,
-    Object? diaryEntries = null,
     Object? quotes = null,
     Object? selfReflections = null,
     Object? detailedInsights = null,
@@ -5532,10 +4883,6 @@ class __$$JournalImplCopyWithImpl<$Res>
           ? _value.summary
           : summary // ignore: cast_nullable_to_non_nullable
               as String,
-      diaryEntries: null == diaryEntries
-          ? _value._diaryEntries
-          : diaryEntries // ignore: cast_nullable_to_non_nullable
-              as List<DiaryEntry>,
       quotes: null == quotes
           ? _value._quotes
           : quotes // ignore: cast_nullable_to_non_nullable
@@ -5591,7 +4938,6 @@ class _$JournalImpl implements _Journal {
       {required this.id,
       required this.dateTime,
       required this.summary,
-      required final List<DiaryEntry> diaryEntries,
       required final List<Quote> quotes,
       required final List<Reflection> selfReflections,
       required final List<Reflection> detailedInsights,
@@ -5603,8 +4949,7 @@ class _$JournalImpl implements _Journal {
       required final List<MoodTracking> moodTrackings,
       required final List<AwakeTimeAllocation> awakeTimeAllocations,
       required this.socialMap})
-      : _diaryEntries = diaryEntries,
-        _quotes = quotes,
+      : _quotes = quotes,
         _selfReflections = selfReflections,
         _detailedInsights = detailedInsights,
         _goals = goals,
@@ -5622,15 +4967,9 @@ class _$JournalImpl implements _Journal {
   final DateTime dateTime;
   @override
   final String summary;
-  final List<DiaryEntry> _diaryEntries;
-  @override
-  List<DiaryEntry> get diaryEntries {
-    if (_diaryEntries is EqualUnmodifiableListView) return _diaryEntries;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_diaryEntries);
-  }
-
+//required List<DiaryEntry> diaryEntries,
   final List<Quote> _quotes;
+//required List<DiaryEntry> diaryEntries,
   @override
   List<Quote> get quotes {
     if (_quotes is EqualUnmodifiableListView) return _quotes;
@@ -5705,7 +5044,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, summary: $summary, diaryEntries: $diaryEntries, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, summary: $summary, quotes: $quotes, selfReflections: $selfReflections, detailedInsights: $detailedInsights, goals: $goals, moodScore: $moodScore, stressLevel: $stressLevel, highlights: $highlights, energyLevels: $energyLevels, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
   }
 
   @override
@@ -5717,8 +5056,6 @@ class _$JournalImpl implements _Journal {
             (identical(other.dateTime, dateTime) ||
                 other.dateTime == dateTime) &&
             (identical(other.summary, summary) || other.summary == summary) &&
-            const DeepCollectionEquality()
-                .equals(other._diaryEntries, _diaryEntries) &&
             const DeepCollectionEquality().equals(other._quotes, _quotes) &&
             const DeepCollectionEquality()
                 .equals(other._selfReflections, _selfReflections) &&
@@ -5748,7 +5085,6 @@ class _$JournalImpl implements _Journal {
       id,
       dateTime,
       summary,
-      const DeepCollectionEquality().hash(_diaryEntries),
       const DeepCollectionEquality().hash(_quotes),
       const DeepCollectionEquality().hash(_selfReflections),
       const DeepCollectionEquality().hash(_detailedInsights),
@@ -5782,7 +5118,6 @@ abstract class _Journal implements Journal {
       {required final String id,
       required final DateTime dateTime,
       required final String summary,
-      required final List<DiaryEntry> diaryEntries,
       required final List<Quote> quotes,
       required final List<Reflection> selfReflections,
       required final List<Reflection> detailedInsights,
@@ -5802,9 +5137,7 @@ abstract class _Journal implements Journal {
   @override
   DateTime get dateTime;
   @override
-  String get summary;
-  @override
-  List<DiaryEntry> get diaryEntries;
+  String get summary; //required List<DiaryEntry> diaryEntries,
   @override
   List<Quote> get quotes;
   @override

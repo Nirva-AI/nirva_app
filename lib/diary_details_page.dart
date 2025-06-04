@@ -5,37 +5,44 @@ import 'package:nirva_app/guided_reflection_page.dart';
 import 'package:nirva_app/utils.dart';
 
 class DiaryDetailsPage extends StatefulWidget {
-  final DiaryEntry diaryData;
+  //final DiaryEntry diaryData;
+  final Event eventData;
 
-  const DiaryDetailsPage({super.key, required this.diaryData});
+  const DiaryDetailsPage({
+    super.key,
+    //required this.diaryData,
+    required this.eventData,
+  });
 
   @override
   State<DiaryDetailsPage> createState() => _DiaryDetailsPageState();
 }
 
 class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
-  bool get isFavoriteDiaryEntry {
-    return AppRuntimeContext().data.checkIfDiaryIsFavorite(widget.diaryData);
+  bool get isFavorite {
+    return AppRuntimeContext().data.checkFavorite(widget.eventData);
+    //return AppRuntimeContext().data.checkIfDiaryIsFavorite(widget.diaryData);
   }
 
   void _toggleFavorite() {
     setState(() {
-      AppRuntimeContext().data.switchDiaryFavoriteStatus(widget.diaryData);
+      AppRuntimeContext().data.switchEventFavoriteStatus(widget.eventData);
+      //AppRuntimeContext().data.switchDiaryFavoriteStatus(widget.diaryData);
       debugPrint(
-        'Star button pressed: ${isFavoriteDiaryEntry ? "Added to favorites" : "Removed from favorites"}',
+        'Star button pressed: ${isFavorite ? "Added to favorites" : "Removed from favorites"}',
       );
     });
   }
 
-  String _getFormattedTime() {
-    final startTime = widget.diaryData.beginTime;
-    final endTime = widget.diaryData.endTime;
+  // String _getFormattedTime() {
+  //   final startTime = widget.diaryData.beginTime;
+  //   final endTime = widget.diaryData.endTime;
 
-    String formattedStartTime = '${startTime.hour}:${startTime.minute}';
-    String formattedEndTime = '${endTime.hour}:${endTime.minute}';
+  //   String formattedStartTime = '${startTime.hour}:${startTime.minute}';
+  //   String formattedEndTime = '${endTime.hour}:${endTime.minute}';
 
-    return '$formattedStartTime - $formattedEndTime';
-  }
+  //   return '$formattedStartTime - $formattedEndTime';
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +64,8 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
           actions: [
             IconButton(
               icon: Icon(
-                isFavoriteDiaryEntry ? Icons.star : Icons.star_border,
-                color: isFavoriteDiaryEntry ? Colors.amber : Colors.black,
+                isFavorite ? Icons.star : Icons.star_border,
+                color: isFavorite ? Colors.amber : Colors.black,
               ),
               onPressed: _toggleFavorite,
             ),
@@ -75,7 +82,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.diaryData.title,
+                      widget.eventData.event_title,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -91,7 +98,8 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          _getFormattedTime(),
+                          //_getFormattedTime(),
+                          widget.eventData.time_range,
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -105,7 +113,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          widget.diaryData.location.name,
+                          widget.eventData.location,
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -120,7 +128,7 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      widget.diaryData.content,
+                      widget.eventData.first_person_narrative,
                       style: const TextStyle(fontSize: 16, height: 1.5),
                     ),
                     const SizedBox(height: 16),
@@ -140,11 +148,11 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     ValueListenableBuilder(
-                      valueListenable: AppRuntimeContext().data.diaryNotes,
-                      builder: (context, List<DiaryEntryNote> notes, _) {
+                      valueListenable: AppRuntimeContext().data.notes,
+                      builder: (context, List<Note> notes, _) {
                         final note = notes.firstWhere(
-                          (element) => element.id == widget.diaryData.id,
-                          orElse: () => DiaryEntryNote(id: '', content: ''),
+                          (element) => element.id == widget.eventData.event_id,
+                          orElse: () => Note(id: '', content: ''),
                         );
                         return Container(
                           width: double.infinity,
@@ -181,8 +189,10 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
               context,
               MaterialPageRoute(
                 builder:
-                    (context) =>
-                        GuidedReflectionPage(diaryData: widget.diaryData),
+                    (context) => GuidedReflectionPage(
+                      //diaryData: widget.diaryData,
+                      eventData: widget.eventData,
+                    ),
               ),
             );
           },

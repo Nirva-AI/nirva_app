@@ -4,11 +4,11 @@ part 'hive_object.g.dart';
 
 // 本机存储的日记收藏列表
 @HiveType(typeId: 1)
-class DiaryFavorites extends HiveObject {
+class Favorites extends HiveObject {
   @HiveField(0)
   List<String> favoriteIds;
 
-  DiaryFavorites({required this.favoriteIds});
+  Favorites({required this.favoriteIds});
 }
 
 // 本机存储UserToken
