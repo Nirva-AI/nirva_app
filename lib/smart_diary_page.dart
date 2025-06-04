@@ -24,7 +24,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     super.initState();
     var nowDate = DateTime.now();
     _focusedDay = nowDate; //AppRuntimeContext().data.currentJournal.dateTime;
-    _selectedDay = nowDate; //AppRuntimeContext().data.currentJournal.dateTime;
+    _selectedDay = AppRuntimeContext().data.currentJournalDate;
   }
 
   @override
@@ -75,6 +75,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   void _updateSelectedDay(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
       _selectedDay = selectedDay;
+      AppRuntimeContext().data.currentJournalDate = selectedDay;
       _focusedDay = focusedDay;
     });
   }

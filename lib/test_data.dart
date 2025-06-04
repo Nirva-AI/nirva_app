@@ -29,6 +29,8 @@ class TestData {
       DateTime(2025, 5, 9),
     );
 
+    AppRuntimeContext().data.currentJournalDate = DateTime(2025, 4, 19);
+
     // 添加todo数据
     AppRuntimeContext().data.tasks = TestData.createTestTasks();
 
@@ -71,8 +73,9 @@ class TestData {
     try {
       final jsonData = await Utils.loadJsonAsset(path);
       final journalFile = JournalFile.fromJson(jsonData);
-      AppRuntimeContext().data.journalFiles.add(journalFile);
-      AppRuntimeContext().data.journalFilesMap[dateTime] = journalFile;
+      //AppRuntimeContext().data.journalFiles.add(journalFile);
+      final key = dateTime.toIso8601String().split('T')[0];
+      AppRuntimeContext().data.journalFiles[key] = journalFile;
       debugPrint('成功加载日记文件: ${journalFile.message}');
       debugPrint('事件数量: ${journalFile.label_extraction.events.length}');
     } catch (error) {

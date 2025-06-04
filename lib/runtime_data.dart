@@ -9,8 +9,9 @@ class RuntimeData {
 
   // 当前的日记和仪表板数据
   List<Journal> journals = [];
-  List<JournalFile> journalFiles = [];
-  Map<DateTime, JournalFile> journalFilesMap = {};
+  //List<JournalFile> journalFiles = [];
+  Map<String, JournalFile> journalFiles = {};
+  DateTime currentJournalDate = DateTime.now();
 
   // 当前的待办事项数据
   List<Task> tasks = [];
@@ -69,60 +70,73 @@ class RuntimeData {
   }
 
   JournalFile get currentJournalFile {
-    // 获取当前的日记文件
-    if (journalFiles.isNotEmpty) {
-      return journalFiles.first;
-    } else {
-      return JournalFile(
-        label_extraction: LabelExtraction(events: []),
-        reflection: ReflectionData(
-          daily_reflection: DailyReflection(
-            reflection_summary: '',
-            gratitude: Gratitude(
-              gratitude_summary: [],
-              gratitude_details: '',
-              win_summary: [],
-              win_details: '',
-              feel_alive_moments: '',
-            ),
-            challenges_and_growth: ChallengesAndGrowth(
-              growth_summary: [],
-              obstacles_faced: '',
-              unfinished_intentions: '',
-              contributing_factors: '',
-            ),
-            learning_and_insights: LearningAndInsights(
-              new_knowledge: '',
-              self_discovery: '',
-              insights_about_others: '',
-              broader_lessons: '',
-            ),
-            connections_and_relationships: ConnectionsAndRelationships(
-              meaningful_interactions: '',
-              notable_about_people: '',
-              follow_up_needed: '',
-            ),
-            looking_forward: LookingForward(
-              do_differently_tomorrow: '',
-              continue_what_worked: '',
-              top_3_priorities_tomorrow: [],
-            ),
-          ),
-        ),
-        message: "",
-      );
+    final key = currentJournalDate.toIso8601String().split('T')[0];
+    if (journalFiles.containsKey(key)) {
+      // 如果当前日期的日记文件存在，则返回该文件
+      return journalFiles[key]!;
     }
+
+    return createEmptyJournalFile();
+
+    // 获取当前的日记文件
+    // if (journalFilesMap.isNotEmpty) {
+    //   return journalFilesMap[currentJournalDate];
+    // } else {
+
+    // }
   }
 
-  DateTime get currentJournalFileDate {
-    // 便利 journalFilesMap 如果 value 是 currentJournalFile，则返回 key
-    for (final entry in journalFilesMap.entries) {
-      if (entry.value == currentJournalFile) {
-        return entry.key;
-      }
-    }
-    return DateTime.now();
+  JournalFile createEmptyJournalFile() {
+    // 创建一个空的 JournalFile
+    return JournalFile(
+      label_extraction: LabelExtraction(events: []),
+      reflection: ReflectionData(
+        daily_reflection: DailyReflection(
+          reflection_summary: '',
+          gratitude: Gratitude(
+            gratitude_summary: [],
+            gratitude_details: '',
+            win_summary: [],
+            win_details: '',
+            feel_alive_moments: '',
+          ),
+          challenges_and_growth: ChallengesAndGrowth(
+            growth_summary: [],
+            obstacles_faced: '',
+            unfinished_intentions: '',
+            contributing_factors: '',
+          ),
+          learning_and_insights: LearningAndInsights(
+            new_knowledge: '',
+            self_discovery: '',
+            insights_about_others: '',
+            broader_lessons: '',
+          ),
+          connections_and_relationships: ConnectionsAndRelationships(
+            meaningful_interactions: '',
+            notable_about_people: '',
+            follow_up_needed: '',
+          ),
+          looking_forward: LookingForward(
+            do_differently_tomorrow: '',
+            continue_what_worked: '',
+            top_3_priorities_tomorrow: [],
+          ),
+        ),
+      ),
+      message: "",
+    );
   }
+
+  // DateTime get currentJournalFileDate {
+  //   // 便利 journalFilesMap 如果 value 是 currentJournalFile，则返回 key
+  //   for (final entry in journalFilesMap.entries) {
+  //     if (entry.value == currentJournalFile) {
+  //       return entry.key;
+  //     }
+  //   }
+  //   return DateTime.now();
+  // }
 
   Dashboard get currentDashboard {
     // 获取当前的仪表板
