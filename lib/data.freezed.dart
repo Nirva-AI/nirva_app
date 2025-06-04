@@ -4640,8 +4640,7 @@ Journal _$JournalFromJson(Map<String, dynamic> json) {
 mixin _$Journal {
   String get id => throw _privateConstructorUsedError;
   DateTime get dateTime => throw _privateConstructorUsedError;
-  String get summary =>
-      throw _privateConstructorUsedError; //required List<DiaryEntry> diaryEntries,
+  String get summary => throw _privateConstructorUsedError;
   List<Quote> get quotes => throw _privateConstructorUsedError;
   List<Reflection> get selfReflections => throw _privateConstructorUsedError;
   List<Reflection> get detailedInsights => throw _privateConstructorUsedError;
@@ -4967,9 +4966,7 @@ class _$JournalImpl implements _Journal {
   final DateTime dateTime;
   @override
   final String summary;
-//required List<DiaryEntry> diaryEntries,
   final List<Quote> _quotes;
-//required List<DiaryEntry> diaryEntries,
   @override
   List<Quote> get quotes {
     if (_quotes is EqualUnmodifiableListView) return _quotes;
@@ -5137,7 +5134,7 @@ abstract class _Journal implements Journal {
   @override
   DateTime get dateTime;
   @override
-  String get summary; //required List<DiaryEntry> diaryEntries,
+  String get summary;
   @override
   List<Quote> get quotes;
   @override

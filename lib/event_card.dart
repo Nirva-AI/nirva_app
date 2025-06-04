@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/diary_details_page.dart';
+import 'package:nirva_app/event_details_page.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/hive_object.dart';
 
-class DiaryEntryCard extends StatefulWidget {
-  //final DiaryEntry diaryData;
+class EventCard extends StatefulWidget {
   final Event eventData;
 
-  const DiaryEntryCard({
-    super.key,
-    //required this.diaryData,
-    required this.eventData,
-  });
+  const EventCard({super.key, required this.eventData});
 
   @override
-  State<DiaryEntryCard> createState() => _DiaryEntryCardState();
+  State<EventCard> createState() => _EventCardState();
 }
 
-class _DiaryEntryCardState extends State<DiaryEntryCard> {
+class _EventCardState extends State<EventCard> {
   late ValueNotifier<List<String>> favoritesNotifier;
 
   @override
@@ -52,8 +47,6 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
 
   bool get isFavorite {
     return AppRuntimeContext().data.checkFavorite(widget.eventData);
-
-    //return AppRuntimeContext().data.checkIfDiaryIsFavorite(widget.diaryData);
   }
 
   @override
@@ -64,7 +57,7 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => DiaryDetailsPage(
+                (context) => EventDetailsPage(
                   //diaryData: widget.diaryData,
                   eventData: widget.eventData,
                 ),
@@ -148,14 +141,4 @@ class _DiaryEntryCardState extends State<DiaryEntryCard> {
       ),
     );
   }
-
-  // String getFormattedTime() {
-  //   final startTime = widget.diaryData.beginTime;
-  //   final endTime = widget.diaryData.endTime;
-
-  //   String formattedStartTime = '${startTime.hour}:${startTime.minute}';
-  //   String formattedEndTime = '${endTime.hour}:${endTime.minute}';
-
-  //   return '$formattedStartTime - $formattedEndTime';
-  // }
 }

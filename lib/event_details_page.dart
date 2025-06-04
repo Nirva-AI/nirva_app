@@ -4,24 +4,18 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart';
 import 'package:nirva_app/utils.dart';
 
-class DiaryDetailsPage extends StatefulWidget {
-  //final DiaryEntry diaryData;
+class EventDetailsPage extends StatefulWidget {
   final Event eventData;
 
-  const DiaryDetailsPage({
-    super.key,
-    //required this.diaryData,
-    required this.eventData,
-  });
+  const EventDetailsPage({super.key, required this.eventData});
 
   @override
-  State<DiaryDetailsPage> createState() => _DiaryDetailsPageState();
+  State<EventDetailsPage> createState() => _EventDetailsPageState();
 }
 
-class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
+class _EventDetailsPageState extends State<EventDetailsPage> {
   bool get isFavorite {
     return AppRuntimeContext().data.checkFavorite(widget.eventData);
-    //return AppRuntimeContext().data.checkIfDiaryIsFavorite(widget.diaryData);
   }
 
   void _toggleFavorite() {
@@ -33,16 +27,6 @@ class _DiaryDetailsPageState extends State<DiaryDetailsPage> {
       );
     });
   }
-
-  // String _getFormattedTime() {
-  //   final startTime = widget.diaryData.beginTime;
-  //   final endTime = widget.diaryData.endTime;
-
-  //   String formattedStartTime = '${startTime.hour}:${startTime.minute}';
-  //   String formattedEndTime = '${endTime.hour}:${endTime.minute}';
-
-  //   return '$formattedStartTime - $formattedEndTime';
-  // }
 
   @override
   Widget build(BuildContext context) {

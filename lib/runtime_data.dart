@@ -132,17 +132,6 @@ class RuntimeData {
     }
   }
 
-  // 切换日记条目的收藏状态
-  // void switchDiaryFavoriteStatus(DiaryEntry diaryEntry) {
-  //   if (favorites.value.contains(diaryEntry.id)) {
-  //     favorites.value.remove(diaryEntry.id);
-  //   } else {
-  //     favorites.value.add(diaryEntry.id);
-  //   }
-  //   // 更新收藏列表
-  //   favorites.value = List.from(favorites.value); // 通知监听者
-  // }
-
   void switchEventFavoriteStatus(Event event) {
     if (favorites.value.contains(event.event_id)) {
       favorites.value.remove(event.event_id);
@@ -152,11 +141,6 @@ class RuntimeData {
     // 更新收藏列表
     favorites.value = List.from(favorites.value); // 通知监听者
   }
-
-  // 检查日记条目是否被标记为最爱
-  // bool checkIfDiaryIsFavorite(DiaryEntry diaryEntry) {
-  //   return favorites.value.contains(diaryEntry.id);
-  // }
 
   bool checkFavorite(Event event) {
     return favorites.value.contains(event.event_id);
@@ -179,14 +163,4 @@ class RuntimeData {
     // 通知监听者
     notes.value = List.from(notes.value);
   }
-
-  // 获取日记条目笔记
-  // String getDiaryNote(DiaryEntry diaryEntry) {
-  //   // 获取日记条目笔记
-  //   final note = notes.value.firstWhere(
-  //     (element) => element.id == diaryEntry.id,
-  //     orElse: () => Note(id: '', content: ''),
-  //   );
-  //   return note.content;
-  // }
 }
