@@ -10,7 +10,9 @@ class APIs {
   // 获取 URL 配置，故意不抓留给外面抓。
   static Future<URLConfigurationResponse?> getUrlConfig() async {
     final appRuntimeContext = AppRuntimeContext();
-    final response = await appRuntimeContext.dio.get<dynamic>("/config");
+    final response = await appRuntimeContext.appserviceDio.get<dynamic>(
+      "/config",
+    );
     final url_configuration_response = URLConfigurationResponse.fromJson(
       response.data!,
     );
@@ -21,17 +23,18 @@ class APIs {
   // 登录方法
   static Future<UserToken?> login() async {
     final appRuntimeContext = AppRuntimeContext();
-    final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
-      appRuntimeContext.urlConfig.loginUrl,
-      data: {
-        'username': appRuntimeContext.data.user.username,
-        'password': appRuntimeContext.data.user.password,
-        'grant_type': 'password',
-      },
-      options: Options(
-        contentType: Headers.formUrlEncodedContentType, // OAuth2默认表单格式
-      ),
-    );
+    final response = await appRuntimeContext.appserviceDio
+        .post<Map<String, dynamic>>(
+          appRuntimeContext.urlConfig.loginUrl,
+          data: {
+            'username': appRuntimeContext.data.user.username,
+            'password': appRuntimeContext.data.user.password,
+            'grant_type': 'password',
+          },
+          options: Options(
+            contentType: Headers.formUrlEncodedContentType, // OAuth2默认表单格式
+          ),
+        );
 
     if (response.statusCode != 200) {
       Logger().e('登录请求失败: ${response.statusCode}, ${response.statusMessage}');
@@ -56,7 +59,9 @@ class APIs {
   // 登出方法，故意不抓留给外面抓。
   static Future<bool> logout() async {
     final appRuntimeContext = AppRuntimeContext();
-    final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
+    final response = await appRuntimeContext.appserviceDio.post<
+      Map<String, dynamic>
+    >(
       appRuntimeContext.urlConfig.logoutUrl,
       options: Options(
         headers: {
@@ -86,14 +91,16 @@ class APIs {
     }
 
     // 发送刷新令牌请求
-    final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
-      appRuntimeContext.urlConfig.refreshUrl,
-      // 使用表单数据格式发送
-      data: FormData.fromMap({
-        'refresh_token': appRuntimeContext.storage.getUserToken().refresh_token,
-      }),
-      options: Options(contentType: Headers.formUrlEncodedContentType),
-    );
+    final response = await appRuntimeContext.appserviceDio
+        .post<Map<String, dynamic>>(
+          appRuntimeContext.urlConfig.refreshUrl,
+          // 使用表单数据格式发送
+          data: FormData.fromMap({
+            'refresh_token':
+                appRuntimeContext.storage.getUserToken().refresh_token,
+          }),
+          options: Options(contentType: Headers.formUrlEncodedContentType),
+        );
 
     if (response.statusCode != 200) {
       Logger().e('令牌刷新请求失败: ${response.statusCode}, ${response.statusMessage}');
@@ -129,7 +136,7 @@ class APIs {
   }) async {
     Logger().d('POST Request - URL: $path, Data: $data');
     final appRuntimeContext = AppRuntimeContext();
-    final response = await appRuntimeContext.dio.post<T>(
+    final response = await appRuntimeContext.appserviceDio.post<T>(
       path,
       data: data,
       queryParameters: query,
@@ -158,7 +165,7 @@ class APIs {
   }) async {
     Logger().d('GET Request - URL: $path, Query: $query');
     final appRuntimeContext = AppRuntimeContext();
-    final response = await appRuntimeContext.dio.get<T>(
+    final response = await appRuntimeContext.appserviceDio.get<T>(
       path,
       queryParameters: query,
       options: Options(
