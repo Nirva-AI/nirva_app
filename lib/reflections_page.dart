@@ -1,7 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/date_and_summary.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/utils.dart';
+
+class ReflectionSummary extends StatelessWidget {
+  const ReflectionSummary({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final fullDateTime = Utils.fullDiaryDateTime(
+      AppRuntimeContext().data.currentJournalFileDate,
+    );
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.yellow[100],
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '''$fullDateTime Reflections''',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          Text(
+            AppRuntimeContext()
+                .data
+                .currentJournalFile
+                .reflection
+                .daily_reflection
+                .reflection_summary,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class ReflectionCard extends StatefulWidget {
   final Reflection reflection;
@@ -192,7 +228,7 @@ class ReflectionsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const DateAndSummary(),
+            const ReflectionSummary(),
             const SizedBox(height: 16),
             _buildPersonalReflections(),
             const SizedBox(height: 16),
@@ -212,11 +248,11 @@ class ReflectionsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Personal Reflections',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
+        // const Text(
+        //   'Personal Reflections',
+        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        // ),
+        // const SizedBox(height: 8),
         ...personalReflections.map(
           (reflection) => Padding(
             padding: const EdgeInsets.only(bottom: 8.0),

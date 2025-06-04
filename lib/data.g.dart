@@ -376,7 +376,6 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
     _$JournalImpl(
       id: json['id'] as String,
       dateTime: DateTime.parse(json['dateTime'] as String),
-      summary: json['summary'] as String,
       quotes: (json['quotes'] as List<dynamic>)
           .map((e) => Quote.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -411,7 +410,6 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'dateTime': instance.dateTime.toIso8601String(),
-      'summary': instance.summary,
       'quotes': instance.quotes,
       'selfReflections': instance.selfReflections,
       'detailedInsights': instance.detailedInsights,

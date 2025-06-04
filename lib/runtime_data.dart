@@ -10,6 +10,7 @@ class RuntimeData {
   // 当前的日记和仪表板数据
   List<Journal> journals = [];
   List<JournalFile> journalFiles = [];
+  Map<DateTime, JournalFile> journalFilesMap = {};
 
   // 当前的待办事项数据
   List<Task> tasks = [];
@@ -50,7 +51,7 @@ class RuntimeData {
       return Journal(
         id: "",
         dateTime: DateTime.now(),
-        summary: '',
+        //summary: '',
         //diaryEntries: [],
         quotes: [],
         selfReflections: [],
@@ -111,6 +112,16 @@ class RuntimeData {
         message: "",
       );
     }
+  }
+
+  DateTime get currentJournalFileDate {
+    // 便利 journalFilesMap 如果 value 是 currentJournalFile，则返回 key
+    for (final entry in journalFilesMap.entries) {
+      if (entry.value == currentJournalFile) {
+        return entry.key;
+      }
+    }
+    return DateTime.now();
   }
 
   Dashboard get currentDashboard {

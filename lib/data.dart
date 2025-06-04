@@ -307,7 +307,7 @@ class Journal with _$Journal {
   const factory Journal({
     required String id,
     required DateTime dateTime,
-    required String summary,
+    //required String summary,
     required List<Quote> quotes,
     required List<Reflection> selfReflections,
     required List<Reflection> detailedInsights,
