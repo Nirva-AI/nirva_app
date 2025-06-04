@@ -493,6 +493,81 @@ class JournalFile with _$JournalFile {
   Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
 }
 
+//  mood_labels: List[str] = Field(
+//         description="Identify 1 to 3 mood labels that best describe user_name's personal mood during this event, based on their speech and reactions.
+//Choose from:
+//peaceful,
+//energized,
+//engaged,
+//disengaged,
+//happy,
+//sad,
+//anxious,
+//stressed,
+//relaxed,
+//excited,
+//bored,
+//frustrated,
+//content,
+//neutral.
+//
+//The first label should be the most dominant mood for user_name. If only one strong mood is evident for user_name, use only that one label. If user_name's mood is unclear or mixed without a dominant feeling, use 'neutral'. These labels should reflect user_name's state, not the general atmosphere or the mood of other people involved, unless it clearly dictates user_name's mood."
+//     )
+
+class MoodTracking2 {
+  static const peacefulColor = 0xFF2196F3; // 蓝色
+  static const energizedColor = 0xFFFF9800; // 橙色
+  static const engagedColor = 0xFF4CAF50; // 绿色
+  static const disengagedColor = 0xFF9E9E9E; // 灰色
+  static const happyColor = 0xFFFFEB3B; // 黄色
+  static const sadColor = 0xFF9C27B0; // 紫色
+  static const anxiousColor = 0xFFF44336; // 红色
+  static const stressedColor = 0xFFCDDC39; // 浅绿色
+  static const relaxedColor = 0xFF00BCD4; // 青色
+  static const excitedColor = 0xFFFFC107; // 深黄色
+  static const boredColor = 0xFF673AB7; // 深紫色
+  static const frustratedColor = 0xFF3F51B5; // 深蓝色
+  static const contentColor = 0xFF8BC34A; // 浅绿色
+  static const neutralColor = 0xFF9E9E9E; // 灰色
+
+  final String name;
+  double percentage;
+  MoodTracking2({required this.name, required this.percentage});
+
+  int get color {
+    switch (name.toLowerCase()) {
+      case 'peaceful':
+        return peacefulColor;
+      case 'energized':
+        return energizedColor;
+      case 'engaged':
+        return engagedColor;
+      case 'disengaged':
+        return disengagedColor;
+      case 'happy':
+        return happyColor;
+      case 'sad':
+        return sadColor;
+      case 'anxious':
+        return anxiousColor;
+      case 'stressed':
+        return stressedColor;
+      case 'relaxed':
+        return relaxedColor;
+      case 'excited':
+        return excitedColor;
+      case 'bored':
+        return boredColor;
+      case 'frustrated':
+        return frustratedColor;
+      case 'content':
+        return contentColor;
+      default:
+        return neutralColor; // 默认颜色为灰色
+    }
+  }
+}
+
 extension JournalFileExtensions on JournalFile {
   List<Event> get events {
     // 返回 LabelExtraction 中的事件列表
@@ -543,5 +618,39 @@ extension JournalFileExtensions on JournalFile {
       totalStressLevel += event.stress_level;
     }
     return totalStressLevel / events.length;
+  }
+
+  double get totalDurationMinutes {
+    double totalDuration = 0;
+    for (var event in events) {
+      totalDuration += event.duration_minutes.toDouble();
+    }
+    return totalDuration;
+  }
+
+  Map<String, double> get moodTimeMap {
+    Map<String, double> moodTimeMap = {};
+    for (var event in events) {
+      for (var moodLabel in event.mood_labels) {
+        if (moodTimeMap.containsKey(moodLabel)) {
+          moodTimeMap[moodLabel] =
+              moodTimeMap[moodLabel]! + event.duration_minutes.toDouble();
+        } else {
+          moodTimeMap[moodLabel] = event.duration_minutes.toDouble();
+        }
+      }
+    }
+    return moodTimeMap;
+  }
+
+  List<MoodTracking2> get moodTracking2 {
+    List<MoodTracking2> ret = [];
+    final totalTime = totalDurationMinutes;
+    for (var entry in moodTimeMap.entries) {
+      double percentage = entry.value / totalTime;
+      ret.add(MoodTracking2(name: entry.key, percentage: percentage));
+    }
+
+    return ret;
   }
 }

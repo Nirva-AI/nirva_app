@@ -4,25 +4,27 @@ import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
 
+// mood_labels: List[str] = Field(
+//       description="Identify 1 to 3 mood labels that best describe user_name's personal mood during this event, based on their speech and reactions. Choose from: peaceful, energized, engaged, disengaged, happy, sad, anxious, stressed, relaxed, excited, bored, frustrated, content, neutral. The first label should be the most dominant mood for user_name. If only one strong mood is evident for user_name, use only that one label. If user_name's mood is unclear or mixed without a dominant feeling, use 'neutral'. These labels should reflect user_name's state, not the general atmosphere or the mood of other people involved, unless it clearly dictates user_name's mood."
+//   )
+
 class MoodTrackingCard extends StatelessWidget {
   const MoodTrackingCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     final sections =
-        AppRuntimeContext().data.currentJournal.moodTrackingMap.entries.map((
-          entry,
-        ) {
+        AppRuntimeContext().data.currentJournalFile.moodTracking2.map((entry) {
           return PieChartSectionData(
-            value: entry.value.toDouble(),
-            color: Color(entry.key.color),
+            value: entry.percentage.toDouble(),
+            color: Color(entry.color),
             radius: 30, // 保持合适的扇形半径
             title: '', // 移除内部标题
             badgeWidget: _buildBadge(
-              entry.key.name,
-              entry.value,
+              entry.name,
+              entry.percentage,
               //moodColors[entry.key.name]!,
-              Color(entry.key.color), // 使用颜色值
+              Color(entry.color), // 使用颜色值
             ),
             badgePositionPercentageOffset: 2.5, // 调整标签位置，远离圆环
             showTitle: false, // 不显示内部标题
