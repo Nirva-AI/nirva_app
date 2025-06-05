@@ -590,6 +590,80 @@ class AwakeTimeAllocation2 {
   }
 }
 
+// inferred_impact_on_user_name: str = Field(
+//     description="For social interactions, infer if it seemed 'energizing', 'draining', or 'neutral' for user_name, based on their language, tone, and reactions. For non-social, use 'N/A'."
+// )
+
+//  interaction_dynamic: str = Field(
+//       description="If social, describe the dynamic (e.g., 'collaborative', 'supportive', 'tense', 'neutral', 'instructional', 'one-sided'). If not social, use 'N/A'."
+//   )
+
+class SocialEntity2 {
+  //'energizing', 'draining', or 'neutral
+
+  static const energizingColor = 0xFF4CAF50; // 绿色
+  static const drainingColor = 0xFFF44336; // 红色
+  static const neutralColor = 0xFF9E9E9E; // 灰色
+
+  final String name;
+  double minutes;
+  final Set<String> interactionDynamics;
+  final Set<String> impacts;
+
+  SocialEntity2({
+    required this.name,
+    required this.minutes,
+    required this.interactionDynamics,
+    required this.impacts,
+  });
+
+  // 写一个方法，和另外一个 SocialEntity2 合并，并返回自身。
+  SocialEntity2 merge(SocialEntity2 other) {
+    if (name != other.name) {
+      throw ArgumentError('Cannot merge different social entities');
+    }
+    return SocialEntity2(
+      name: name,
+      minutes: minutes + other.minutes,
+      interactionDynamics: Set.from(interactionDynamics)
+        ..addAll(other.interactionDynamics),
+      impacts: Set.from(impacts)..addAll(other.impacts),
+    );
+  }
+
+  double get hours {
+    return minutes / 60.0; // 将分钟转换为小时
+  }
+
+  String get impact {
+    // inferred_impact_on_user_name: str = Field(
+    //     description="For social interactions, infer if it seemed 'energizing', 'draining', or 'neutral' for user_name, based on their language, tone, and reactions. For non-social, use 'N/A'."
+    // )
+    if (impacts.isEmpty) return 'N/A';
+    // 假设影响是正面、中性或负面
+    if (impacts.contains('energizing')) {
+      return 'energizing';
+    } else if (impacts.contains('draining')) {
+      return 'draining';
+    } else {
+      return 'neutral';
+    }
+  }
+
+  int get color {
+    switch (impact) {
+      case 'energizing':
+        return energizingColor;
+      case 'draining':
+        return drainingColor;
+      case 'neutral':
+        return neutralColor;
+      default:
+        return neutralColor; // 默认颜色为灰色
+    }
+  }
+}
+
 extension JournalFileExtensions on JournalFile {
   List<Event> get events {
     // 返回 LabelExtraction 中的事件列表
@@ -705,5 +779,34 @@ extension JournalFileExtensions on JournalFile {
       peoples.addAll(event.people_involved);
     }
     return peoples;
+  }
+
+  Map<String, SocialEntity2> get socialEntities {
+    Map<String, SocialEntity2> socialMap = {};
+    for (var event in events) {
+      for (var person in event.people_involved) {
+        if (socialMap.containsKey(person)) {
+          socialMap[person]!.minutes += event.duration_minutes.toDouble();
+          socialMap[person]!.interactionDynamics.add(event.interaction_dynamic);
+          socialMap[person]!.impacts.add(event.inferred_impact_on_user_name);
+        } else {
+          socialMap[person] = SocialEntity2(
+            name: person,
+            minutes: event.duration_minutes.toDouble(),
+            interactionDynamics: {event.interaction_dynamic},
+            impacts: {event.inferred_impact_on_user_name},
+          );
+        }
+      }
+    }
+    return socialMap;
+  }
+
+  double totalSocialTime() {
+    double total = 0.0;
+    for (var entity in socialEntities.values) {
+      total += entity.minutes;
+    }
+    return total;
   }
 }
