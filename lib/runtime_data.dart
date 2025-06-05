@@ -172,4 +172,32 @@ class RuntimeData {
     // 通知监听者
     notes.value = List.from(notes.value);
   }
+
+  // 获取当前的社交地图
+  Map<String, SocialEntity2> genGlobalSocialEntitiesMap() {
+    // 获取全局社交实体的映射
+    final Map<String, SocialEntity2> map = {};
+    for (var journalFile in journalFiles.values) {
+      Map<String, SocialEntity2> subMap = journalFile.socialEntities;
+      for (var key in subMap.keys) {
+        if (!map.containsKey(key)) {
+          map[key] = subMap[key]!;
+        } else {
+          // 如果已经存在，则合并
+          map[key]!.merge(subMap[key]!);
+        }
+      }
+    }
+    return map;
+  }
+
+  // 获取全局社交地图
+  double getTotalSocialHours() {
+    // 计算全局社交时间
+    double totalHours = 0;
+    for (var entity in globalSocialMap.socialEntities) {
+      totalHours += entity.hours;
+    }
+    return totalHours;
+  }
 }

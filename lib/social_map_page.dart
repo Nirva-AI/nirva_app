@@ -19,7 +19,7 @@ class SocialMapPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Social Interactions 卡片
-            SocialInteractionsCard(socialEntities: socialEntities),
+            SocialInteractionsCard(),
 
             const SizedBox(height: 24),
 
@@ -41,17 +41,18 @@ class SocialMapPage extends StatelessWidget {
 }
 
 class SocialInteractionsCard extends StatelessWidget {
-  final List<SocialEntity> socialEntities;
-
-  const SocialInteractionsCard({super.key, required this.socialEntities});
+  const SocialInteractionsCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     // 计算总时间
-    double totalHours = 0;
-    for (var entity in socialEntities) {
-      totalHours += entity.hours;
-    }
+    final totalHours = AppRuntimeContext().data.getTotalSocialHours();
+    // 获取全局社交实体映射
+    final Map<String, SocialEntity2> globalSocialMap =
+        AppRuntimeContext().data.genGlobalSocialEntitiesMap();
+
+    // 将globalSocialMap中的value全部取出来，存成一个List
+    final List<SocialEntity2> socialEntities = globalSocialMap.values.toList();
 
     return Card(
       elevation: 2,
@@ -127,14 +128,7 @@ class SocialInteractionsCard extends StatelessWidget {
                   final entity = socialEntities[index];
 
                   // 根据impact选择颜色
-                  Color impactColor;
-                  if (entity.impact == 'Positive') {
-                    impactColor = Colors.green;
-                  } else if (entity.impact == 'Neutral') {
-                    impactColor = Colors.amber;
-                  } else {
-                    impactColor = Colors.red;
-                  }
+                  Color impactColor = Color(entity.color);
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -147,7 +141,10 @@ class SocialInteractionsCard extends StatelessWidget {
                             style: const TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ),
-                        Expanded(flex: 2, child: Text(entity.hours.toString())),
+                        Expanded(
+                          flex: 2,
+                          child: Text(entity.hours.toStringAsFixed(1)),
+                        ),
                         Expanded(
                           flex: 3,
                           child: Row(
