@@ -213,35 +213,35 @@ class AwakeTimeAllocation with _$AwakeTimeAllocation {
   Map<String, dynamic> toJson() => (this as _AwakeTimeAllocation).toJson();
 }
 
-@freezed
-class SocialEntity with _$SocialEntity {
-  const factory SocialEntity({
-    required String id,
-    required String name,
-    required String description,
-    required List<String> tips,
-    required double hours,
-    @Default('') String impact,
-  }) = _SocialEntity;
+// @freezed
+// class SocialEntity with _$SocialEntity {
+//   const factory SocialEntity({
+//     required String id,
+//     required String name,
+//     required String description,
+//     required List<String> tips,
+//     required double hours,
+//     @Default('') String impact,
+//   }) = _SocialEntity;
 
-  factory SocialEntity.fromJson(Map<String, dynamic> json) =>
-      _$SocialEntityFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _SocialEntity).toJson();
-}
+//   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
+//       _$SocialEntityFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _SocialEntity).toJson();
+// }
 
-@freezed
-class SocialMap with _$SocialMap {
-  const factory SocialMap({
-    required String id,
-    required List<SocialEntity> socialEntities,
-  }) = _SocialMap;
+// @freezed
+// class SocialMap with _$SocialMap {
+//   const factory SocialMap({
+//     required String id,
+//     required List<SocialEntity> socialEntities,
+//   }) = _SocialMap;
 
-  factory SocialMap.fromJson(Map<String, dynamic> json) =>
-      _$SocialMapFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _SocialMap).toJson();
-}
+//   factory SocialMap.fromJson(Map<String, dynamic> json) =>
+//       _$SocialMapFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _SocialMap).toJson();
+// }
 
 @freezed
 class Journal with _$Journal {
@@ -255,7 +255,7 @@ class Journal with _$Journal {
     //required List<EnergyLevel> energyLevels,
     required List<MoodTracking> moodTrackings,
     required List<AwakeTimeAllocation> awakeTimeAllocations,
-    required SocialMap socialMap,
+    //required SocialMap socialMap,
   }) = _Journal;
 
   factory Journal.fromJson(Map<String, dynamic> json) =>
@@ -264,22 +264,22 @@ class Journal with _$Journal {
   Map<String, dynamic> toJson() => (this as _Journal).toJson();
 }
 
-extension JournalExtensions on Journal {
-  Map<MoodTracking, double> get moodTrackingMap {
-    double totalValue = 0.0;
-    for (var mood in moodTrackings) {
-      totalValue += mood.value;
-    }
-    final Map<MoodTracking, double> moodMap = {};
-    if (totalValue == 0) {
-      return moodMap;
-    }
-    for (var mood in moodTrackings) {
-      moodMap[mood] = mood.value / totalValue;
-    }
-    return moodMap;
-  }
-}
+// extension JournalExtensions on Journal {
+//   Map<MoodTracking, double> get moodTrackingMap {
+//     double totalValue = 0.0;
+//     for (var mood in moodTrackings) {
+//       totalValue += mood.value;
+//     }
+//     final Map<MoodTracking, double> moodMap = {};
+//     if (totalValue == 0) {
+//       return moodMap;
+//     }
+//     for (var mood in moodTrackings) {
+//       moodMap[mood] = mood.value / totalValue;
+//     }
+//     return moodMap;
+//   }
+// }
 
 @freezed
 class MoodScoreDashboard with _$MoodScoreDashboard {

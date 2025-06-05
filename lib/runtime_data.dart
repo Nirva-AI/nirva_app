@@ -29,7 +29,7 @@ class RuntimeData {
   List<Dashboard> dashboards = [];
 
   //
-  SocialMap globalSocialMap = SocialMap(id: "", socialEntities: []);
+  //SocialMap globalSocialMap = SocialMap(id: "", socialEntities: []);
 
   //
   Map<String, List<Task>> get groupedTasks {
@@ -55,7 +55,7 @@ class RuntimeData {
         //energyLevels: [],
         moodTrackings: [],
         awakeTimeAllocations: [],
-        socialMap: SocialMap(id: "", socialEntities: []),
+        //socialMap: SocialMap(id: "", socialEntities: []),
       );
     }
   }
@@ -195,7 +195,8 @@ class RuntimeData {
   double getTotalSocialHours() {
     // 计算全局社交时间
     double totalHours = 0;
-    for (var entity in globalSocialMap.socialEntities) {
+    final global = genGlobalSocialEntitiesMap();
+    for (var entity in global.values) {
       totalHours += entity.hours;
     }
     return totalHours;
