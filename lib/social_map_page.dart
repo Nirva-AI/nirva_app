@@ -8,8 +8,8 @@ class SocialMapPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 获取 DataManager 中的社交数据
-    final socialEntities =
-        AppRuntimeContext().data.globalSocialMap.socialEntities;
+    // final socialEntities =
+    //     AppRuntimeContext().data.globalSocialMap.socialEntities;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Holistic Social Map')),
@@ -32,7 +32,7 @@ class SocialMapPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Relationship Details 内容
-            RelationshipDetailsCard(socialEntities: socialEntities),
+            RelationshipDetailsCard(),
           ],
         ),
       ),
@@ -176,12 +176,15 @@ class SocialInteractionsCard extends StatelessWidget {
 }
 
 class RelationshipDetailsCard extends StatelessWidget {
-  final List<SocialEntity> socialEntities;
+  //final List<SocialEntity> socialEntities;
 
-  const RelationshipDetailsCard({super.key, required this.socialEntities});
+  const RelationshipDetailsCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, SocialEntity2> globalSocialMap =
+        AppRuntimeContext().data.genGlobalSocialEntitiesMap();
+    final List<SocialEntity2> socialEntities = globalSocialMap.values.toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -191,7 +194,7 @@ class RelationshipDetailsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRelationshipCard(SocialEntity entity) {
+  Widget _buildRelationshipCard(SocialEntity2 entity) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Card(
@@ -244,7 +247,7 @@ class RelationshipDetailsCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               // 描述
-              Text(entity.description, style: const TextStyle(fontSize: 16)),
+              Text(entity.impact, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
 
               // 关系提示标题
@@ -259,7 +262,7 @@ class RelationshipDetailsCard extends StatelessWidget {
               const SizedBox(height: 8),
 
               // 提示列表
-              ...entity.tips.map<Widget>(
+              ...entity.interactionDynamics.map<Widget>(
                 (tip) => Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Row(

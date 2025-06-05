@@ -132,35 +132,35 @@ class TestData {
 
   // 随机生成社交影响
   static void initializeTestSocalMap() {
-    Map<String, SocialEntity> globalSocialMap = {};
+    // Map<String, SocialEntity> globalSocialMap = {};
 
-    for (var journal in AppRuntimeContext().data.journals) {
-      // 设置测试数据
-      for (var socialEntity in journal.socialMap.socialEntities) {
-        debugPrint('社交实体: ${socialEntity.name}');
-        if (globalSocialMap.containsKey(socialEntity.name)) {
-          debugPrint('社交实体已存在: ${socialEntity.name}');
-          SocialEntity existingEntity = globalSocialMap[socialEntity.name]!;
-          //目前就把时间相加。
-          globalSocialMap[socialEntity.name] = existingEntity.copyWith(
-            hours: existingEntity.hours + socialEntity.hours,
-          );
+    // for (var journal in AppRuntimeContext().data.journals) {
+    //   // 设置测试数据
+    //   for (var socialEntity in journal.socialMap.socialEntities) {
+    //     debugPrint('社交实体: ${socialEntity.name}');
+    //     if (globalSocialMap.containsKey(socialEntity.name)) {
+    //       debugPrint('社交实体已存在: ${socialEntity.name}');
+    //       SocialEntity existingEntity = globalSocialMap[socialEntity.name]!;
+    //       //目前就把时间相加。
+    //       globalSocialMap[socialEntity.name] = existingEntity.copyWith(
+    //         hours: existingEntity.hours + socialEntity.hours,
+    //       );
 
-          continue;
-        }
+    //       continue;
+    //     }
 
-        globalSocialMap[socialEntity.name] = socialEntity.copyWith(
-          impact: randomSocialImpact(),
-        );
-      }
-    }
+    //     globalSocialMap[socialEntity.name] = socialEntity.copyWith(
+    //       impact: randomSocialImpact(),
+    //     );
+    //   }
+    // }
 
     // 把 globalSocialMap 的value合成一个list
-    List<SocialEntity> socialEntities = globalSocialMap.values.toList();
-    AppRuntimeContext().data.globalSocialMap = SocialMap(
-      id: "",
-      socialEntities: socialEntities,
-    );
+    // List<SocialEntity> socialEntities = globalSocialMap.values.toList();
+    // AppRuntimeContext().data.globalSocialMap = SocialMap(
+    //   id: "",
+    //   socialEntities: socialEntities,
+    // );
   }
 
   // 测试数据： 初始化待办事项数据
@@ -300,56 +300,56 @@ class TestData {
       AwakeTimeAllocation(name: 'Other', value: 4, color: 0xFF9E9E9E),
     ];
 
-    List<SocialEntity> socialEntities = [
-      SocialEntity(
-        id: "",
-        name: 'Ashley',
-        description:
-            'Deep, supportive conversation. Vulnerability was met with understanding.',
-        tips: [
-          'Reciprocate Support: Ensure you\'re actively listening and offering support for her challenges (job search, etc.) as she does for you.',
-          'Follow Through: Act on plans discussed, like the library meet-up, to build reliability.',
-          'Shared Fun: Continue exploring shared interests beyond processing difficulties, like the arts or potential future activities.',
-        ],
-        hours: 3,
-      ),
-      SocialEntity(
-        id: "",
-        name: 'Trent',
-        description:
-            'Shared a fun hiking trip. Great teamwork and mutual encouragement.',
-        tips: [
-          'Acknowledge Commitments: Address things like listening to the record he gave you to show you value his gestures and follow through.',
-          'Appreciate His Perspective: Even when disagreeing (like on AI ethics), acknowledge and show respect for his viewpoint to maintain positive discourse.',
-          'Continue Shared Exploration: Lean into shared interests like film, exploring challenging ideas, and trying new experiences (restaurants, neighborhoods). Ask about his work/life updates proactively.',
-        ],
-        hours: 2,
-      ),
-      SocialEntity(
-        id: "",
-        name: 'Charlie',
-        description:
-            'Had a long discussion about books and movies. Discovered shared interests.',
-        tips: [
-          'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-          'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-          'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-        ],
-        hours: 1.5,
-      ),
-      SocialEntity(
-        id: "",
-        name: 'Diana',
-        description:
-            'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
-        tips: [
-          'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-          'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-          'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-        ],
-        hours: 4,
-      ),
-    ];
+    // List<SocialEntity> socialEntities = [
+    //   SocialEntity(
+    //     id: "",
+    //     name: 'Ashley',
+    //     description:
+    //         'Deep, supportive conversation. Vulnerability was met with understanding.',
+    //     tips: [
+    //       'Reciprocate Support: Ensure you\'re actively listening and offering support for her challenges (job search, etc.) as she does for you.',
+    //       'Follow Through: Act on plans discussed, like the library meet-up, to build reliability.',
+    //       'Shared Fun: Continue exploring shared interests beyond processing difficulties, like the arts or potential future activities.',
+    //     ],
+    //     hours: 3,
+    //   ),
+    //   SocialEntity(
+    //     id: "",
+    //     name: 'Trent',
+    //     description:
+    //         'Shared a fun hiking trip. Great teamwork and mutual encouragement.',
+    //     tips: [
+    //       'Acknowledge Commitments: Address things like listening to the record he gave you to show you value his gestures and follow through.',
+    //       'Appreciate His Perspective: Even when disagreeing (like on AI ethics), acknowledge and show respect for his viewpoint to maintain positive discourse.',
+    //       'Continue Shared Exploration: Lean into shared interests like film, exploring challenging ideas, and trying new experiences (restaurants, neighborhoods). Ask about his work/life updates proactively.',
+    //     ],
+    //     hours: 2,
+    //   ),
+    //   SocialEntity(
+    //     id: "",
+    //     name: 'Charlie',
+    //     description:
+    //         'Had a long discussion about books and movies. Discovered shared interests.',
+    //     tips: [
+    //       'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+    //       'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+    //       'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+    //     ],
+    //     hours: 1.5,
+    //   ),
+    //   SocialEntity(
+    //     id: "",
+    //     name: 'Diana',
+    //     description:
+    //         'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
+    //     tips: [
+    //       'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
+    //       'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
+    //       'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
+    //     ],
+    //     hours: 4,
+    //   ),
+    // ];
 
     return Journal(
       id: dateTime.toIso8601String(),
@@ -358,7 +358,7 @@ class TestData {
       //energyLevels: energyLevels,
       moodTrackings: moodTrackings,
       awakeTimeAllocations: awakeTimeAllocations,
-      socialMap: SocialMap(id: "", socialEntities: socialEntities),
+      //socialMap: SocialMap(id: "", socialEntities: socialEntities),
     );
   }
 

@@ -3318,444 +3318,6 @@ abstract class _AwakeTimeAllocation implements AwakeTimeAllocation {
       throw _privateConstructorUsedError;
 }
 
-SocialEntity _$SocialEntityFromJson(Map<String, dynamic> json) {
-  return _SocialEntity.fromJson(json);
-}
-
-/// @nodoc
-mixin _$SocialEntity {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get description => throw _privateConstructorUsedError;
-  List<String> get tips => throw _privateConstructorUsedError;
-  double get hours => throw _privateConstructorUsedError;
-  String get impact => throw _privateConstructorUsedError;
-
-  /// Serializes this SocialEntity to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of SocialEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SocialEntityCopyWith<SocialEntity> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SocialEntityCopyWith<$Res> {
-  factory $SocialEntityCopyWith(
-          SocialEntity value, $Res Function(SocialEntity) then) =
-      _$SocialEntityCopyWithImpl<$Res, SocialEntity>;
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      String description,
-      List<String> tips,
-      double hours,
-      String impact});
-}
-
-/// @nodoc
-class _$SocialEntityCopyWithImpl<$Res, $Val extends SocialEntity>
-    implements $SocialEntityCopyWith<$Res> {
-  _$SocialEntityCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of SocialEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? description = null,
-    Object? tips = null,
-    Object? hours = null,
-    Object? impact = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      tips: null == tips
-          ? _value.tips
-          : tips // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      hours: null == hours
-          ? _value.hours
-          : hours // ignore: cast_nullable_to_non_nullable
-              as double,
-      impact: null == impact
-          ? _value.impact
-          : impact // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$SocialEntityImplCopyWith<$Res>
-    implements $SocialEntityCopyWith<$Res> {
-  factory _$$SocialEntityImplCopyWith(
-          _$SocialEntityImpl value, $Res Function(_$SocialEntityImpl) then) =
-      __$$SocialEntityImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      String description,
-      List<String> tips,
-      double hours,
-      String impact});
-}
-
-/// @nodoc
-class __$$SocialEntityImplCopyWithImpl<$Res>
-    extends _$SocialEntityCopyWithImpl<$Res, _$SocialEntityImpl>
-    implements _$$SocialEntityImplCopyWith<$Res> {
-  __$$SocialEntityImplCopyWithImpl(
-      _$SocialEntityImpl _value, $Res Function(_$SocialEntityImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of SocialEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? description = null,
-    Object? tips = null,
-    Object? hours = null,
-    Object? impact = null,
-  }) {
-    return _then(_$SocialEntityImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      tips: null == tips
-          ? _value._tips
-          : tips // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      hours: null == hours
-          ? _value.hours
-          : hours // ignore: cast_nullable_to_non_nullable
-              as double,
-      impact: null == impact
-          ? _value.impact
-          : impact // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$SocialEntityImpl implements _SocialEntity {
-  const _$SocialEntityImpl(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required final List<String> tips,
-      required this.hours,
-      this.impact = ''})
-      : _tips = tips;
-
-  factory _$SocialEntityImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SocialEntityImplFromJson(json);
-
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final String description;
-  final List<String> _tips;
-  @override
-  List<String> get tips {
-    if (_tips is EqualUnmodifiableListView) return _tips;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_tips);
-  }
-
-  @override
-  final double hours;
-  @override
-  @JsonKey()
-  final String impact;
-
-  @override
-  String toString() {
-    return 'SocialEntity(id: $id, name: $name, description: $description, tips: $tips, hours: $hours, impact: $impact)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SocialEntityImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
-            const DeepCollectionEquality().equals(other._tips, _tips) &&
-            (identical(other.hours, hours) || other.hours == hours) &&
-            (identical(other.impact, impact) || other.impact == impact));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, name, description,
-      const DeepCollectionEquality().hash(_tips), hours, impact);
-
-  /// Create a copy of SocialEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SocialEntityImplCopyWith<_$SocialEntityImpl> get copyWith =>
-      __$$SocialEntityImplCopyWithImpl<_$SocialEntityImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SocialEntityImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _SocialEntity implements SocialEntity {
-  const factory _SocialEntity(
-      {required final String id,
-      required final String name,
-      required final String description,
-      required final List<String> tips,
-      required final double hours,
-      final String impact}) = _$SocialEntityImpl;
-
-  factory _SocialEntity.fromJson(Map<String, dynamic> json) =
-      _$SocialEntityImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  String get description;
-  @override
-  List<String> get tips;
-  @override
-  double get hours;
-  @override
-  String get impact;
-
-  /// Create a copy of SocialEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SocialEntityImplCopyWith<_$SocialEntityImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-SocialMap _$SocialMapFromJson(Map<String, dynamic> json) {
-  return _SocialMap.fromJson(json);
-}
-
-/// @nodoc
-mixin _$SocialMap {
-  String get id => throw _privateConstructorUsedError;
-  List<SocialEntity> get socialEntities => throw _privateConstructorUsedError;
-
-  /// Serializes this SocialMap to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of SocialMap
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SocialMapCopyWith<SocialMap> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SocialMapCopyWith<$Res> {
-  factory $SocialMapCopyWith(SocialMap value, $Res Function(SocialMap) then) =
-      _$SocialMapCopyWithImpl<$Res, SocialMap>;
-  @useResult
-  $Res call({String id, List<SocialEntity> socialEntities});
-}
-
-/// @nodoc
-class _$SocialMapCopyWithImpl<$Res, $Val extends SocialMap>
-    implements $SocialMapCopyWith<$Res> {
-  _$SocialMapCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of SocialMap
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? socialEntities = null,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      socialEntities: null == socialEntities
-          ? _value.socialEntities
-          : socialEntities // ignore: cast_nullable_to_non_nullable
-              as List<SocialEntity>,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$SocialMapImplCopyWith<$Res>
-    implements $SocialMapCopyWith<$Res> {
-  factory _$$SocialMapImplCopyWith(
-          _$SocialMapImpl value, $Res Function(_$SocialMapImpl) then) =
-      __$$SocialMapImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String id, List<SocialEntity> socialEntities});
-}
-
-/// @nodoc
-class __$$SocialMapImplCopyWithImpl<$Res>
-    extends _$SocialMapCopyWithImpl<$Res, _$SocialMapImpl>
-    implements _$$SocialMapImplCopyWith<$Res> {
-  __$$SocialMapImplCopyWithImpl(
-      _$SocialMapImpl _value, $Res Function(_$SocialMapImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of SocialMap
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? socialEntities = null,
-  }) {
-    return _then(_$SocialMapImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      socialEntities: null == socialEntities
-          ? _value._socialEntities
-          : socialEntities // ignore: cast_nullable_to_non_nullable
-              as List<SocialEntity>,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$SocialMapImpl implements _SocialMap {
-  const _$SocialMapImpl(
-      {required this.id, required final List<SocialEntity> socialEntities})
-      : _socialEntities = socialEntities;
-
-  factory _$SocialMapImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SocialMapImplFromJson(json);
-
-  @override
-  final String id;
-  final List<SocialEntity> _socialEntities;
-  @override
-  List<SocialEntity> get socialEntities {
-    if (_socialEntities is EqualUnmodifiableListView) return _socialEntities;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_socialEntities);
-  }
-
-  @override
-  String toString() {
-    return 'SocialMap(id: $id, socialEntities: $socialEntities)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SocialMapImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            const DeepCollectionEquality()
-                .equals(other._socialEntities, _socialEntities));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, id, const DeepCollectionEquality().hash(_socialEntities));
-
-  /// Create a copy of SocialMap
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SocialMapImplCopyWith<_$SocialMapImpl> get copyWith =>
-      __$$SocialMapImplCopyWithImpl<_$SocialMapImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SocialMapImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _SocialMap implements SocialMap {
-  const factory _SocialMap(
-      {required final String id,
-      required final List<SocialEntity> socialEntities}) = _$SocialMapImpl;
-
-  factory _SocialMap.fromJson(Map<String, dynamic> json) =
-      _$SocialMapImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  List<SocialEntity> get socialEntities;
-
-  /// Create a copy of SocialMap
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SocialMapImplCopyWith<_$SocialMapImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 Journal _$JournalFromJson(Map<String, dynamic> json) {
   return _Journal.fromJson(json);
 }
@@ -3772,7 +3334,6 @@ mixin _$Journal {
   List<MoodTracking> get moodTrackings => throw _privateConstructorUsedError;
   List<AwakeTimeAllocation> get awakeTimeAllocations =>
       throw _privateConstructorUsedError;
-  SocialMap get socialMap => throw _privateConstructorUsedError;
 
   /// Serializes this Journal to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3793,10 +3354,7 @@ abstract class $JournalCopyWith<$Res> {
       DateTime dateTime,
       List<Highlight> highlights,
       List<MoodTracking> moodTrackings,
-      List<AwakeTimeAllocation> awakeTimeAllocations,
-      SocialMap socialMap});
-
-  $SocialMapCopyWith<$Res> get socialMap;
+      List<AwakeTimeAllocation> awakeTimeAllocations});
 }
 
 /// @nodoc
@@ -3819,7 +3377,6 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
     Object? highlights = null,
     Object? moodTrackings = null,
     Object? awakeTimeAllocations = null,
-    Object? socialMap = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -3842,21 +3399,7 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
           ? _value.awakeTimeAllocations
           : awakeTimeAllocations // ignore: cast_nullable_to_non_nullable
               as List<AwakeTimeAllocation>,
-      socialMap: null == socialMap
-          ? _value.socialMap
-          : socialMap // ignore: cast_nullable_to_non_nullable
-              as SocialMap,
     ) as $Val);
-  }
-
-  /// Create a copy of Journal
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $SocialMapCopyWith<$Res> get socialMap {
-    return $SocialMapCopyWith<$Res>(_value.socialMap, (value) {
-      return _then(_value.copyWith(socialMap: value) as $Val);
-    });
   }
 }
 
@@ -3872,11 +3415,7 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
       DateTime dateTime,
       List<Highlight> highlights,
       List<MoodTracking> moodTrackings,
-      List<AwakeTimeAllocation> awakeTimeAllocations,
-      SocialMap socialMap});
-
-  @override
-  $SocialMapCopyWith<$Res> get socialMap;
+      List<AwakeTimeAllocation> awakeTimeAllocations});
 }
 
 /// @nodoc
@@ -3897,7 +3436,6 @@ class __$$JournalImplCopyWithImpl<$Res>
     Object? highlights = null,
     Object? moodTrackings = null,
     Object? awakeTimeAllocations = null,
-    Object? socialMap = null,
   }) {
     return _then(_$JournalImpl(
       id: null == id
@@ -3920,10 +3458,6 @@ class __$$JournalImplCopyWithImpl<$Res>
           ? _value._awakeTimeAllocations
           : awakeTimeAllocations // ignore: cast_nullable_to_non_nullable
               as List<AwakeTimeAllocation>,
-      socialMap: null == socialMap
-          ? _value.socialMap
-          : socialMap // ignore: cast_nullable_to_non_nullable
-              as SocialMap,
     ));
   }
 }
@@ -3936,8 +3470,7 @@ class _$JournalImpl implements _Journal {
       required this.dateTime,
       required final List<Highlight> highlights,
       required final List<MoodTracking> moodTrackings,
-      required final List<AwakeTimeAllocation> awakeTimeAllocations,
-      required this.socialMap})
+      required final List<AwakeTimeAllocation> awakeTimeAllocations})
       : _highlights = highlights,
         _moodTrackings = moodTrackings,
         _awakeTimeAllocations = awakeTimeAllocations;
@@ -3983,11 +3516,8 @@ class _$JournalImpl implements _Journal {
   }
 
   @override
-  final SocialMap socialMap;
-
-  @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, highlights: $highlights, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations, socialMap: $socialMap)';
+    return 'Journal(id: $id, dateTime: $dateTime, highlights: $highlights, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations)';
   }
 
   @override
@@ -4003,9 +3533,7 @@ class _$JournalImpl implements _Journal {
             const DeepCollectionEquality()
                 .equals(other._moodTrackings, _moodTrackings) &&
             const DeepCollectionEquality()
-                .equals(other._awakeTimeAllocations, _awakeTimeAllocations) &&
-            (identical(other.socialMap, socialMap) ||
-                other.socialMap == socialMap));
+                .equals(other._awakeTimeAllocations, _awakeTimeAllocations));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -4016,8 +3544,7 @@ class _$JournalImpl implements _Journal {
       dateTime,
       const DeepCollectionEquality().hash(_highlights),
       const DeepCollectionEquality().hash(_moodTrackings),
-      const DeepCollectionEquality().hash(_awakeTimeAllocations),
-      socialMap);
+      const DeepCollectionEquality().hash(_awakeTimeAllocations));
 
   /// Create a copy of Journal
   /// with the given fields replaced by the non-null parameter values.
@@ -4037,12 +3564,12 @@ class _$JournalImpl implements _Journal {
 
 abstract class _Journal implements Journal {
   const factory _Journal(
-      {required final String id,
-      required final DateTime dateTime,
-      required final List<Highlight> highlights,
-      required final List<MoodTracking> moodTrackings,
-      required final List<AwakeTimeAllocation> awakeTimeAllocations,
-      required final SocialMap socialMap}) = _$JournalImpl;
+          {required final String id,
+          required final DateTime dateTime,
+          required final List<Highlight> highlights,
+          required final List<MoodTracking> moodTrackings,
+          required final List<AwakeTimeAllocation> awakeTimeAllocations}) =
+      _$JournalImpl;
 
   factory _Journal.fromJson(Map<String, dynamic> json) = _$JournalImpl.fromJson;
 
@@ -4058,8 +3585,6 @@ abstract class _Journal implements Journal {
   List<MoodTracking> get moodTrackings;
   @override
   List<AwakeTimeAllocation> get awakeTimeAllocations;
-  @override
-  SocialMap get socialMap;
 
   /// Create a copy of Journal
   /// with the given fields replaced by the non-null parameter values.

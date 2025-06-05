@@ -275,40 +275,6 @@ Map<String, dynamic> _$$AwakeTimeAllocationImplToJson(
       'color': instance.color,
     };
 
-_$SocialEntityImpl _$$SocialEntityImplFromJson(Map<String, dynamic> json) =>
-    _$SocialEntityImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      tips: (json['tips'] as List<dynamic>).map((e) => e as String).toList(),
-      hours: (json['hours'] as num).toDouble(),
-      impact: json['impact'] as String? ?? '',
-    );
-
-Map<String, dynamic> _$$SocialEntityImplToJson(_$SocialEntityImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'description': instance.description,
-      'tips': instance.tips,
-      'hours': instance.hours,
-      'impact': instance.impact,
-    };
-
-_$SocialMapImpl _$$SocialMapImplFromJson(Map<String, dynamic> json) =>
-    _$SocialMapImpl(
-      id: json['id'] as String,
-      socialEntities: (json['socialEntities'] as List<dynamic>)
-          .map((e) => SocialEntity.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-
-Map<String, dynamic> _$$SocialMapImplToJson(_$SocialMapImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'socialEntities': instance.socialEntities,
-    };
-
 _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
     _$JournalImpl(
       id: json['id'] as String,
@@ -322,7 +288,6 @@ _$JournalImpl _$$JournalImplFromJson(Map<String, dynamic> json) =>
       awakeTimeAllocations: (json['awakeTimeAllocations'] as List<dynamic>)
           .map((e) => AwakeTimeAllocation.fromJson(e as Map<String, dynamic>))
           .toList(),
-      socialMap: SocialMap.fromJson(json['socialMap'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
@@ -332,7 +297,6 @@ Map<String, dynamic> _$$JournalImplToJson(_$JournalImpl instance) =>
       'highlights': instance.highlights,
       'moodTrackings': instance.moodTrackings,
       'awakeTimeAllocations': instance.awakeTimeAllocations,
-      'socialMap': instance.socialMap,
     };
 
 _$MoodScoreDashboardImpl _$$MoodScoreDashboardImplFromJson(
