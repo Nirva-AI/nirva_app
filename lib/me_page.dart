@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/user_profile_page.dart';
 import 'package:nirva_app/update_data_page.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/hive_data_viewer_page.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -137,6 +138,21 @@ class _MePageState extends State<MePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const UpdateDataPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Divider(height: 1),
+                    _buildSettingsOption(
+                      icon: Icons.storage,
+                      title: 'Local Data',
+                      subtitle: 'View local data stored in Hive',
+                      onTap: () {
+                        debugPrint('Local Data tapped');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HiveDataViewerPage(),
                           ),
                         );
                       },
