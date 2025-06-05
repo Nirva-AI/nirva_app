@@ -493,27 +493,6 @@ class JournalFile with _$JournalFile {
   Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
 }
 
-//  mood_labels: List[str] = Field(
-//         description="Identify 1 to 3 mood labels that best describe user_name's personal mood during this event, based on their speech and reactions.
-//Choose from:
-//peaceful,
-//energized,
-//engaged,
-//disengaged,
-//happy,
-//sad,
-//anxious,
-//stressed,
-//relaxed,
-//excited,
-//bored,
-//frustrated,
-//content,
-//neutral.
-//
-//The first label should be the most dominant mood for user_name. If only one strong mood is evident for user_name, use only that one label. If user_name's mood is unclear or mixed without a dominant feeling, use 'neutral'. These labels should reflect user_name's state, not the general atmosphere or the mood of other people involved, unless it clearly dictates user_name's mood."
-//     )
-
 class MoodTracking2 {
   static const peacefulColor = 0xFF2196F3; // 蓝色
   static const energizedColor = 0xFFFF9800; // 橙色
@@ -567,18 +546,6 @@ class MoodTracking2 {
     }
   }
 }
-
-// activity_type: Literal[
-//       "work",
-//       "exercise",
-//       "social",
-//       "learning",
-//       "self-care",
-//       "chores",
-//       "commute",
-//       "meal",
-//       "leisure",
-//       "unknown",
 
 class AwakeTimeAllocation2 {
   static const workColor = 0xFF2196F3; // 蓝色
@@ -730,5 +697,13 @@ extension JournalFileExtensions on JournalFile {
       ret.add(AwakeTimeAllocation2(name: entry.key, minutes: entry.value));
     }
     return ret;
+  }
+
+  Set<String> get peoples_involved {
+    Set<String> peoples = {};
+    for (var event in events) {
+      peoples.addAll(event.people_involved);
+    }
+    return peoples;
   }
 }
