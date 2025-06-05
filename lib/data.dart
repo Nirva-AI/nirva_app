@@ -635,10 +635,10 @@ class SocialEntity2 {
     return minutes / 60.0; // 将分钟转换为小时
   }
 
+  // inferred_impact_on_user_name: str = Field(
+  //     description="For social interactions, infer if it seemed 'energizing', 'draining', or 'neutral' for user_name, based on their language, tone, and reactions. For non-social, use 'N/A'."
+  // )
   String get impact {
-    // inferred_impact_on_user_name: str = Field(
-    //     description="For social interactions, infer if it seemed 'energizing', 'draining', or 'neutral' for user_name, based on their language, tone, and reactions. For non-social, use 'N/A'."
-    // )
     if (impacts.isEmpty) return 'N/A';
     // 假设影响是正面、中性或负面
     if (impacts.contains('energizing')) {
@@ -648,6 +648,14 @@ class SocialEntity2 {
     } else {
       return 'neutral';
     }
+  }
+
+  // 根据 interactionDynamics 和 impacts 生成描述
+  String get discription {
+    String dynamicsDescription =
+        interactionDynamics.isNotEmpty ? interactionDynamics.join(', ') : 'N/A';
+    String impactDescription = impacts.isNotEmpty ? impacts.join(', ') : 'N/A';
+    return 'Dynamics: $dynamicsDescription, Impact: $impactDescription';
   }
 
   int get color {
