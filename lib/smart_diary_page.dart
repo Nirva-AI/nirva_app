@@ -36,7 +36,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
             .currentJournalFile
             .label_extraction
             .events) {
-      quotes.add(event.one_sentence_summary);
+      quotes.add(event.action_item);
     }
 
     return SingleChildScrollView(

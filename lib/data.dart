@@ -568,6 +568,61 @@ class MoodTracking2 {
   }
 }
 
+// activity_type: Literal[
+//       "work",
+//       "exercise",
+//       "social",
+//       "learning",
+//       "self-care",
+//       "chores",
+//       "commute",
+//       "meal",
+//       "leisure",
+//       "unknown",
+
+class AwakeTimeAllocation2 {
+  static const workColor = 0xFF2196F3; // 蓝色
+  static const exerciseColor = 0xFFFF9800; // 橙色
+  static const socialColor = 0xFF4CAF50; // 绿色
+  static const learningColor = 0xFF9E9E9E; // 灰色
+  static const selfCareColor = 0xFFFFEB3B; // 黄色
+  static const choresColor = 0xFF9C27B0; // 紫色
+  static const commuteColor = 0xFFF44336; // 红色
+  static const mealColor = 0xFFCDDC39; // 浅绿色
+  static const leisureColor = 0xFF00BCD4; // 青色
+  static const unknownColor = 0xFF9E9E9E; // 灰色
+
+  final String name;
+  double minutes;
+
+  AwakeTimeAllocation2({required this.name, required this.minutes});
+
+  int get color {
+    switch (name.toLowerCase()) {
+      case 'work':
+        return workColor;
+      case 'exercise':
+        return exerciseColor;
+      case 'social':
+        return socialColor;
+      case 'learning':
+        return learningColor;
+      case 'self-care':
+        return selfCareColor;
+      case 'chores':
+        return choresColor;
+      case 'commute':
+        return commuteColor;
+      case 'meal':
+        return mealColor;
+      case 'leisure':
+        return leisureColor;
+      default:
+        return unknownColor; // 默认颜色为灰色
+    }
+  }
+}
+
 extension JournalFileExtensions on JournalFile {
   List<Event> get events {
     // 返回 LabelExtraction 中的事件列表
@@ -643,6 +698,21 @@ extension JournalFileExtensions on JournalFile {
     return moodTimeMap;
   }
 
+  Map<String, double> get activityTimeMap {
+    Map<String, double> activityTimeMap = {};
+    for (var event in events) {
+      if (activityTimeMap.containsKey(event.activity_type)) {
+        activityTimeMap[event.activity_type] =
+            activityTimeMap[event.activity_type]! +
+            event.duration_minutes.toDouble();
+      } else {
+        activityTimeMap[event.activity_type] =
+            event.duration_minutes.toDouble();
+      }
+    }
+    return activityTimeMap;
+  }
+
   List<MoodTracking2> get moodTracking2 {
     List<MoodTracking2> ret = [];
     final totalTime = totalDurationMinutes;
@@ -651,6 +721,14 @@ extension JournalFileExtensions on JournalFile {
       ret.add(MoodTracking2(name: entry.key, percentage: percentage));
     }
 
+    return ret;
+  }
+
+  List<AwakeTimeAllocation2> get awakeTimeAllocation2 {
+    List<AwakeTimeAllocation2> ret = [];
+    for (var entry in activityTimeMap.entries) {
+      ret.add(AwakeTimeAllocation2(name: entry.key, minutes: entry.value));
+    }
     return ret;
   }
 }
