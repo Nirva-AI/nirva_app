@@ -5,7 +5,7 @@ import 'package:nirva_app/energy_level_card.dart';
 import 'package:nirva_app/mood_tracking_card.dart';
 //import 'package:nirva_app/social_map_card.dart';
 import 'package:nirva_app/awake_time_allocation_card.dart';
-import 'package:nirva_app/today_highlights_card.dart';
+//import 'package:nirva_app/today_highlights_card.dart';
 import 'package:nirva_app/mood_score_card.dart';
 import 'package:nirva_app/social_map_graph_card.dart';
 
@@ -30,8 +30,8 @@ class DashboardPage extends StatelessWidget {
               _buildAwakeTimeAllocationCard(),
               const SizedBox(height: 16),
               _buildSocialMapCard(),
-              const SizedBox(height: 16),
-              _buildTodaysHighlightsCard(),
+              // const SizedBox(height: 16),
+              // _buildTodaysHighlightsCard(),
             ],
           ),
         ),
@@ -63,7 +63,7 @@ class DashboardPage extends StatelessWidget {
     //return const SocialMapCard();
   }
 
-  Widget _buildTodaysHighlightsCard() {
-    return TodayHighlightsCard();
-  }
+  // Widget _buildTodaysHighlightsCard() {
+  //   return TodayHighlightsCard();
+  // }
 }

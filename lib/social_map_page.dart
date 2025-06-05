@@ -126,10 +126,6 @@ class SocialInteractionsCard extends StatelessWidget {
                 separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
                   final entity = socialEntities[index];
-
-                  // 根据impact选择颜色
-                  Color impactColor = Color(entity.color);
-
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12.0),
                     child: Row(
@@ -153,7 +149,7 @@ class SocialInteractionsCard extends StatelessWidget {
                                 width: 12,
                                 height: 12,
                                 decoration: BoxDecoration(
-                                  color: impactColor,
+                                  color: Color(entity.color),
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -231,12 +227,7 @@ class RelationshipDetailsCard extends StatelessWidget {
                         width: 12,
                         height: 12,
                         decoration: BoxDecoration(
-                          color:
-                              entity.impact == 'Positive'
-                                  ? Colors.green
-                                  : entity.impact == 'Neutral'
-                                  ? Colors.amber
-                                  : Colors.red,
+                          color: Color(entity.color), // 使用实体的颜色
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -247,7 +238,7 @@ class RelationshipDetailsCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               // 描述
-              Text(entity.impact, style: const TextStyle(fontSize: 16)),
+              Text(entity.discription, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
 
               // 关系提示标题
