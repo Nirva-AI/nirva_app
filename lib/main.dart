@@ -6,6 +6,7 @@ import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
 //import 'package:nirva_app/test_calendar_app.dart';
 //import 'package:nirva_app/hive_data.dart';
+//import 'package:nirva_app/test_file_access_app.dart'; // 添加这一行
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
@@ -21,6 +22,8 @@ void main() async {
   //runApp(TestGraphViewApp());
   //如果需要测试日历视图，可以取消下面的注释，下面会进入测试应用，隔离主应用进行专项测试
   //runApp(const TestCalendarApp());
+  //如果需要测试iOS文件应用访问，可以取消下面的注释
+  //runApp(const TestFileAccessApp());
 }
 
 Future<void> initializeApp() async {

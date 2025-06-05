@@ -65,5 +65,10 @@
     <!-- 本地网络权限说明 -->
     <key>NSLocalNetworkUsageDescription</key>
     <string>需要访问本地网络以连接您的私有服务器</string>
+	<!-- 访问文件应用 -->
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 </dict>
 </plist>
