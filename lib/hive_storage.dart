@@ -93,4 +93,25 @@ class HiveStorage {
     final box = Hive.box<UserToken>(_userTokenBox);
     await box.delete(_userTokenKey);
   }
+
+  // 获取所有 Hive 数据的统计信息和内容
+  Map<String, dynamic> getAllData() {
+    final Map<String, dynamic> data = {};
+    
+    // 获取收藏夹数据
+    if (Hive.isBoxOpen(_favoritesBox)) {
+      final favBox = Hive.box<Favorites>(_favoritesBox);
+      final favorites = favBox.get(_favoritesKey);
+      data['favorites'] = favorites;
+    }
+    
+    // 获取用户令牌数据
+    if (Hive.isBoxOpen(_userTokenBox)) {
+      final tokenBox = Hive.box<UserToken>(_userTokenBox);
+      final token = tokenBox.get(_userTokenKey);
+      data['userToken'] = token;
+    }
+    
+    return data;
+  }
 }
