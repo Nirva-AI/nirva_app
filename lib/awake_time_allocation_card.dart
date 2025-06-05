@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/awake_time_allocation_details_page.dart';
+import 'package:nirva_app/data.dart';
 
 class AwakeTimeAllocationCard extends StatelessWidget {
   const AwakeTimeAllocationCard({super.key});
 
-  final double _minY = 0;
-  final double _maxY = 8;
-  final double _interval = 2;
+  static const double _minY = 0;
+  static const double _maxY = 8;
+  static const double _interval = 2;
 
   String _formatLeftTitle(double value) {
     if (value >= 0 && value <= 8 && value % 2 == 0) {
@@ -20,7 +21,7 @@ class AwakeTimeAllocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final awakeTimeAllocations =
-        AppRuntimeContext().data.currentJournal.awakeTimeAllocations;
+        AppRuntimeContext().data.currentJournalFile.awakeTimeAllocation2;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -109,7 +110,7 @@ class AwakeTimeAllocationCard extends StatelessWidget {
                               x: entry.key,
                               barRods: [
                                 BarChartRodData(
-                                  toY: entry.value.value,
+                                  toY: entry.value.minutes / 60,
                                   color: Color(entry.value.color),
                                   width: 15,
                                   borderRadius: BorderRadius.zero,
