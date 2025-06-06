@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+import 'package:uuid/uuid.dart'; // 添加此行引入uuid包
 
 class APIs {
   // 获取 URL 配置，故意不抓留给外面抓。
@@ -251,9 +252,25 @@ class APIs {
   // 聊天请求, 故意不抓留给外面抓。
   static Future<ChatActionResponse?> chat(String content) async {
     final appRuntimeContext = AppRuntimeContext();
+    final uuid = Uuid(); // 创建UUID生成器实例
+
+    final chatActionRequest = ChatActionRequest(
+      human_message: ChatMessage(
+        id: uuid.v4(), // 使用uuid生成唯一ID
+        role: MessageRole.human,
+        content: content,
+        time_stamp: DateTime.now().toIso8601String(),
+      ),
+      chat_history: appRuntimeContext.chat.messages.value,
+    );
+
+    // 添加详细日志，查看完整请求体
+    final requestJson = chatActionRequest.toJson();
+    Logger().d('Chat request payload: ${jsonEncode(requestJson)}');
+
     final response = await safePost<Map<String, dynamic>>(
       appRuntimeContext.urlConfig.chatActionUrl,
-      data: ChatActionRequest(content: content).toJson(),
+      data: chatActionRequest.toJson(),
     );
 
     if (response == null || response.data == null) {
@@ -263,6 +280,10 @@ class APIs {
 
     final chatResponse = ChatActionResponse.fromJson(response.data!);
     Logger().d('Chat action response: ${jsonEncode(chatResponse.toJson())}');
-    return chatResponse;
+    appRuntimeContext.chat.appendConversation([
+      chatActionRequest.human_message,
+      chatResponse.ai_message,
+    ]);
+    return chatResponse; // 这里返回null是因为没有实现具体的聊天逻辑
   }
 }

@@ -20,11 +20,34 @@ class URLConfigurationResponse with _$URLConfigurationResponse {
   Map<String, dynamic> toJson() => (this as _URLConfigurationResponse).toJson();
 }
 
-//聊天请求
+class MessageRole {
+  static const int system = 0; // 0
+  static const int human = 1; // 1
+  static const int ai = 2; // 2
+}
+
+@freezed
+class ChatMessage with _$ChatMessage {
+  const factory ChatMessage({
+    required String id,
+    required int role,
+    required String content,
+    required String time_stamp,
+    List<String>? tags, // 可选参数
+  }) = _ChatMessage;
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json) =>
+      _$ChatMessageFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _ChatMessage).toJson();
+}
+
 @freezed
 class ChatActionRequest with _$ChatActionRequest {
-  const factory ChatActionRequest({required String content}) =
-      _ChatActionRequest;
+  const factory ChatActionRequest({
+    required ChatMessage human_message,
+    required List<ChatMessage> chat_history, // 可选参数
+  }) = _ChatActionRequest;
 
   factory ChatActionRequest.fromJson(Map<String, dynamic> json) =>
       _$ChatActionRequestFromJson(json);
@@ -34,7 +57,7 @@ class ChatActionRequest with _$ChatActionRequest {
 
 @freezed
 class ChatActionResponse with _$ChatActionResponse {
-  const factory ChatActionResponse({required String message}) =
+  const factory ChatActionResponse({required ChatMessage ai_message}) =
       _ChatActionResponse;
 
   factory ChatActionResponse.fromJson(Map<String, dynamic> json) =>
