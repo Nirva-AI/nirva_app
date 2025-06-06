@@ -2,6 +2,7 @@
 import 'package:path_provider/path_provider.dart'; // 用于获取平台相关的存储路径
 import 'package:hive/hive.dart';
 import 'package:nirva_app/hive_object.dart';
+import 'package:nirva_app/api_models.dart';
 
 class HiveStorage {
   // 现有的常量定义
@@ -11,6 +12,10 @@ class HiveStorage {
   // 新增 Token 相关的常量定义
   static const String _userTokenBox = 'userTokenBox';
   static const String _userTokenKey = 'userToken';
+
+  // 添加新的常量
+  static const String _chatHistoryBox = 'chatHistoryBox';
+  static const String _chatHistoryKey = 'chatHistory';
 
   Future<void> _initialize() async {
     // 获取应用的文档目录
@@ -23,6 +28,7 @@ class HiveStorage {
     await _initialize(); // 确保 Hive 已经初始化
     await Hive.deleteBoxFromDisk(_favoritesBox);
     await Hive.deleteBoxFromDisk(_userTokenBox);
+    await Hive.deleteBoxFromDisk(_chatHistoryBox); // 添加此行
     await Hive.close(); // 关闭所有打开的 Box
     await Hive.deleteFromDisk();
   }
@@ -31,7 +37,7 @@ class HiveStorage {
   Future<void> initializeAdapters() async {
     await _initialize(); // 确保 Hive 已经初始化
     // 并发初始化所有 Box
-    await Future.wait([_initFavorites(), _initUserToken()]);
+    await Future.wait([_initFavorites(), _initUserToken(), _initChatHistory()]);
   }
 
   // 初始化 DiaryFavorites 的 Box
@@ -53,6 +59,19 @@ class HiveStorage {
     }
     if (!Hive.isBoxOpen(_userTokenBox)) {
       await Hive.openBox<UserToken>(_userTokenBox);
+    }
+  }
+
+  // 初始化聊天历史 Box
+  Future<void> _initChatHistory() async {
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(HiveChatMessageAdapter());
+    }
+    if (!Hive.isAdapterRegistered(4)) {
+      Hive.registerAdapter(ChatHistoryAdapter());
+    }
+    if (!Hive.isBoxOpen(_chatHistoryBox)) {
+      await Hive.openBox<ChatHistory>(_chatHistoryBox);
     }
   }
 
@@ -94,6 +113,30 @@ class HiveStorage {
     await box.delete(_userTokenKey);
   }
 
+  // 保存聊天历史
+  Future<void> saveChatHistory(List<ChatMessage> messages) async {
+    final box = Hive.box<ChatHistory>(_chatHistoryBox);
+    final hiveMessages =
+        messages.map((msg) => HiveChatMessage.fromChatMessage(msg)).toList();
+    await box.put(_chatHistoryKey, ChatHistory(messages: hiveMessages));
+  }
+
+  // 获取聊天历史
+  List<ChatMessage> getChatHistory() {
+    final box = Hive.box<ChatHistory>(_chatHistoryBox);
+    final history = box.get(_chatHistoryKey);
+    if (history == null) {
+      return [];
+    }
+    return history.messages.map((msg) => msg.toChatMessage()).toList();
+  }
+
+  // 清除聊天历史
+  Future<void> clearChatHistory() async {
+    final box = Hive.box<ChatHistory>(_chatHistoryBox);
+    await box.delete(_chatHistoryKey);
+  }
+
   // 获取所有 Hive 数据的统计信息和内容
   Map<String, dynamic> getAllData() {
     final Map<String, dynamic> data = {};
@@ -110,6 +153,13 @@ class HiveStorage {
       final tokenBox = Hive.box<UserToken>(_userTokenBox);
       final token = tokenBox.get(_userTokenKey);
       data['userToken'] = token;
+    }
+
+    // 获取聊天历史数据
+    if (Hive.isBoxOpen(_chatHistoryBox)) {
+      final chatBox = Hive.box<ChatHistory>(_chatHistoryBox);
+      final history = chatBox.get(_chatHistoryKey);
+      data['chatHistory'] = history;
     }
 
     return data;

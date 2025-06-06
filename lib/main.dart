@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+//import 'package:nirva_app/hive_object.dart';
 //import 'package:nirva_app/main_app.dart';
 import 'package:nirva_app/test_data.dart';
 import 'package:nirva_app/test_chat_app.dart';
@@ -38,7 +39,7 @@ Future<void> initializeApp() async {
 
 Future<void> testHive() async {
   // 初始化 Hive
-  await AppRuntimeContext().storage.deleteFromDisk(); // 清空之前的数据
+  //await AppRuntimeContext().storage.deleteFromDisk(); // 清空之前的数据
   await AppRuntimeContext().storage.initializeAdapters();
 
   final retrievedFavorites = AppRuntimeContext().storage.getFavorites();
@@ -48,4 +49,7 @@ Future<void> testHive() async {
   } else {
     debugPrint('DiaryFavorites 测试失败: 收藏夹数据不存在或为空');
   }
+
+  final storageChatHistory = AppRuntimeContext().storage.getChatHistory();
+  AppRuntimeContext().chat.chatHistory.value = storageChatHistory; // 清空之前的聊天记录
 }

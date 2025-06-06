@@ -261,7 +261,7 @@ class APIs {
         content: content,
         time_stamp: DateTime.now().toIso8601String(),
       ),
-      chat_history: appRuntimeContext.chat.messages.value,
+      chat_history: appRuntimeContext.chat.chatHistory.value,
     );
 
     // 添加详细日志，查看完整请求体
@@ -284,6 +284,11 @@ class APIs {
       chatActionRequest.human_message,
       chatResponse.ai_message,
     ]);
+
+    // _saveMessages 会通过监听器自动调用
+    appRuntimeContext.storage.saveChatHistory(
+      appRuntimeContext.chat.chatHistory.value,
+    );
     return chatResponse; // 这里返回null是因为没有实现具体的聊天逻辑
   }
 }
