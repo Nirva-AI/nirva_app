@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/message.dart';
+//import 'package:nirva_app/message.dart';
 import 'package:nirva_app/apis.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/api_models.dart';
 
 class AssistantChatPage extends StatefulWidget {
   final TextEditingController textController;
@@ -16,10 +17,10 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
   final ScrollController _scrollController = ScrollController();
   bool _isSending = false;
 
-  String _getContent(BaseMessage message) {
-    if (message.role == ChatRole.user) {
+  String _getContent(ChatMessage message) {
+    if (message.role == MessageRole.human) {
       return 'You: ${message.content}';
-    } else if (message.role == ChatRole.ai) {
+    } else if (message.role == MessageRole.ai) {
       return 'Nirva: ${message.content}';
     }
     return 'Illegal: ${message.content}';
@@ -46,13 +47,13 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     try {
       final response = await APIs.chat(message);
       if (response != null) {
-        AppRuntimeContext().chat.addUserMessage(message);
-        AppRuntimeContext().chat.addAIMessage('AI 回复: ${response.message}');
+        //AppRuntimeContext().chat.addUserMessage(message);
+        //AppRuntimeContext().chat.addAIMessage('AI 回复: ${response.message}');
       } else {
-        AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复1');
+        //AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复1');
       }
     } catch (e) {
-      AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复2');
+      //AppRuntimeContext().chat.addAIMessage('错误: 无法获取回复2');
     }
 
     widget.textController.clear();
@@ -78,7 +79,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
       body: Column(
         children: [
           Expanded(
-            child: ValueListenableBuilder<List<BaseMessage>>(
+            child: ValueListenableBuilder<List<ChatMessage>>(
               valueListenable: AppRuntimeContext().chat.messages,
               builder: (context, chatMessagesValue, _) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -89,7 +90,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
                   itemCount: chatMessagesValue.length,
                   itemBuilder: (context, index) {
                     final message = chatMessagesValue[index];
-                    final isUser = message.role == ChatRole.user;
+                    final isUser = message.role == MessageRole.human;
                     return Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
