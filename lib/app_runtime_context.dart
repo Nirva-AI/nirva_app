@@ -74,4 +74,10 @@ class AppRuntimeContext {
   Dio get appserviceDio {
     return _appserviceDio;
   }
+
+  // 清除对话历史!
+  Future<void> clearChatHistory() async {
+    chat.chatHistory.value = [];
+    await AppRuntimeContext().storage.clearChatHistory();
+  }
 }
