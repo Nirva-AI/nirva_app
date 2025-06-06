@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
-//import 'package:nirva_app/app_runtime_context.dart';
 import 'package:share_plus/share_plus.dart';
 
 class TestFileAccessApp extends StatelessWidget {
@@ -158,37 +157,6 @@ class _FileAccessTestPageState extends State<FileAccessTestPage> {
     }
   }
 
-  // 创建包含Hive数据的JSON文件
-  // Future<void> _exportHiveDataToJson() async {
-  //   try {
-  //     final directory = await getApplicationDocumentsDirectory();
-  //     final timestamp = DateTime.now().millisecondsSinceEpoch;
-  //     final path = '${directory.path}/hive_data_$timestamp.json';
-
-  //     // 获取Hive数据
-  //     final hiveData = AppRuntimeContext().storage.getAllData();
-  //     final jsonString = hiveData.toString();
-
-  //     // 写入文件
-  //     final file = File(path);
-  //     await file.writeAsString(jsonString);
-
-  //     await _loadAppFiles();
-
-  //     if (!mounted) return;
-
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(const SnackBar(content: Text('已导出Hive数据到JSON文件')));
-  //   } catch (e) {
-  //     if (!mounted) return;
-
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text('导出Hive数据出错: $e')));
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -231,15 +199,6 @@ class _FileAccessTestPageState extends State<FileAccessTestPage> {
                     ),
                   ),
                 ),
-                // Expanded(  // 添加Expanded包裹按钮
-                //   child: Padding(
-                //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                //     child: ElevatedButton(
-                //       onPressed: _exportHiveDataToJson,
-                //       child: const Text('导出Hive数据', overflow: TextOverflow.ellipsis),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
