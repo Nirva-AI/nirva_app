@@ -5,7 +5,7 @@ import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/hive_object.dart';
 
 class EventCard extends StatefulWidget {
-  final Event eventData;
+  final EventAnalysis eventData;
 
   const EventCard({super.key, required this.eventData});
 

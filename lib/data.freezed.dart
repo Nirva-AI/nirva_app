@@ -199,12 +199,12 @@ abstract class _User implements User {
       throw _privateConstructorUsedError;
 }
 
-Event _$EventFromJson(Map<String, dynamic> json) {
-  return _Event.fromJson(json);
+EventAnalysis _$EventAnalysisFromJson(Map<String, dynamic> json) {
+  return _EventAnalysis.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Event {
+mixin _$EventAnalysis {
   String get event_id => throw _privateConstructorUsedError;
   String get event_title => throw _privateConstructorUsedError;
   String get time_range => throw _privateConstructorUsedError;
@@ -223,19 +223,21 @@ mixin _$Event {
   String get first_person_narrative => throw _privateConstructorUsedError;
   String get action_item => throw _privateConstructorUsedError;
 
-  /// Serializes this Event to a JSON map.
+  /// Serializes this EventAnalysis to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of Event
+  /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $EventCopyWith<Event> get copyWith => throw _privateConstructorUsedError;
+  $EventAnalysisCopyWith<EventAnalysis> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $EventCopyWith<$Res> {
-  factory $EventCopyWith(Event value, $Res Function(Event) then) =
-      _$EventCopyWithImpl<$Res, Event>;
+abstract class $EventAnalysisCopyWith<$Res> {
+  factory $EventAnalysisCopyWith(
+          EventAnalysis value, $Res Function(EventAnalysis) then) =
+      _$EventAnalysisCopyWithImpl<$Res, EventAnalysis>;
   @useResult
   $Res call(
       {String event_id,
@@ -258,16 +260,16 @@ abstract class $EventCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$EventCopyWithImpl<$Res, $Val extends Event>
-    implements $EventCopyWith<$Res> {
-  _$EventCopyWithImpl(this._value, this._then);
+class _$EventAnalysisCopyWithImpl<$Res, $Val extends EventAnalysis>
+    implements $EventAnalysisCopyWith<$Res> {
+  _$EventAnalysisCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Event
+  /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -364,10 +366,11 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
 }
 
 /// @nodoc
-abstract class _$$EventImplCopyWith<$Res> implements $EventCopyWith<$Res> {
-  factory _$$EventImplCopyWith(
-          _$EventImpl value, $Res Function(_$EventImpl) then) =
-      __$$EventImplCopyWithImpl<$Res>;
+abstract class _$$EventAnalysisImplCopyWith<$Res>
+    implements $EventAnalysisCopyWith<$Res> {
+  factory _$$EventAnalysisImplCopyWith(
+          _$EventAnalysisImpl value, $Res Function(_$EventAnalysisImpl) then) =
+      __$$EventAnalysisImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -391,14 +394,14 @@ abstract class _$$EventImplCopyWith<$Res> implements $EventCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$EventImplCopyWithImpl<$Res>
-    extends _$EventCopyWithImpl<$Res, _$EventImpl>
-    implements _$$EventImplCopyWith<$Res> {
-  __$$EventImplCopyWithImpl(
-      _$EventImpl _value, $Res Function(_$EventImpl) _then)
+class __$$EventAnalysisImplCopyWithImpl<$Res>
+    extends _$EventAnalysisCopyWithImpl<$Res, _$EventAnalysisImpl>
+    implements _$$EventAnalysisImplCopyWith<$Res> {
+  __$$EventAnalysisImplCopyWithImpl(
+      _$EventAnalysisImpl _value, $Res Function(_$EventAnalysisImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Event
+  /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -421,7 +424,7 @@ class __$$EventImplCopyWithImpl<$Res>
     Object? first_person_narrative = null,
     Object? action_item = null,
   }) {
-    return _then(_$EventImpl(
+    return _then(_$EventAnalysisImpl(
       event_id: null == event_id
           ? _value.event_id
           : event_id // ignore: cast_nullable_to_non_nullable
@@ -496,8 +499,8 @@ class __$$EventImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$EventImpl implements _Event {
-  const _$EventImpl(
+class _$EventAnalysisImpl implements _EventAnalysis {
+  const _$EventAnalysisImpl(
       {required this.event_id,
       required this.event_title,
       required this.time_range,
@@ -519,8 +522,8 @@ class _$EventImpl implements _Event {
         _people_involved = people_involved,
         _topic_labels = topic_labels;
 
-  factory _$EventImpl.fromJson(Map<String, dynamic> json) =>
-      _$$EventImplFromJson(json);
+  factory _$EventAnalysisImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EventAnalysisImplFromJson(json);
 
   @override
   final String event_id;
@@ -577,14 +580,14 @@ class _$EventImpl implements _Event {
 
   @override
   String toString() {
-    return 'Event(event_id: $event_id, event_title: $event_title, time_range: $time_range, duration_minutes: $duration_minutes, location: $location, mood_labels: $mood_labels, mood_score: $mood_score, stress_level: $stress_level, energy_level: $energy_level, activity_type: $activity_type, people_involved: $people_involved, interaction_dynamic: $interaction_dynamic, inferred_impact_on_user_name: $inferred_impact_on_user_name, topic_labels: $topic_labels, one_sentence_summary: $one_sentence_summary, first_person_narrative: $first_person_narrative, action_item: $action_item)';
+    return 'EventAnalysis(event_id: $event_id, event_title: $event_title, time_range: $time_range, duration_minutes: $duration_minutes, location: $location, mood_labels: $mood_labels, mood_score: $mood_score, stress_level: $stress_level, energy_level: $energy_level, activity_type: $activity_type, people_involved: $people_involved, interaction_dynamic: $interaction_dynamic, inferred_impact_on_user_name: $inferred_impact_on_user_name, topic_labels: $topic_labels, one_sentence_summary: $one_sentence_summary, first_person_narrative: $first_person_narrative, action_item: $action_item)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$EventImpl &&
+            other is _$EventAnalysisImpl &&
             (identical(other.event_id, event_id) ||
                 other.event_id == event_id) &&
             (identical(other.event_title, event_title) ||
@@ -645,24 +648,24 @@ class _$EventImpl implements _Event {
       first_person_narrative,
       action_item);
 
-  /// Create a copy of Event
+  /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$EventImplCopyWith<_$EventImpl> get copyWith =>
-      __$$EventImplCopyWithImpl<_$EventImpl>(this, _$identity);
+  _$$EventAnalysisImplCopyWith<_$EventAnalysisImpl> get copyWith =>
+      __$$EventAnalysisImplCopyWithImpl<_$EventAnalysisImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EventImplToJson(
+    return _$$EventAnalysisImplToJson(
       this,
     );
   }
 }
 
-abstract class _Event implements Event {
-  const factory _Event(
+abstract class _EventAnalysis implements EventAnalysis {
+  const factory _EventAnalysis(
       {required final String event_id,
       required final String event_title,
       required final String time_range,
@@ -679,9 +682,10 @@ abstract class _Event implements Event {
       required final List<String> topic_labels,
       required final String one_sentence_summary,
       required final String first_person_narrative,
-      required final String action_item}) = _$EventImpl;
+      required final String action_item}) = _$EventAnalysisImpl;
 
-  factory _Event.fromJson(Map<String, dynamic> json) = _$EventImpl.fromJson;
+  factory _EventAnalysis.fromJson(Map<String, dynamic> json) =
+      _$EventAnalysisImpl.fromJson;
 
   @override
   String get event_id;
@@ -718,11 +722,11 @@ abstract class _Event implements Event {
   @override
   String get action_item;
 
-  /// Create a copy of Event
+  /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$EventImplCopyWith<_$EventImpl> get copyWith =>
+  _$$EventAnalysisImplCopyWith<_$EventAnalysisImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -5682,7 +5686,7 @@ LabelExtraction _$LabelExtractionFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$LabelExtraction {
-  List<Event> get events => throw _privateConstructorUsedError;
+  List<EventAnalysis> get events => throw _privateConstructorUsedError;
 
   /// Serializes this LabelExtraction to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -5700,7 +5704,7 @@ abstract class $LabelExtractionCopyWith<$Res> {
           LabelExtraction value, $Res Function(LabelExtraction) then) =
       _$LabelExtractionCopyWithImpl<$Res, LabelExtraction>;
   @useResult
-  $Res call({List<Event> events});
+  $Res call({List<EventAnalysis> events});
 }
 
 /// @nodoc
@@ -5724,7 +5728,7 @@ class _$LabelExtractionCopyWithImpl<$Res, $Val extends LabelExtraction>
       events: null == events
           ? _value.events
           : events // ignore: cast_nullable_to_non_nullable
-              as List<Event>,
+              as List<EventAnalysis>,
     ) as $Val);
   }
 }
@@ -5737,7 +5741,7 @@ abstract class _$$LabelExtractionImplCopyWith<$Res>
       __$$LabelExtractionImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<Event> events});
+  $Res call({List<EventAnalysis> events});
 }
 
 /// @nodoc
@@ -5759,7 +5763,7 @@ class __$$LabelExtractionImplCopyWithImpl<$Res>
       events: null == events
           ? _value._events
           : events // ignore: cast_nullable_to_non_nullable
-              as List<Event>,
+              as List<EventAnalysis>,
     ));
   }
 }
@@ -5767,15 +5771,15 @@ class __$$LabelExtractionImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$LabelExtractionImpl implements _LabelExtraction {
-  const _$LabelExtractionImpl({required final List<Event> events})
+  const _$LabelExtractionImpl({required final List<EventAnalysis> events})
       : _events = events;
 
   factory _$LabelExtractionImpl.fromJson(Map<String, dynamic> json) =>
       _$$LabelExtractionImplFromJson(json);
 
-  final List<Event> _events;
+  final List<EventAnalysis> _events;
   @override
-  List<Event> get events {
+  List<EventAnalysis> get events {
     if (_events is EqualUnmodifiableListView) return _events;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_events);
@@ -5817,14 +5821,14 @@ class _$LabelExtractionImpl implements _LabelExtraction {
 }
 
 abstract class _LabelExtraction implements LabelExtraction {
-  const factory _LabelExtraction({required final List<Event> events}) =
+  const factory _LabelExtraction({required final List<EventAnalysis> events}) =
       _$LabelExtractionImpl;
 
   factory _LabelExtraction.fromJson(Map<String, dynamic> json) =
       _$LabelExtractionImpl.fromJson;
 
   @override
-  List<Event> get events;
+  List<EventAnalysis> get events;
 
   /// Create a copy of LabelExtraction
   /// with the given fields replaced by the non-null parameter values.

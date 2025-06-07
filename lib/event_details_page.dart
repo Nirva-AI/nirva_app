@@ -5,7 +5,7 @@ import 'package:nirva_app/guided_reflection_page.dart';
 import 'package:nirva_app/utils.dart';
 
 class EventDetailsPage extends StatefulWidget {
-  final Event eventData;
+  final EventAnalysis eventData;
 
   const EventDetailsPage({super.key, required this.eventData});
 

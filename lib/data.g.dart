@@ -19,7 +19,8 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
       'displayName': instance.displayName,
     };
 
-_$EventImpl _$$EventImplFromJson(Map<String, dynamic> json) => _$EventImpl(
+_$EventAnalysisImpl _$$EventAnalysisImplFromJson(Map<String, dynamic> json) =>
+    _$EventAnalysisImpl(
       event_id: json['event_id'] as String,
       event_title: json['event_title'] as String,
       time_range: json['time_range'] as String,
@@ -46,7 +47,7 @@ _$EventImpl _$$EventImplFromJson(Map<String, dynamic> json) => _$EventImpl(
       action_item: json['action_item'] as String,
     );
 
-Map<String, dynamic> _$$EventImplToJson(_$EventImpl instance) =>
+Map<String, dynamic> _$$EventAnalysisImplToJson(_$EventAnalysisImpl instance) =>
     <String, dynamic>{
       'event_id': instance.event_id,
       'event_title': instance.event_title,
@@ -502,7 +503,7 @@ _$LabelExtractionImpl _$$LabelExtractionImplFromJson(
         Map<String, dynamic> json) =>
     _$LabelExtractionImpl(
       events: (json['events'] as List<dynamic>)
-          .map((e) => Event.fromJson(e as Map<String, dynamic>))
+          .map((e) => EventAnalysis.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
