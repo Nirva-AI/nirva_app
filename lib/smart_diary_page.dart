@@ -30,12 +30,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   @override
   Widget build(BuildContext context) {
     List<String> quotes = [];
-    for (var event
-        in AppRuntimeContext()
-            .data
-            .currentJournalFile
-            .label_extraction
-            .events) {
+    for (var event in AppRuntimeContext().data.currentJournalFile.events) {
       quotes.add(event.action_item);
     }
 
@@ -65,7 +60,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
           // 动态展示日记条目
           _buildEventList(
             //AppRuntimeContext().data.currentJournal.diaryEntries,
-            AppRuntimeContext().data.currentJournalFile.label_extraction.events,
+            AppRuntimeContext().data.currentJournalFile.events,
           ),
         ],
       ),

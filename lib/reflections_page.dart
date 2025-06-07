@@ -28,7 +28,6 @@ class ReflectionSummary extends StatelessWidget {
             AppRuntimeContext()
                 .data
                 .currentJournalFile
-                .reflection
                 .daily_reflection
                 .reflection_summary,
           ),
@@ -232,7 +231,7 @@ class ReflectionsPage extends StatelessWidget {
 
   Widget _buildReflectionCards() {
     final dailyReflection =
-        AppRuntimeContext().data.currentJournalFile.reflection.daily_reflection;
+        AppRuntimeContext().data.currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +262,7 @@ class ReflectionsPage extends StatelessWidget {
 
   Widget _buildGoalCards() {
     final dailyReflection =
-        AppRuntimeContext().data.currentJournalFile.reflection.daily_reflection;
+        AppRuntimeContext().data.currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

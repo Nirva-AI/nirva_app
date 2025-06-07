@@ -499,44 +499,21 @@ Map<String, dynamic> _$$DashboardImplToJson(_$DashboardImpl instance) =>
       'awakeTimeAllocation': instance.awakeTimeAllocation,
     };
 
-_$LabelExtractionImpl _$$LabelExtractionImplFromJson(
-        Map<String, dynamic> json) =>
-    _$LabelExtractionImpl(
+_$JournalFileImpl _$$JournalFileImplFromJson(Map<String, dynamic> json) =>
+    _$JournalFileImpl(
+      username: json['username'] as String,
+      time_stamp: json['time_stamp'] as String,
       events: (json['events'] as List<dynamic>)
           .map((e) => EventAnalysis.fromJson(e as Map<String, dynamic>))
           .toList(),
-    );
-
-Map<String, dynamic> _$$LabelExtractionImplToJson(
-        _$LabelExtractionImpl instance) =>
-    <String, dynamic>{
-      'events': instance.events,
-    };
-
-_$ReflectionDataImpl _$$ReflectionDataImplFromJson(Map<String, dynamic> json) =>
-    _$ReflectionDataImpl(
       daily_reflection: DailyReflection.fromJson(
           json['daily_reflection'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ReflectionDataImplToJson(
-        _$ReflectionDataImpl instance) =>
-    <String, dynamic>{
-      'daily_reflection': instance.daily_reflection,
-    };
-
-_$JournalFileImpl _$$JournalFileImplFromJson(Map<String, dynamic> json) =>
-    _$JournalFileImpl(
-      label_extraction: LabelExtraction.fromJson(
-          json['label_extraction'] as Map<String, dynamic>),
-      reflection:
-          ReflectionData.fromJson(json['reflection'] as Map<String, dynamic>),
-      message: json['message'] as String,
-    );
-
 Map<String, dynamic> _$$JournalFileImplToJson(_$JournalFileImpl instance) =>
     <String, dynamic>{
-      'label_extraction': instance.label_extraction,
-      'reflection': instance.reflection,
-      'message': instance.message,
+      'username': instance.username,
+      'time_stamp': instance.time_stamp,
+      'events': instance.events,
+      'daily_reflection': instance.daily_reflection,
     };

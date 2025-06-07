@@ -23,13 +23,13 @@ class TestData {
 
     // 这里读取日记。
     await loadTestJournalFile(
-      'assets/analyze_result_2025-04-19-01.txt.json',
+      'assets/analyze_result_nirva-2025-04-19-00.txt.json',
       AppRuntimeContext().data.currentJournalDate,
     );
-    await loadTestJournalFile(
-      'assets/analyze_result_2025-05-09-01.txt.json',
-      DateTime(2025, 5, 9),
-    );
+    // await loadTestJournalFile(
+    //   'assets/analyze_result_2025-05-09-01.txt.json',
+    //   DateTime(2025, 5, 9),
+    // );
 
     // 添加todo数据
     AppRuntimeContext().data.tasks = TestData.createTestTasks();
@@ -77,8 +77,8 @@ class TestData {
       //final key = dateTime.toIso8601String().split('T')[0];
       //AppRuntimeContext().data.journalFiles[key] = journalFile;
       AppRuntimeContext().data.setJournalFile(loadJournalFile, dateTime);
-      debugPrint('成功加载日记文件: ${loadJournalFile.message}');
-      debugPrint('事件数量: ${loadJournalFile.label_extraction.events.length}');
+      //debugPrint('成功加载日记文件: ${loadJournalFile.message}');
+      debugPrint('事件数量: ${loadJournalFile.events.length}');
     } catch (error) {
       debugPrint('加载日记文件时出错: $error');
     }
@@ -87,7 +87,7 @@ class TestData {
   // 添加日记的最爱数据
   static void initializeTestFavorites(JournalFile journalFile) {
     // 设置测试数据
-    List<EventAnalysis> events = journalFile.label_extraction.events;
+    List<EventAnalysis> events = journalFile.events;
 
     //
     if (events.isNotEmpty) {
@@ -103,7 +103,7 @@ class TestData {
   // 添加日记的笔记数据
   static void initializeTestMyNotes(JournalFile journalFile) {
     // 设置测试数据
-    List<EventAnalysis> events = journalFile.label_extraction.events;
+    List<EventAnalysis> events = journalFile.events;
 
     //
     if (events.isNotEmpty) {

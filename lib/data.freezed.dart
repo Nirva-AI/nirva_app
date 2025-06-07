@@ -5680,340 +5680,16 @@ abstract class _Dashboard implements Dashboard {
       throw _privateConstructorUsedError;
 }
 
-LabelExtraction _$LabelExtractionFromJson(Map<String, dynamic> json) {
-  return _LabelExtraction.fromJson(json);
-}
-
-/// @nodoc
-mixin _$LabelExtraction {
-  List<EventAnalysis> get events => throw _privateConstructorUsedError;
-
-  /// Serializes this LabelExtraction to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of LabelExtraction
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $LabelExtractionCopyWith<LabelExtraction> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $LabelExtractionCopyWith<$Res> {
-  factory $LabelExtractionCopyWith(
-          LabelExtraction value, $Res Function(LabelExtraction) then) =
-      _$LabelExtractionCopyWithImpl<$Res, LabelExtraction>;
-  @useResult
-  $Res call({List<EventAnalysis> events});
-}
-
-/// @nodoc
-class _$LabelExtractionCopyWithImpl<$Res, $Val extends LabelExtraction>
-    implements $LabelExtractionCopyWith<$Res> {
-  _$LabelExtractionCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of LabelExtraction
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? events = null,
-  }) {
-    return _then(_value.copyWith(
-      events: null == events
-          ? _value.events
-          : events // ignore: cast_nullable_to_non_nullable
-              as List<EventAnalysis>,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$LabelExtractionImplCopyWith<$Res>
-    implements $LabelExtractionCopyWith<$Res> {
-  factory _$$LabelExtractionImplCopyWith(_$LabelExtractionImpl value,
-          $Res Function(_$LabelExtractionImpl) then) =
-      __$$LabelExtractionImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({List<EventAnalysis> events});
-}
-
-/// @nodoc
-class __$$LabelExtractionImplCopyWithImpl<$Res>
-    extends _$LabelExtractionCopyWithImpl<$Res, _$LabelExtractionImpl>
-    implements _$$LabelExtractionImplCopyWith<$Res> {
-  __$$LabelExtractionImplCopyWithImpl(
-      _$LabelExtractionImpl _value, $Res Function(_$LabelExtractionImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of LabelExtraction
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? events = null,
-  }) {
-    return _then(_$LabelExtractionImpl(
-      events: null == events
-          ? _value._events
-          : events // ignore: cast_nullable_to_non_nullable
-              as List<EventAnalysis>,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$LabelExtractionImpl implements _LabelExtraction {
-  const _$LabelExtractionImpl({required final List<EventAnalysis> events})
-      : _events = events;
-
-  factory _$LabelExtractionImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LabelExtractionImplFromJson(json);
-
-  final List<EventAnalysis> _events;
-  @override
-  List<EventAnalysis> get events {
-    if (_events is EqualUnmodifiableListView) return _events;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_events);
-  }
-
-  @override
-  String toString() {
-    return 'LabelExtraction(events: $events)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LabelExtractionImpl &&
-            const DeepCollectionEquality().equals(other._events, _events));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_events));
-
-  /// Create a copy of LabelExtraction
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LabelExtractionImplCopyWith<_$LabelExtractionImpl> get copyWith =>
-      __$$LabelExtractionImplCopyWithImpl<_$LabelExtractionImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$LabelExtractionImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _LabelExtraction implements LabelExtraction {
-  const factory _LabelExtraction({required final List<EventAnalysis> events}) =
-      _$LabelExtractionImpl;
-
-  factory _LabelExtraction.fromJson(Map<String, dynamic> json) =
-      _$LabelExtractionImpl.fromJson;
-
-  @override
-  List<EventAnalysis> get events;
-
-  /// Create a copy of LabelExtraction
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LabelExtractionImplCopyWith<_$LabelExtractionImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-ReflectionData _$ReflectionDataFromJson(Map<String, dynamic> json) {
-  return _ReflectionData.fromJson(json);
-}
-
-/// @nodoc
-mixin _$ReflectionData {
-  DailyReflection get daily_reflection => throw _privateConstructorUsedError;
-
-  /// Serializes this ReflectionData to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of ReflectionData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ReflectionDataCopyWith<ReflectionData> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ReflectionDataCopyWith<$Res> {
-  factory $ReflectionDataCopyWith(
-          ReflectionData value, $Res Function(ReflectionData) then) =
-      _$ReflectionDataCopyWithImpl<$Res, ReflectionData>;
-  @useResult
-  $Res call({DailyReflection daily_reflection});
-
-  $DailyReflectionCopyWith<$Res> get daily_reflection;
-}
-
-/// @nodoc
-class _$ReflectionDataCopyWithImpl<$Res, $Val extends ReflectionData>
-    implements $ReflectionDataCopyWith<$Res> {
-  _$ReflectionDataCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of ReflectionData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? daily_reflection = null,
-  }) {
-    return _then(_value.copyWith(
-      daily_reflection: null == daily_reflection
-          ? _value.daily_reflection
-          : daily_reflection // ignore: cast_nullable_to_non_nullable
-              as DailyReflection,
-    ) as $Val);
-  }
-
-  /// Create a copy of ReflectionData
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $DailyReflectionCopyWith<$Res> get daily_reflection {
-    return $DailyReflectionCopyWith<$Res>(_value.daily_reflection, (value) {
-      return _then(_value.copyWith(daily_reflection: value) as $Val);
-    });
-  }
-}
-
-/// @nodoc
-abstract class _$$ReflectionDataImplCopyWith<$Res>
-    implements $ReflectionDataCopyWith<$Res> {
-  factory _$$ReflectionDataImplCopyWith(_$ReflectionDataImpl value,
-          $Res Function(_$ReflectionDataImpl) then) =
-      __$$ReflectionDataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({DailyReflection daily_reflection});
-
-  @override
-  $DailyReflectionCopyWith<$Res> get daily_reflection;
-}
-
-/// @nodoc
-class __$$ReflectionDataImplCopyWithImpl<$Res>
-    extends _$ReflectionDataCopyWithImpl<$Res, _$ReflectionDataImpl>
-    implements _$$ReflectionDataImplCopyWith<$Res> {
-  __$$ReflectionDataImplCopyWithImpl(
-      _$ReflectionDataImpl _value, $Res Function(_$ReflectionDataImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of ReflectionData
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? daily_reflection = null,
-  }) {
-    return _then(_$ReflectionDataImpl(
-      daily_reflection: null == daily_reflection
-          ? _value.daily_reflection
-          : daily_reflection // ignore: cast_nullable_to_non_nullable
-              as DailyReflection,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$ReflectionDataImpl implements _ReflectionData {
-  const _$ReflectionDataImpl({required this.daily_reflection});
-
-  factory _$ReflectionDataImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ReflectionDataImplFromJson(json);
-
-  @override
-  final DailyReflection daily_reflection;
-
-  @override
-  String toString() {
-    return 'ReflectionData(daily_reflection: $daily_reflection)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ReflectionDataImpl &&
-            (identical(other.daily_reflection, daily_reflection) ||
-                other.daily_reflection == daily_reflection));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, daily_reflection);
-
-  /// Create a copy of ReflectionData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ReflectionDataImplCopyWith<_$ReflectionDataImpl> get copyWith =>
-      __$$ReflectionDataImplCopyWithImpl<_$ReflectionDataImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ReflectionDataImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _ReflectionData implements ReflectionData {
-  const factory _ReflectionData(
-      {required final DailyReflection daily_reflection}) = _$ReflectionDataImpl;
-
-  factory _ReflectionData.fromJson(Map<String, dynamic> json) =
-      _$ReflectionDataImpl.fromJson;
-
-  @override
-  DailyReflection get daily_reflection;
-
-  /// Create a copy of ReflectionData
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ReflectionDataImplCopyWith<_$ReflectionDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 JournalFile _$JournalFileFromJson(Map<String, dynamic> json) {
   return _JournalFile.fromJson(json);
 }
 
 /// @nodoc
 mixin _$JournalFile {
-  LabelExtraction get label_extraction => throw _privateConstructorUsedError;
-  ReflectionData get reflection => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
+  String get username => throw _privateConstructorUsedError;
+  String get time_stamp => throw _privateConstructorUsedError;
+  List<EventAnalysis> get events => throw _privateConstructorUsedError;
+  DailyReflection get daily_reflection => throw _privateConstructorUsedError;
 
   /// Serializes this JournalFile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -6032,12 +5708,12 @@ abstract class $JournalFileCopyWith<$Res> {
       _$JournalFileCopyWithImpl<$Res, JournalFile>;
   @useResult
   $Res call(
-      {LabelExtraction label_extraction,
-      ReflectionData reflection,
-      String message});
+      {String username,
+      String time_stamp,
+      List<EventAnalysis> events,
+      DailyReflection daily_reflection});
 
-  $LabelExtractionCopyWith<$Res> get label_extraction;
-  $ReflectionDataCopyWith<$Res> get reflection;
+  $DailyReflectionCopyWith<$Res> get daily_reflection;
 }
 
 /// @nodoc
@@ -6055,23 +5731,28 @@ class _$JournalFileCopyWithImpl<$Res, $Val extends JournalFile>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? label_extraction = null,
-    Object? reflection = null,
-    Object? message = null,
+    Object? username = null,
+    Object? time_stamp = null,
+    Object? events = null,
+    Object? daily_reflection = null,
   }) {
     return _then(_value.copyWith(
-      label_extraction: null == label_extraction
-          ? _value.label_extraction
-          : label_extraction // ignore: cast_nullable_to_non_nullable
-              as LabelExtraction,
-      reflection: null == reflection
-          ? _value.reflection
-          : reflection // ignore: cast_nullable_to_non_nullable
-              as ReflectionData,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
               as String,
+      time_stamp: null == time_stamp
+          ? _value.time_stamp
+          : time_stamp // ignore: cast_nullable_to_non_nullable
+              as String,
+      events: null == events
+          ? _value.events
+          : events // ignore: cast_nullable_to_non_nullable
+              as List<EventAnalysis>,
+      daily_reflection: null == daily_reflection
+          ? _value.daily_reflection
+          : daily_reflection // ignore: cast_nullable_to_non_nullable
+              as DailyReflection,
     ) as $Val);
   }
 
@@ -6079,19 +5760,9 @@ class _$JournalFileCopyWithImpl<$Res, $Val extends JournalFile>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $LabelExtractionCopyWith<$Res> get label_extraction {
-    return $LabelExtractionCopyWith<$Res>(_value.label_extraction, (value) {
-      return _then(_value.copyWith(label_extraction: value) as $Val);
-    });
-  }
-
-  /// Create a copy of JournalFile
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ReflectionDataCopyWith<$Res> get reflection {
-    return $ReflectionDataCopyWith<$Res>(_value.reflection, (value) {
-      return _then(_value.copyWith(reflection: value) as $Val);
+  $DailyReflectionCopyWith<$Res> get daily_reflection {
+    return $DailyReflectionCopyWith<$Res>(_value.daily_reflection, (value) {
+      return _then(_value.copyWith(daily_reflection: value) as $Val);
     });
   }
 }
@@ -6105,14 +5776,13 @@ abstract class _$$JournalFileImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {LabelExtraction label_extraction,
-      ReflectionData reflection,
-      String message});
+      {String username,
+      String time_stamp,
+      List<EventAnalysis> events,
+      DailyReflection daily_reflection});
 
   @override
-  $LabelExtractionCopyWith<$Res> get label_extraction;
-  @override
-  $ReflectionDataCopyWith<$Res> get reflection;
+  $DailyReflectionCopyWith<$Res> get daily_reflection;
 }
 
 /// @nodoc
@@ -6128,23 +5798,28 @@ class __$$JournalFileImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? label_extraction = null,
-    Object? reflection = null,
-    Object? message = null,
+    Object? username = null,
+    Object? time_stamp = null,
+    Object? events = null,
+    Object? daily_reflection = null,
   }) {
     return _then(_$JournalFileImpl(
-      label_extraction: null == label_extraction
-          ? _value.label_extraction
-          : label_extraction // ignore: cast_nullable_to_non_nullable
-              as LabelExtraction,
-      reflection: null == reflection
-          ? _value.reflection
-          : reflection // ignore: cast_nullable_to_non_nullable
-              as ReflectionData,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
               as String,
+      time_stamp: null == time_stamp
+          ? _value.time_stamp
+          : time_stamp // ignore: cast_nullable_to_non_nullable
+              as String,
+      events: null == events
+          ? _value._events
+          : events // ignore: cast_nullable_to_non_nullable
+              as List<EventAnalysis>,
+      daily_reflection: null == daily_reflection
+          ? _value.daily_reflection
+          : daily_reflection // ignore: cast_nullable_to_non_nullable
+              as DailyReflection,
     ));
   }
 }
@@ -6153,23 +5828,33 @@ class __$$JournalFileImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$JournalFileImpl implements _JournalFile {
   const _$JournalFileImpl(
-      {required this.label_extraction,
-      required this.reflection,
-      required this.message});
+      {required this.username,
+      required this.time_stamp,
+      required final List<EventAnalysis> events,
+      required this.daily_reflection})
+      : _events = events;
 
   factory _$JournalFileImpl.fromJson(Map<String, dynamic> json) =>
       _$$JournalFileImplFromJson(json);
 
   @override
-  final LabelExtraction label_extraction;
+  final String username;
   @override
-  final ReflectionData reflection;
+  final String time_stamp;
+  final List<EventAnalysis> _events;
   @override
-  final String message;
+  List<EventAnalysis> get events {
+    if (_events is EqualUnmodifiableListView) return _events;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_events);
+  }
+
+  @override
+  final DailyReflection daily_reflection;
 
   @override
   String toString() {
-    return 'JournalFile(label_extraction: $label_extraction, reflection: $reflection, message: $message)';
+    return 'JournalFile(username: $username, time_stamp: $time_stamp, events: $events, daily_reflection: $daily_reflection)';
   }
 
   @override
@@ -6177,17 +5862,19 @@ class _$JournalFileImpl implements _JournalFile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$JournalFileImpl &&
-            (identical(other.label_extraction, label_extraction) ||
-                other.label_extraction == label_extraction) &&
-            (identical(other.reflection, reflection) ||
-                other.reflection == reflection) &&
-            (identical(other.message, message) || other.message == message));
+            (identical(other.username, username) ||
+                other.username == username) &&
+            (identical(other.time_stamp, time_stamp) ||
+                other.time_stamp == time_stamp) &&
+            const DeepCollectionEquality().equals(other._events, _events) &&
+            (identical(other.daily_reflection, daily_reflection) ||
+                other.daily_reflection == daily_reflection));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, label_extraction, reflection, message);
+  int get hashCode => Object.hash(runtimeType, username, time_stamp,
+      const DeepCollectionEquality().hash(_events), daily_reflection);
 
   /// Create a copy of JournalFile
   /// with the given fields replaced by the non-null parameter values.
@@ -6207,19 +5894,22 @@ class _$JournalFileImpl implements _JournalFile {
 
 abstract class _JournalFile implements JournalFile {
   const factory _JournalFile(
-      {required final LabelExtraction label_extraction,
-      required final ReflectionData reflection,
-      required final String message}) = _$JournalFileImpl;
+      {required final String username,
+      required final String time_stamp,
+      required final List<EventAnalysis> events,
+      required final DailyReflection daily_reflection}) = _$JournalFileImpl;
 
   factory _JournalFile.fromJson(Map<String, dynamic> json) =
       _$JournalFileImpl.fromJson;
 
   @override
-  LabelExtraction get label_extraction;
+  String get username;
   @override
-  ReflectionData get reflection;
+  String get time_stamp;
   @override
-  String get message;
+  List<EventAnalysis> get events;
+  @override
+  DailyReflection get daily_reflection;
 
   /// Create a copy of JournalFile
   /// with the given fields replaced by the non-null parameter values.
