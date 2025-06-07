@@ -461,38 +461,23 @@ class Dashboard with _$Dashboard {
   }
 }
 
-@freezed
-class LabelExtraction with _$LabelExtraction {
-  const factory LabelExtraction({required List<EventAnalysis> events}) =
-      _LabelExtraction;
+// @freezed
+// class LabelExtraction with _$LabelExtraction {
+//   const factory LabelExtraction({required List<EventAnalysis> events}) =
+//       _LabelExtraction;
 
-  factory LabelExtraction.fromJson(Map<String, dynamic> json) =>
-      _$LabelExtractionFromJson(json);
-}
+//   factory LabelExtraction.fromJson(Map<String, dynamic> json) =>
+//       _$LabelExtractionFromJson(json);
+// }
 
-@freezed
-class ReflectionData with _$ReflectionData {
-  const factory ReflectionData({required DailyReflection daily_reflection}) =
-      _ReflectionData;
+// @freezed
+// class ReflectionData with _$ReflectionData {
+//   const factory ReflectionData({required DailyReflection daily_reflection}) =
+//       _ReflectionData;
 
-  factory ReflectionData.fromJson(Map<String, dynamic> json) =>
-      _$ReflectionDataFromJson(json);
-}
-
-@freezed
-class JournalFile with _$JournalFile {
-  const factory JournalFile({
-    required LabelExtraction label_extraction,
-    required ReflectionData reflection,
-    required String message,
-  }) = _JournalFile;
-
-  factory JournalFile.fromJson(Map<String, dynamic> json) =>
-      _$JournalFileFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
-}
+//   factory ReflectionData.fromJson(Map<String, dynamic> json) =>
+//       _$ReflectionDataFromJson(json);
+// }
 
 class MoodTracking2 {
   static const peacefulColor = 0xFF2196F3; // 蓝色
@@ -673,40 +658,46 @@ class SocialEntity2 {
   }
 }
 
+@freezed
+class JournalFile with _$JournalFile {
+  const factory JournalFile({
+    required String username,
+    required String time_stamp,
+    required List<EventAnalysis> events,
+    required DailyReflection daily_reflection,
+  }) = _JournalFile;
+
+  factory JournalFile.fromJson(Map<String, dynamic> json) =>
+      _$JournalFileFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
+}
+
 extension JournalFileExtensions on JournalFile {
-  List<EventAnalysis> get events {
-    // 返回 LabelExtraction 中的事件列表
-    return label_extraction.events;
-  }
-
-  DailyReflection get dailyReflection {
-    // 返回 ReflectionData 中的日常反思
-    return reflection.daily_reflection;
-  }
-
   Gratitude get gratitude {
     // 返回日常反思中的感恩部分
-    return reflection.daily_reflection.gratitude;
+    return daily_reflection.gratitude;
   }
 
   ChallengesAndGrowth get challengesAndGrowth {
     // 返回日常反思中的挑战与成长部分
-    return reflection.daily_reflection.challenges_and_growth;
+    return daily_reflection.challenges_and_growth;
   }
 
   LearningAndInsights get learningAndInsights {
     // 返回日常反思中的学习与洞察部分
-    return reflection.daily_reflection.learning_and_insights;
+    return daily_reflection.learning_and_insights;
   }
 
   ConnectionsAndRelationships get connectionsAndRelationships {
     // 返回日常反思中的连接与关系部分
-    return reflection.daily_reflection.connections_and_relationships;
+    return daily_reflection.connections_and_relationships;
   }
 
   LookingForward get lookingForward {
     // 返回日常反思中的展望未来部分
-    return reflection.daily_reflection.looking_forward;
+    return daily_reflection.looking_forward;
   }
 
   double get moodScoreAverage {
