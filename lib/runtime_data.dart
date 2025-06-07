@@ -141,7 +141,7 @@ class RuntimeData {
     }
   }
 
-  void switchEventFavoriteStatus(Event event) {
+  void switchEventFavoriteStatus(EventAnalysis event) {
     if (favorites.value.contains(event.event_id)) {
       favorites.value.remove(event.event_id);
     } else {
@@ -151,12 +151,12 @@ class RuntimeData {
     favorites.value = List.from(favorites.value); // 通知监听者
   }
 
-  bool checkFavorite(Event event) {
+  bool checkFavorite(EventAnalysis event) {
     return favorites.value.contains(event.event_id);
   }
 
   // 修改日记条目笔记
-  void updateNote(Event event, String content) {
+  void updateNote(EventAnalysis event, String content) {
     // 保存日记条目笔记
     final note = Note(id: event.event_id, content: content);
     if (notes.value.any((element) => element.id == event.event_id)) {

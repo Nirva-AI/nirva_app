@@ -17,8 +17,8 @@ class User with _$User {
 }
 
 @freezed
-class Event with _$Event {
-  const factory Event({
+class EventAnalysis with _$EventAnalysis {
+  const factory EventAnalysis({
     required String event_id,
     required String event_title,
     required String time_range,
@@ -36,11 +36,12 @@ class Event with _$Event {
     required String one_sentence_summary,
     required String first_person_narrative,
     required String action_item,
-  }) = _Event;
+  }) = _EventAnalysis;
 
-  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
+  factory EventAnalysis.fromJson(Map<String, dynamic> json) =>
+      _$EventAnalysisFromJson(json);
   @override
-  Map<String, dynamic> toJson() => (this as _Event).toJson();
+  Map<String, dynamic> toJson() => (this as _EventAnalysis).toJson();
 }
 
 // 日常反思中的感恩部分
@@ -462,7 +463,7 @@ class Dashboard with _$Dashboard {
 
 @freezed
 class LabelExtraction with _$LabelExtraction {
-  const factory LabelExtraction({required List<Event> events}) =
+  const factory LabelExtraction({required List<EventAnalysis> events}) =
       _LabelExtraction;
 
   factory LabelExtraction.fromJson(Map<String, dynamic> json) =>
@@ -673,7 +674,7 @@ class SocialEntity2 {
 }
 
 extension JournalFileExtensions on JournalFile {
-  List<Event> get events {
+  List<EventAnalysis> get events {
     // 返回 LabelExtraction 中的事件列表
     return label_extraction.events;
   }

@@ -3,7 +3,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/app_runtime_context.dart'; // 确保导入 DataManager
 
 class GuidedReflectionPage extends StatelessWidget {
-  final Event eventData; // 新增参数
+  final EventAnalysis eventData; // 新增参数
 
   final TextEditingController _textController =
       TextEditingController(); // 添加控制器

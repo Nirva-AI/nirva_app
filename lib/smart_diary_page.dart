@@ -156,8 +156,8 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     );
   }
 
-  Widget _buildEventList(List<Event> events) {
-    List<Event> finalEvents = [];
+  Widget _buildEventList(List<EventAnalysis> events) {
+    List<EventAnalysis> finalEvents = [];
     if (_isFavorite) {
       for (var entry in events) {
         if (AppRuntimeContext().data.checkFavorite(entry)) {
