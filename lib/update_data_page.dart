@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+//import 'package:share_plus/share_plus.dart';
+//import 'package:nirva_app/app_runtime_context.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -107,74 +107,74 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   }
 
   // 创建示例文本文件
-  Future<void> _createSampleTextFile() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final path = '${directory.path}/sample_file_$timestamp.txt';
+  // Future<void> _createSampleTextFile() async {
+  //   try {
+  //     final directory = await getApplicationDocumentsDirectory();
+  //     final timestamp = DateTime.now().millisecondsSinceEpoch;
+  //     final path = '${directory.path}/sample_file_$timestamp.txt';
 
-      final file = File(path);
-      await file.writeAsString('这是一个样例文件内容，创建于 ${DateTime.now()}');
+  //     final file = File(path);
+  //     await file.writeAsString('这是一个样例文件内容，创建于 ${DateTime.now()}');
 
-      await _loadAppFiles();
+  //     await _loadAppFiles();
 
-      if (!mounted) return;
+  //     if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('已创建示例文件')));
-    } catch (e) {
-      if (!mounted) return;
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(const SnackBar(content: Text('已创建示例文件')));
+  //   } catch (e) {
+  //     if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('创建文件出错: $e')));
-    }
-  }
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text('创建文件出错: $e')));
+  //   }
+  // }
 
   // 导出Hive数据至JSON文件
-  Future<void> _exportHiveDataToJson() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final path = '${directory.path}/hive_data_$timestamp.json';
+  // Future<void> _exportHiveDataToJson() async {
+  //   try {
+  //     final directory = await getApplicationDocumentsDirectory();
+  //     final timestamp = DateTime.now().millisecondsSinceEpoch;
+  //     final path = '${directory.path}/hive_data_$timestamp.json';
 
-      // 获取Hive数据
-      final hiveData = AppRuntimeContext().storage.getAllData();
-      final jsonString = hiveData.toString();
+  //     // 获取Hive数据
+  //     final hiveData = AppRuntimeContext().storage.getAllData();
+  //     final jsonString = hiveData.toString();
 
-      // 写入文件
-      final file = File(path);
-      await file.writeAsString(jsonString);
+  //     // 写入文件
+  //     final file = File(path);
+  //     await file.writeAsString(jsonString);
 
-      await _loadAppFiles();
+  //     await _loadAppFiles();
 
-      if (!mounted) return;
+  //     if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('已导出Hive数据到JSON文件')));
-    } catch (e) {
-      if (!mounted) return;
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(const SnackBar(content: Text('已导出Hive数据到JSON文件')));
+  //   } catch (e) {
+  //     if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('导出Hive数据出错: $e')));
-    }
-  }
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text('导出Hive数据出错: $e')));
+  //   }
+  // }
 
   // 分享文件
-  Future<void> _shareFile(String path) async {
-    try {
-      await Share.shareXFiles([XFile(path)], text: '文件分享');
-    } catch (e) {
-      if (!mounted) return;
+  // Future<void> _shareFile(String path) async {
+  //   try {
+  //     await Share.shareXFiles([XFile(path)], text: '文件分享');
+  //   } catch (e) {
+  //     if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('分享文件出错: $e')));
-    }
-  }
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text('分享文件出错: $e')));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -210,30 +210,30 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: ElevatedButton(
-                      onPressed: _createSampleTextFile,
-                      child: const Text(
-                        '创建示例文件',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: ElevatedButton(
-                      onPressed: _exportHiveDataToJson,
-                      child: const Text(
-                        '导出Hive数据',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: Padding(
+                //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                //     child: ElevatedButton(
+                //       onPressed: _createSampleTextFile,
+                //       child: const Text(
+                //         '创建示例文件',
+                //         overflow: TextOverflow.ellipsis,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // Expanded(
+                //   child: Padding(
+                //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                //     child: ElevatedButton(
+                //       onPressed: _exportHiveDataToJson,
+                //       child: const Text(
+                //         '导出Hive数据',
+                //         overflow: TextOverflow.ellipsis,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -262,11 +262,11 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                           icon: const Icon(Icons.remove_red_eye),
                           onPressed: () => _readFileContent(file.path),
                         ),
-                      if (!isDirectory)
-                        IconButton(
-                          icon: const Icon(Icons.share),
-                          onPressed: () => _shareFile(file.path),
-                        ),
+                      // if (!isDirectory)
+                      //   IconButton(
+                      //     icon: const Icon(Icons.share),
+                      //     onPressed: () => _shareFile(file.path),
+                      //   ),
                     ],
                   ),
                   onTap: isDirectory ? null : () => _readFileContent(file.path),

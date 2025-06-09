@@ -39,4 +39,8 @@ class URLConfiguration {
   String get analyzeActionUrl {
     return _urlConfig.endpoints['analyze'] ?? '';
   }
+
+  String get uploadTranscriptUrl {
+    return _urlConfig.endpoints['upload_transcript'] ?? '';
+  }
 }

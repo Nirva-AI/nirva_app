@@ -39,7 +39,7 @@ Future<void> initializeApp() async {
 
 Future<void> testHive() async {
   // 初始化 Hive
-  //await AppRuntimeContext().storage.deleteFromDisk(); // 清空之前的数据
+  await AppRuntimeContext().storage.deleteFromDisk(); // 清空之前的数据
   await AppRuntimeContext().storage.initializeAdapters();
 
   final retrievedFavorites = AppRuntimeContext().storage.getFavorites();
