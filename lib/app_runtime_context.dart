@@ -59,24 +59,6 @@ class AppRuntimeContext {
       ),
     ]);
 
-  // 用于基础app服务的 Dio 实例
-  final Dio _uploadServiceDio = Dio(
-      BaseOptions(
-        baseUrl: _baseUrl,
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 60 * 5),
-      ),
-    )
-    ..interceptors.addAll([
-      LogInterceptor(request: true, requestHeader: true, responseHeader: true),
-      InterceptorsWrapper(
-        onError: (error, handler) {
-          Logger().e('Dio Error: ${error.message}');
-          return handler.next(error);
-        },
-      ),
-    ]);
-
   RuntimeData get data {
     return _data;
   }
@@ -95,10 +77,6 @@ class AppRuntimeContext {
 
   Dio get appserviceDio {
     return _appserviceDio;
-  }
-
-  Dio get uploadServiceDio {
-    return _uploadServiceDio;
   }
 
   // 清除对话历史!

@@ -136,6 +136,7 @@ class APIs {
     UserToken userToken, {
     Object? data,
     Map<String, dynamic>? query,
+    int receiveTimeout = 30, // 添加接收超时参数，默认30秒
   }) async {
     Logger().d('POST Request - URL: $path, Data: $data');
     final response = await dio.post<T>(
@@ -147,6 +148,7 @@ class APIs {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${userToken.access_token}',
         },
+        receiveTimeout: Duration(seconds: receiveTimeout), // 设置接收超时时间
       ),
     );
 
@@ -165,6 +167,7 @@ class APIs {
     String path,
     UserToken userToken, {
     Map<String, dynamic>? query,
+    int receiveTimeout = 30, // 添加接收超时参数，默认30秒
   }) async {
     Logger().d('GET Request - URL: $path, Query: $query');
     final response = await dio.get<T>(
@@ -175,6 +178,7 @@ class APIs {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${userToken.access_token}',
         },
+        receiveTimeout: Duration(seconds: receiveTimeout), // 设置接收超时时间
       ),
     );
 
@@ -193,18 +197,20 @@ class APIs {
     String path, {
     Object? data,
     Map<String, dynamic>? query,
+    int receiveTimeout = 30, // 添加接收超时参数
   }) async {
     final appRuntimeContext = AppRuntimeContext();
     final userToken = appRuntimeContext.storage.getUserToken();
 
     try {
-      // 首次尝试发送请求
+      // 首次尝试发送请求，传递超时参数
       return await simplePost<T>(
         dio,
         path,
         userToken,
         data: data,
         query: query,
+        receiveTimeout: receiveTimeout,
       );
     } on DioException catch (e) {
       // 捕获 401 未授权错误
@@ -215,13 +221,14 @@ class APIs {
         final newToken = await refreshToken();
         if (newToken != null) {
           Logger().i('令牌刷新成功，重新发送请求');
-          // 使用新令牌重新尝试请求
+          // 使用新令牌重新尝试请求，同样传递超时参数
           return await simplePost<T>(
             dio,
             path,
             newToken,
             data: data,
             query: query,
+            receiveTimeout: receiveTimeout,
           );
         }
       }
@@ -237,13 +244,20 @@ class APIs {
     Dio dio,
     String path, {
     Map<String, dynamic>? query,
+    int receiveTimeout = 30, // 添加接收超时参数
   }) async {
     final appRuntimeContext = AppRuntimeContext();
     final userToken = appRuntimeContext.storage.getUserToken();
 
     try {
-      // 首次尝试发送请求
-      return await simpleGet<T>(dio, path, userToken, query: query);
+      // 首次尝试发送请求，传递超时参数
+      return await simpleGet<T>(
+        dio,
+        path,
+        userToken,
+        query: query,
+        receiveTimeout: receiveTimeout,
+      );
     } on DioException catch (e) {
       // 捕获 401 未授权错误
       if (e.response?.statusCode == 401 && userToken.refresh_token.isNotEmpty) {
@@ -253,8 +267,14 @@ class APIs {
         final newToken = await refreshToken();
         if (newToken != null) {
           Logger().i('令牌刷新成功，重新发送请求');
-          // 使用新令牌重新尝试请求
-          return await simpleGet<T>(dio, path, newToken, query: query);
+          // 使用新令牌重新尝试请求，同样传递超时参数
+          return await simpleGet<T>(
+            dio,
+            path,
+            newToken,
+            query: query,
+            receiveTimeout: receiveTimeout,
+          );
         }
       }
 
@@ -324,7 +344,7 @@ class APIs {
     );
 
     final response = await safePost<Map<String, dynamic>>(
-      appRuntimeContext.uploadServiceDio,
+      appRuntimeContext.appserviceDio,
       appRuntimeContext.urlConfig.uploadTranscriptUrl,
       data: uploadTranscriptActionRequest.toJson(),
     );
@@ -356,9 +376,10 @@ class APIs {
     );
 
     final response = await safePost<Map<String, dynamic>>(
-      appRuntimeContext.uploadServiceDio,
+      appRuntimeContext.appserviceDio,
       appRuntimeContext.urlConfig.analyzeActionUrl,
       data: analyzeActionRequest.toJson(),
+      receiveTimeout: 60 * 2, // 设置接收超时时间为120秒, 时间较长。
     );
 
     if (response == null || response.data == null) {
