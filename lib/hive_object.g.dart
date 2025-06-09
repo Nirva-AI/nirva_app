@@ -205,7 +205,7 @@ class JournalFileIndexAdapter extends TypeAdapter<JournalFileIndex> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return JournalFileIndex(
-      files: (fields[0] as List).cast<JournalFileMeta>(),
+      files: (fields[0] as List?)?.cast<JournalFileMeta>(),
     );
   }
 

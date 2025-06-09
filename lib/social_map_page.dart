@@ -7,10 +7,6 @@ class SocialMapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 获取 DataManager 中的社交数据
-    // final socialEntities =
-    //     AppRuntimeContext().data.globalSocialMap.socialEntities;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Holistic Social Map')),
       body: SingleChildScrollView(
@@ -46,10 +42,10 @@ class SocialInteractionsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 计算总时间
-    final totalHours = AppRuntimeContext().data.getTotalSocialHours();
+    final totalHours = AppRuntimeContext().getTotalSocialHours();
     // 获取全局社交实体映射
     final Map<String, SocialEntity2> globalSocialMap =
-        AppRuntimeContext().data.genGlobalSocialEntitiesMap();
+        AppRuntimeContext().genGlobalSocialEntitiesMap();
 
     // 将globalSocialMap中的value全部取出来，存成一个List
     final List<SocialEntity2> socialEntities = globalSocialMap.values.toList();
@@ -179,7 +175,7 @@ class RelationshipDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Map<String, SocialEntity2> globalSocialMap =
-        AppRuntimeContext().data.genGlobalSocialEntitiesMap();
+        AppRuntimeContext().genGlobalSocialEntitiesMap();
     final List<SocialEntity2> socialEntities = globalSocialMap.values.toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

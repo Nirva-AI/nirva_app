@@ -21,7 +21,7 @@ class AwakeTimeAllocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final awakeTimeAllocations =
-        AppRuntimeContext().data.currentJournalFile.awakeTimeAllocation2;
+        AppRuntimeContext().currentJournalFile.awakeTimeAllocation2;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

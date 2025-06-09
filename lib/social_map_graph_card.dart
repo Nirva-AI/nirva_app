@@ -53,7 +53,7 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
     newGraph.addNode(userNode);
 
     for (var peoplesName
-        in AppRuntimeContext().data.currentJournalFile.peoples_involved) {
+        in AppRuntimeContext().currentJournalFile.peoples_involved) {
       Node node = Node.Id(peoplesName);
       newGraph.addNode(node);
       newGraph.addEdge(userNode, node);

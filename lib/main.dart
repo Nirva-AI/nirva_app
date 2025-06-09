@@ -28,20 +28,22 @@ void main() async {
 }
 
 Future<void> initializeApp() async {
+  // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
+  await AppRuntimeContext().storage.deleteFromDisk(); // 这句是测试的，清空之前的数据
+  await AppRuntimeContext().storage.initializeAdapters();
+
   // 在这里执行任何需要的初始化操作，例如加载配置文件
   // 例如：await loadConfig();
   // 或者其他异步操作
+
+  // 填充测试数据。
   await TestData.initializeTestData();
 
-  // 测试 Hive 数据库
-  await testHive();
+  // 正式步骤：初始初始化 Hive 存储。
+  await initializeHiveStorage();
 }
 
-Future<void> testHive() async {
-  // 初始化 Hive
-  await AppRuntimeContext().storage.deleteFromDisk(); // 清空之前的数据
-  await AppRuntimeContext().storage.initializeAdapters();
-
+Future<void> initializeHiveStorage() async {
   final retrievedFavorites = AppRuntimeContext().storage.getFavorites();
   if (retrievedFavorites != null && retrievedFavorites.favoriteIds.isNotEmpty) {
     debugPrint('DiaryFavorites 测试通过: 收藏夹数据存在');

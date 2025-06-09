@@ -22,15 +22,14 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   @override
   void initState() {
     super.initState();
-    var nowDate = DateTime.now();
-    _focusedDay = nowDate; //AppRuntimeContext().data.currentJournal.dateTime;
-    _selectedDay = AppRuntimeContext().data.currentJournalDate;
+    _focusedDay = AppRuntimeContext().data.selectedDateTime;
+    _selectedDay = AppRuntimeContext().data.selectedDateTime;
   }
 
   @override
   Widget build(BuildContext context) {
     List<String> quotes = [];
-    for (var event in AppRuntimeContext().data.currentJournalFile.events) {
+    for (var event in AppRuntimeContext().currentJournalFile.events) {
       quotes.add(event.action_item);
     }
 
@@ -60,7 +59,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
           // 动态展示日记条目
           _buildEventList(
             //AppRuntimeContext().data.currentJournal.diaryEntries,
-            AppRuntimeContext().data.currentJournalFile.events,
+            AppRuntimeContext().currentJournalFile.events,
           ),
         ],
       ),
@@ -70,8 +69,10 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   void _updateSelectedDay(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
       _selectedDay = selectedDay;
-      AppRuntimeContext().data.currentJournalDate = selectedDay;
       _focusedDay = focusedDay;
+
+      // 这里需要修改！！
+      AppRuntimeContext().data.selectedDateTime = selectedDay;
     });
   }
 

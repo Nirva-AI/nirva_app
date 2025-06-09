@@ -9,7 +9,7 @@ class StressLevelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stressLevel =
-        AppRuntimeContext().data.currentJournalFile.stressLevelAverage;
+        AppRuntimeContext().currentJournalFile.stressLevelAverage;
 
     return Expanded(
       child: Card(
