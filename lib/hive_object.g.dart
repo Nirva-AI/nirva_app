@@ -159,3 +159,108 @@ class ChatHistoryAdapter extends TypeAdapter<ChatHistory> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class JournalFileMetaAdapter extends TypeAdapter<JournalFileMeta> {
+  @override
+  final int typeId = 5;
+
+  @override
+  JournalFileMeta read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return JournalFileMeta(
+      fileName: fields[0] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, JournalFileMeta obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.fileName);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JournalFileMetaAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class JournalFileIndexAdapter extends TypeAdapter<JournalFileIndex> {
+  @override
+  final int typeId = 6;
+
+  @override
+  JournalFileIndex read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return JournalFileIndex(
+      files: (fields[0] as List).cast<JournalFileMeta>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, JournalFileIndex obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.files);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JournalFileIndexAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class JournalFileStorageAdapter extends TypeAdapter<JournalFileStorage> {
+  @override
+  final int typeId = 7;
+
+  @override
+  JournalFileStorage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return JournalFileStorage(
+      fileName: fields[0] as String,
+      content: fields[1] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, JournalFileStorage obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.fileName)
+      ..writeByte(1)
+      ..write(obj.content);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JournalFileStorageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

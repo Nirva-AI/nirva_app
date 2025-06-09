@@ -89,3 +89,99 @@ class ChatHistory extends HiveObject {
 
   ChatHistory({required this.messages});
 }
+
+// 单个日记文件的元数据
+@HiveType(typeId: 5)
+class JournalFileMeta extends HiveObject {
+  @HiveField(0)
+  String fileName; // 文件名，用作唯一标识符
+
+  JournalFileMeta({required this.fileName});
+}
+
+// 日记文件索引管理器
+@HiveType(typeId: 6)
+class JournalFileIndex extends HiveObject {
+  @HiveField(0)
+  List<JournalFileMeta> files;
+
+  JournalFileIndex({this.files = const []});
+
+  // 添加日记文件元数据
+  void addFile(JournalFileMeta fileMeta) {
+    // 检查是否已存在同名文件
+    final index = files.indexWhere((f) => f.fileName == fileMeta.fileName);
+
+    if (index >= 0) {
+      // 更新已存在的文件元数据
+      files[index] = fileMeta;
+    } else {
+      // 添加新文件元数据
+      files.add(fileMeta);
+    }
+  }
+
+  // 根据文件名删除元数据
+  bool removeFile(String fileName) {
+    final initialLength = files.length;
+    files.removeWhere((file) => file.fileName == fileName);
+    return files.length < initialLength;
+  }
+
+  // 更新文件元数据
+  bool updateFile(String fileName, JournalFileMeta newMeta) {
+    final index = files.indexWhere((f) => f.fileName == fileName);
+
+    if (index >= 0) {
+      files[index] = newMeta;
+      return true;
+    }
+    return false;
+  }
+
+  // 根据文件名查找元数据
+  JournalFileMeta? findFile(String fileName) {
+    try {
+      return files.firstWhere((file) => file.fileName == fileName);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // 获取最近的n个日记文件
+  List<JournalFileMeta> getRecentFiles({int limit = 10}) {
+    // 已经按创建时间排序，所以直接返回前n个
+    return files.length <= limit ? List.from(files) : files.sublist(0, limit);
+  }
+}
+
+// 单个日记文件的完整内容
+@HiveType(typeId: 7)
+class JournalFileStorage extends HiveObject {
+  @HiveField(0)
+  String fileName; // 文件名，关联到元数据
+
+  @HiveField(1)
+  String content; // 日记内容的JSON字符串
+
+  JournalFileStorage({required this.fileName, required this.content});
+
+  // 更新内容并返回新的元数据
+  JournalFileMeta updateContent(String newContent, JournalFileMeta meta) {
+    content = newContent;
+    return meta;
+  }
+
+  // 创建新日记文件及其元数据
+  static (JournalFileStorage, JournalFileMeta) create({
+    required String fileName,
+    required String content,
+  }) {
+    // 创建元数据
+    final meta = JournalFileMeta(fileName: fileName);
+
+    // 创建文件
+    final file = JournalFileStorage(fileName: fileName, content: content);
+    return (file, meta);
+  }
+}

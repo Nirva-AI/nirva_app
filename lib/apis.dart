@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:uuid/uuid.dart'; // 添加此行引入uuid包
+import 'package:nirva_app/data.dart';
 
 class APIs {
   // 获取 URL 配置，故意不抓留给外面抓。
@@ -352,6 +353,23 @@ class APIs {
     Logger().d(
       'Analyze action response: ${jsonEncode(analyzeResponse.toJson())}',
     );
+
+    // 直接存。
+    appRuntimeContext.storage.createJournalFile(
+      fileName: analyzeResponse.journal_file.time_stamp,
+      content: jsonEncode(analyzeResponse.toJson()),
+    );
+
+    // 读一下试试
+    final journalFileStorage = appRuntimeContext.storage.getJournalFile(
+      analyzeResponse.journal_file.time_stamp,
+    );
+    if (journalFileStorage != null) {
+      final journalFile = JournalFile.fromJson(
+        jsonDecode(journalFileStorage.content),
+      );
+      Logger().d('Journal file content: ${jsonEncode(journalFile.toJson())}');
+    }
 
     return analyzeResponse;
   }

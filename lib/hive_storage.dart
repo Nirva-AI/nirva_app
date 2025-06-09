@@ -1,5 +1,5 @@
 //import 'dart:io'; // 用于获取应用的文档目录
-import 'package:path_provider/path_provider.dart'; // 用于获取平台相关的存储路径
+import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/api_models.dart';
@@ -17,10 +17,15 @@ class HiveStorage {
   static const String _chatHistoryBox = 'chatHistoryBox';
   static const String _chatHistoryKey = 'chatHistory';
 
+  // 日记文件相关常量
+  static const String _journalIndexBox = 'journalIndexBox';
+  static const String _journalIndexKey = 'journalIndex';
+  static const String _journalFilesBox = 'journalFilesBox';
+
   Future<void> _initialize() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
-    Hive.init(directory.path); // 初始化 Hive 并设置存储路径
+    Hive.init(directory.path);
   }
 
   //清空所有 Box 的数据并关闭所有 Box
@@ -28,16 +33,68 @@ class HiveStorage {
     await _initialize(); // 确保 Hive 已经初始化
     await Hive.deleteBoxFromDisk(_favoritesBox);
     await Hive.deleteBoxFromDisk(_userTokenBox);
-    await Hive.deleteBoxFromDisk(_chatHistoryBox); // 添加此行
-    await Hive.close(); // 关闭所有打开的 Box
+    await Hive.deleteBoxFromDisk(_chatHistoryBox);
+    await Hive.deleteBoxFromDisk(_journalIndexBox);
+    await Hive.deleteBoxFromDisk(_journalFilesBox);
+    await Hive.close();
     await Hive.deleteFromDisk();
   }
 
   // 初始化 Hive
   Future<void> initializeAdapters() async {
-    await _initialize(); // 确保 Hive 已经初始化
-    // 并发初始化所有 Box
-    await Future.wait([_initFavorites(), _initUserToken(), _initChatHistory()]);
+    await _initialize();
+    await Future.wait([
+      _initFavorites(),
+      _initUserToken(),
+      _initChatHistory(),
+      _initJournalSystem(),
+    ]);
+  }
+
+  // 获取所有 Hive 数据的统计信息和内容
+  Map<String, dynamic> getAllData() {
+    final Map<String, dynamic> data = {};
+
+    // 获取收藏夹数据
+    if (Hive.isBoxOpen(_favoritesBox)) {
+      final favBox = Hive.box<Favorites>(_favoritesBox);
+      final favorites = favBox.get(_favoritesKey);
+      data['favorites'] = favorites;
+    }
+
+    // 获取用户令牌数据
+    if (Hive.isBoxOpen(_userTokenBox)) {
+      final tokenBox = Hive.box<UserToken>(_userTokenBox);
+      final token = tokenBox.get(_userTokenKey);
+      data['userToken'] = token;
+    }
+
+    // 获取聊天历史数据
+    if (Hive.isBoxOpen(_chatHistoryBox)) {
+      final chatBox = Hive.box<ChatHistory>(_chatHistoryBox);
+      final history = chatBox.get(_chatHistoryKey);
+      data['chatHistory'] = history;
+    }
+
+    // 获取日记索引数据
+    if (Hive.isBoxOpen(_journalIndexBox)) {
+      final indexBox = Hive.box<JournalFileIndex>(_journalIndexBox);
+      final index = indexBox.get(_journalIndexKey);
+      data['journalIndex'] = index;
+
+      // 添加日记文件计数
+      if (index != null) {
+        data['journalCount'] = index.files.length;
+      }
+    }
+
+    // 添加日记文件存储统计
+    if (Hive.isBoxOpen(_journalFilesBox)) {
+      final filesBox = Hive.box<JournalFileStorage>(_journalFilesBox);
+      data['journalFilesCount'] = filesBox.length;
+    }
+
+    return data;
   }
 
   // 初始化 DiaryFavorites 的 Box
@@ -72,6 +129,28 @@ class HiveStorage {
     }
     if (!Hive.isBoxOpen(_chatHistoryBox)) {
       await Hive.openBox<ChatHistory>(_chatHistoryBox);
+    }
+  }
+
+  // 初始化日记系统相关的 Box
+  Future<void> _initJournalSystem() async {
+    // 注册适配器
+    if (!Hive.isAdapterRegistered(5)) {
+      Hive.registerAdapter(JournalFileMetaAdapter());
+    }
+    if (!Hive.isAdapterRegistered(6)) {
+      Hive.registerAdapter(JournalFileIndexAdapter());
+    }
+    if (!Hive.isAdapterRegistered(7)) {
+      Hive.registerAdapter(JournalFileStorageAdapter());
+    }
+
+    // 打开Boxes
+    if (!Hive.isBoxOpen(_journalIndexBox)) {
+      await Hive.openBox<JournalFileIndex>(_journalIndexBox);
+    }
+    if (!Hive.isBoxOpen(_journalFilesBox)) {
+      await Hive.openBox<JournalFileStorage>(_journalFilesBox);
     }
   }
 
@@ -137,31 +216,129 @@ class HiveStorage {
     await box.delete(_chatHistoryKey);
   }
 
-  // 获取所有 Hive 数据的统计信息和内容
-  Map<String, dynamic> getAllData() {
-    final Map<String, dynamic> data = {};
-
-    // 获取收藏夹数据
-    if (Hive.isBoxOpen(_favoritesBox)) {
-      final favBox = Hive.box<Favorites>(_favoritesBox);
-      final favorites = favBox.get(_favoritesKey);
-      data['favorites'] = favorites;
+  // 获取日记文件索引
+  JournalFileIndex getJournalIndex() {
+    final box = Hive.box<JournalFileIndex>(_journalIndexBox);
+    final index = box.get(_journalIndexKey);
+    if (index == null) {
+      return JournalFileIndex(); // 返回空索引
     }
+    return index;
+  }
 
-    // 获取用户令牌数据
-    if (Hive.isBoxOpen(_userTokenBox)) {
-      final tokenBox = Hive.box<UserToken>(_userTokenBox);
-      final token = tokenBox.get(_userTokenKey);
-      data['userToken'] = token;
-    }
+  // 保存日记文件索引
+  Future<void> saveJournalIndex(JournalFileIndex index) async {
+    final box = Hive.box<JournalFileIndex>(_journalIndexBox);
+    await box.put(_journalIndexKey, index);
+  }
 
-    // 获取聊天历史数据
-    if (Hive.isBoxOpen(_chatHistoryBox)) {
-      final chatBox = Hive.box<ChatHistory>(_chatHistoryBox);
-      final history = chatBox.get(_chatHistoryKey);
-      data['chatHistory'] = history;
-    }
+  // 获取单个日记文件
+  JournalFileStorage? getJournalFile(String fileName) {
+    final box = Hive.box<JournalFileStorage>(_journalFilesBox);
+    return box.get(fileName);
+  }
 
-    return data;
+  // 保存单个日记文件
+  Future<void> saveJournalFile(JournalFileStorage file) async {
+    final box = Hive.box<JournalFileStorage>(_journalFilesBox);
+    await box.put(file.fileName, file);
+  }
+
+  // 删除单个日记文件
+  Future<void> deleteJournalFile(String fileName) async {
+    final box = Hive.box<JournalFileStorage>(_journalFilesBox);
+    await box.delete(fileName);
+  }
+
+  // 创建新的日记文件并更新索引
+  Future<JournalFileMeta> createJournalFile({
+    required String fileName,
+    required String content,
+  }) async {
+    // 创建文件和元数据
+    final (file, meta) = JournalFileStorage.create(
+      fileName: fileName,
+      content: content,
+    );
+
+    // 保存文件
+    await saveJournalFile(file);
+
+    // 更新索引
+    final index = getJournalIndex();
+    index.addFile(meta);
+    await saveJournalIndex(index);
+
+    return meta;
+  }
+
+  // 更新日记文件内容
+  Future<JournalFileMeta?> updateJournalFile(
+    String fileName,
+    String newContent,
+  ) async {
+    // 获取文件
+    final file = getJournalFile(fileName);
+    if (file == null) return null;
+
+    // 获取索引
+    final index = getJournalIndex();
+    final meta = index.findFile(fileName);
+    if (meta == null) return null;
+
+    // 更新文件内容
+    final updatedMeta = file.updateContent(newContent, meta);
+
+    // 保存更新
+    await saveJournalFile(file);
+    index.updateFile(fileName, updatedMeta);
+    await saveJournalIndex(index);
+
+    return updatedMeta;
+  }
+
+  // 删除日记文件及其元数据
+  Future<bool> deleteJournal(String fileName) async {
+    // 获取索引
+    final index = getJournalIndex();
+
+    // 删除索引中的元数据
+    final removed = index.removeFile(fileName);
+    if (!removed) return false;
+
+    // 删除文件
+    await deleteJournalFile(fileName);
+
+    // 保存索引
+    await saveJournalIndex(index);
+
+    return true;
   }
 }
+
+
+
+// 创建新日记
+// final journalMeta = await hiveStorage.createJournalFile(
+//   fileName: 'journal_${DateTime.now().millisecondsSinceEpoch}.json',
+//   content: '{"text": "今天是美好的一天...", "mood": "happy"}',
+//   tags: ['日常', '心情'],
+// );
+
+// // 获取最近的日记列表
+// final recentJournals = hiveStorage.getRecentJournals(limit: 5);
+// for (final meta in recentJournals) {
+//   print('${meta.fileName}: ${meta.previewText}');
+  
+//   // 按需加载完整内容
+//   final journal = hiveStorage.getJournalFile(meta.fileName);
+//   if (journal != null) {
+//     print('完整内容: ${journal.content}');
+//   }
+// }
+
+// // 更新日记内容
+// final updatedMeta = await hiveStorage.updateJournalFile(
+//   journalMeta.fileName, 
+//   '{"text": "今天遇到了有趣的事...", "mood": "excited"}'
+// );
