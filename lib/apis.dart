@@ -131,14 +131,14 @@ class APIs {
 
   // 简单的post请求方法
   static Future<Response<T>?> simplePost<T>(
+    Dio dio,
     String path,
     UserToken userToken, {
     Object? data,
     Map<String, dynamic>? query,
   }) async {
     Logger().d('POST Request - URL: $path, Data: $data');
-    final appRuntimeContext = AppRuntimeContext();
-    final response = await appRuntimeContext.appserviceDio.post<T>(
+    final response = await dio.post<T>(
       path,
       data: data,
       queryParameters: query,
@@ -161,13 +161,13 @@ class APIs {
 
   // 简单的get请求方法
   static Future<Response<T>?> simpleGet<T>(
+    Dio dio,
     String path,
     UserToken userToken, {
     Map<String, dynamic>? query,
   }) async {
     Logger().d('GET Request - URL: $path, Query: $query');
-    final appRuntimeContext = AppRuntimeContext();
-    final response = await appRuntimeContext.appserviceDio.get<T>(
+    final response = await dio.get<T>(
       path,
       queryParameters: query,
       options: Options(
@@ -189,6 +189,7 @@ class APIs {
 
   // 安全POST请求方法 - 自动处理授权过期并重试, 内部会只抓取401错误
   static Future<Response<T>?> safePost<T>(
+    Dio dio,
     String path, {
     Object? data,
     Map<String, dynamic>? query,
@@ -198,7 +199,13 @@ class APIs {
 
     try {
       // 首次尝试发送请求
-      return await simplePost<T>(path, userToken, data: data, query: query);
+      return await simplePost<T>(
+        dio,
+        path,
+        userToken,
+        data: data,
+        query: query,
+      );
     } on DioException catch (e) {
       // 捕获 401 未授权错误
       if (e.response?.statusCode == 401 && userToken.refresh_token.isNotEmpty) {
@@ -209,7 +216,13 @@ class APIs {
         if (newToken != null) {
           Logger().i('令牌刷新成功，重新发送请求');
           // 使用新令牌重新尝试请求
-          return await simplePost<T>(path, newToken, data: data, query: query);
+          return await simplePost<T>(
+            dio,
+            path,
+            newToken,
+            data: data,
+            query: query,
+          );
         }
       }
 
@@ -221,6 +234,7 @@ class APIs {
 
   // 安全GET请求方法 - 自动处理授权过期并重试, 内部会只抓取401错误
   static Future<Response<T>?> safeGet<T>(
+    Dio dio,
     String path, {
     Map<String, dynamic>? query,
   }) async {
@@ -229,7 +243,7 @@ class APIs {
 
     try {
       // 首次尝试发送请求
-      return await simpleGet<T>(path, userToken, query: query);
+      return await simpleGet<T>(dio, path, userToken, query: query);
     } on DioException catch (e) {
       // 捕获 401 未授权错误
       if (e.response?.statusCode == 401 && userToken.refresh_token.isNotEmpty) {
@@ -240,7 +254,7 @@ class APIs {
         if (newToken != null) {
           Logger().i('令牌刷新成功，重新发送请求');
           // 使用新令牌重新尝试请求
-          return await simpleGet<T>(path, newToken, query: query);
+          return await simpleGet<T>(dio, path, newToken, query: query);
         }
       }
 
@@ -270,6 +284,7 @@ class APIs {
     Logger().d('Chat request payload: ${jsonEncode(requestJson)}');
 
     final response = await safePost<Map<String, dynamic>>(
+      appRuntimeContext.appserviceDio,
       appRuntimeContext.urlConfig.chatActionUrl,
       data: chatActionRequest.toJson(),
     );
@@ -309,6 +324,7 @@ class APIs {
     );
 
     final response = await safePost<Map<String, dynamic>>(
+      appRuntimeContext.uploadServiceDio,
       appRuntimeContext.urlConfig.uploadTranscriptUrl,
       data: uploadTranscriptActionRequest.toJson(),
     );
@@ -340,6 +356,7 @@ class APIs {
     );
 
     final response = await safePost<Map<String, dynamic>>(
+      appRuntimeContext.uploadServiceDio,
       appRuntimeContext.urlConfig.analyzeActionUrl,
       data: analyzeActionRequest.toJson(),
     );

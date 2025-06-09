@@ -39,12 +39,32 @@ class AppRuntimeContext {
   // URL 配置实例
   final URLConfiguration _urlConfig = URLConfiguration();
 
-  // Dio 实例和配置（从DioService合并过来）
+  static const String _baseUrl = 'http://192.168.192.40:8000';
+
+  // 用于基础app服务的 Dio 实例
   final Dio _appserviceDio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.22.108:8000',
+        baseUrl: _baseUrl,
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
+      ),
+    )
+    ..interceptors.addAll([
+      LogInterceptor(request: true, requestHeader: true, responseHeader: true),
+      InterceptorsWrapper(
+        onError: (error, handler) {
+          Logger().e('Dio Error: ${error.message}');
+          return handler.next(error);
+        },
+      ),
+    ]);
+
+  // 用于基础app服务的 Dio 实例
+  final Dio _uploadServiceDio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl,
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 60 * 5),
       ),
     )
     ..interceptors.addAll([
@@ -75,6 +95,10 @@ class AppRuntimeContext {
 
   Dio get appserviceDio {
     return _appserviceDio;
+  }
+
+  Dio get uploadServiceDio {
+    return _uploadServiceDio;
   }
 
   // 清除对话历史!
