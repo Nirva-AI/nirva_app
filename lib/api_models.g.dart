@@ -71,3 +71,60 @@ Map<String, dynamic> _$$ChatActionResponseImplToJson(
     <String, dynamic>{
       'ai_message': instance.ai_message,
     };
+
+_$AnalyzeActionRequestImpl _$$AnalyzeActionRequestImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AnalyzeActionRequestImpl(
+      time_stamp: json['time_stamp'] as String,
+      file_number: (json['file_number'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$AnalyzeActionRequestImplToJson(
+        _$AnalyzeActionRequestImpl instance) =>
+    <String, dynamic>{
+      'time_stamp': instance.time_stamp,
+      'file_number': instance.file_number,
+    };
+
+_$AnalyzeActionResponseImpl _$$AnalyzeActionResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AnalyzeActionResponseImpl(
+      journal_file:
+          JournalFile.fromJson(json['journal_file'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$AnalyzeActionResponseImplToJson(
+        _$AnalyzeActionResponseImpl instance) =>
+    <String, dynamic>{
+      'journal_file': instance.journal_file,
+    };
+
+_$UploadTranscriptActionRequestImpl
+    _$$UploadTranscriptActionRequestImplFromJson(Map<String, dynamic> json) =>
+        _$UploadTranscriptActionRequestImpl(
+          transcript_content: json['transcript_content'] as String,
+          time_stamp: json['time_stamp'] as String,
+          file_number: (json['file_number'] as num).toInt(),
+          file_suffix: json['file_suffix'] as String,
+        );
+
+Map<String, dynamic> _$$UploadTranscriptActionRequestImplToJson(
+        _$UploadTranscriptActionRequestImpl instance) =>
+    <String, dynamic>{
+      'transcript_content': instance.transcript_content,
+      'time_stamp': instance.time_stamp,
+      'file_number': instance.file_number,
+      'file_suffix': instance.file_suffix,
+    };
+
+_$UploadTranscriptActionResponseImpl
+    _$$UploadTranscriptActionResponseImplFromJson(Map<String, dynamic> json) =>
+        _$UploadTranscriptActionResponseImpl(
+          message: json['message'] as String? ?? '',
+        );
+
+Map<String, dynamic> _$$UploadTranscriptActionResponseImplToJson(
+        _$UploadTranscriptActionResponseImpl instance) =>
+    <String, dynamic>{
+      'message': instance.message,
+    };

@@ -847,3 +847,742 @@ abstract class _ChatActionResponse implements ChatActionResponse {
   _$$ChatActionResponseImplCopyWith<_$ChatActionResponseImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+AnalyzeActionRequest _$AnalyzeActionRequestFromJson(Map<String, dynamic> json) {
+  return _AnalyzeActionRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AnalyzeActionRequest {
+  String get time_stamp => throw _privateConstructorUsedError;
+  int get file_number => throw _privateConstructorUsedError;
+
+  /// Serializes this AnalyzeActionRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of AnalyzeActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AnalyzeActionRequestCopyWith<AnalyzeActionRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AnalyzeActionRequestCopyWith<$Res> {
+  factory $AnalyzeActionRequestCopyWith(AnalyzeActionRequest value,
+          $Res Function(AnalyzeActionRequest) then) =
+      _$AnalyzeActionRequestCopyWithImpl<$Res, AnalyzeActionRequest>;
+  @useResult
+  $Res call({String time_stamp, int file_number});
+}
+
+/// @nodoc
+class _$AnalyzeActionRequestCopyWithImpl<$Res,
+        $Val extends AnalyzeActionRequest>
+    implements $AnalyzeActionRequestCopyWith<$Res> {
+  _$AnalyzeActionRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of AnalyzeActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? time_stamp = null,
+    Object? file_number = null,
+  }) {
+    return _then(_value.copyWith(
+      time_stamp: null == time_stamp
+          ? _value.time_stamp
+          : time_stamp // ignore: cast_nullable_to_non_nullable
+              as String,
+      file_number: null == file_number
+          ? _value.file_number
+          : file_number // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$AnalyzeActionRequestImplCopyWith<$Res>
+    implements $AnalyzeActionRequestCopyWith<$Res> {
+  factory _$$AnalyzeActionRequestImplCopyWith(_$AnalyzeActionRequestImpl value,
+          $Res Function(_$AnalyzeActionRequestImpl) then) =
+      __$$AnalyzeActionRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String time_stamp, int file_number});
+}
+
+/// @nodoc
+class __$$AnalyzeActionRequestImplCopyWithImpl<$Res>
+    extends _$AnalyzeActionRequestCopyWithImpl<$Res, _$AnalyzeActionRequestImpl>
+    implements _$$AnalyzeActionRequestImplCopyWith<$Res> {
+  __$$AnalyzeActionRequestImplCopyWithImpl(_$AnalyzeActionRequestImpl _value,
+      $Res Function(_$AnalyzeActionRequestImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AnalyzeActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? time_stamp = null,
+    Object? file_number = null,
+  }) {
+    return _then(_$AnalyzeActionRequestImpl(
+      time_stamp: null == time_stamp
+          ? _value.time_stamp
+          : time_stamp // ignore: cast_nullable_to_non_nullable
+              as String,
+      file_number: null == file_number
+          ? _value.file_number
+          : file_number // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AnalyzeActionRequestImpl implements _AnalyzeActionRequest {
+  const _$AnalyzeActionRequestImpl(
+      {required this.time_stamp, required this.file_number});
+
+  factory _$AnalyzeActionRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AnalyzeActionRequestImplFromJson(json);
+
+  @override
+  final String time_stamp;
+  @override
+  final int file_number;
+
+  @override
+  String toString() {
+    return 'AnalyzeActionRequest(time_stamp: $time_stamp, file_number: $file_number)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AnalyzeActionRequestImpl &&
+            (identical(other.time_stamp, time_stamp) ||
+                other.time_stamp == time_stamp) &&
+            (identical(other.file_number, file_number) ||
+                other.file_number == file_number));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, time_stamp, file_number);
+
+  /// Create a copy of AnalyzeActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AnalyzeActionRequestImplCopyWith<_$AnalyzeActionRequestImpl>
+      get copyWith =>
+          __$$AnalyzeActionRequestImplCopyWithImpl<_$AnalyzeActionRequestImpl>(
+              this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AnalyzeActionRequestImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _AnalyzeActionRequest implements AnalyzeActionRequest {
+  const factory _AnalyzeActionRequest(
+      {required final String time_stamp,
+      required final int file_number}) = _$AnalyzeActionRequestImpl;
+
+  factory _AnalyzeActionRequest.fromJson(Map<String, dynamic> json) =
+      _$AnalyzeActionRequestImpl.fromJson;
+
+  @override
+  String get time_stamp;
+  @override
+  int get file_number;
+
+  /// Create a copy of AnalyzeActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AnalyzeActionRequestImplCopyWith<_$AnalyzeActionRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+AnalyzeActionResponse _$AnalyzeActionResponseFromJson(
+    Map<String, dynamic> json) {
+  return _AnalyzeActionResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AnalyzeActionResponse {
+  JournalFile get journal_file => throw _privateConstructorUsedError;
+
+  /// Serializes this AnalyzeActionResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of AnalyzeActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AnalyzeActionResponseCopyWith<AnalyzeActionResponse> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AnalyzeActionResponseCopyWith<$Res> {
+  factory $AnalyzeActionResponseCopyWith(AnalyzeActionResponse value,
+          $Res Function(AnalyzeActionResponse) then) =
+      _$AnalyzeActionResponseCopyWithImpl<$Res, AnalyzeActionResponse>;
+  @useResult
+  $Res call({JournalFile journal_file});
+
+  $JournalFileCopyWith<$Res> get journal_file;
+}
+
+/// @nodoc
+class _$AnalyzeActionResponseCopyWithImpl<$Res,
+        $Val extends AnalyzeActionResponse>
+    implements $AnalyzeActionResponseCopyWith<$Res> {
+  _$AnalyzeActionResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of AnalyzeActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? journal_file = null,
+  }) {
+    return _then(_value.copyWith(
+      journal_file: null == journal_file
+          ? _value.journal_file
+          : journal_file // ignore: cast_nullable_to_non_nullable
+              as JournalFile,
+    ) as $Val);
+  }
+
+  /// Create a copy of AnalyzeActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $JournalFileCopyWith<$Res> get journal_file {
+    return $JournalFileCopyWith<$Res>(_value.journal_file, (value) {
+      return _then(_value.copyWith(journal_file: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$AnalyzeActionResponseImplCopyWith<$Res>
+    implements $AnalyzeActionResponseCopyWith<$Res> {
+  factory _$$AnalyzeActionResponseImplCopyWith(
+          _$AnalyzeActionResponseImpl value,
+          $Res Function(_$AnalyzeActionResponseImpl) then) =
+      __$$AnalyzeActionResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({JournalFile journal_file});
+
+  @override
+  $JournalFileCopyWith<$Res> get journal_file;
+}
+
+/// @nodoc
+class __$$AnalyzeActionResponseImplCopyWithImpl<$Res>
+    extends _$AnalyzeActionResponseCopyWithImpl<$Res,
+        _$AnalyzeActionResponseImpl>
+    implements _$$AnalyzeActionResponseImplCopyWith<$Res> {
+  __$$AnalyzeActionResponseImplCopyWithImpl(_$AnalyzeActionResponseImpl _value,
+      $Res Function(_$AnalyzeActionResponseImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AnalyzeActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? journal_file = null,
+  }) {
+    return _then(_$AnalyzeActionResponseImpl(
+      journal_file: null == journal_file
+          ? _value.journal_file
+          : journal_file // ignore: cast_nullable_to_non_nullable
+              as JournalFile,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AnalyzeActionResponseImpl implements _AnalyzeActionResponse {
+  const _$AnalyzeActionResponseImpl({required this.journal_file});
+
+  factory _$AnalyzeActionResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AnalyzeActionResponseImplFromJson(json);
+
+  @override
+  final JournalFile journal_file;
+
+  @override
+  String toString() {
+    return 'AnalyzeActionResponse(journal_file: $journal_file)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AnalyzeActionResponseImpl &&
+            (identical(other.journal_file, journal_file) ||
+                other.journal_file == journal_file));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, journal_file);
+
+  /// Create a copy of AnalyzeActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AnalyzeActionResponseImplCopyWith<_$AnalyzeActionResponseImpl>
+      get copyWith => __$$AnalyzeActionResponseImplCopyWithImpl<
+          _$AnalyzeActionResponseImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AnalyzeActionResponseImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _AnalyzeActionResponse implements AnalyzeActionResponse {
+  const factory _AnalyzeActionResponse(
+      {required final JournalFile journal_file}) = _$AnalyzeActionResponseImpl;
+
+  factory _AnalyzeActionResponse.fromJson(Map<String, dynamic> json) =
+      _$AnalyzeActionResponseImpl.fromJson;
+
+  @override
+  JournalFile get journal_file;
+
+  /// Create a copy of AnalyzeActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AnalyzeActionResponseImplCopyWith<_$AnalyzeActionResponseImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+UploadTranscriptActionRequest _$UploadTranscriptActionRequestFromJson(
+    Map<String, dynamic> json) {
+  return _UploadTranscriptActionRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UploadTranscriptActionRequest {
+  String get transcript_content => throw _privateConstructorUsedError;
+  String get time_stamp => throw _privateConstructorUsedError;
+  int get file_number => throw _privateConstructorUsedError;
+  String get file_suffix => throw _privateConstructorUsedError;
+
+  /// Serializes this UploadTranscriptActionRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UploadTranscriptActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UploadTranscriptActionRequestCopyWith<UploadTranscriptActionRequest>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UploadTranscriptActionRequestCopyWith<$Res> {
+  factory $UploadTranscriptActionRequestCopyWith(
+          UploadTranscriptActionRequest value,
+          $Res Function(UploadTranscriptActionRequest) then) =
+      _$UploadTranscriptActionRequestCopyWithImpl<$Res,
+          UploadTranscriptActionRequest>;
+  @useResult
+  $Res call(
+      {String transcript_content,
+      String time_stamp,
+      int file_number,
+      String file_suffix});
+}
+
+/// @nodoc
+class _$UploadTranscriptActionRequestCopyWithImpl<$Res,
+        $Val extends UploadTranscriptActionRequest>
+    implements $UploadTranscriptActionRequestCopyWith<$Res> {
+  _$UploadTranscriptActionRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UploadTranscriptActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? transcript_content = null,
+    Object? time_stamp = null,
+    Object? file_number = null,
+    Object? file_suffix = null,
+  }) {
+    return _then(_value.copyWith(
+      transcript_content: null == transcript_content
+          ? _value.transcript_content
+          : transcript_content // ignore: cast_nullable_to_non_nullable
+              as String,
+      time_stamp: null == time_stamp
+          ? _value.time_stamp
+          : time_stamp // ignore: cast_nullable_to_non_nullable
+              as String,
+      file_number: null == file_number
+          ? _value.file_number
+          : file_number // ignore: cast_nullable_to_non_nullable
+              as int,
+      file_suffix: null == file_suffix
+          ? _value.file_suffix
+          : file_suffix // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UploadTranscriptActionRequestImplCopyWith<$Res>
+    implements $UploadTranscriptActionRequestCopyWith<$Res> {
+  factory _$$UploadTranscriptActionRequestImplCopyWith(
+          _$UploadTranscriptActionRequestImpl value,
+          $Res Function(_$UploadTranscriptActionRequestImpl) then) =
+      __$$UploadTranscriptActionRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String transcript_content,
+      String time_stamp,
+      int file_number,
+      String file_suffix});
+}
+
+/// @nodoc
+class __$$UploadTranscriptActionRequestImplCopyWithImpl<$Res>
+    extends _$UploadTranscriptActionRequestCopyWithImpl<$Res,
+        _$UploadTranscriptActionRequestImpl>
+    implements _$$UploadTranscriptActionRequestImplCopyWith<$Res> {
+  __$$UploadTranscriptActionRequestImplCopyWithImpl(
+      _$UploadTranscriptActionRequestImpl _value,
+      $Res Function(_$UploadTranscriptActionRequestImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UploadTranscriptActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? transcript_content = null,
+    Object? time_stamp = null,
+    Object? file_number = null,
+    Object? file_suffix = null,
+  }) {
+    return _then(_$UploadTranscriptActionRequestImpl(
+      transcript_content: null == transcript_content
+          ? _value.transcript_content
+          : transcript_content // ignore: cast_nullable_to_non_nullable
+              as String,
+      time_stamp: null == time_stamp
+          ? _value.time_stamp
+          : time_stamp // ignore: cast_nullable_to_non_nullable
+              as String,
+      file_number: null == file_number
+          ? _value.file_number
+          : file_number // ignore: cast_nullable_to_non_nullable
+              as int,
+      file_suffix: null == file_suffix
+          ? _value.file_suffix
+          : file_suffix // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UploadTranscriptActionRequestImpl
+    implements _UploadTranscriptActionRequest {
+  const _$UploadTranscriptActionRequestImpl(
+      {required this.transcript_content,
+      required this.time_stamp,
+      required this.file_number,
+      required this.file_suffix});
+
+  factory _$UploadTranscriptActionRequestImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$UploadTranscriptActionRequestImplFromJson(json);
+
+  @override
+  final String transcript_content;
+  @override
+  final String time_stamp;
+  @override
+  final int file_number;
+  @override
+  final String file_suffix;
+
+  @override
+  String toString() {
+    return 'UploadTranscriptActionRequest(transcript_content: $transcript_content, time_stamp: $time_stamp, file_number: $file_number, file_suffix: $file_suffix)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UploadTranscriptActionRequestImpl &&
+            (identical(other.transcript_content, transcript_content) ||
+                other.transcript_content == transcript_content) &&
+            (identical(other.time_stamp, time_stamp) ||
+                other.time_stamp == time_stamp) &&
+            (identical(other.file_number, file_number) ||
+                other.file_number == file_number) &&
+            (identical(other.file_suffix, file_suffix) ||
+                other.file_suffix == file_suffix));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, transcript_content, time_stamp, file_number, file_suffix);
+
+  /// Create a copy of UploadTranscriptActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UploadTranscriptActionRequestImplCopyWith<
+          _$UploadTranscriptActionRequestImpl>
+      get copyWith => __$$UploadTranscriptActionRequestImplCopyWithImpl<
+          _$UploadTranscriptActionRequestImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UploadTranscriptActionRequestImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UploadTranscriptActionRequest
+    implements UploadTranscriptActionRequest {
+  const factory _UploadTranscriptActionRequest(
+      {required final String transcript_content,
+      required final String time_stamp,
+      required final int file_number,
+      required final String file_suffix}) = _$UploadTranscriptActionRequestImpl;
+
+  factory _UploadTranscriptActionRequest.fromJson(Map<String, dynamic> json) =
+      _$UploadTranscriptActionRequestImpl.fromJson;
+
+  @override
+  String get transcript_content;
+  @override
+  String get time_stamp;
+  @override
+  int get file_number;
+  @override
+  String get file_suffix;
+
+  /// Create a copy of UploadTranscriptActionRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UploadTranscriptActionRequestImplCopyWith<
+          _$UploadTranscriptActionRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+UploadTranscriptActionResponse _$UploadTranscriptActionResponseFromJson(
+    Map<String, dynamic> json) {
+  return _UploadTranscriptActionResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UploadTranscriptActionResponse {
+  String get message => throw _privateConstructorUsedError;
+
+  /// Serializes this UploadTranscriptActionResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UploadTranscriptActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UploadTranscriptActionResponseCopyWith<UploadTranscriptActionResponse>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UploadTranscriptActionResponseCopyWith<$Res> {
+  factory $UploadTranscriptActionResponseCopyWith(
+          UploadTranscriptActionResponse value,
+          $Res Function(UploadTranscriptActionResponse) then) =
+      _$UploadTranscriptActionResponseCopyWithImpl<$Res,
+          UploadTranscriptActionResponse>;
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class _$UploadTranscriptActionResponseCopyWithImpl<$Res,
+        $Val extends UploadTranscriptActionResponse>
+    implements $UploadTranscriptActionResponseCopyWith<$Res> {
+  _$UploadTranscriptActionResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UploadTranscriptActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? message = null,
+  }) {
+    return _then(_value.copyWith(
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UploadTranscriptActionResponseImplCopyWith<$Res>
+    implements $UploadTranscriptActionResponseCopyWith<$Res> {
+  factory _$$UploadTranscriptActionResponseImplCopyWith(
+          _$UploadTranscriptActionResponseImpl value,
+          $Res Function(_$UploadTranscriptActionResponseImpl) then) =
+      __$$UploadTranscriptActionResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class __$$UploadTranscriptActionResponseImplCopyWithImpl<$Res>
+    extends _$UploadTranscriptActionResponseCopyWithImpl<$Res,
+        _$UploadTranscriptActionResponseImpl>
+    implements _$$UploadTranscriptActionResponseImplCopyWith<$Res> {
+  __$$UploadTranscriptActionResponseImplCopyWithImpl(
+      _$UploadTranscriptActionResponseImpl _value,
+      $Res Function(_$UploadTranscriptActionResponseImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UploadTranscriptActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? message = null,
+  }) {
+    return _then(_$UploadTranscriptActionResponseImpl(
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UploadTranscriptActionResponseImpl
+    implements _UploadTranscriptActionResponse {
+  const _$UploadTranscriptActionResponseImpl({this.message = ''});
+
+  factory _$UploadTranscriptActionResponseImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$UploadTranscriptActionResponseImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String message;
+
+  @override
+  String toString() {
+    return 'UploadTranscriptActionResponse(message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UploadTranscriptActionResponseImpl &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, message);
+
+  /// Create a copy of UploadTranscriptActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UploadTranscriptActionResponseImplCopyWith<
+          _$UploadTranscriptActionResponseImpl>
+      get copyWith => __$$UploadTranscriptActionResponseImplCopyWithImpl<
+          _$UploadTranscriptActionResponseImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UploadTranscriptActionResponseImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UploadTranscriptActionResponse
+    implements UploadTranscriptActionResponse {
+  const factory _UploadTranscriptActionResponse({final String message}) =
+      _$UploadTranscriptActionResponseImpl;
+
+  factory _UploadTranscriptActionResponse.fromJson(Map<String, dynamic> json) =
+      _$UploadTranscriptActionResponseImpl.fromJson;
+
+  @override
+  String get message;
+
+  /// Create a copy of UploadTranscriptActionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UploadTranscriptActionResponseImplCopyWith<
+          _$UploadTranscriptActionResponseImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

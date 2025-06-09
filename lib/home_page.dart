@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // 使用枚举类型替代整数
-  HomePageNavigationType _selectedPage = HomePageNavigationType.smartDiary;
+  HomePageNavigationType _selectedPage = HomePageNavigationType.me;
 
   final TextEditingController _textController = TextEditingController();
 

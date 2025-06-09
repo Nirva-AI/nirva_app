@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 // 请注意，本页是为了对接python fastapi服务器的数据定义的代码，命名风格完全和服务器一致，所以关警告。不要修改命名风格。
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nirva_app/data.dart';
 part 'api_models.freezed.dart';
 part 'api_models.g.dart';
 
@@ -64,4 +65,56 @@ class ChatActionResponse with _$ChatActionResponse {
       _$ChatActionResponseFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _ChatActionResponse).toJson();
+}
+
+@freezed
+class AnalyzeActionRequest with _$AnalyzeActionRequest {
+  const factory AnalyzeActionRequest({
+    required String time_stamp,
+    required int file_number,
+  }) = _AnalyzeActionRequest;
+
+  factory AnalyzeActionRequest.fromJson(Map<String, dynamic> json) =>
+      _$AnalyzeActionRequestFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _AnalyzeActionRequest).toJson();
+}
+
+@freezed
+class AnalyzeActionResponse with _$AnalyzeActionResponse {
+  const factory AnalyzeActionResponse({required JournalFile journal_file}) =
+      _AnalyzeActionResponse;
+
+  factory AnalyzeActionResponse.fromJson(Map<String, dynamic> json) =>
+      _$AnalyzeActionResponseFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _AnalyzeActionResponse).toJson();
+}
+
+@freezed
+class UploadTranscriptActionRequest with _$UploadTranscriptActionRequest {
+  const factory UploadTranscriptActionRequest({
+    required String transcript_content,
+    required String time_stamp,
+    required int file_number,
+    required String file_suffix,
+  }) = _UploadTranscriptActionRequest;
+
+  factory UploadTranscriptActionRequest.fromJson(Map<String, dynamic> json) =>
+      _$UploadTranscriptActionRequestFromJson(json);
+  @override
+  Map<String, dynamic> toJson() =>
+      (this as _UploadTranscriptActionRequest).toJson();
+}
+
+@freezed
+class UploadTranscriptActionResponse with _$UploadTranscriptActionResponse {
+  const factory UploadTranscriptActionResponse({@Default('') String message}) =
+      _UploadTranscriptActionResponse;
+
+  factory UploadTranscriptActionResponse.fromJson(Map<String, dynamic> json) =>
+      _$UploadTranscriptActionResponseFromJson(json);
+  @override
+  Map<String, dynamic> toJson() =>
+      (this as _UploadTranscriptActionResponse).toJson();
 }

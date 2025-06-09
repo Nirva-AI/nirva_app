@@ -291,4 +291,68 @@ class APIs {
     );
     return chatResponse; // 这里返回null是因为没有实现具体的聊天逻辑
   }
+
+  // 上传转录文本, 故意不抓留给外面抓。
+  static Future<UploadTranscriptActionResponse?> uploadTranscript(
+    String transcriptContent,
+    String timeStamp,
+    int fileNumber,
+    String fileSuffix,
+  ) async {
+    final appRuntimeContext = AppRuntimeContext();
+    final uploadTranscriptActionRequest = UploadTranscriptActionRequest(
+      transcript_content: transcriptContent,
+      time_stamp: timeStamp,
+      file_number: fileNumber,
+      file_suffix: fileSuffix,
+    );
+
+    final response = await safePost<Map<String, dynamic>>(
+      appRuntimeContext.urlConfig.uploadTranscriptUrl,
+      data: uploadTranscriptActionRequest.toJson(),
+    );
+
+    if (response == null || response.data == null) {
+      Logger().e('Upload transcript action failed: No response data');
+      return null;
+    }
+
+    final uploadResponse = UploadTranscriptActionResponse.fromJson(
+      response.data!,
+    );
+    Logger().d(
+      'Upload transcript action response: ${jsonEncode(uploadResponse.toJson())}',
+    );
+
+    return uploadResponse;
+  }
+
+  // 分析请求, 故意不抓留给外面抓。
+  static Future<AnalyzeActionResponse?> analyze(
+    String timeStamp,
+    int fileNumber,
+  ) async {
+    final appRuntimeContext = AppRuntimeContext();
+    final analyzeActionRequest = AnalyzeActionRequest(
+      time_stamp: timeStamp,
+      file_number: fileNumber,
+    );
+
+    final response = await safePost<Map<String, dynamic>>(
+      appRuntimeContext.urlConfig.analyzeActionUrl,
+      data: analyzeActionRequest.toJson(),
+    );
+
+    if (response == null || response.data == null) {
+      Logger().e('Analyze action failed: No response data');
+      return null;
+    }
+
+    final analyzeResponse = AnalyzeActionResponse.fromJson(response.data!);
+    Logger().d(
+      'Analyze action response: ${jsonEncode(analyzeResponse.toJson())}',
+    );
+
+    return analyzeResponse;
+  }
 }
