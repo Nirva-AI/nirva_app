@@ -105,7 +105,9 @@ class JournalFileIndex extends HiveObject {
   @HiveField(0)
   List<JournalFileMeta> files;
 
-  JournalFileIndex({this.files = const []});
+  // 修改构造函数，确保创建可修改列表
+  JournalFileIndex({List<JournalFileMeta>? files})
+    : files = files != null ? List<JournalFileMeta>.from(files) : [];
 
   // 添加日记文件元数据
   void addFile(JournalFileMeta fileMeta) {
@@ -119,6 +121,9 @@ class JournalFileIndex extends HiveObject {
       // 添加新文件元数据
       files.add(fileMeta);
     }
+
+    // 按照某种条件排序，例如文件名
+    // files.sort((a, b) => a.fileName.compareTo(b.fileName));
   }
 
   // 根据文件名删除元数据

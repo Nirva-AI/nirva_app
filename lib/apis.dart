@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/app_runtime_context.dart';
-import 'package:uuid/uuid.dart'; // 添加此行引入uuid包
+import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
 
 class APIs {
@@ -355,21 +355,25 @@ class APIs {
     );
 
     // 直接存。
-    appRuntimeContext.storage.createJournalFile(
+    await appRuntimeContext.storage.createJournalFile(
       fileName: analyzeResponse.journal_file.time_stamp,
-      content: jsonEncode(analyzeResponse.toJson()),
+      content: jsonEncode(analyzeResponse.journal_file.toJson()),
     );
 
     // 读一下试试
     final journalFileStorage = appRuntimeContext.storage.getJournalFile(
       analyzeResponse.journal_file.time_stamp,
     );
-    if (journalFileStorage != null) {
-      final journalFile = JournalFile.fromJson(
-        jsonDecode(journalFileStorage.content),
-      );
-      Logger().d('Journal file content: ${jsonEncode(journalFile.toJson())}');
+    if (journalFileStorage == null) {
+      return null; // 没有存储成功，就是有问题。
     }
+
+    // 直接测试一次！
+    final jsonDecode =
+        json.decode(journalFileStorage.content) as Map<String, dynamic>;
+
+    final journalFile = JournalFile.fromJson(jsonDecode);
+    Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
 
     return analyzeResponse;
   }
