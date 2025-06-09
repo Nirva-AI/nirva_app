@@ -672,6 +672,49 @@ class JournalFile with _$JournalFile {
 
   @override
   Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
+
+  static JournalFile createEmpty() {
+    // 创建一个空的 JournalFile
+    return JournalFile(
+      username: "",
+      time_stamp: "",
+      events: [],
+      daily_reflection: DailyReflection(
+        reflection_summary: '',
+        gratitude: Gratitude(
+          gratitude_summary: [],
+          gratitude_details: '',
+          win_summary: [],
+          win_details: '',
+          feel_alive_moments: '',
+        ),
+        challenges_and_growth: ChallengesAndGrowth(
+          growth_summary: [],
+          obstacles_faced: '',
+          unfinished_intentions: '',
+          contributing_factors: '',
+        ),
+        learning_and_insights: LearningAndInsights(
+          new_knowledge: '',
+          self_discovery: '',
+          insights_about_others: '',
+          broader_lessons: '',
+        ),
+        connections_and_relationships: ConnectionsAndRelationships(
+          meaningful_interactions: '',
+          notable_about_people: '',
+          follow_up_needed: '',
+        ),
+        looking_forward: LookingForward(
+          do_differently_tomorrow: '',
+          continue_what_worked: '',
+          top_3_priorities_tomorrow: [],
+        ),
+        // ),
+      ),
+      //message: "",
+    );
+  }
 }
 
 extension JournalFileExtensions on JournalFile {

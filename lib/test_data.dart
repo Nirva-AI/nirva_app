@@ -1,9 +1,11 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'dart:math';
 import 'package:nirva_app/utils.dart';
+import 'dart:convert';
 
 // 管理全局数据的类
 class TestData {
@@ -19,17 +21,15 @@ class TestData {
       displayName: 'wei',
     );
 
-    AppRuntimeContext().data.currentJournalDate = DateTime(2025, 4, 19);
-
     // 这里读取日记。
     await loadTestJournalFile(
       'assets/analyze_result_nirva-2025-04-19-00.txt.json',
-      AppRuntimeContext().data.currentJournalDate,
+      DateTime(2025, 4, 19),
     );
-    // await loadTestJournalFile(
-    //   'assets/analyze_result_2025-05-09-01.txt.json',
-    //   DateTime(2025, 5, 9),
-    // );
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-05-09-00.txt.json',
+      DateTime(2025, 5, 9),
+    );
 
     // 添加todo数据
     AppRuntimeContext().data.tasks = TestData.createTestTasks();
@@ -45,15 +45,6 @@ class TestData {
 
     AppRuntimeContext().data.monthlyArchivedHighlights =
         TestData.createTestMonthlyArchivedHighlights();
-
-    // 添加日记的最爱数据
-    //initializeTestFavorites(AppRuntimeContext().data.currentJournalFile);
-
-    // 添加日记的笔记数据
-    //initializeTestMyNotes(AppRuntimeContext().data.currentJournalFile);
-
-    //
-    initializeTestSocalMap();
 
     //
     AppRuntimeContext().data.dashboards.add(
@@ -73,12 +64,26 @@ class TestData {
     try {
       final jsonData = await Utils.loadJsonAsset(path);
       final loadJournalFile = JournalFile.fromJson(jsonData);
-      //AppRuntimeContext().data.journalFiles.add(journalFile);
-      //final key = dateTime.toIso8601String().split('T')[0];
-      //AppRuntimeContext().data.journalFiles[key] = journalFile;
-      AppRuntimeContext().data.setJournalFile(loadJournalFile, dateTime);
-      //debugPrint('成功加载日记文件: ${loadJournalFile.message}');
       debugPrint('事件数量: ${loadJournalFile.events.length}');
+
+      await AppRuntimeContext().storage.createJournalFile(
+        fileName: dateTime.toIso8601String(),
+        content: jsonEncode(jsonData),
+      );
+
+      final journalFileStorage = AppRuntimeContext().storage.getJournalFile(
+        dateTime.toIso8601String(),
+      );
+      if (journalFileStorage != null) {
+        // 直接测试一次！
+        final jsonDecode =
+            json.decode(journalFileStorage.content) as Map<String, dynamic>;
+
+        final journalFile = JournalFile.fromJson(jsonDecode);
+        Logger().d(
+          'loadTestJournalFile Journal file loaded: ${jsonEncode(journalFile.toJson())}',
+        );
+      }
     } catch (error) {
       debugPrint('加载日记文件时出错: $error');
     }
@@ -128,39 +133,6 @@ class TestData {
     List<String> impacts = ['Positive', 'Negative', 'Neutral'];
     //final random = Random();
     return impacts[random.nextInt(impacts.length)];
-  }
-
-  // 随机生成社交影响
-  static void initializeTestSocalMap() {
-    // Map<String, SocialEntity> globalSocialMap = {};
-
-    // for (var journal in AppRuntimeContext().data.journals) {
-    //   // 设置测试数据
-    //   for (var socialEntity in journal.socialMap.socialEntities) {
-    //     debugPrint('社交实体: ${socialEntity.name}');
-    //     if (globalSocialMap.containsKey(socialEntity.name)) {
-    //       debugPrint('社交实体已存在: ${socialEntity.name}');
-    //       SocialEntity existingEntity = globalSocialMap[socialEntity.name]!;
-    //       //目前就把时间相加。
-    //       globalSocialMap[socialEntity.name] = existingEntity.copyWith(
-    //         hours: existingEntity.hours + socialEntity.hours,
-    //       );
-
-    //       continue;
-    //     }
-
-    //     globalSocialMap[socialEntity.name] = socialEntity.copyWith(
-    //       impact: randomSocialImpact(),
-    //     );
-    //   }
-    // }
-
-    // 把 globalSocialMap 的value合成一个list
-    // List<SocialEntity> socialEntities = globalSocialMap.values.toList();
-    // AppRuntimeContext().data.globalSocialMap = SocialMap(
-    //   id: "",
-    //   socialEntities: socialEntities,
-    // );
   }
 
   // 测试数据： 初始化待办事项数据
@@ -300,65 +272,12 @@ class TestData {
       AwakeTimeAllocation(name: 'Other', value: 4, color: 0xFF9E9E9E),
     ];
 
-    // List<SocialEntity> socialEntities = [
-    //   SocialEntity(
-    //     id: "",
-    //     name: 'Ashley',
-    //     description:
-    //         'Deep, supportive conversation. Vulnerability was met with understanding.',
-    //     tips: [
-    //       'Reciprocate Support: Ensure you\'re actively listening and offering support for her challenges (job search, etc.) as she does for you.',
-    //       'Follow Through: Act on plans discussed, like the library meet-up, to build reliability.',
-    //       'Shared Fun: Continue exploring shared interests beyond processing difficulties, like the arts or potential future activities.',
-    //     ],
-    //     hours: 3,
-    //   ),
-    //   SocialEntity(
-    //     id: "",
-    //     name: 'Trent',
-    //     description:
-    //         'Shared a fun hiking trip. Great teamwork and mutual encouragement.',
-    //     tips: [
-    //       'Acknowledge Commitments: Address things like listening to the record he gave you to show you value his gestures and follow through.',
-    //       'Appreciate His Perspective: Even when disagreeing (like on AI ethics), acknowledge and show respect for his viewpoint to maintain positive discourse.',
-    //       'Continue Shared Exploration: Lean into shared interests like film, exploring challenging ideas, and trying new experiences (restaurants, neighborhoods). Ask about his work/life updates proactively.',
-    //     ],
-    //     hours: 2,
-    //   ),
-    //   SocialEntity(
-    //     id: "",
-    //     name: 'Charlie',
-    //     description:
-    //         'Had a long discussion about books and movies. Discovered shared interests.',
-    //     tips: [
-    //       'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-    //       'Plan Future Activities: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-    //       'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-    //     ],
-    //     hours: 1.5,
-    //   ),
-    //   SocialEntity(
-    //     id: "",
-    //     name: 'Diana',
-    //     description:
-    //         'Enjoyed a relaxing day at the park. Shared thoughts and future plans.',
-    //     tips: [
-    //       'Plan Future Outings: Discuss and plan future outings or activities together to strengthen your bond. Consider exploring new places or trying new hobbies together.',
-    //       'Be Open to Vulnerability: Share your thoughts and feelings openly to foster a deeper connection.',
-    //       'Explore Shared Interests: Continue discussing books and movies to deepen your connection. Consider starting a book club or movie night together.',
-    //     ],
-    //     hours: 4,
-    //   ),
-    // ];
-
     return Journal(
       id: dateTime.toIso8601String(),
       dateTime: dateTime,
       highlights: highlights,
-      //energyLevels: energyLevels,
       moodTrackings: moodTrackings,
       awakeTimeAllocations: awakeTimeAllocations,
-      //socialMap: SocialMap(id: "", socialEntities: socialEntities),
     );
   }
 

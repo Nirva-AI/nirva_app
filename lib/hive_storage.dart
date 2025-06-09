@@ -315,30 +315,3 @@ class HiveStorage {
     return true;
   }
 }
-
-
-
-// 创建新日记
-// final journalMeta = await hiveStorage.createJournalFile(
-//   fileName: 'journal_${DateTime.now().millisecondsSinceEpoch}.json',
-//   content: '{"text": "今天是美好的一天...", "mood": "happy"}',
-//   tags: ['日常', '心情'],
-// );
-
-// // 获取最近的日记列表
-// final recentJournals = hiveStorage.getRecentJournals(limit: 5);
-// for (final meta in recentJournals) {
-//   print('${meta.fileName}: ${meta.previewText}');
-  
-//   // 按需加载完整内容
-//   final journal = hiveStorage.getJournalFile(meta.fileName);
-//   if (journal != null) {
-//     print('完整内容: ${journal.content}');
-//   }
-// }
-
-// // 更新日记内容
-// final updatedMeta = await hiveStorage.updateJournalFile(
-//   journalMeta.fileName, 
-//   '{"text": "今天遇到了有趣的事...", "mood": "excited"}'
-// );

@@ -8,8 +8,7 @@ class MoodScoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moodScore =
-        AppRuntimeContext().data.currentJournalFile.moodScoreAverage;
+    final moodScore = AppRuntimeContext().currentJournalFile.moodScoreAverage;
 
     return Expanded(
       child: Card(

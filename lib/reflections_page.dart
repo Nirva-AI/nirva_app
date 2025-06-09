@@ -8,7 +8,7 @@ class ReflectionSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fullDateTime = Utils.fullDiaryDateTime(
-      AppRuntimeContext().data.currentJournalDate,
+      AppRuntimeContext().data.selectedDateTime,
     );
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -26,7 +26,6 @@ class ReflectionSummary extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             AppRuntimeContext()
-                .data
                 .currentJournalFile
                 .daily_reflection
                 .reflection_summary,
@@ -231,7 +230,7 @@ class ReflectionsPage extends StatelessWidget {
 
   Widget _buildReflectionCards() {
     final dailyReflection =
-        AppRuntimeContext().data.currentJournalFile.daily_reflection;
+        AppRuntimeContext().currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,7 +261,7 @@ class ReflectionsPage extends StatelessWidget {
 
   Widget _buildGoalCards() {
     final dailyReflection =
-        AppRuntimeContext().data.currentJournalFile.daily_reflection;
+        AppRuntimeContext().currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

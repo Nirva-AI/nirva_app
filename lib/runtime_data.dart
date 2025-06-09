@@ -8,9 +8,8 @@ class RuntimeData {
   User user = User(username: "", password: "", displayName: "");
 
   // 当前的日记和仪表板数据
-  List<Journal> journals = [];
-  Map<String, JournalFile> journalFiles = {};
-  DateTime currentJournalDate = DateTime.now();
+  List<Journal> journals = []; // 旧的数据。！
+  DateTime selectedDateTime = DateTime.now();
 
   // 当前的待办事项数据
   List<Task> tasks = [];
@@ -27,9 +26,6 @@ class RuntimeData {
 
   //
   List<Dashboard> dashboards = [];
-
-  //
-  //SocialMap globalSocialMap = SocialMap(id: "", socialEntities: []);
 
   //
   Map<String, List<Task>> get groupedTasks {
@@ -58,71 +54,6 @@ class RuntimeData {
         //socialMap: SocialMap(id: "", socialEntities: []),
       );
     }
-  }
-
-  String _journalFileKey(DateTime dateTime) {
-    // 获取日记文件的键
-    return dateTime.toIso8601String().split('T')[0];
-  }
-
-  JournalFile get currentJournalFile {
-    final key = _journalFileKey(currentJournalDate);
-    if (journalFiles.containsKey(key)) {
-      // 如果当前日期的日记文件存在，则返回该文件
-      return journalFiles[key]!;
-    }
-
-    return createEmptyJournalFile();
-  }
-
-  void setJournalFile(JournalFile journalFile, DateTime dateTime) {
-    final key = _journalFileKey(dateTime);
-    journalFiles[key] = journalFile;
-  }
-
-  JournalFile createEmptyJournalFile() {
-    // 创建一个空的 JournalFile
-    return JournalFile(
-      username: "",
-      time_stamp: "",
-      events: [],
-      //label_extraction: LabelExtraction(events: []),
-      //reflection: ReflectionData(
-      daily_reflection: DailyReflection(
-        reflection_summary: '',
-        gratitude: Gratitude(
-          gratitude_summary: [],
-          gratitude_details: '',
-          win_summary: [],
-          win_details: '',
-          feel_alive_moments: '',
-        ),
-        challenges_and_growth: ChallengesAndGrowth(
-          growth_summary: [],
-          obstacles_faced: '',
-          unfinished_intentions: '',
-          contributing_factors: '',
-        ),
-        learning_and_insights: LearningAndInsights(
-          new_knowledge: '',
-          self_discovery: '',
-          insights_about_others: '',
-          broader_lessons: '',
-        ),
-        connections_and_relationships: ConnectionsAndRelationships(
-          meaningful_interactions: '',
-          notable_about_people: '',
-          follow_up_needed: '',
-        ),
-        looking_forward: LookingForward(
-          do_differently_tomorrow: '',
-          continue_what_worked: '',
-          top_3_priorities_tomorrow: [],
-        ),
-        // ),
-      ),
-      //message: "",
-    );
   }
 
   Dashboard get currentDashboard {
@@ -174,34 +105,5 @@ class RuntimeData {
     }
     // 通知监听者
     notes.value = List.from(notes.value);
-  }
-
-  // 获取当前的社交地图
-  Map<String, SocialEntity2> genGlobalSocialEntitiesMap() {
-    // 获取全局社交实体的映射
-    final Map<String, SocialEntity2> map = {};
-    for (var journalFile in journalFiles.values) {
-      Map<String, SocialEntity2> subMap = journalFile.socialEntities;
-      for (var key in subMap.keys) {
-        if (!map.containsKey(key)) {
-          map[key] = subMap[key]!;
-        } else {
-          // 如果已经存在，则合并
-          map[key]!.merge(subMap[key]!);
-        }
-      }
-    }
-    return map;
-  }
-
-  // 获取全局社交地图
-  double getTotalSocialHours() {
-    // 计算全局社交时间
-    double totalHours = 0;
-    final global = genGlobalSocialEntitiesMap();
-    for (var entity in global.values) {
-      totalHours += entity.hours;
-    }
-    return totalHours;
   }
 }
