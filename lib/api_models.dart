@@ -79,17 +79,6 @@ class AnalyzeActionRequest with _$AnalyzeActionRequest {
   Map<String, dynamic> toJson() => (this as _AnalyzeActionRequest).toJson();
 }
 
-// @freezed
-// class AnalyzeActionResponse with _$AnalyzeActionResponse {
-//   const factory AnalyzeActionResponse({required JournalFile journal_file}) =
-//       _AnalyzeActionResponse;
-
-//   factory AnalyzeActionResponse.fromJson(Map<String, dynamic> json) =>
-//       _$AnalyzeActionResponseFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _AnalyzeActionResponse).toJson();
-// }
-
 @freezed
 class UploadTranscriptActionRequest with _$UploadTranscriptActionRequest {
   const factory UploadTranscriptActionRequest({
@@ -117,12 +106,6 @@ class UploadTranscriptActionResponse with _$UploadTranscriptActionResponse {
   Map<String, dynamic> toJson() =>
       (this as _UploadTranscriptActionResponse).toJson();
 }
-
-// @final
-// @register_base_model_class
-// class BackgroundTaskResponse(BaseModel):
-//     task_id: str
-//     message: str
 
 @freezed
 class BackgroundTaskResponse with _$BackgroundTaskResponse {

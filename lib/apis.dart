@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:uuid/uuid.dart';
-//import 'package:nirva_app/data.dart';
+import 'package:nirva_app/data.dart';
 import 'package:nirva_app/utils.dart';
 
 class APIs {
@@ -397,28 +397,60 @@ class APIs {
     );
 
     return backgroundTaskResponse;
+  }
+
+  static Future<JournalFile?> getJournalFile(String timeStamp) async {
+    final appRuntimeContext = AppRuntimeContext();
+    final response = await safeGet<Map<String, dynamic>>(
+      appRuntimeContext.appserviceDio,
+      appRuntimeContext.urlConfig.formatGetJournalFileUrl(timeStamp),
+      query: {'time_stamp': timeStamp},
+    );
+
+    if (response == null || response.data == null) {
+      Logger().e('Get journal file failed: No response data');
+      return null;
+    }
 
     // 直接存。
-    // await appRuntimeContext.storage.createJournalFile(
-    //   fileName: analyzeResponse.journal_file.time_stamp,
-    //   content: jsonEncode(analyzeResponse.journal_file.toJson()),
-    // );
+    await appRuntimeContext.storage.createJournalFile(
+      fileName: timeStamp,
+      content: jsonEncode(response.data!),
+    );
 
-    // // 读一下试试
-    // final journalFileStorage = appRuntimeContext.storage.getJournalFile(
-    //   analyzeResponse.journal_file.time_stamp,
-    // );
-    // if (journalFileStorage == null) {
-    //   return null; // 没有存储成功，就是有问题。
-    // }
+    // 读一下试试
+    final journalFileStorage = appRuntimeContext.storage.getJournalFile(
+      timeStamp,
+    );
 
-    // // 直接测试一次！
-    // final jsonDecode =
-    //     json.decode(journalFileStorage.content) as Map<String, dynamic>;
+    // 没有存储成功，就是有问题。
+    if (journalFileStorage == null) {
+      return null;
+    }
 
-    // final journalFile = JournalFile.fromJson(jsonDecode);
-    // Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
+    // 直接测试一次！
+    final jsonDecode =
+        json.decode(journalFileStorage.content) as Map<String, dynamic>;
 
-    // return analyzeResponse;
+    final journalFile = JournalFile.fromJson(jsonDecode);
+    Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
+    return journalFile;
+  }
+
+  static Future<Map<String, dynamic>?> getTaskStatus(String taskId) async {
+    final appRuntimeContext = AppRuntimeContext();
+    final response = await safeGet<Map<String, dynamic>>(
+      appRuntimeContext.appserviceDio,
+      appRuntimeContext.urlConfig.formatTaskStatusUrl(taskId),
+    );
+
+    if (response == null || response.data == null) {
+      Logger().e('Get task status failed: No response data');
+      return null;
+    }
+
+    final taskStatus = response.data!;
+    Logger().d('Task status response: ${jsonEncode(taskStatus)}');
+    return taskStatus;
   }
 }

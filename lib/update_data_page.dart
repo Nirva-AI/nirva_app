@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -19,6 +20,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   final List<FileSystemEntity> _files = [];
   String _selectedFilePath = '';
   String _fileContent = '';
+  String _taskId = '';
 
   // 定义过滤列表，可以根据需要进行修改
   static const Set<String> _filteredExtensions = {
@@ -188,15 +190,15 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     Logger().d('上传转录数据成功: ${uploadResponse.message}');
 
-    // 尝试分析数据
-    final analyzeResponse = await APIs.analyze(
-      //parsedData.item1.toIso8601String(),
+    // 尝试分析数据 BackgroundTaskResponse
+    final backgroundTaskResponse = await APIs.analyze(
       Utils.formatDateTimeToIso(parsedData.item1),
       parsedData.item2,
     );
 
-    if (analyzeResponse != null) {
+    if (backgroundTaskResponse != null) {
       Logger().d('分析数据成功');
+      _taskId = backgroundTaskResponse.task_id;
     } else {
       Logger().d('分析数据失败');
     }
@@ -226,11 +228,65 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  // 获取结果
+  Future<void> _getResults() async {
+    if (_selectedFilePath.isEmpty) {
+      _showSnackBar('请先导入文件');
+      return;
+    }
+
+    try {
+      // 获取文件名和时间戳
+      final fileName = _selectedFilePath.split('/').last;
+      final parsedData = Utils.parseDataFromSpecialFilename(fileName);
+      if (parsedData == null) {
+        Logger().d('未能解析文件名或内容');
+        return;
+      }
+      Logger().d('解析后的数据: $parsedData');
+
+      if (_taskId != '') {
+        // 如果记录了任务ID，检查任务状态，
+        final taskStatus = await APIs.getTaskStatus(_taskId);
+        if (taskStatus == null) {
+          _showSnackBar('任务状态获取失败');
+          return;
+        }
+
+        final status = taskStatus["status"];
+        Logger().d('任务状态: $status');
+        if (status == 'pending' || status == 'processing') {
+          _showSnackBar('任务仍在进行中，请稍后再试');
+          return;
+        } else if (status == 'failed') {
+          _showSnackBar('任务执行失败，请检查日志');
+          return;
+        } else if (status != 'completed') {
+          _showSnackBar('未知任务状态: $status');
+          return;
+        }
+      }
+
+      // 获取结果
+      final journalFile = await APIs.getJournalFile(
+        Utils.formatDateTimeToIso(parsedData.item1),
+      );
+      if (journalFile != null) {
+        setState(() {
+          _showSnackBar('获取结果成功');
+          _fileContent = jsonEncode(journalFile.toJson());
+        });
+      }
+    } catch (e) {
+      _showSnackBar('异常提示: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('数据更新'),
+        title: const Text('Test Update Data'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -251,7 +307,19 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                     child: ElevatedButton(
                       onPressed: _pickFileFromiOSFilesAndHandle,
                       child: const Text(
-                        '从文件应用导入',
+                        'Pick From iOS Files',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: ElevatedButton(
+                      onPressed: _getResults,
+                      child: const Text(
+                        'Check Results',
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -271,14 +339,14 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '选中文件: ${_selectedFilePath.isEmpty ? '无' : _selectedFilePath.split('/').last}',
+                    'Select File: ${_selectedFilePath.isEmpty ? 'None' : _selectedFilePath.split('/').last}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  Text('路径: $_selectedFilePath'),
+                  Text('Path: $_selectedFilePath'),
                   const SizedBox(height: 16),
                   const Text(
-                    '文件内容:',
+                    'File Content:',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
