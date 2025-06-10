@@ -8,7 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
 import 'dart:convert';
 import 'package:nirva_app/hive_object.dart';
-//
+import 'package:nirva_app/utils.dart';
 
 // 管理全局数据的类
 class AppRuntimeContext {
@@ -39,12 +39,12 @@ class AppRuntimeContext {
   // URL 配置实例
   final URLConfiguration _urlConfig = URLConfiguration();
 
-  static const String _baseUrl = 'http://192.168.192.40:8000';
+  //static const String _baseUrl = 'http://192.168.192.100:8000';
 
   // 用于基础app服务的 Dio 实例
   final Dio _appserviceDio = Dio(
       BaseOptions(
-        baseUrl: _baseUrl,
+        baseUrl: 'http://192.168.192.100:8000',
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -96,7 +96,8 @@ class AppRuntimeContext {
       currentDate.day,
     );
     final journalFileStorage = _storage.getJournalFile(
-      makeStorageKeyDateTime.toIso8601String(),
+      //makeStorageKeyDateTime.toIso8601String(),
+      Utils.formatDateTimeToIso(makeStorageKeyDateTime),
     );
     if (journalFileStorage == null) {
       return JournalFile.createEmpty();

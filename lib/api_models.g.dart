@@ -86,19 +86,6 @@ Map<String, dynamic> _$$AnalyzeActionRequestImplToJson(
       'file_number': instance.file_number,
     };
 
-_$AnalyzeActionResponseImpl _$$AnalyzeActionResponseImplFromJson(
-        Map<String, dynamic> json) =>
-    _$AnalyzeActionResponseImpl(
-      journal_file:
-          JournalFile.fromJson(json['journal_file'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$$AnalyzeActionResponseImplToJson(
-        _$AnalyzeActionResponseImpl instance) =>
-    <String, dynamic>{
-      'journal_file': instance.journal_file,
-    };
-
 _$UploadTranscriptActionRequestImpl
     _$$UploadTranscriptActionRequestImplFromJson(Map<String, dynamic> json) =>
         _$UploadTranscriptActionRequestImpl(
@@ -126,5 +113,19 @@ _$UploadTranscriptActionResponseImpl
 Map<String, dynamic> _$$UploadTranscriptActionResponseImplToJson(
         _$UploadTranscriptActionResponseImpl instance) =>
     <String, dynamic>{
+      'message': instance.message,
+    };
+
+_$BackgroundTaskResponseImpl _$$BackgroundTaskResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$BackgroundTaskResponseImpl(
+      task_id: json['task_id'] as String,
+      message: json['message'] as String,
+    );
+
+Map<String, dynamic> _$$BackgroundTaskResponseImplToJson(
+        _$BackgroundTaskResponseImpl instance) =>
+    <String, dynamic>{
+      'task_id': instance.task_id,
       'message': instance.message,
     };
