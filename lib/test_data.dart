@@ -67,12 +67,14 @@ class TestData {
       debugPrint('事件数量: ${loadJournalFile.events.length}');
 
       await AppRuntimeContext().storage.createJournalFile(
-        fileName: dateTime.toIso8601String(),
+        //fileName: dateTime.toIso8601String(),
+        fileName: Utils.formatDateTimeToIso(dateTime),
         content: jsonEncode(jsonData),
       );
 
       final journalFileStorage = AppRuntimeContext().storage.getJournalFile(
-        dateTime.toIso8601String(),
+        //dateTime.toIso8601String(),
+        Utils.formatDateTimeToIso(dateTime),
       );
       if (journalFileStorage != null) {
         // 直接测试一次！
@@ -273,7 +275,8 @@ class TestData {
     ];
 
     return Journal(
-      id: dateTime.toIso8601String(),
+      //id: dateTime.toIso8601String(),
+      id: Utils.formatDateTimeToIso(dateTime),
       dateTime: dateTime,
       highlights: highlights,
       moodTrackings: moodTrackings,

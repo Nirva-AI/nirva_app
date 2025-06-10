@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/apis.dart';
 import 'package:tuple/tuple.dart';
+//import 'package:nirva_app/utils.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -174,7 +175,8 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   ) async {
     final uploadResponse = await APIs.uploadTranscript(
       content,
-      parsedData.item1.toIso8601String(),
+      //parsedData.item1.toIso8601String(),
+      Utils.formatDateTimeToIso(parsedData.item1),
       parsedData.item2,
       parsedData.item3,
     );
@@ -188,7 +190,8 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     // 尝试分析数据
     final analyzeResponse = await APIs.analyze(
-      parsedData.item1.toIso8601String(),
+      //parsedData.item1.toIso8601String(),
+      Utils.formatDateTimeToIso(parsedData.item1),
       parsedData.item2,
     );
 

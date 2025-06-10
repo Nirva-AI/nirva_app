@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 // 请注意，本页是为了对接python fastapi服务器的数据定义的代码，命名风格完全和服务器一致，所以关警告。不要修改命名风格。
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:nirva_app/data.dart';
 part 'api_models.freezed.dart';
 part 'api_models.g.dart';
 
@@ -80,16 +79,16 @@ class AnalyzeActionRequest with _$AnalyzeActionRequest {
   Map<String, dynamic> toJson() => (this as _AnalyzeActionRequest).toJson();
 }
 
-@freezed
-class AnalyzeActionResponse with _$AnalyzeActionResponse {
-  const factory AnalyzeActionResponse({required JournalFile journal_file}) =
-      _AnalyzeActionResponse;
+// @freezed
+// class AnalyzeActionResponse with _$AnalyzeActionResponse {
+//   const factory AnalyzeActionResponse({required JournalFile journal_file}) =
+//       _AnalyzeActionResponse;
 
-  factory AnalyzeActionResponse.fromJson(Map<String, dynamic> json) =>
-      _$AnalyzeActionResponseFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _AnalyzeActionResponse).toJson();
-}
+//   factory AnalyzeActionResponse.fromJson(Map<String, dynamic> json) =>
+//       _$AnalyzeActionResponseFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _AnalyzeActionResponse).toJson();
+// }
 
 @freezed
 class UploadTranscriptActionRequest with _$UploadTranscriptActionRequest {
@@ -117,4 +116,23 @@ class UploadTranscriptActionResponse with _$UploadTranscriptActionResponse {
   @override
   Map<String, dynamic> toJson() =>
       (this as _UploadTranscriptActionResponse).toJson();
+}
+
+// @final
+// @register_base_model_class
+// class BackgroundTaskResponse(BaseModel):
+//     task_id: str
+//     message: str
+
+@freezed
+class BackgroundTaskResponse with _$BackgroundTaskResponse {
+  const factory BackgroundTaskResponse({
+    required String task_id,
+    required String message,
+  }) = _BackgroundTaskResponse;
+
+  factory BackgroundTaskResponse.fromJson(Map<String, dynamic> json) =>
+      _$BackgroundTaskResponseFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _BackgroundTaskResponse).toJson();
 }

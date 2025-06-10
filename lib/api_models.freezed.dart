@@ -1021,177 +1021,6 @@ abstract class _AnalyzeActionRequest implements AnalyzeActionRequest {
       get copyWith => throw _privateConstructorUsedError;
 }
 
-AnalyzeActionResponse _$AnalyzeActionResponseFromJson(
-    Map<String, dynamic> json) {
-  return _AnalyzeActionResponse.fromJson(json);
-}
-
-/// @nodoc
-mixin _$AnalyzeActionResponse {
-  JournalFile get journal_file => throw _privateConstructorUsedError;
-
-  /// Serializes this AnalyzeActionResponse to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of AnalyzeActionResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $AnalyzeActionResponseCopyWith<AnalyzeActionResponse> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $AnalyzeActionResponseCopyWith<$Res> {
-  factory $AnalyzeActionResponseCopyWith(AnalyzeActionResponse value,
-          $Res Function(AnalyzeActionResponse) then) =
-      _$AnalyzeActionResponseCopyWithImpl<$Res, AnalyzeActionResponse>;
-  @useResult
-  $Res call({JournalFile journal_file});
-
-  $JournalFileCopyWith<$Res> get journal_file;
-}
-
-/// @nodoc
-class _$AnalyzeActionResponseCopyWithImpl<$Res,
-        $Val extends AnalyzeActionResponse>
-    implements $AnalyzeActionResponseCopyWith<$Res> {
-  _$AnalyzeActionResponseCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of AnalyzeActionResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? journal_file = null,
-  }) {
-    return _then(_value.copyWith(
-      journal_file: null == journal_file
-          ? _value.journal_file
-          : journal_file // ignore: cast_nullable_to_non_nullable
-              as JournalFile,
-    ) as $Val);
-  }
-
-  /// Create a copy of AnalyzeActionResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $JournalFileCopyWith<$Res> get journal_file {
-    return $JournalFileCopyWith<$Res>(_value.journal_file, (value) {
-      return _then(_value.copyWith(journal_file: value) as $Val);
-    });
-  }
-}
-
-/// @nodoc
-abstract class _$$AnalyzeActionResponseImplCopyWith<$Res>
-    implements $AnalyzeActionResponseCopyWith<$Res> {
-  factory _$$AnalyzeActionResponseImplCopyWith(
-          _$AnalyzeActionResponseImpl value,
-          $Res Function(_$AnalyzeActionResponseImpl) then) =
-      __$$AnalyzeActionResponseImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({JournalFile journal_file});
-
-  @override
-  $JournalFileCopyWith<$Res> get journal_file;
-}
-
-/// @nodoc
-class __$$AnalyzeActionResponseImplCopyWithImpl<$Res>
-    extends _$AnalyzeActionResponseCopyWithImpl<$Res,
-        _$AnalyzeActionResponseImpl>
-    implements _$$AnalyzeActionResponseImplCopyWith<$Res> {
-  __$$AnalyzeActionResponseImplCopyWithImpl(_$AnalyzeActionResponseImpl _value,
-      $Res Function(_$AnalyzeActionResponseImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of AnalyzeActionResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? journal_file = null,
-  }) {
-    return _then(_$AnalyzeActionResponseImpl(
-      journal_file: null == journal_file
-          ? _value.journal_file
-          : journal_file // ignore: cast_nullable_to_non_nullable
-              as JournalFile,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$AnalyzeActionResponseImpl implements _AnalyzeActionResponse {
-  const _$AnalyzeActionResponseImpl({required this.journal_file});
-
-  factory _$AnalyzeActionResponseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AnalyzeActionResponseImplFromJson(json);
-
-  @override
-  final JournalFile journal_file;
-
-  @override
-  String toString() {
-    return 'AnalyzeActionResponse(journal_file: $journal_file)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AnalyzeActionResponseImpl &&
-            (identical(other.journal_file, journal_file) ||
-                other.journal_file == journal_file));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, journal_file);
-
-  /// Create a copy of AnalyzeActionResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AnalyzeActionResponseImplCopyWith<_$AnalyzeActionResponseImpl>
-      get copyWith => __$$AnalyzeActionResponseImplCopyWithImpl<
-          _$AnalyzeActionResponseImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$AnalyzeActionResponseImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _AnalyzeActionResponse implements AnalyzeActionResponse {
-  const factory _AnalyzeActionResponse(
-      {required final JournalFile journal_file}) = _$AnalyzeActionResponseImpl;
-
-  factory _AnalyzeActionResponse.fromJson(Map<String, dynamic> json) =
-      _$AnalyzeActionResponseImpl.fromJson;
-
-  @override
-  JournalFile get journal_file;
-
-  /// Create a copy of AnalyzeActionResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AnalyzeActionResponseImplCopyWith<_$AnalyzeActionResponseImpl>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
 UploadTranscriptActionRequest _$UploadTranscriptActionRequestFromJson(
     Map<String, dynamic> json) {
   return _UploadTranscriptActionRequest.fromJson(json);
@@ -1584,5 +1413,179 @@ abstract class _UploadTranscriptActionResponse
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UploadTranscriptActionResponseImplCopyWith<
           _$UploadTranscriptActionResponseImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+BackgroundTaskResponse _$BackgroundTaskResponseFromJson(
+    Map<String, dynamic> json) {
+  return _BackgroundTaskResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$BackgroundTaskResponse {
+  String get task_id => throw _privateConstructorUsedError;
+  String get message => throw _privateConstructorUsedError;
+
+  /// Serializes this BackgroundTaskResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of BackgroundTaskResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $BackgroundTaskResponseCopyWith<BackgroundTaskResponse> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $BackgroundTaskResponseCopyWith<$Res> {
+  factory $BackgroundTaskResponseCopyWith(BackgroundTaskResponse value,
+          $Res Function(BackgroundTaskResponse) then) =
+      _$BackgroundTaskResponseCopyWithImpl<$Res, BackgroundTaskResponse>;
+  @useResult
+  $Res call({String task_id, String message});
+}
+
+/// @nodoc
+class _$BackgroundTaskResponseCopyWithImpl<$Res,
+        $Val extends BackgroundTaskResponse>
+    implements $BackgroundTaskResponseCopyWith<$Res> {
+  _$BackgroundTaskResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of BackgroundTaskResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? task_id = null,
+    Object? message = null,
+  }) {
+    return _then(_value.copyWith(
+      task_id: null == task_id
+          ? _value.task_id
+          : task_id // ignore: cast_nullable_to_non_nullable
+              as String,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$BackgroundTaskResponseImplCopyWith<$Res>
+    implements $BackgroundTaskResponseCopyWith<$Res> {
+  factory _$$BackgroundTaskResponseImplCopyWith(
+          _$BackgroundTaskResponseImpl value,
+          $Res Function(_$BackgroundTaskResponseImpl) then) =
+      __$$BackgroundTaskResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String task_id, String message});
+}
+
+/// @nodoc
+class __$$BackgroundTaskResponseImplCopyWithImpl<$Res>
+    extends _$BackgroundTaskResponseCopyWithImpl<$Res,
+        _$BackgroundTaskResponseImpl>
+    implements _$$BackgroundTaskResponseImplCopyWith<$Res> {
+  __$$BackgroundTaskResponseImplCopyWithImpl(
+      _$BackgroundTaskResponseImpl _value,
+      $Res Function(_$BackgroundTaskResponseImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of BackgroundTaskResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? task_id = null,
+    Object? message = null,
+  }) {
+    return _then(_$BackgroundTaskResponseImpl(
+      task_id: null == task_id
+          ? _value.task_id
+          : task_id // ignore: cast_nullable_to_non_nullable
+              as String,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$BackgroundTaskResponseImpl implements _BackgroundTaskResponse {
+  const _$BackgroundTaskResponseImpl(
+      {required this.task_id, required this.message});
+
+  factory _$BackgroundTaskResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$BackgroundTaskResponseImplFromJson(json);
+
+  @override
+  final String task_id;
+  @override
+  final String message;
+
+  @override
+  String toString() {
+    return 'BackgroundTaskResponse(task_id: $task_id, message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BackgroundTaskResponseImpl &&
+            (identical(other.task_id, task_id) || other.task_id == task_id) &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, task_id, message);
+
+  /// Create a copy of BackgroundTaskResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BackgroundTaskResponseImplCopyWith<_$BackgroundTaskResponseImpl>
+      get copyWith => __$$BackgroundTaskResponseImplCopyWithImpl<
+          _$BackgroundTaskResponseImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$BackgroundTaskResponseImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _BackgroundTaskResponse implements BackgroundTaskResponse {
+  const factory _BackgroundTaskResponse(
+      {required final String task_id,
+      required final String message}) = _$BackgroundTaskResponseImpl;
+
+  factory _BackgroundTaskResponse.fromJson(Map<String, dynamic> json) =
+      _$BackgroundTaskResponseImpl.fromJson;
+
+  @override
+  String get task_id;
+  @override
+  String get message;
+
+  /// Create a copy of BackgroundTaskResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$BackgroundTaskResponseImplCopyWith<_$BackgroundTaskResponseImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

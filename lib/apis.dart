@@ -6,7 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:uuid/uuid.dart';
-import 'package:nirva_app/data.dart';
+//import 'package:nirva_app/data.dart';
+import 'package:nirva_app/utils.dart';
 
 class APIs {
   // 获取 URL 配置，故意不抓留给外面抓。
@@ -294,7 +295,8 @@ class APIs {
         id: uuid.v4(), // 使用uuid生成唯一ID
         role: MessageRole.human,
         content: content,
-        time_stamp: DateTime.now().toIso8601String(),
+        time_stamp: Utils.formatDateTimeToIso(DateTime.now()),
+        //DateTime.now().toIso8601String(),
       ),
       chat_history: appRuntimeContext.chat.chatHistory.value,
     );
@@ -365,7 +367,7 @@ class APIs {
   }
 
   // 分析请求, 故意不抓留给外面抓。
-  static Future<AnalyzeActionResponse?> analyze(
+  static Future<BackgroundTaskResponse?> analyze(
     String timeStamp,
     int fileNumber,
   ) async {
@@ -379,7 +381,7 @@ class APIs {
       appRuntimeContext.appserviceDio,
       appRuntimeContext.urlConfig.analyzeActionUrl,
       data: analyzeActionRequest.toJson(),
-      receiveTimeout: 60 * 2, // 设置接收超时时间为120秒, 时间较长。
+      receiveTimeout: 60, // 设置接收超时时间为60秒, 时间较长。
     );
 
     if (response == null || response.data == null) {
@@ -387,32 +389,36 @@ class APIs {
       return null;
     }
 
-    final analyzeResponse = AnalyzeActionResponse.fromJson(response.data!);
-    Logger().d(
-      'Analyze action response: ${jsonEncode(analyzeResponse.toJson())}',
+    final backgroundTaskResponse = BackgroundTaskResponse.fromJson(
+      response.data!,
     );
+    Logger().d(
+      'Analyze action response: ${jsonEncode(backgroundTaskResponse.toJson())}',
+    );
+
+    return backgroundTaskResponse;
 
     // 直接存。
-    await appRuntimeContext.storage.createJournalFile(
-      fileName: analyzeResponse.journal_file.time_stamp,
-      content: jsonEncode(analyzeResponse.journal_file.toJson()),
-    );
+    // await appRuntimeContext.storage.createJournalFile(
+    //   fileName: analyzeResponse.journal_file.time_stamp,
+    //   content: jsonEncode(analyzeResponse.journal_file.toJson()),
+    // );
 
-    // 读一下试试
-    final journalFileStorage = appRuntimeContext.storage.getJournalFile(
-      analyzeResponse.journal_file.time_stamp,
-    );
-    if (journalFileStorage == null) {
-      return null; // 没有存储成功，就是有问题。
-    }
+    // // 读一下试试
+    // final journalFileStorage = appRuntimeContext.storage.getJournalFile(
+    //   analyzeResponse.journal_file.time_stamp,
+    // );
+    // if (journalFileStorage == null) {
+    //   return null; // 没有存储成功，就是有问题。
+    // }
 
-    // 直接测试一次！
-    final jsonDecode =
-        json.decode(journalFileStorage.content) as Map<String, dynamic>;
+    // // 直接测试一次！
+    // final jsonDecode =
+    //     json.decode(journalFileStorage.content) as Map<String, dynamic>;
 
-    final journalFile = JournalFile.fromJson(jsonDecode);
-    Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
+    // final journalFile = JournalFile.fromJson(jsonDecode);
+    // Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
 
-    return analyzeResponse;
+    // return analyzeResponse;
   }
 }

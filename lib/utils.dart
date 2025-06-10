@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   // 计算对应的月份标签
@@ -193,5 +194,11 @@ class Utils {
       debugPrint("无法从文件名 $filename 中解析出日期时间、文件编号或后缀。");
       return null;
     }
+  }
+
+  static String formatDateTimeToIso(DateTime date) {
+    // 格式 "yyyy-MM-ddTHH:mm:ss" 完全符合 ISO8601 格式但不含毫秒
+    final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    return formatter.format(date);
   }
 }
