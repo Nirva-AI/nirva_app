@@ -43,4 +43,22 @@ class URLConfiguration {
   String get uploadTranscriptUrl {
     return _urlConfig.endpoints['upload_transcript'] ?? '';
   }
+
+  // 格式化URL
+  String formatTaskStatusUrl(String taskId) {
+    return _urlConfig.endpoints['task_status']?.replaceAll(
+          '{task_id}',
+          taskId,
+        ) ??
+        '';
+  }
+
+  // 格式化获取日记文件的URL
+  String formatGetJournalFileUrl(String timeStamp) {
+    return _urlConfig.endpoints['get_journal_file']?.replaceAll(
+          '{time_stamp}',
+          timeStamp,
+        ) ??
+        '';
+  }
 }
