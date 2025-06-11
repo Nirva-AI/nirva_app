@@ -22,8 +22,8 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = AppRuntimeContext().data.selectedDateTime;
-    _selectedDay = AppRuntimeContext().data.selectedDateTime;
+    _focusedDay = AppRuntimeContext().selectedDateTime;
+    _selectedDay = AppRuntimeContext().selectedDateTime;
   }
 
   @override
@@ -72,7 +72,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
       _focusedDay = focusedDay;
 
       // 这里需要修改！！
-      AppRuntimeContext().data.selectedDateTime = selectedDay;
+      AppRuntimeContext().selectedDateTime = selectedDay;
     });
   }
 

@@ -31,13 +31,13 @@ class TestData {
       DateTime(2025, 5, 9),
     );
 
-    AppRuntimeContext().data.selectedDateTime = DateTime(2025, 4, 19);
+    AppRuntimeContext().selectedDateTime = DateTime(2025, 4, 19);
 
     // 添加todo数据
     //AppRuntimeContext().data.tasks = TestData.createTestTasks();
 
     // 添加日记数据
-    AppRuntimeContext().data.journals.add(
+    AppRuntimeContext().data.legacyJournals.add(
       TestData.createTestJournal(DateTime(2025, 5, 22)),
     );
 
@@ -51,9 +51,9 @@ class TestData {
     //
     AppRuntimeContext().data.dashboards.add(
       TestData.createTestDashboard(
-        AppRuntimeContext().data.currentJournal.dateTime,
-        AppRuntimeContext().data.currentJournal.moodTrackings,
-        AppRuntimeContext().data.currentJournal.awakeTimeAllocations,
+        AppRuntimeContext().data.currentLegacyJournal.dateTime,
+        AppRuntimeContext().data.currentLegacyJournal.moodTrackings,
+        AppRuntimeContext().data.currentLegacyJournal.awakeTimeAllocations,
       ),
     );
   }
@@ -241,7 +241,7 @@ class TestData {
   }
 
   // 测试数据： 初始化个人数据
-  static Journal createTestJournal(DateTime dateTime) {
+  static LegacyJournal createTestJournal(DateTime dateTime) {
     final List<Highlight> highlights = [
       Highlight(
         category: 'ACHIEVEMENT',
@@ -276,7 +276,7 @@ class TestData {
       AwakeTimeAllocation(name: 'Other', value: 4, color: 0xFF9E9E9E),
     ];
 
-    return Journal(
+    return LegacyJournal(
       //id: dateTime.toIso8601String(),
       id: Utils.formatDateTimeToIso(dateTime),
       dateTime: dateTime,
