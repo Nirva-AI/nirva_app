@@ -264,3 +264,37 @@ class JournalFileStorageAdapter extends TypeAdapter<JournalFileStorage> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class HiveTasksAdapter extends TypeAdapter<HiveTasks> {
+  @override
+  final int typeId = 8;
+
+  @override
+  HiveTasks read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return HiveTasks(
+      taskJsonList: (fields[0] as List).cast<String>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, HiveTasks obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.taskJsonList);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HiveTasksAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
