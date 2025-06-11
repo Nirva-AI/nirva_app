@@ -53,7 +53,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
   // 当滚动到左侧边缘时加载更多历史数据
   void _onScrollUpdate() {
-    if (_scrollController.position.pixels <= 0) {
+    // 当滚动接近左侧边缘时加载更多数据（距离左侧边缘20像素内）
+    if (_scrollController.position.pixels <= _scrollController.position.minScrollExtent + 20) {
       // 加载更多历史数据
       setState(() {
         final oldestDate = _chartData.first.date;
@@ -75,9 +76,17 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
         _chartData.insertAll(0, moreData.reversed.toList());
         _chartWidth += 7 * 60.0; // 为新添加的7天增加宽度
+      });
 
-        // 调整滚动位置以保持当前查看的位置
-        _scrollController.jumpTo(_scrollController.position.pixels + 7 * 60.0);
+      // 使用微任务确保在状态更新后调整滚动位置
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.pixels + 7 * 60.0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
       });
     }
   }
@@ -112,7 +121,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                 drawVerticalLine: false,
                 getDrawingHorizontalLine: (value) {
                   return FlLine(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Color.fromRGBO(255, 255, 255, 0.2),
                     strokeWidth: 1,
                     dashArray: [5, 5],
                   );
@@ -147,11 +156,12 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 32,
+                    reservedSize: 45, // 从32增加到45
                     getTitlesWidget: (value, meta) {
                       final index = value.toInt();
-                      if (index < 0 || index >= _chartData.length)
+                      if (index < 0 || index >= _chartData.length) {
                         return const SizedBox.shrink();
+                      }
 
                       final date = _chartData[index].date;
                       final isToday = _isToday(date);
@@ -215,7 +225,13 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: widget.lineColor.withOpacity(0.1),
+                    // 透明度方案二 (如果上面的方案不适用)
+                    color: Color.fromARGB(
+                      (0.2 * 255).toInt(), // alpha (透明度)
+                      255,
+                      255,
+                      255, // RGB
+                    ),
                   ),
                 ),
               ],

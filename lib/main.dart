@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
 
   // 执行异步操作，例如加载配置文件
-  await initializeApp();
+  //await initializeApp();
 
   // 运行核心应用
   //runApp(const MainApp());
