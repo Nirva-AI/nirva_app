@@ -852,4 +852,22 @@ extension JournalFileExtensions on JournalFile {
     }
     return total;
   }
+
+  List<String> genQuotes() {
+    // 返回所有事件的 action_item
+    if (events.isEmpty) {
+      return [];
+    }
+
+    List<String> quotes = [];
+    for (var event in events) {
+      if (event.action_item.isEmpty || event.action_item == 'N/A') {
+        continue;
+      }
+
+      quotes.add(event.action_item);
+    }
+
+    return quotes;
+  }
 }
