@@ -9,7 +9,7 @@ class SlidingChartData {
   SlidingChartData({required this.date, required this.value});
 
   // 生成测试数据
-  static const daysToShow = 14;
+  static const daysToShow = 28;
   static List<SlidingChartData> generateSlidingChartSamples(
     DateTime startDate,
     int days,
@@ -18,7 +18,7 @@ class SlidingChartData {
     final List<SlidingChartData> data = [];
 
     // 生成包含今天在内的过去14天数据
-    for (int i = days; i > 0; i--) {
+    for (int i = days; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
 
       // 生成一些模拟的睡眠数据 (6-10小时范围内的随机值)
@@ -81,24 +81,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   }
 
   // 当滚动到左侧边缘时加载更多历史数据
-  void _onScrollUpdate() {
-    // 当滚动接近左侧边缘时加载更多数据（距离左侧边缘20像素内）
-    if (_scrollController.position.pixels <=
-        _scrollController.position.minScrollExtent + 20) {
-      // 加载更多历史数据
-      setState(() {
-        final oldestDate = _chartData.first.date;
-        List<SlidingChartData> moreData =
-            SlidingChartData.generateSlidingChartSamples(
-              oldestDate,
-              SlidingChartData.daysToShow,
-            );
-        _chartData.insertAll(0, moreData.toList());
-        _chartWidth +=
-            SlidingChartData.daysToShow * _defaultChartWidth; // 为新添加的14天增加宽度
-      });
-    }
-  }
+  void _onScrollUpdate() {}
 
   @override
   Widget build(BuildContext context) {
@@ -145,22 +128,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                   sideTitles: SideTitles(showTitles: false),
                 ),
                 leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: false,
-                    reservedSize: 40,
-                    getTitlesWidget: (value, meta) {
-                      if (value % 2 == 0) {
-                        return Text(
-                          '${value.toInt()}h',
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                  sideTitles: SideTitles(showTitles: false),
                 ),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
@@ -296,43 +264,23 @@ class _TestChartPageState extends State<TestChartPage> {
   // 生成测试数据
   List<SlidingChartData> _initTestData() {
     final now = DateTime.now();
-    final todayData = SlidingChartData(
-      date: now,
-      value: 7.5, // 假设今天的睡眠时间为7.5小时
-    );
-    final last14daysData = SlidingChartData.generateSlidingChartSamples(
+    final samples = SlidingChartData.generateSlidingChartSamples(
       now,
       SlidingChartData.daysToShow,
     );
-    return last14daysData + [todayData];
+    return samples;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('睡眠时间图表'),
-        backgroundColor: Colors.black,
-      ),
+      appBar: AppBar(title: const Text('睡眠时间图表'), backgroundColor: Colors.grey),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '睡眠时间趋势',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              '过去两周的睡眠数据',
-              style: TextStyle(fontSize: 14, color: Colors.white70),
-            ),
-            const SizedBox(height: 24),
+            const Divider(color: Colors.white24, thickness: 1),
             SizedBox(
               height: 300,
               child: SlidingLineChart(
