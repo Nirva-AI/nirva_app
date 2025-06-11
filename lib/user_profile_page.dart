@@ -49,12 +49,12 @@ class UserProfilePage extends StatelessWidget {
               children: [
                 // Name
                 ListTile(
-                  title: const Text('Name'),
+                  title: const Text('Account Name'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppRuntimeContext().data.user.displayName,
+                        AppRuntimeContext().data.user.username,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(
@@ -70,13 +70,45 @@ class UserProfilePage extends StatelessWidget {
                 ),
                 const Divider(height: 1),
 
+                // Nick Name
+                ListTile(
+                  title: const Text('Nick Name'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppRuntimeContext().data.user.displayName,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    debugPrint('Nick Name tapped');
+                  },
+                ),
+                const Divider(height: 1),
+
                 // Manage My Logins
                 ListTile(
                   title: const Text('Manage My Logins'),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: Colors.grey,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppRuntimeContext().appserviceDio.options.baseUrl,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
                   onTap: () {
                     debugPrint('Manage My Logins tapped');
