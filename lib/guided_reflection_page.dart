@@ -70,7 +70,7 @@ class GuidedReflectionPage extends StatelessWidget {
             // 保存按钮
             Center(
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // 保存按钮点击事件
                   final content = _textController.text; // 获取输入框内容
                   AppRuntimeContext().data.updateNote(
@@ -79,6 +79,9 @@ class GuidedReflectionPage extends StatelessWidget {
                   ); // 保存到 DataManager
                   debugPrint('Save button pressed: $content'); // 打印保存内容
                   Navigator.pop(context); // 返回到 DiaryDetailsPage
+                  await AppRuntimeContext().storage.saveNotes(
+                    AppRuntimeContext().data.notes.value,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple, // 按钮背景颜色

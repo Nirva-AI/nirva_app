@@ -60,4 +60,8 @@ Future<void> initializeHiveStorage() async {
   // 任务列表
   final retrievedTasks = AppRuntimeContext().storage.getAllTasks();
   AppRuntimeContext().data.tasks.value = retrievedTasks;
+
+  //notes
+  final retrievedNotes = AppRuntimeContext().storage.getAllNotes();
+  AppRuntimeContext().data.notes.value = retrievedNotes;
 }

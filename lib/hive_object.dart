@@ -208,3 +208,19 @@ class HiveTasks extends HiveObject {
         .toList();
   }
 }
+
+// 笔记列表的 Hive 存储结构
+@HiveType(typeId: 9)
+class HiveNotes extends HiveObject {
+  @HiveField(0)
+  List<String> noteJsonList;
+
+  HiveNotes({required this.noteJsonList});
+
+  // 获取所有笔记
+  List<Note> toNotes() {
+    return noteJsonList
+        .map((jsonString) => Note.fromJson(jsonDecode(jsonString)))
+        .toList();
+  }
+}
