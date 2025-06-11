@@ -28,6 +28,10 @@ class HiveStorage {
   static const String _tasksBox = 'tasksBox';
   static const String _tasksKey = 'tasks';
 
+  // 添加笔记相关常量
+  static const String _notesBox = 'notesBox';
+  static const String _notesKey = 'notes';
+
   Future<void> _initialize() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
@@ -37,12 +41,19 @@ class HiveStorage {
   //清空所有 Box 的数据并关闭所有 Box
   Future<void> deleteFromDisk() async {
     await _initialize(); // 确保 Hive 已经初始化
-    await Hive.deleteBoxFromDisk(_favoritesBox);
-    await Hive.deleteBoxFromDisk(_userTokenBox);
-    await Hive.deleteBoxFromDisk(_chatHistoryBox);
-    await Hive.deleteBoxFromDisk(_journalIndexBox);
-    await Hive.deleteBoxFromDisk(_journalFilesBox);
-    await Hive.deleteBoxFromDisk(_tasksBox); // 添加任务 Box 的删除
+
+    // 并行删除所有 Box
+    await Future.wait([
+      Hive.deleteBoxFromDisk(_favoritesBox),
+      Hive.deleteBoxFromDisk(_userTokenBox),
+      Hive.deleteBoxFromDisk(_chatHistoryBox),
+      Hive.deleteBoxFromDisk(_journalIndexBox),
+      Hive.deleteBoxFromDisk(_journalFilesBox),
+      Hive.deleteBoxFromDisk(_tasksBox),
+      Hive.deleteBoxFromDisk(_notesBox),
+    ]);
+
+    // 这两个操作需要顺序执行，不能并行化
     await Hive.close();
     await Hive.deleteFromDisk();
   }
@@ -56,6 +67,7 @@ class HiveStorage {
       _initChatHistory(),
       _initJournalSystem(),
       _initTasks(), // 添加任务存储初始化
+      _initNotes(), // 添加笔记存储初始化
     ]);
   }
 
@@ -126,6 +138,16 @@ class HiveStorage {
     }
   }
 
+  // 添加笔记存储的初始化方法
+  Future<void> _initNotes() async {
+    if (!Hive.isAdapterRegistered(9)) {
+      Hive.registerAdapter(HiveNotesAdapter());
+    }
+    if (!Hive.isBoxOpen(_notesBox)) {
+      await Hive.openBox<HiveNotes>(_notesBox);
+    }
+  }
+
   // 获取所有 Hive 数据的统计信息和内容
   Map<String, dynamic> getAllData() {
     final Map<String, dynamic> data = {};
@@ -177,6 +199,13 @@ class HiveStorage {
       if (tasks != null) {
         data['tasksCount'] = tasks.taskJsonList.length;
       }
+    }
+
+    // 获取笔记数据
+    if (Hive.isBoxOpen(_notesBox)) {
+      final notesBox = Hive.box<HiveNotes>(_notesBox);
+      final notes = notesBox.get(_notesKey);
+      data['notes'] = notes;
     }
 
     return data;
@@ -359,5 +388,23 @@ class HiveStorage {
     final taskJsonList =
         tasks.map((task) => jsonEncode(task.toJson())).toList();
     await box.put(_tasksKey, HiveTasks(taskJsonList: taskJsonList));
+  }
+
+  // 获取所有笔记
+  List<Note> getAllNotes() {
+    final box = Hive.box<HiveNotes>(_notesBox);
+    final hiveNotes = box.get(_notesKey);
+    if (hiveNotes == null) {
+      return [];
+    }
+    return hiveNotes.toNotes();
+  }
+
+  // 保存笔记列表
+  Future<void> saveNotes(List<Note> notes) async {
+    final box = Hive.box<HiveNotes>(_notesBox);
+    final noteJsonList =
+        notes.map((note) => jsonEncode(note.toJson())).toList();
+    await box.put(_notesKey, HiveNotes(noteJsonList: noteJsonList));
   }
 }
