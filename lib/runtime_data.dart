@@ -13,7 +13,7 @@ class RuntimeData {
   DateTime selectedDateTime = DateTime.now();
 
   // 当前的待办事项数据
-  List<Task> tasks = [];
+  ValueNotifier<List<Task>> tasks = ValueNotifier([]);
 
   // 当前的高亮数据
   List<ArchivedHighlights> weeklyArchivedHighlights = [];
@@ -56,18 +56,12 @@ class RuntimeData {
 
   bool hasTask(String tag, String description) {
     // 检查是否存在指定标签和描述的任务
-    return tasks.any(
+    return tasks.value.any(
       (task) => task.tag == tag && task.description == description,
     );
   }
 
   void addTask(String tag, String description) {
-    if (hasTask(tag, description)) {
-      // 如果任务已存在，则不添加
-      debugPrint('Task already exists: $tag - $description');
-      return;
-    }
-
     // 添加任务到任务列表
     final uuid = Uuid(); // 创建UUID生成器实例
     final newTask = Task(
@@ -76,14 +70,26 @@ class RuntimeData {
       description: description,
       isCompleted: false,
     );
-    tasks.add(newTask);
+    tasks.value.add(newTask); // 使用ValueNotifier的add方法
+    tasks.value = List.from(tasks.value); // 通知监听者
     debugPrint('Task added: $tag - $description');
+  }
+
+  // 切换任务的完成状态
+  void switchTaskStatus(Task task) {
+    // 切换任务的完成状态
+    final int index = tasks.value.indexOf(task);
+    if (index != -1) {
+      final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
+      tasks.value[index] = updatedTask;
+      tasks.value = List.from(tasks.value); // 通知监听者
+    }
   }
 
   //
   Map<String, List<Task>> get groupedTasks {
     final Map<String, List<Task>> groupedTasks = {};
-    for (var task in tasks) {
+    for (var task in tasks.value) {
       if (!groupedTasks.containsKey(task.tag)) {
         groupedTasks[task.tag] = [];
       }
@@ -92,14 +98,11 @@ class RuntimeData {
     return groupedTasks;
   }
 
-  // 切换任务的完成状态
-  void switchTaskStatus(Task task) {
-    // 切换任务的完成状态
-    final int index = tasks.indexOf(task);
-    if (index != -1) {
-      final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
-      tasks[index] = updatedTask;
-    }
+  //
+  void clearCompletedTasks() {
+    // 清除已完成的任务
+    tasks.value = tasks.value.where((task) => !task.isCompleted).toList();
+    tasks.value = List.from(tasks.value); // 通知监听者
   }
 
   void switchEventFavoriteStatus(EventAnalysis event) {
