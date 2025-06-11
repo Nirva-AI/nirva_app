@@ -70,21 +70,18 @@ class SlidingLineChart extends StatefulWidget {
 class _SlidingLineChartState extends State<SlidingLineChart> {
   late ScrollController _scrollController;
   late List<SlidingChartData> _chartData;
-  late double _chartWidth;
-
   static const double _defaultChartWidth = 45.0; // 每天的默认宽度
+
+  double get chartWidth {
+    return SlidingChartData.daysToShow(DateTime.now()) *
+        _defaultChartWidth; // 每天60逻辑像素宽度
+  }
 
   @override
   void initState() {
     super.initState();
     _chartData = List.from(widget.initialData);
     _scrollController = ScrollController();
-
-    // 计算图表宽度，每天分配一个固定宽度
-    _chartWidth =
-        SlidingChartData.daysToShow(DateTime.now()) *
-        _defaultChartWidth; // 每天60逻辑像素宽度
-
     // 在初始化后滚动到最右侧（最新数据）
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -116,7 +113,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
         scrollDirection: Axis.horizontal,
         physics: const ClampingScrollPhysics(),
         child: Container(
-          width: _chartWidth,
+          width: chartWidth,
           height: 300,
           padding: const EdgeInsets.all(16),
           child: LineChart(
@@ -125,6 +122,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
               maxX: _chartData.length.toDouble() - 1,
               minY: widget.minY,
               maxY: widget.maxY,
+              // 添加这个配置来禁用点击交互UI
+              lineTouchData: LineTouchData(enabled: false),
               gridData: FlGridData(
                 show: true,
                 horizontalInterval: 2,
@@ -204,7 +203,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                 LineChartBarData(
                   spots: _getSpots(),
                   isCurved: true,
-                  barWidth: 2,
+                  barWidth: 3,
                   color: widget.lineColor,
                   dotData: FlDotData(
                     show: true,
@@ -221,16 +220,6 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                         strokeWidth: 2,
                       );
                     },
-                  ),
-                  belowBarData: BarAreaData(
-                    show: true,
-                    // 透明度方案二 (如果上面的方案不适用)
-                    color: Color.fromARGB(
-                      (0.2 * 255).toInt(), // alpha (透明度)
-                      255,
-                      255,
-                      255, // RGB
-                    ),
                   ),
                 ),
               ],
