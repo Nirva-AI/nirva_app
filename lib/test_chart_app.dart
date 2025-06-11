@@ -8,18 +8,36 @@ class SlidingChartData {
 
   SlidingChartData({required this.date, required this.value});
 
-  // 生成测试数据
-  static const daysToShow = 28;
-  static List<SlidingChartData> generateSlidingChartSamples(
-    DateTime startDate,
-    int days,
-  ) {
-    final now = startDate;
+  static int daysToShow(DateTime startDate) {
+    // 计算去年同月同日的日期
+    final lastYearSameDate = DateTime(
+      startDate.year - 1,
+      startDate.month,
+      startDate.day,
+    );
+
+    // 计算从去年同日到今天的天数
+    final daysBetween = startDate.difference(lastYearSameDate).inDays;
+    return daysBetween;
+  }
+
+  // 生成数据的大列表
+  static List<SlidingChartData> generate(DateTime startDate) {
+    // 计算去年同月同日的日期
+    final lastYearSameDate = DateTime(
+      startDate.year - 1,
+      startDate.month,
+      startDate.day,
+    );
+
+    // 计算从去年同日到今天的天数
+    final daysBetween = startDate.difference(lastYearSameDate).inDays;
+
     final List<SlidingChartData> data = [];
 
-    // 生成包含今天在内的过去14天数据
-    for (int i = days; i >= 0; i--) {
-      final date = now.subtract(Duration(days: i));
+    // 从去年同日开始，生成每一天的数据
+    for (int i = 0; i <= daysBetween; i++) {
+      final date = lastYearSameDate.add(Duration(days: i));
 
       // 生成一些模拟的睡眠数据 (6-10小时范围内的随机值)
       final sleepHours = 6.0 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0);
@@ -64,7 +82,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
     // 计算图表宽度，每天分配一个固定宽度
     _chartWidth =
-        SlidingChartData.daysToShow * _defaultChartWidth; // 每天60逻辑像素宽度
+        SlidingChartData.daysToShow(DateTime.now()) *
+        _defaultChartWidth; // 每天60逻辑像素宽度
 
     // 在初始化后滚动到最右侧（最新数据）
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -263,11 +282,7 @@ class TestChartPage extends StatefulWidget {
 class _TestChartPageState extends State<TestChartPage> {
   // 生成测试数据
   List<SlidingChartData> _initTestData() {
-    final now = DateTime.now();
-    final samples = SlidingChartData.generateSlidingChartSamples(
-      now,
-      SlidingChartData.daysToShow,
-    );
+    final samples = SlidingChartData.generate(DateTime.now());
     return samples;
   }
 
