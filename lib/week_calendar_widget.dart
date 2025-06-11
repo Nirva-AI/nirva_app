@@ -6,12 +6,15 @@ class WeekCalendarWidget extends StatelessWidget {
   final DateTime focusedDay;
   final DateTime? selectedDay;
   final Function(DateTime, DateTime) onDaySelected;
+  // 新增参数: 需要标红的日期集合
+  final Set<DateTime> redMarkedDays;
 
   const WeekCalendarWidget({
     super.key,
     required this.focusedDay,
     required this.selectedDay,
     required this.onDaySelected,
+    this.redMarkedDays = const {}, // 默认为空集合
   });
 
   @override
@@ -72,6 +75,37 @@ class WeekCalendarWidget extends StatelessWidget {
           color: Colors.black, // 周末文字颜色
         ),
       ),
+      // 添加日期构建器
+      calendarBuilders: CalendarBuilders(
+        defaultBuilder: (context, day, focusedDay) {
+          // 检查当前日期是否需要标红
+          bool isRedMarked = redMarkedDays.any((d) => isSameDay(day, d));
+
+          if (isRedMarked) {
+            return Container(
+              margin: const EdgeInsets.all(4.0),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  '${day.day}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          }
+          return null; // 返回null使用默认样式
+        },
+      ),
     );
   }
 }
+
+/*
+
+*/
