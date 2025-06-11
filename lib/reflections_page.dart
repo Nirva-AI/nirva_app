@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/utils.dart';
 
+class LookingForwardTag {
+  static const String doDifferentlyTomorrow = 'Do Differently Tomorrow';
+  static const String continueWhatWorked = 'Continue What Worked';
+  static const String top3PrioritiesTomorrow = 'Top 3 Priorities Tomorrow';
+}
+
 class ReflectionSummary extends StatelessWidget {
   const ReflectionSummary({super.key});
 
@@ -102,9 +108,23 @@ class _ReflectionCardState extends State<ReflectionCard> {
 
 class GoalCard extends StatelessWidget {
   final String title;
-  final String content;
+  final List<String> contents;
 
-  const GoalCard({super.key, required this.title, required this.content});
+  const GoalCard({super.key, required this.title, required this.contents});
+
+  String get parsedContent {
+    if (contents.isEmpty) {
+      return '';
+    }
+
+    if (contents.length == 1) {
+      return contents.first; // 如果只有一个内容，直接返回
+    }
+
+    return contents
+        .map((content) => "- $content") // 每个内容前添加一个破折号
+        .join('\n'); // 使用换行符连接所有内容
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +151,8 @@ class GoalCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.checklist, color: Colors.purple),
                   onPressed: () {
-                    _showTopOverlay(context, title, content);
+                    _addTaskToTodoList();
+                    _showTopOverlay(context, title, parsedContent);
                   },
                 ),
               ],
@@ -141,13 +162,21 @@ class GoalCard extends StatelessWidget {
             Row(
               children: [
                 const SizedBox(width: 8),
-                Expanded(child: Text(content)),
+                Expanded(child: Text(parsedContent)),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _addTaskToTodoList() {
+    // 添加任务到待办列表的逻辑
+    debugPrint('Task added: $title');
+    for (var content in contents) {
+      AppRuntimeContext().data.addTask(title, content);
+    }
   }
 
   // 封装的 _showTopOverlay 函数
@@ -186,7 +215,7 @@ class GoalCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '"$title" and $content tasks have been added to your todo list.',
+                      '"$title" have been added to your todo list.',
                       style: const TextStyle(color: Colors.black),
                     ),
                   ],
@@ -271,26 +300,24 @@ class ReflectionsPage extends StatelessWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        _buildGoalCard(
-          'Do Differently Tomorrow',
+        _buildGoalCard(LookingForwardTag.doDifferentlyTomorrow, [
           dailyReflection.looking_forward.do_differently_tomorrow,
-        ),
-        _buildGoalCard(
-          'Continue What Worked',
+        ]),
+        _buildGoalCard(LookingForwardTag.continueWhatWorked, [
           dailyReflection.looking_forward.continue_what_worked,
-        ),
+        ]),
         _buildGoalCard(
-          "Top 3 Priorities Tomorrow",
-          dailyReflection.looking_forward.top_3_priorities_tomorrow.join(', '),
+          LookingForwardTag.top3PrioritiesTomorrow,
+          dailyReflection.looking_forward.top_3_priorities_tomorrow,
         ),
       ],
     );
   }
 
-  Widget _buildGoalCard(String title, String content) {
+  Widget _buildGoalCard(String title, List<String> contents) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: GoalCard(title: title, content: content),
+      child: GoalCard(title: title, contents: contents),
     );
   }
 }

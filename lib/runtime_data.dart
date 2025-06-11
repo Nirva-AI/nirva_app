@@ -1,6 +1,7 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:nirva_app/data.dart';
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
 // 管理全局数据的类
 class RuntimeData {
@@ -27,18 +28,6 @@ class RuntimeData {
   //
   List<Dashboard> dashboards = [];
 
-  //
-  Map<String, List<Task>> get groupedTasks {
-    final Map<String, List<Task>> groupedTasks = {};
-    for (var task in tasks) {
-      if (!groupedTasks.containsKey(task.tag)) {
-        groupedTasks[task.tag] = [];
-      }
-      groupedTasks[task.tag]!.add(task);
-    }
-    return groupedTasks;
-  }
-
   Journal get currentJournal {
     // 获取当前的日记条目
     if (journals.isNotEmpty) {
@@ -63,6 +52,44 @@ class RuntimeData {
     } else {
       return Dashboard.createEmpty();
     }
+  }
+
+  bool hasTask(String tag, String description) {
+    // 检查是否存在指定标签和描述的任务
+    return tasks.any(
+      (task) => task.tag == tag && task.description == description,
+    );
+  }
+
+  void addTask(String tag, String description) {
+    if (hasTask(tag, description)) {
+      // 如果任务已存在，则不添加
+      debugPrint('Task already exists: $tag - $description');
+      return;
+    }
+
+    // 添加任务到任务列表
+    final uuid = Uuid(); // 创建UUID生成器实例
+    final newTask = Task(
+      id: uuid.v4(), // 生成唯一的任务ID
+      tag: tag,
+      description: description,
+      isCompleted: false,
+    );
+    tasks.add(newTask);
+    debugPrint('Task added: $tag - $description');
+  }
+
+  //
+  Map<String, List<Task>> get groupedTasks {
+    final Map<String, List<Task>> groupedTasks = {};
+    for (var task in tasks) {
+      if (!groupedTasks.containsKey(task.tag)) {
+        groupedTasks[task.tag] = [];
+      }
+      groupedTasks[task.tag]!.add(task);
+    }
+    return groupedTasks;
   }
 
   // 切换任务的完成状态

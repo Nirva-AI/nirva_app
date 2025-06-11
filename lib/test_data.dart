@@ -21,18 +21,20 @@ class TestData {
       displayName: 'wei',
     );
 
-    // 这里读取日记。
-    // await loadTestJournalFile(
-    //   'assets/analyze_result_nirva-2025-04-19-00.txt.json',
-    //   DateTime(2025, 4, 19),
-    // );
-    // await loadTestJournalFile(
-    //   'assets/analyze_result_nirva-2025-05-09-00.txt.json',
-    //   DateTime(2025, 5, 9),
-    // );
+    //这里读取日记。
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-04-19-00.txt.json',
+      DateTime(2025, 4, 19),
+    );
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-05-09-00.txt.json',
+      DateTime(2025, 5, 9),
+    );
+
+    AppRuntimeContext().data.selectedDateTime = DateTime(2025, 4, 19);
 
     // 添加todo数据
-    AppRuntimeContext().data.tasks = TestData.createTestTasks();
+    //AppRuntimeContext().data.tasks = TestData.createTestTasks();
 
     // 添加日记数据
     AppRuntimeContext().data.journals.add(
@@ -138,19 +140,19 @@ class TestData {
   }
 
   // 测试数据： 初始化待办事项数据
-  static List<Task> createTestTasks() {
-    return [
-      Task(id: "", tag: 'Wellness', description: 'Morning meditation'),
-      Task(id: "", tag: 'Wellness', description: 'Evening reading - 30 mins'),
-      Task(
-        id: "",
-        tag: 'Work',
-        description: 'Prepare presentation for meeting',
-      ),
-      Task(id: "", tag: 'Personal', description: 'Call mom', isCompleted: true),
-      Task(id: "", tag: 'Health', description: 'Schedule dentist appointment'),
-    ];
-  }
+  // static List<Task> createTestTasks() {
+  //   return [
+  //     Task(id: "", tag: 'Wellness', description: 'Morning meditation'),
+  //     Task(id: "", tag: 'Wellness', description: 'Evening reading - 30 mins'),
+  //     Task(
+  //       id: "",
+  //       tag: 'Work',
+  //       description: 'Prepare presentation for meeting',
+  //     ),
+  //     Task(id: "", tag: 'Personal', description: 'Call mom', isCompleted: true),
+  //     Task(id: "", tag: 'Health', description: 'Schedule dentist appointment'),
+  //   ];
+  // }
 
   static List<ArchivedHighlights> createTestWeeklyArchivedHighlights() {
     return [
