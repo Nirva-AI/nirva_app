@@ -81,16 +81,20 @@ class _TodoListViewState extends State<TodoListView> {
                                   );
                                 },
                                 child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor:
-                                        task.isCompleted
-                                            ? Colors.green
-                                            : Colors.red,
-                                    radius: 4,
-                                  ),
+                                  // leading: CircleAvatar(
+                                  //   backgroundColor:
+                                  //       task.isCompleted
+                                  //           ? Colors.green
+                                  //           : Colors.red,
+                                  //   radius: 4,
+                                  // ),
                                   title: Text(
                                     task.description,
                                     style: TextStyle(
+                                      color:
+                                          task.isCompleted
+                                              ? Colors.green
+                                              : Colors.red,
                                       fontSize: 13,
                                       decoration:
                                           task.isCompleted
