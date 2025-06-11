@@ -41,7 +41,7 @@ class TodayHighlightsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final highlights = AppRuntimeContext().data.currentJournal.highlights;
+    final highlights = AppRuntimeContext().data.currentLegacyJournal.highlights;
 
     return Card(
       elevation: 2,

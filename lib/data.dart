@@ -245,8 +245,8 @@ class AwakeTimeAllocation with _$AwakeTimeAllocation {
 // }
 
 @freezed
-class Journal with _$Journal {
-  const factory Journal({
+class LegacyJournal with _$LegacyJournal {
+  const factory LegacyJournal({
     required String id,
     required DateTime dateTime,
     //required List<Quote> quotes,
@@ -259,8 +259,8 @@ class Journal with _$Journal {
     //required SocialMap socialMap,
   }) = _Journal;
 
-  factory Journal.fromJson(Map<String, dynamic> json) =>
-      _$JournalFromJson(json);
+  factory LegacyJournal.fromJson(Map<String, dynamic> json) =>
+      _$LegacyJournalFromJson(json);
   @override
   Map<String, dynamic> toJson() => (this as _Journal).toJson();
 }

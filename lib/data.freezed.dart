@@ -3322,12 +3322,12 @@ abstract class _AwakeTimeAllocation implements AwakeTimeAllocation {
       throw _privateConstructorUsedError;
 }
 
-Journal _$JournalFromJson(Map<String, dynamic> json) {
+LegacyJournal _$LegacyJournalFromJson(Map<String, dynamic> json) {
   return _Journal.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Journal {
+mixin _$LegacyJournal {
   String get id => throw _privateConstructorUsedError;
   DateTime get dateTime =>
       throw _privateConstructorUsedError; //required List<Quote> quotes,
@@ -3339,19 +3339,21 @@ mixin _$Journal {
   List<AwakeTimeAllocation> get awakeTimeAllocations =>
       throw _privateConstructorUsedError;
 
-  /// Serializes this Journal to a JSON map.
+  /// Serializes this LegacyJournal to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of Journal
+  /// Create a copy of LegacyJournal
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $JournalCopyWith<Journal> get copyWith => throw _privateConstructorUsedError;
+  $LegacyJournalCopyWith<LegacyJournal> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $JournalCopyWith<$Res> {
-  factory $JournalCopyWith(Journal value, $Res Function(Journal) then) =
-      _$JournalCopyWithImpl<$Res, Journal>;
+abstract class $LegacyJournalCopyWith<$Res> {
+  factory $LegacyJournalCopyWith(
+          LegacyJournal value, $Res Function(LegacyJournal) then) =
+      _$LegacyJournalCopyWithImpl<$Res, LegacyJournal>;
   @useResult
   $Res call(
       {String id,
@@ -3362,16 +3364,16 @@ abstract class $JournalCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$JournalCopyWithImpl<$Res, $Val extends Journal>
-    implements $JournalCopyWith<$Res> {
-  _$JournalCopyWithImpl(this._value, this._then);
+class _$LegacyJournalCopyWithImpl<$Res, $Val extends LegacyJournal>
+    implements $LegacyJournalCopyWith<$Res> {
+  _$LegacyJournalCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Journal
+  /// Create a copy of LegacyJournal
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -3408,7 +3410,8 @@ class _$JournalCopyWithImpl<$Res, $Val extends Journal>
 }
 
 /// @nodoc
-abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
+abstract class _$$JournalImplCopyWith<$Res>
+    implements $LegacyJournalCopyWith<$Res> {
   factory _$$JournalImplCopyWith(
           _$JournalImpl value, $Res Function(_$JournalImpl) then) =
       __$$JournalImplCopyWithImpl<$Res>;
@@ -3424,13 +3427,13 @@ abstract class _$$JournalImplCopyWith<$Res> implements $JournalCopyWith<$Res> {
 
 /// @nodoc
 class __$$JournalImplCopyWithImpl<$Res>
-    extends _$JournalCopyWithImpl<$Res, _$JournalImpl>
+    extends _$LegacyJournalCopyWithImpl<$Res, _$JournalImpl>
     implements _$$JournalImplCopyWith<$Res> {
   __$$JournalImplCopyWithImpl(
       _$JournalImpl _value, $Res Function(_$JournalImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Journal
+  /// Create a copy of LegacyJournal
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -3521,7 +3524,7 @@ class _$JournalImpl implements _Journal {
 
   @override
   String toString() {
-    return 'Journal(id: $id, dateTime: $dateTime, highlights: $highlights, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations)';
+    return 'LegacyJournal(id: $id, dateTime: $dateTime, highlights: $highlights, moodTrackings: $moodTrackings, awakeTimeAllocations: $awakeTimeAllocations)';
   }
 
   @override
@@ -3550,7 +3553,7 @@ class _$JournalImpl implements _Journal {
       const DeepCollectionEquality().hash(_moodTrackings),
       const DeepCollectionEquality().hash(_awakeTimeAllocations));
 
-  /// Create a copy of Journal
+  /// Create a copy of LegacyJournal
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
@@ -3566,7 +3569,7 @@ class _$JournalImpl implements _Journal {
   }
 }
 
-abstract class _Journal implements Journal {
+abstract class _Journal implements LegacyJournal {
   const factory _Journal(
           {required final String id,
           required final DateTime dateTime,
@@ -3590,7 +3593,7 @@ abstract class _Journal implements Journal {
   @override
   List<AwakeTimeAllocation> get awakeTimeAllocations;
 
-  /// Create a copy of Journal
+  /// Create a copy of LegacyJournal
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)

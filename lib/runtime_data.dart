@@ -9,8 +9,7 @@ class RuntimeData {
   User user = User(username: "", password: "", displayName: "");
 
   // 当前的日记和仪表板数据
-  List<Journal> journals = []; // 旧的数据。！
-  DateTime selectedDateTime = DateTime.now();
+  List<LegacyJournal> legacyJournals = []; // 旧的数据。！
 
   // 当前的待办事项数据
   ValueNotifier<List<Task>> tasks = ValueNotifier([]);
@@ -28,12 +27,12 @@ class RuntimeData {
   //
   List<Dashboard> dashboards = [];
 
-  Journal get currentJournal {
+  LegacyJournal get currentLegacyJournal {
     // 获取当前的日记条目
-    if (journals.isNotEmpty) {
-      return journals.last;
+    if (legacyJournals.isNotEmpty) {
+      return legacyJournals.last;
     } else {
-      return Journal(
+      return LegacyJournal(
         id: "",
         dateTime: DateTime.now(),
         highlights: [],

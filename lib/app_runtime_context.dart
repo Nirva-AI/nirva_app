@@ -27,6 +27,8 @@ class AppRuntimeContext {
     _instance = AppRuntimeContext._internal();
   }
 
+  DateTime selectedDateTime = DateTime.now();
+
   // 数据管理器实例
   final RuntimeData _data = RuntimeData();
 
@@ -87,13 +89,13 @@ class AppRuntimeContext {
 
   // 获取当前的日记文件。
   JournalFile get currentJournalFile {
-    final currentDate = _data.selectedDateTime;
+    //final currentDate = _data.selectedDateTime;
 
     // 读一下试试
     final makeStorageKeyDateTime = DateTime(
-      currentDate.year,
-      currentDate.month,
-      currentDate.day,
+      selectedDateTime.year,
+      selectedDateTime.month,
+      selectedDateTime.day,
     );
     final journalFileStorage = _storage.getJournalFile(
       Utils.formatDateTimeToIso(makeStorageKeyDateTime),

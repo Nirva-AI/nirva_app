@@ -14,7 +14,7 @@ class ReflectionSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fullDateTime = Utils.fullDiaryDateTime(
-      AppRuntimeContext().data.selectedDateTime,
+      AppRuntimeContext().selectedDateTime,
     );
     return Container(
       padding: const EdgeInsets.all(16.0),

@@ -42,7 +42,7 @@ class EnergyLevelCard extends StatelessWidget {
   List<EnergyLevel> get energyLevels {
     List<EnergyLevel> ret = [];
     final events = AppRuntimeContext().currentJournalFile.events;
-    final currentJournalDate = AppRuntimeContext().data.selectedDateTime;
+    final currentJournalDate = AppRuntimeContext().selectedDateTime;
     for (var event in events) {
       try {
         final parseTimeRange = Utils.parseTimeRange(
