@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
@@ -54,7 +53,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   // 当滚动到左侧边缘时加载更多历史数据
   void _onScrollUpdate() {
     // 当滚动接近左侧边缘时加载更多数据（距离左侧边缘20像素内）
-    if (_scrollController.position.pixels <= _scrollController.position.minScrollExtent + 20) {
+    if (_scrollController.position.pixels <=
+        _scrollController.position.minScrollExtent + 20) {
       // 加载更多历史数据
       setState(() {
         final oldestDate = _chartData.first.date;
@@ -76,17 +76,6 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
         _chartData.insertAll(0, moreData.reversed.toList());
         _chartWidth += 7 * 60.0; // 为新添加的7天增加宽度
-      });
-
-      // 使用微任务确保在状态更新后调整滚动位置
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.pixels + 7 * 60.0,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
-        }
       });
     }
   }
@@ -156,10 +145,17 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 45, // 从32增加到45
+                    reservedSize: 45,
+                    interval: 1, // 确保每个数据点之间有固定间隔
                     getTitlesWidget: (value, meta) {
                       final index = value.toInt();
                       if (index < 0 || index >= _chartData.length) {
+                        return const SizedBox.shrink();
+                      }
+
+                      // 可以选择每几个数据点显示一个标签
+                      if (index % 2 != 0) {
+                        // 仅显示偶数索引的标签
                         return const SizedBox.shrink();
                       }
 
@@ -168,8 +164,9 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
                       // 获取星期几的简写
                       String weekday = DateFormat('E').format(date);
+                      // 添加日期信息，更清晰地识别不同日期
+                      String dayMonth = DateFormat('d/M').format(date);
 
-                      // 添加简单的小图标（可以根据需求进一步定制）
                       return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 4,
@@ -181,17 +178,18 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                         ),
                         child: Column(
                           children: [
-                            Icon(
-                              Icons.label,
-                              color: isToday ? Colors.black : Colors.white,
-                              size: 16,
-                            ),
-                            const SizedBox(height: 4),
                             Text(
                               weekday,
                               style: TextStyle(
                                 color: isToday ? Colors.black : Colors.white,
                                 fontSize: 12,
+                              ),
+                            ),
+                            Text(
+                              dayMonth,
+                              style: TextStyle(
+                                color: isToday ? Colors.black : Colors.white70,
+                                fontSize: 10,
                               ),
                             ),
                           ],
