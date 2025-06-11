@@ -1,6 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
+import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:nirva_app/api_models.dart';
+import 'package:nirva_app/data.dart';
 part 'hive_object.g.dart';
 
 // 本机存储的日记收藏列表
@@ -188,5 +190,21 @@ class JournalFileStorage extends HiveObject {
     // 创建文件
     final file = JournalFileStorage(fileName: fileName, content: content);
     return (file, meta);
+  }
+}
+
+// 任务列表的 Hive 存储结构
+@HiveType(typeId: 8)
+class HiveTasks extends HiveObject {
+  @HiveField(0)
+  List<String> taskJsonList;
+
+  HiveTasks({required this.taskJsonList});
+
+  // 获取所有任务
+  List<Task> toTasks() {
+    return taskJsonList
+        .map((jsonString) => Task.fromJson(jsonDecode(jsonString)))
+        .toList();
   }
 }

@@ -3,6 +3,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
 import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/api_models.dart';
+import 'package:nirva_app/data.dart';
+import 'dart:convert';
 
 class HiveStorage {
   // 现有的常量定义
@@ -22,6 +24,10 @@ class HiveStorage {
   static const String _journalIndexKey = 'journalIndex';
   static const String _journalFilesBox = 'journalFilesBox';
 
+  // 添加任务相关常量
+  static const String _tasksBox = 'tasksBox';
+  static const String _tasksKey = 'tasks';
+
   Future<void> _initialize() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
@@ -36,6 +42,7 @@ class HiveStorage {
     await Hive.deleteBoxFromDisk(_chatHistoryBox);
     await Hive.deleteBoxFromDisk(_journalIndexBox);
     await Hive.deleteBoxFromDisk(_journalFilesBox);
+    await Hive.deleteBoxFromDisk(_tasksBox); // 添加任务 Box 的删除
     await Hive.close();
     await Hive.deleteFromDisk();
   }
@@ -48,53 +55,8 @@ class HiveStorage {
       _initUserToken(),
       _initChatHistory(),
       _initJournalSystem(),
+      _initTasks(), // 添加任务存储初始化
     ]);
-  }
-
-  // 获取所有 Hive 数据的统计信息和内容
-  Map<String, dynamic> getAllData() {
-    final Map<String, dynamic> data = {};
-
-    // 获取收藏夹数据
-    if (Hive.isBoxOpen(_favoritesBox)) {
-      final favBox = Hive.box<Favorites>(_favoritesBox);
-      final favorites = favBox.get(_favoritesKey);
-      data['favorites'] = favorites;
-    }
-
-    // 获取用户令牌数据
-    if (Hive.isBoxOpen(_userTokenBox)) {
-      final tokenBox = Hive.box<UserToken>(_userTokenBox);
-      final token = tokenBox.get(_userTokenKey);
-      data['userToken'] = token;
-    }
-
-    // 获取聊天历史数据
-    if (Hive.isBoxOpen(_chatHistoryBox)) {
-      final chatBox = Hive.box<ChatHistory>(_chatHistoryBox);
-      final history = chatBox.get(_chatHistoryKey);
-      data['chatHistory'] = history;
-    }
-
-    // 获取日记索引数据
-    if (Hive.isBoxOpen(_journalIndexBox)) {
-      final indexBox = Hive.box<JournalFileIndex>(_journalIndexBox);
-      final index = indexBox.get(_journalIndexKey);
-      data['journalIndex'] = index;
-
-      // 添加日记文件计数
-      if (index != null) {
-        data['journalCount'] = index.files.length;
-      }
-    }
-
-    // 添加日记文件存储统计
-    if (Hive.isBoxOpen(_journalFilesBox)) {
-      final filesBox = Hive.box<JournalFileStorage>(_journalFilesBox);
-      data['journalFilesCount'] = filesBox.length;
-    }
-
-    return data;
   }
 
   // 初始化 DiaryFavorites 的 Box
@@ -152,6 +114,72 @@ class HiveStorage {
     if (!Hive.isBoxOpen(_journalFilesBox)) {
       await Hive.openBox<JournalFileStorage>(_journalFilesBox);
     }
+  }
+
+  // 添加任务存储的初始化方法
+  Future<void> _initTasks() async {
+    if (!Hive.isAdapterRegistered(8)) {
+      Hive.registerAdapter(HiveTasksAdapter());
+    }
+    if (!Hive.isBoxOpen(_tasksBox)) {
+      await Hive.openBox<HiveTasks>(_tasksBox);
+    }
+  }
+
+  // 获取所有 Hive 数据的统计信息和内容
+  Map<String, dynamic> getAllData() {
+    final Map<String, dynamic> data = {};
+
+    // 获取收藏夹数据
+    if (Hive.isBoxOpen(_favoritesBox)) {
+      final favBox = Hive.box<Favorites>(_favoritesBox);
+      final favorites = favBox.get(_favoritesKey);
+      data['favorites'] = favorites;
+    }
+
+    // 获取用户令牌数据
+    if (Hive.isBoxOpen(_userTokenBox)) {
+      final tokenBox = Hive.box<UserToken>(_userTokenBox);
+      final token = tokenBox.get(_userTokenKey);
+      data['userToken'] = token;
+    }
+
+    // 获取聊天历史数据
+    if (Hive.isBoxOpen(_chatHistoryBox)) {
+      final chatBox = Hive.box<ChatHistory>(_chatHistoryBox);
+      final history = chatBox.get(_chatHistoryKey);
+      data['chatHistory'] = history;
+    }
+
+    // 获取日记索引数据
+    if (Hive.isBoxOpen(_journalIndexBox)) {
+      final indexBox = Hive.box<JournalFileIndex>(_journalIndexBox);
+      final index = indexBox.get(_journalIndexKey);
+      data['journalIndex'] = index;
+
+      // 添加日记文件计数
+      if (index != null) {
+        data['journalCount'] = index.files.length;
+      }
+    }
+
+    // 添加日记文件存储统计
+    if (Hive.isBoxOpen(_journalFilesBox)) {
+      final filesBox = Hive.box<JournalFileStorage>(_journalFilesBox);
+      data['journalFilesCount'] = filesBox.length;
+    }
+
+    // 获取任务数据
+    if (Hive.isBoxOpen(_tasksBox)) {
+      final tasksBox = Hive.box<HiveTasks>(_tasksBox);
+      final tasks = tasksBox.get(_tasksKey);
+      data['tasks'] = tasks;
+      if (tasks != null) {
+        data['tasksCount'] = tasks.taskJsonList.length;
+      }
+    }
+
+    return data;
   }
 
   // 保存 DiaryFavorites 数据
@@ -313,5 +341,23 @@ class HiveStorage {
     await saveJournalIndex(index);
 
     return true;
+  }
+
+  // 获取所有任务
+  List<Task> getAllTasks() {
+    final box = Hive.box<HiveTasks>(_tasksBox);
+    final hiveTasks = box.get(_tasksKey);
+    if (hiveTasks == null) {
+      return [];
+    }
+    return hiveTasks.toTasks();
+  }
+
+  // 保存任务列表
+  Future<void> saveTasks(List<Task> tasks) async {
+    final box = Hive.box<HiveTasks>(_tasksBox);
+    final taskJsonList =
+        tasks.map((task) => jsonEncode(task.toJson())).toList();
+    await box.put(_tasksKey, HiveTasks(taskJsonList: taskJsonList));
   }
 }
