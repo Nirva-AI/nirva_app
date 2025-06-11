@@ -28,20 +28,17 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> quotes = [];
-    for (var event in AppRuntimeContext().currentJournalFile.events) {
-      quotes.add(event.action_item);
-    }
+    // List<String> quotes = [];
+    // for (var event in AppRuntimeContext().currentJournalFile.events) {
+    //   quotes.add(event.action_item);
+    // }
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 顶部引言卡片轮播
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: QuoteCarousel(quotes: quotes),
-          ),
+          Padding(padding: const EdgeInsets.all(16.0), child: QuoteCarousel()),
 
           // 添加日期标题栏组件
           _buildDateHeader(),

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-//import 'package:nirva_app/app_runtime_context.dart';
-//import 'package:nirva_app/data.dart';
+import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/data.dart';
 
 class QuoteCarousel extends StatefulWidget {
-  final List<String> quotes;
-
-  const QuoteCarousel({super.key, required this.quotes});
+  const QuoteCarousel({super.key});
 
   @override
   State<QuoteCarousel> createState() => _QuoteCarouselState();
@@ -13,30 +11,6 @@ class QuoteCarousel extends StatefulWidget {
 
 class _QuoteCarouselState extends State<QuoteCarousel> {
   int _currentPage = 0;
-  // final Map<int, LinearGradient> gradientMap = {};
-
-  // LinearGradient _randomGradient(String quote) {
-  //   if (!gradientMap.containsKey(quote.hashCode)) {
-  //     final colors = [
-  //       Colors.red,
-  //       Colors.green,
-  //       Colors.blue,
-  //       Colors.yellow,
-  //       Colors.purple,
-  //       Colors.orange,
-  //     ];
-  //     gradientMap[quote.hashCode] = LinearGradient(
-  //       colors: [
-  //         colors[quote.hashCode % colors.length],
-  //         colors[(quote.hashCode ~/ 2) % colors.length],
-  //       ],
-  //       begin: Alignment.topLeft,
-  //       end: Alignment.bottomRight,
-  //     );
-  //   }
-
-  //   return gradientMap[quote.hashCode]!;
-  // }
 
   // 返回固定的明亮渐变色
   LinearGradient _getGradient() {
@@ -52,19 +26,24 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    var quotes = AppRuntimeContext().currentJournalFile.genQuotes();
+    if (quotes.isEmpty) {
+      quotes = ['N/A'];
+    }
+
     return Column(
       children: [
         SizedBox(
           height: 150, // 设置卡片高度
           child: PageView.builder(
-            itemCount: widget.quotes.length,
+            itemCount: quotes.length,
             onPageChanged: (index) {
               setState(() {
                 _currentPage = index;
               });
             },
             itemBuilder: (context, index) {
-              final quote = widget.quotes[index];
+              final quote = quotes[index];
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8.0),
                 padding: const EdgeInsets.all(16.0),
@@ -91,7 +70,7 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
-            widget.quotes.length,
+            quotes.length,
             (index) => AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               margin: const EdgeInsets.symmetric(horizontal: 4.0),
