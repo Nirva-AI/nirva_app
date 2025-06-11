@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/month_calendar_widget.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 
 class MonthCalendarPage extends StatelessWidget {
   final DateTime initialFocusedDay;
@@ -15,6 +16,13 @@ class MonthCalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 示例：标记特定日期为红色
+    Set<DateTime> journalDates = {};
+    var allJournalFiles = AppRuntimeContext().allJournalFiles;
+    for (var file in allJournalFiles) {
+      DateTime date = DateTime.parse(file.time_stamp);
+      journalDates.add(date);
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar'),
@@ -33,6 +41,7 @@ class MonthCalendarPage extends StatelessWidget {
             onDaySelected(selectedDay, focusedDay);
             Navigator.pop(context); // 选中日期后返回上一页
           },
+          redMarkedDays: journalDates, // 传入需要标红的日期
         ),
       ),
     );
