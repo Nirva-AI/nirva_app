@@ -17,7 +17,7 @@ class SmartDiaryPage extends StatefulWidget {
 class _SmartDiaryPageState extends State<SmartDiaryPage> {
   late DateTime _focusedDay;
   DateTime? _selectedDay;
-  bool _isFavorite = false; // 新增成员变量，表示收藏状态
+  bool _isFavorite = false;
 
   @override
   void initState() {
@@ -28,10 +28,13 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // List<String> quotes = [];
-    // for (var event in AppRuntimeContext().currentJournalFile.events) {
-    //   quotes.add(event.action_item);
-    // }
+    // 示例：标记特定日期为红色
+    Set<DateTime> journalDates = {};
+    var allJournalFiles = AppRuntimeContext().allJournalFiles;
+    for (var file in allJournalFiles) {
+      DateTime date = DateTime.parse(file.time_stamp);
+      journalDates.add(date);
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -50,14 +53,12 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
               focusedDay: _focusedDay,
               selectedDay: _selectedDay,
               onDaySelected: _updateSelectedDay,
+              redMarkedDays: journalDates, // 传入需要标红的日期
             ),
           ),
 
           // 动态展示日记条目
-          _buildEventList(
-            //AppRuntimeContext().data.currentJournal.diaryEntries,
-            AppRuntimeContext().currentJournalFile.events,
-          ),
+          _buildEventList(AppRuntimeContext().currentJournalFile.events),
         ],
       ),
     );
