@@ -2,9 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
+class SlidingChartData {
+  final DateTime date;
+  final double value;
+
+  SlidingChartData({required this.date, required this.value});
+
+  // 生成测试数据
+  static const daysToShow = 14;
+  static List<SlidingChartData> generateSlidingChartSamples(
+    DateTime startDate,
+    int days,
+  ) {
+    final now = startDate;
+    final List<SlidingChartData> data = [];
+
+    // 生成包含今天在内的过去14天数据
+    for (int i = days; i > 0; i--) {
+      final date = now.subtract(Duration(days: i));
+
+      // 生成一些模拟的睡眠数据 (6-10小时范围内的随机值)
+      final sleepHours = 6.0 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0);
+
+      data.add(SlidingChartData(date: date, value: sleepHours));
+    }
+
+    return data;
+  }
+}
+
 class SlidingLineChart extends StatefulWidget {
   final List<SlidingChartData> initialData;
-  final int daysToShow; // 初始显示的天数
   final double minY;
   final double maxY;
   final Color lineColor;
@@ -12,7 +40,6 @@ class SlidingLineChart extends StatefulWidget {
   const SlidingLineChart({
     super.key,
     required this.initialData,
-    this.daysToShow = 14, // 默认显示两周数据
     this.minY = 0,
     this.maxY = 12, // 假设最大值为12小时
     this.lineColor = Colors.white,
@@ -36,7 +63,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     _scrollController = ScrollController();
 
     // 计算图表宽度，每天分配一个固定宽度
-    _chartWidth = widget.daysToShow * _defaultChartWidth; // 每天60逻辑像素宽度
+    _chartWidth =
+        SlidingChartData.daysToShow * _defaultChartWidth; // 每天60逻辑像素宽度
 
     // 在初始化后滚动到最右侧（最新数据）
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,9 +89,13 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
       setState(() {
         final oldestDate = _chartData.first.date;
         List<SlidingChartData> moreData =
-            SlidingChartData.generateSlidingChartSamples(oldestDate, 7);
+            SlidingChartData.generateSlidingChartSamples(
+              oldestDate,
+              SlidingChartData.daysToShow,
+            );
         _chartData.insertAll(0, moreData.toList());
-        _chartWidth += 7 * _defaultChartWidth; // 为新添加的7天增加宽度
+        _chartWidth +=
+            SlidingChartData.daysToShow * _defaultChartWidth; // 为新添加的14天增加宽度
       });
     }
   }
@@ -140,12 +172,6 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                       if (index < 0 || index >= _chartData.length) {
                         return const SizedBox.shrink();
                       }
-
-                      // 可以选择每几个数据点显示一个标签
-                      // if (index % 2 != 0) {
-                      //   // 仅显示偶数索引的标签
-                      //   return const SizedBox.shrink();
-                      // }
 
                       final date = _chartData[index].date;
                       final isToday = _isToday(date);
@@ -242,34 +268,6 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   }
 }
 
-class SlidingChartData {
-  final DateTime date;
-  final double value;
-
-  SlidingChartData({required this.date, required this.value});
-
-  // 生成测试数据
-  static List<SlidingChartData> generateSlidingChartSamples(
-    DateTime startDate,
-    int days,
-  ) {
-    final now = startDate;
-    final List<SlidingChartData> data = [];
-
-    // 生成包含今天在内的过去14天数据
-    for (int i = days; i > 0; i--) {
-      final date = now.subtract(Duration(days: i));
-
-      // 生成一些模拟的睡眠数据 (6-10小时范围内的随机值)
-      final sleepHours = 6.0 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0);
-
-      data.add(SlidingChartData(date: date, value: sleepHours));
-    }
-
-    return data;
-  }
-}
-
 class TestChartApp extends StatelessWidget {
   const TestChartApp({super.key});
 
@@ -302,8 +300,11 @@ class _TestChartPageState extends State<TestChartPage> {
       date: now,
       value: 7.5, // 假设今天的睡眠时间为7.5小时
     );
-    final last7daysData = SlidingChartData.generateSlidingChartSamples(now, 7);
-    return last7daysData + [todayData];
+    final last14daysData = SlidingChartData.generateSlidingChartSamples(
+      now,
+      SlidingChartData.daysToShow,
+    );
+    return last14daysData + [todayData];
   }
 
   @override
