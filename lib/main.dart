@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 //import 'package:nirva_app/hive_object.dart';
-import 'package:nirva_app/main_app.dart';
+//import 'package:nirva_app/main_app.dart';
 import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
 //import 'package:nirva_app/test_calendar_app.dart';
 //import 'package:nirva_app/hive_data.dart';
 //import 'package:nirva_app/test_file_access_app.dart'; // 添加这一行
+import 'package:nirva_app/test_chart_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
@@ -16,7 +17,7 @@ void main() async {
   await initializeApp();
 
   // 运行核心应用
-  runApp(const MainApp());
+  //runApp(const MainApp());
   //如果需要测试应用，可以取消下面的注释，下面会进入测试应用，隔离主应用进行专项测试
   //runApp(TestChatApp());
   //如果需要测试图形视图，可以取消下面的注释，下面会进入测试应用，隔离主应用进行专项测试
@@ -25,6 +26,8 @@ void main() async {
   //runApp(const TestCalendarApp());
   //如果需要测试iOS文件应用访问，可以取消下面的注释
   //runApp(const TestFileAccessApp());
+  // 如果需要测试图表，可以取消下面的注释
+  runApp(const TestChartApp());
 }
 
 Future<void> initializeApp() async {
