@@ -1,12 +1,14 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
 class SlidingChartData {
+  static final random = Random();
   final DateTime date;
-  final double value;
+  final double? value; // 修改为可空类型
 
-  SlidingChartData({required this.date, required this.value});
+  SlidingChartData({required this.date, this.value});
 
   static int daysToShow(DateTime startDate) {
     // 计算去年同月同日的日期
@@ -38,14 +40,19 @@ class SlidingChartData {
     // 从去年同日开始，生成每一天的数据
     for (int i = 0; i <= daysBetween; i++) {
       final date = lastYearSameDate.add(Duration(days: i));
-
-      // 生成一些模拟的睡眠数据 (6-10小时范围内的随机值)
-      final sleepHours = 6.0 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0);
-
-      data.add(SlidingChartData(date: date, value: sleepHours));
+      data.add(SlidingChartData(date: date, value: genRandomValue(date)));
     }
 
     return data;
+  }
+
+  static double? genRandomValue(DateTime date) {
+    // 有10%的概率返回null，模拟数据缺失
+    if (random.nextDouble() < 0.1) {
+      return null; // 模拟数据缺失
+    }
+    // 生成一个0到12之间的随机值
+    return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
   }
 }
 
@@ -199,30 +206,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                   ),
                 ),
               ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: _getSpots(),
-                  isCurved: true,
-                  barWidth: 3,
-                  color: widget.lineColor,
-                  dotData: FlDotData(
-                    show: true,
-                    getDotPainter: (spot, percent, barData, index) {
-                      // 找出这个点对应的日期
-                      final date = _chartData[index].date;
-                      final isToday = _isToday(date);
-
-                      return FlDotCirclePainter(
-                        radius: isToday ? 8 : 4,
-                        color: Colors.white,
-                        strokeColor:
-                            isToday ? Colors.white : Colors.transparent,
-                        strokeWidth: 2,
-                      );
-                    },
-                  ),
-                ),
-              ],
+              lineBarsData: _getLineChartBars(),
             ),
           ),
         ),
@@ -230,10 +214,52 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     );
   }
 
-  List<FlSpot> _getSpots() {
-    return _chartData.asMap().entries.map((entry) {
-      return FlSpot(entry.key.toDouble(), entry.value.value);
-    }).toList();
+  List<LineChartBarData> _getLineChartBars() {
+    List<LineChartBarData> result = [];
+    List<FlSpot> currentSegment = [];
+
+    for (int i = 0; i < _chartData.length; i++) {
+      if (_chartData[i].value != null) {
+        // 有数据的点，添加到当前线段
+        currentSegment.add(FlSpot(i.toDouble(), _chartData[i].value!));
+      } else if (currentSegment.isNotEmpty) {
+        // 遇到空值且当前线段不为空，结束当前线段
+        result.add(_createLineChartBarData(currentSegment));
+        currentSegment = [];
+      }
+    }
+
+    // 添加最后一段线段(如果有)
+    if (currentSegment.isNotEmpty) {
+      result.add(_createLineChartBarData(currentSegment));
+    }
+
+    return result;
+  }
+
+  LineChartBarData _createLineChartBarData(List<FlSpot> spots) {
+    return LineChartBarData(
+      spots: List.from(spots), // 创建副本避免引用问题
+      isCurved: true,
+      barWidth: 3,
+      color: widget.lineColor,
+      dotData: FlDotData(
+        show: true,
+        getDotPainter: (spot, percent, barData, index) {
+          // 找到对应原始数据的索引
+          int originalIndex = spot.x.toInt();
+          final date = _chartData[originalIndex].date;
+          final isToday = _isToday(date);
+
+          return FlDotCirclePainter(
+            radius: isToday ? 8 : 4,
+            color: Colors.white,
+            strokeColor: isToday ? Colors.white : Colors.transparent,
+            strokeWidth: 2,
+          );
+        },
+      ),
+    );
   }
 
   bool _isToday(DateTime date) {
@@ -250,7 +276,7 @@ class TestChartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '测试图表',
+      //title: '测试图表',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -278,7 +304,10 @@ class _TestChartPageState extends State<TestChartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('睡眠时间图表'), backgroundColor: Colors.grey),
+      appBar: AppBar(
+        title: const Text('Sliding Chart'),
+        backgroundColor: Colors.grey,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
