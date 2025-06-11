@@ -94,20 +94,20 @@ class TestData {
   }
 
   // 添加日记的最爱数据
-  static void initializeTestFavorites(JournalFile journalFile) {
-    // 设置测试数据
-    List<EventAnalysis> events = journalFile.events;
+  // static void initializeTestFavorites(JournalFile journalFile) {
+  //   // 设置测试数据
+  //   List<EventAnalysis> events = journalFile.events;
 
-    //
-    if (events.isNotEmpty) {
-      EventAnalysis randomEvent = events[random.nextInt(events.length)];
-      debugPrint('随机选中的日记: ${randomEvent.event_title}');
-      AppRuntimeContext().data.favorites.value = [randomEvent.event_id];
-      debugPrint('已添加到最爱: ${randomEvent.event_id}');
-    } else {
-      debugPrint('diaryEntries 列表为空');
-    }
-  }
+  //   //
+  //   if (events.isNotEmpty) {
+  //     EventAnalysis randomEvent = events[random.nextInt(events.length)];
+  //     debugPrint('随机选中的日记: ${randomEvent.event_title}');
+  //     AppRuntimeContext().data.favorites.value = [randomEvent.event_id];
+  //     debugPrint('已添加到最爱: ${randomEvent.event_id}');
+  //   } else {
+  //     debugPrint('diaryEntries 列表为空');
+  //   }
+  // }
 
   // 添加日记的笔记数据
   static void initializeTestMyNotes(JournalFile journalFile) {

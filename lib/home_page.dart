@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
@@ -19,7 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // 使用枚举类型替代整数
-  HomePageNavigationType _selectedPage = HomePageNavigationType.reflection;
+  HomePageNavigationType _selectedPage = HomePageNavigationType.smartDiary;
 
   final TextEditingController _textController = TextEditingController();
 
@@ -103,6 +104,7 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.checklist),
               onPressed: () {
                 debugPrint('to-do list');
+                AppRuntimeContext().data.clearCompletedTasks();
                 _showToDoList(context);
               },
             ),

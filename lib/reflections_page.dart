@@ -106,24 +106,30 @@ class _ReflectionCardState extends State<ReflectionCard> {
   }
 }
 
-class GoalCard extends StatelessWidget {
+class GoalCard extends StatefulWidget {
   final String title;
   final List<String> contents;
 
   const GoalCard({super.key, required this.title, required this.contents});
 
+  @override
+  State<GoalCard> createState() => _GoalCardState();
+}
+
+class _GoalCardState extends State<GoalCard> {
+  // 添加一个全局的 key 用于获取 overlay
+  //final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   String get parsedContent {
-    if (contents.isEmpty) {
+    if (widget.contents.isEmpty) {
       return '';
     }
 
-    if (contents.length == 1) {
-      return contents.first; // 如果只有一个内容，直接返回
+    if (widget.contents.length == 1) {
+      return widget.contents.first;
     }
 
-    return contents
-        .map((content) => "- $content") // 每个内容前添加一个破折号
-        .join('\n'); // 使用换行符连接所有内容
+    return widget.contents.map((content) => "- $content").join('\n');
   }
 
   @override
@@ -137,11 +143,11 @@ class GoalCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // 两端对齐
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
-                    title,
+                    widget.title,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -150,15 +156,11 @@ class GoalCard extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.checklist, color: Colors.purple),
-                  onPressed: () {
-                    _addTaskToTodoList();
-                    _showTopOverlay(context, title, parsedContent);
-                  },
+                  onPressed: _handleAddTask,
                 ),
               ],
             ),
             const SizedBox(height: 8),
-
             Row(
               children: [
                 const SizedBox(width: 8),
@@ -171,67 +173,48 @@ class GoalCard extends StatelessWidget {
     );
   }
 
-  void _addTaskToTodoList() {
-    // 添加任务到待办列表的逻辑
-    debugPrint('Task added: $title');
-    for (var content in contents) {
-      AppRuntimeContext().data.addTask(title, content);
+  void _handleAddTask() {
+    _addTaskToTodoList().then((_) {
+      if (mounted) {
+        // 使用 SnackBar 替代自定义 overlay
+        _showAddedNotification();
+      }
+    });
+  }
+
+  Future<void> _addTaskToTodoList() async {
+    // 原有实现保持不变
+    debugPrint('Task added: ${widget.title}');
+    bool hasChanged = false;
+    for (var content in widget.contents) {
+      if (AppRuntimeContext().data.hasTask(widget.title, content)) {
+        // 如果任务已存在，则不添加
+        continue;
+      }
+      AppRuntimeContext().data.addTask(widget.title, content);
+      hasChanged = true;
+    }
+
+    if (hasChanged) {
+      await AppRuntimeContext().storage.saveTasks(
+        AppRuntimeContext().data.tasks.value,
+      );
     }
   }
 
-  // 封装的 _showTopOverlay 函数
-  void _showTopOverlay(BuildContext context, String title, String content) {
-    final overlay = Overlay.of(context);
-    final overlayEntry = OverlayEntry(
-      builder:
-          (context) => Positioned(
-            top: kToolbarHeight, // 设置为 AppBar 的高度
-            left: 16, // 添加左右边距
-            right: 16,
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.0), // 设置圆角
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha((0.1 * 255).toInt()),
-                      blurRadius: 8.0,
-                      offset: const Offset(0, 4), // 阴影偏移
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Added to todo list',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '"$title" have been added to your todo list.',
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+  // 替换原有的 _showTopOverlay 方法
+  void _showAddedNotification() {
+    final snackBar = SnackBar(
+      content: Text('"${widget.title}" has been added to your todo list.'),
+      backgroundColor: Colors.grey.shade800,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      duration: const Duration(seconds: 2),
     );
 
-    // 显示 Overlay
-    overlay.insert(overlayEntry);
-
-    // 自动移除 Overlay
-    Future.delayed(const Duration(seconds: 2), () {
-      overlayEntry.remove();
-    });
+    // 使用当前的 context，这是安全的，因为我们已经检查了 mounted
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 

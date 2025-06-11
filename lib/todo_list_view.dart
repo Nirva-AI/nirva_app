@@ -33,14 +33,18 @@ class _TodoListViewState extends State<TodoListView> {
                     const Text(
                       'To-Do List',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.of(context).pop();
+
+                        await AppRuntimeContext().storage.saveTasks(
+                          AppRuntimeContext().data.tasks.value,
+                        );
                       },
                     ),
                   ],
@@ -70,12 +74,15 @@ class _TodoListViewState extends State<TodoListView> {
                             const SizedBox(height: 8),
                             ...tasks.map((task) {
                               return InkWell(
-                                onTap: () {
+                                onTap: () async {
                                   setState(() {
                                     AppRuntimeContext().data.switchTaskStatus(
                                       task,
                                     );
                                   });
+                                  await AppRuntimeContext().storage.saveTasks(
+                                    AppRuntimeContext().data.tasks.value,
+                                  );
                                   debugPrint(
                                     'Task tapped: ${task.description}',
                                   );
@@ -95,7 +102,7 @@ class _TodoListViewState extends State<TodoListView> {
                                           task.isCompleted
                                               ? Colors.green
                                               : Colors.red,
-                                      fontSize: 13,
+                                      fontSize: 14,
                                       decoration:
                                           task.isCompleted
                                               ? TextDecoration.lineThrough
@@ -111,15 +118,15 @@ class _TodoListViewState extends State<TodoListView> {
                       }).toList(),
                 ),
               ),
-              const Divider(),
-              // 添加新任务按钮
-              ListTile(
-                leading: const Icon(Icons.add),
-                title: const Text('Add New Task'),
-                onTap: () {
-                  debugPrint('Add New Task tapped');
-                },
-              ),
+              // const Divider(),
+              // // 添加新任务按钮
+              // ListTile(
+              //   leading: const Icon(Icons.add),
+              //   title: const Text('Add New Task'),
+              //   onTap: () {
+              //     debugPrint('Add New Task tapped');
+              //   },
+              // ),
             ],
           ),
         ),
