@@ -45,7 +45,7 @@ class SocialInteractionsCard extends StatelessWidget {
     final totalHours = AppRuntimeContext().getTotalSocialHours();
     // 获取全局社交实体映射
     final Map<String, SocialEntity2> globalSocialMap =
-        AppRuntimeContext().genGlobalSocialEntitiesMap();
+        AppRuntimeContext().buildSocialMap();
 
     // 将globalSocialMap中的value全部取出来，存成一个List
     final List<SocialEntity2> socialEntities = globalSocialMap.values.toList();
@@ -175,7 +175,7 @@ class RelationshipDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Map<String, SocialEntity2> globalSocialMap =
-        AppRuntimeContext().genGlobalSocialEntitiesMap();
+        AppRuntimeContext().buildSocialMap();
     final List<SocialEntity2> socialEntities = globalSocialMap.values.toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

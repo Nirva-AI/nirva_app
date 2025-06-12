@@ -25,8 +25,14 @@ class AppRuntimeContext {
     _instance = AppRuntimeContext._internal();
   }
 
+  // 当前选中的日期时间
   DateTime _selectedDateTime = DateTime.now();
+
+  // 当前的日记文件
   JournalFile? _currentJournalFile;
+
+  // 空的日记文件实例
+  final emptyJournalFile = JournalFile.createEmpty();
 
   // 数据管理器实例
   final RuntimeData _data = RuntimeData();
@@ -43,7 +49,7 @@ class AppRuntimeContext {
   // 用于基础app服务的 Dio 实例
   final Dio _appserviceDio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.192.59:8000',
+        baseUrl: 'http://192.168.2.70:8000',
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -86,8 +92,8 @@ class AppRuntimeContext {
 
   // 获取当前的日记文件。
   JournalFile get currentJournalFile {
-    return _currentJournalFile ??
-        JournalFile.createEmpty(); // 如果没有绑定，则返回一个空的日记文件
+    return _currentJournalFile ?? emptyJournalFile;
+    //JournalFile.createEmpty(); // 如果没有绑定，则返回一个空的日记文件
   }
 
   //
@@ -98,40 +104,24 @@ class AppRuntimeContext {
   //
   void selectDateTime(DateTime dateTime) {
     _selectedDateTime = dateTime;
-    _sortJournalFilesByDate();
-    _associateActiveJournalFile();
+    _data.sortJournalFilesByDate();
+    _onActiveJournalFile();
   }
 
   //
   void addJournalFile(JournalFile journalFile) {
-    _data.journalFiles.value = [..._data.journalFiles.value, journalFile];
-    _sortJournalFilesByDate();
-    _associateActiveJournalFile();
+    _data.setupJournalFiles(journalFiles + [journalFile]);
+    _onActiveJournalFile();
   }
 
   //
   void initializeJournalFiles(List<JournalFile> files) {
-    _data.journalFiles.value = files;
-    _sortJournalFilesByDate();
-    _associateActiveJournalFile();
+    _data.setupJournalFiles(files);
+    _onActiveJournalFile();
   }
 
   //
-  List<JournalFile> _sortJournalFilesByDate() {
-    // 按照时间戳排序日记文件
-    return _data.journalFiles.value
-        .where((file) => file.time_stamp.isNotEmpty)
-        .toList()
-      ..sort(
-        (a, b) => DateTime.parse(
-          a.time_stamp,
-        ).compareTo(DateTime.parse(b.time_stamp)),
-      );
-  }
-
-  //
-  void _associateActiveJournalFile() {
-    // 绑定当前的日记文件
+  void _onActiveJournalFile() {
     _currentJournalFile = null;
     for (var journalFile in journalFiles) {
       if (journalFile.time_stamp ==
@@ -144,12 +134,12 @@ class AppRuntimeContext {
   //
   List<JournalFile> get journalFiles {
     // 获取所有的日记文件
-    return data.journalFiles.value;
+    return _data.journalFiles.value;
   }
 
   //
   // 获取当前的社交地图
-  Map<String, SocialEntity2> genGlobalSocialEntitiesMap() {
+  Map<String, SocialEntity2> buildSocialMap() {
     // 获取全局社交实体的映射
     final Map<String, SocialEntity2> map = {};
     for (var journalFile in journalFiles) {
@@ -170,7 +160,7 @@ class AppRuntimeContext {
   double getTotalSocialHours() {
     // 计算全局社交时间
     double totalHours = 0;
-    final global = genGlobalSocialEntitiesMap();
+    final global = buildSocialMap();
     for (var entity in global.values) {
       totalHours += entity.hours;
     }
