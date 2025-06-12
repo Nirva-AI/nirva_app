@@ -52,7 +52,8 @@ class SlidingChartData {
       return null; // 模拟数据缺失
     }
     // 生成一个0到12之间的随机值
-    return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
+    return 12;
+    //return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
   }
 }
 
@@ -103,168 +104,119 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     super.dispose();
   }
 
-  // 当滚动到左侧边缘时加载更多历史数据
-  void _onScrollUpdate() {}
-
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         // 滚动图表(不包含右侧刻度)
-        NotificationListener<ScrollNotification>(
-          onNotification: (scrollNotification) {
-            if (scrollNotification is ScrollUpdateNotification) {
-              _onScrollUpdate();
-            }
-            return false;
-          },
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            physics: const ClampingScrollPhysics(),
-            child: Container(
-              width: chartWidth,
-              height: 300,
-              padding: EdgeInsets.only(
-                left: 16,
-                top: 16,
-                bottom: 16,
-                right: 52,
-              ), // 右侧留出空间
-              child: LineChart(
-                LineChartData(
-                  minX: 0,
-                  maxX: _chartData.length.toDouble() - 1,
-                  minY: widget.minY,
-                  maxY: widget.maxY,
-                  lineTouchData: LineTouchData(enabled: false),
-                  gridData: FlGridData(
-                    show: true,
-                    horizontalInterval: 2,
-                    drawHorizontalLine: true,
-                    drawVerticalLine: false,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Color.fromRGBO(255, 255, 255, 0.2),
-                        strokeWidth: 1,
-                        dashArray: [5, 5],
-                      );
-                    },
-                  ),
-                  borderData: FlBorderData(show: false),
-                  titlesData: FlTitlesData(
-                    // 禁用右侧刻度
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 45,
-                        interval: 1, // 确保每个数据点之间有固定间隔
-                        getTitlesWidget: (value, meta) {
-                          final index = value.toInt();
-                          if (index < 0 || index >= _chartData.length) {
-                            return const SizedBox.shrink();
-                          }
-
-                          final date = _chartData[index].date;
-                          final isToday = _isToday(date);
-
-                          // 获取星期几的简写
-                          String weekday = DateFormat('E').format(date);
-                          // 添加日期信息，更清晰地识别不同日期
-                          String dayMonth = DateFormat('d/M').format(date);
-
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  isToday ? Colors.white : Colors.transparent,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  weekday,
-                                  style: TextStyle(
-                                    color:
-                                        isToday ? Colors.black : Colors.white,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                Text(
-                                  dayMonth,
-                                  style: TextStyle(
-                                    color:
-                                        isToday ? Colors.black : Colors.white70,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  lineBarsData: _getLineChartBars(),
+        SingleChildScrollView(
+          controller: _scrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const ClampingScrollPhysics(),
+          child: Container(
+            width: chartWidth,
+            height: 300,
+            padding: EdgeInsets.only(
+              left: 16,
+              top: 16,
+              bottom: 16,
+              right: 16,
+            ), // 右侧留出空间
+            child: LineChart(
+              LineChartData(
+                minX: 0,
+                maxX: _chartData.length.toDouble() - 1,
+                minY: widget.minY,
+                maxY: widget.maxY,
+                lineTouchData: LineTouchData(enabled: false),
+                gridData: FlGridData(
+                  show: true,
+                  horizontalInterval: 2,
+                  drawHorizontalLine: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Color.fromRGBO(255, 255, 255, 0.2),
+                      strokeWidth: 1,
+                      dashArray: [5, 5],
+                    );
+                  },
                 ),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  // 禁用右侧刻度
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 45,
+                      interval: 1, // 确保每个数据点之间有固定间隔
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index < 0 || index >= _chartData.length) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final date = _chartData[index].date;
+                        final isToday = _isToday(date);
+
+                        // 获取星期几的简写
+                        String weekday = DateFormat('E').format(date);
+                        // 添加日期信息，更清晰地识别不同日期
+                        String dayMonth = DateFormat('d/M').format(date);
+
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isToday ? Colors.white : Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                weekday,
+                                style: TextStyle(
+                                  color: isToday ? Colors.black : Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              Text(
+                                dayMonth,
+                                style: TextStyle(
+                                  color:
+                                      isToday ? Colors.black : Colors.white70,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                lineBarsData:
+                    _getLineChartBars(), // 正确位置在这里，作为LineChartData的直接属性
               ),
             ),
           ),
-        ),
-
-        // 固定在右侧的刻度
-        Positioned(
-          right: 8, // 调整位置以适应您的布局
-          top: 16,
-          // bottom: 16,
-          child: _buildFixedYAxisTitles(),
         ),
       ],
     );
   }
 
   // 创建固定的Y轴刻度
-  Widget _buildFixedYAxisTitles() {
-    return SizedBox(
-      width: 36, // 和原来的reservedSize一致
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: List.generate((widget.maxY / 2).ceil(), (index) {
-          // 从maxY开始向下计算刻度值
-          final value = widget.maxY - index * 2;
-          // 只显示整数刻度值
-          if (value >= widget.minY && value % 2 == 0) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                '${value.toInt()}h',
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        }),
-      ),
-    );
-  }
-
   List<LineChartBarData> _getLineChartBars() {
     List<LineChartBarData> result = [];
     List<FlSpot> currentSegment = [];
@@ -364,7 +316,6 @@ class _TestChartPageState extends State<TestChartPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Divider(color: Colors.white24, thickness: 1),
             SizedBox(
               height: 300,
               child: SlidingLineChart(
