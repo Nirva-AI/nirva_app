@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 //import 'package:nirva_app/data.dart';
-//import 'package:nirva_app/energy_level_details_page.dart'; // 导入新页面
+import 'package:nirva_app/energy_level_details_page.dart'; // 导入新页面
 import 'package:nirva_app/utils.dart';
 
 class EnergyLabel {
@@ -130,18 +130,18 @@ class EnergyLevelCard extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                // const Spacer(), // 添加Spacer将按钮推到最右侧
-                // IconButton(
-                //   icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                //   onPressed: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => EnergyLevelDetailsPage(),
-                //       ),
-                //     );
-                //   },
-                // ),
+                const Spacer(), // 添加Spacer将按钮推到最右侧
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EnergyLevelDetailsPage(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 16),
