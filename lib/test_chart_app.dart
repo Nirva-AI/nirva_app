@@ -50,7 +50,6 @@ class SlidingChartData {
     if (random.nextDouble() < 0.1) {
       return null; // 模拟数据缺失
     }
-    //return 12;
     return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
   }
 }
@@ -122,7 +121,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                     left: 16,
                     top: 16,
                     bottom: 16,
-                    right: 0,
+                    right: 16,
                   ),
                   child: LineChart(
                     LineChartData(
@@ -243,10 +242,9 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
               ),
             ),
             //右侧预留固定宽度区域
-            Container(
+            SizedBox(
               width: 40,
               height: 300,
-              color: Colors.blue, // 半透明蓝色
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
@@ -254,10 +252,36 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                     top: 16.0,
                     bottom: 16.0 + 45.0,
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.yellow, width: 2.0),
-                    ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final containerHeight = constraints.maxHeight;
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.yellow, width: 2.0),
+                        ),
+                        child: Stack(
+                          children: [
+                            // 刻度值 10
+                            Positioned(
+                              top: _calculateYPosition(
+                                10,
+                                widget.minY,
+                                widget.maxY,
+                                containerHeight,
+                              ),
+                              child: const Text(
+                                '10',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            // 其他刻度...
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -322,6 +346,21 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     return date.year == now.year &&
         date.month == now.month &&
         date.day == now.day;
+  }
+
+  // 计算刻度值在Y轴上的位置
+  double _calculateYPosition(
+    double value,
+    double minY,
+    double maxY, [
+    double containerHeight = 219,
+  ]) {
+    // 容器总高度
+    // final double containerHeight = 219; //300 - 16.0 - (16.0 + 45.0);
+    // 反转Y轴映射(因为Flutter绘制坐标是从上到下)
+    final double heightRatio = 1.0 - (value - minY) / (maxY - minY);
+    // 计算位置
+    return containerHeight * heightRatio;
   }
 }
 
