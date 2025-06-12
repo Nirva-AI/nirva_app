@@ -10,6 +10,7 @@ class SlidingChartData {
   static List<double> yAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
   static const double unitWidth = 50.0;
 
+  /// 生成的图表数据
   final DateTime date;
   final double? value;
 
@@ -46,14 +47,20 @@ class SlidingChartData {
     if (random.nextDouble() < 0.1) {
       return null;
     }
+
     return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
   }
 }
 
 class SlidingLineChart extends StatefulWidget {
   final Color lineColor;
+  final double settingHeight;
 
-  const SlidingLineChart({super.key, this.lineColor = Colors.white});
+  const SlidingLineChart({
+    super.key,
+    required this.settingHeight,
+    this.lineColor = Colors.white,
+  });
 
   @override
   State<SlidingLineChart> createState() => _SlidingLineChartState();
@@ -101,7 +108,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                 physics: const ClampingScrollPhysics(),
                 child: Container(
                   width: chartWidth,
-                  height: 300,
+                  height: widget.settingHeight,
                   padding: const EdgeInsets.only(
                     left: 16,
                     top: 16,
@@ -210,7 +217,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
             ),
             SizedBox(
               width: 40,
-              height: 300,
+              height: widget.settingHeight,
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
@@ -375,6 +382,7 @@ class TestChartPage extends StatefulWidget {
 class _TestChartPageState extends State<TestChartPage> {
   @override
   Widget build(BuildContext context) {
+    final double settingHeight = 400;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sliding Chart'),
@@ -386,8 +394,11 @@ class _TestChartPageState extends State<TestChartPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 300,
-              child: SlidingLineChart(lineColor: Colors.white),
+              height: settingHeight,
+              child: SlidingLineChart(
+                lineColor: Colors.white,
+                settingHeight: settingHeight,
+              ),
             ),
           ],
         ),
