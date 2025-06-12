@@ -7,9 +7,17 @@ import 'dart:math';
 
 class Dashboard2 {
   static final random = Random();
+
+  //
   static const double moodScoreMinY = 0;
   static const double moodScoreMaxY = 12;
   static List<double> moodScoreYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
+
+  //
+  static const double stressLevelMinY = 0;
+  static const double stressLevelMaxY = 12;
+  static List<double> stressLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
+
   //
   final DateTime dateTime;
   JournalFile? journalFile;
