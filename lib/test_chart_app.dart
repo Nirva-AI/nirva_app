@@ -76,7 +76,7 @@ class SlidingLineChart extends StatefulWidget {
 class _SlidingLineChartState extends State<SlidingLineChart> {
   late ScrollController _scrollController;
   late List<SlidingChartData> _chartData;
-  static const double _defaultChartWidth = 45.0; // 每天的默认宽度
+  static const double _defaultChartWidth = 50.0; // 每天的默认宽度
 
   double get chartWidth {
     return SlidingChartData.daysToShow(DateTime.now()) *
@@ -245,8 +245,22 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
             //右侧预留固定宽度区域
             Container(
               width: 40,
-              height: 300 - 32,
+              height: 300,
               color: Colors.blue, // 半透明蓝色
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 16.0,
+                    bottom: 16.0 + 45.0,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.yellow, width: 2.0),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
