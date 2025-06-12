@@ -282,53 +282,53 @@ class LegacyJournal with _$LegacyJournal {
 //   }
 // }
 
-@freezed
-class MoodScoreDashboard with _$MoodScoreDashboard {
-  const factory MoodScoreDashboard({
-    required List<String> insights,
-    required List<double> scores,
-    required List<double> day,
-    required List<double> week,
-    required List<double> month,
-  }) = _MoodScoreDashboard;
+// @freezed
+// class MoodScoreDashboard with _$MoodScoreDashboard {
+//   const factory MoodScoreDashboard({
+//     required List<String> insights,
+//     required List<double> scores,
+//     required List<double> day,
+//     required List<double> week,
+//     required List<double> month,
+//   }) = _MoodScoreDashboard;
 
-  factory MoodScoreDashboard.fromJson(Map<String, dynamic> json) =>
-      _$MoodScoreDashboardFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _MoodScoreDashboard).toJson();
-}
+//   factory MoodScoreDashboard.fromJson(Map<String, dynamic> json) =>
+//       _$MoodScoreDashboardFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _MoodScoreDashboard).toJson();
+// }
 
-@freezed
-class StressLevelDashboard with _$StressLevelDashboard {
-  const factory StressLevelDashboard({
-    required List<String> insights,
-    required List<double> scores,
-    required List<double> day,
-    required List<double> week,
-    required List<double> month,
-  }) = _StressLevelDashboard;
+// @freezed
+// class StressLevelDashboard with _$StressLevelDashboard {
+//   const factory StressLevelDashboard({
+//     required List<String> insights,
+//     required List<double> scores,
+//     required List<double> day,
+//     required List<double> week,
+//     required List<double> month,
+//   }) = _StressLevelDashboard;
 
-  factory StressLevelDashboard.fromJson(Map<String, dynamic> json) =>
-      _$StressLevelDashboardFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _StressLevelDashboard).toJson();
-}
+//   factory StressLevelDashboard.fromJson(Map<String, dynamic> json) =>
+//       _$StressLevelDashboardFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _StressLevelDashboard).toJson();
+// }
 
-@freezed
-class EnergyLevelDashboard with _$EnergyLevelDashboard {
-  const factory EnergyLevelDashboard({
-    required List<String> insights,
-    required List<double> scores,
-    required List<double> day,
-    required List<double> week,
-    required List<double> month,
-  }) = _EnergyLevelDashboard;
+// @freezed
+// class EnergyLevelDashboard with _$EnergyLevelDashboard {
+//   const factory EnergyLevelDashboard({
+//     required List<String> insights,
+//     required List<double> scores,
+//     required List<double> day,
+//     required List<double> week,
+//     required List<double> month,
+//   }) = _EnergyLevelDashboard;
 
-  factory EnergyLevelDashboard.fromJson(Map<String, dynamic> json) =>
-      _$EnergyLevelDashboardFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _EnergyLevelDashboard).toJson();
-}
+//   factory EnergyLevelDashboard.fromJson(Map<String, dynamic> json) =>
+//       _$EnergyLevelDashboardFromJson(json);
+//   @override
+//   Map<String, dynamic> toJson() => (this as _EnergyLevelDashboard).toJson();
+// }
 
 @freezed
 class MoodTrackingDashboardEntry with _$MoodTrackingDashboardEntry {
@@ -416,9 +416,9 @@ extension AwakeTimeAllocationDashboardExtensions
 class Dashboard with _$Dashboard {
   const factory Dashboard({
     required DateTime dateTime,
-    required MoodScoreDashboard moodScore,
-    required StressLevelDashboard stressLevel,
-    required EnergyLevelDashboard energyLevel,
+    // required MoodScoreDashboard moodScore,
+    // required StressLevelDashboard stressLevel,
+    // required EnergyLevelDashboard energyLevel,
     required MoodTrackingDashboard moodTracking,
     required AwakeTimeAllocationDashboard awakeTimeAllocation,
   }) = _Dashboard;
@@ -431,27 +431,27 @@ class Dashboard with _$Dashboard {
   static Dashboard createEmpty() {
     return Dashboard(
       dateTime: DateTime.now(),
-      moodScore: MoodScoreDashboard(
-        insights: [],
-        scores: [],
-        day: [],
-        week: [],
-        month: [],
-      ),
-      stressLevel: StressLevelDashboard(
-        insights: [],
-        scores: [],
-        day: [],
-        week: [],
-        month: [],
-      ),
-      energyLevel: EnergyLevelDashboard(
-        insights: [],
-        scores: [],
-        day: [],
-        week: [],
-        month: [],
-      ),
+      // moodScore: MoodScoreDashboard(
+      //   insights: [],
+      //   scores: [],
+      //   day: [],
+      //   week: [],
+      //   month: [],
+      // ),
+      // stressLevel: StressLevelDashboard(
+      //   insights: [],
+      //   scores: [],
+      //   day: [],
+      //   week: [],
+      //   month: [],
+      // ),
+      // energyLevel: EnergyLevelDashboard(
+      //   insights: [],
+      //   scores: [],
+      //   day: [],
+      //   week: [],
+      //   month: [],
+      // ),
       moodTracking: MoodTrackingDashboard(entries: [], insights: []),
       awakeTimeAllocation: AwakeTimeAllocationDashboard(
         entries: [],

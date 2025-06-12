@@ -256,43 +256,43 @@ class TestData {
     List<AwakeTimeAllocation> awakeTimeAllocations,
   ) {
     // 创建情绪分数仪表盘
-    final moodScore = MoodScoreDashboard(
-      insights: [
-        // 'Your mood has been generally trending upward this week.',
-        'Morning periods seem to have higher scores than evenings.',
-        'Consider activities that boost your mood during lower periods.',
-      ],
-      scores: [83, 85, 85],
-      day: [81, 85, 76, 82, 80, 85, 83],
-      week: [78, 82, 79, 85],
-      month: [70, 78, 80, 82, 85],
-    );
+    // final moodScore = MoodScoreDashboard(
+    //   insights: [
+    //     // 'Your mood has been generally trending upward this week.',
+    //     'Morning periods seem to have higher scores than evenings.',
+    //     'Consider activities that boost your mood during lower periods.',
+    //   ],
+    //   scores: [83, 85, 85],
+    //   day: [81, 85, 76, 82, 80, 85, 83],
+    //   week: [78, 82, 79, 85],
+    //   month: [70, 78, 80, 82, 85],
+    // );
 
-    // 创建压力水平仪表盘
-    final stressLevel = StressLevelDashboard(
-      insights: [
-        //'Your stress levels have decreased over this week.',
-        'Meditation sessions appear to reduce stress levels significantly.',
-        'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
-      ],
-      scores: [3.3, 2.9, 3.2],
-      day: [4.2, 3.5, 5.3, 4.1, 3.2, 2.9, 3.3],
-      week: [4.5, 3.8, 3.2, 2.9],
-      month: [5.2, 4.8, 4.3, 3.7, 3.2],
-    );
+    // // 创建压力水平仪表盘
+    // final stressLevel = StressLevelDashboard(
+    //   insights: [
+    //     //'Your stress levels have decreased over this week.',
+    //     'Meditation sessions appear to reduce stress levels significantly.',
+    //     'Work-related stress peaks on Mondays and gradually decreases throughout the week.',
+    //   ],
+    //   scores: [3.3, 2.9, 3.2],
+    //   day: [4.2, 3.5, 5.3, 4.1, 3.2, 2.9, 3.3],
+    //   week: [4.5, 3.8, 3.2, 2.9],
+    //   month: [5.2, 4.8, 4.3, 3.7, 3.2],
+    // );
 
-    // 创建能量水平仪表盘
-    final energyLevel = EnergyLevelDashboard(
-      insights: [
-        //'Your energy levels peak in the late morning and early afternoon.',
-        'Social interactions appear to boost your energy significantly.',
-        'Consider scheduling important tasks during your high-energy periods.',
-      ],
-      scores: [8.3, 8.1, 8.0],
-      day: [7.0, 6.0, 8.0, 7.0, 7.0, 6.0, 8.3],
-      week: [6.8, 7.2, 7.5, 7.9],
-      month: [6.2, 6.7, 7.3, 7.8, 8.1],
-    );
+    // // 创建能量水平仪表盘
+    // final energyLevel = EnergyLevelDashboard(
+    //   insights: [
+    //     //'Your energy levels peak in the late morning and early afternoon.',
+    //     'Social interactions appear to boost your energy significantly.',
+    //     'Consider scheduling important tasks during your high-energy periods.',
+    //   ],
+    //   scores: [8.3, 8.1, 8.0],
+    //   day: [7.0, 6.0, 8.0, 7.0, 7.0, 6.0, 8.3],
+    //   week: [6.8, 7.2, 7.5, 7.9],
+    //   month: [6.2, 6.7, 7.3, 7.8, 8.1],
+    // );
 
     // 创建情绪追踪仪表盘条目
     List<MoodTrackingDashboardEntry> moodTrackingEntries = [];
@@ -342,9 +342,9 @@ class TestData {
 
     return Dashboard(
       dateTime: dateTime,
-      moodScore: moodScore,
-      stressLevel: stressLevel,
-      energyLevel: energyLevel,
+      // moodScore: moodScore,
+      // stressLevel: stressLevel,
+      // energyLevel: energyLevel,
       moodTracking: moodTracking,
       awakeTimeAllocation: awakeTimeAllocation,
     );
