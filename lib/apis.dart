@@ -434,6 +434,9 @@ class APIs {
 
     final journalFile = JournalFile.fromJson(jsonDecode);
     Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
+
+    //
+    AppRuntimeContext().addJournalFile(journalFile);
     return journalFile;
   }
 

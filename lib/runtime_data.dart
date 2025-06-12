@@ -24,6 +24,9 @@ class RuntimeData {
   // 日记条目笔记
   ValueNotifier<List<Note>> notes = ValueNotifier([]);
 
+  // 缓存的日记文件列表
+  ValueNotifier<List<JournalFile>> journalFiles = ValueNotifier([]);
+
   //
   List<Dashboard> dashboards = [];
 
@@ -36,10 +39,8 @@ class RuntimeData {
         id: "",
         dateTime: DateTime.now(),
         highlights: [],
-        //energyLevels: [],
         moodTrackings: [],
         awakeTimeAllocations: [],
-        //socialMap: SocialMap(id: "", socialEntities: []),
       );
     }
   }

@@ -6,8 +6,6 @@ import 'package:nirva_app/url_configuration.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
-import 'dart:convert';
-import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/utils.dart';
 
 // 管理全局数据的类
@@ -27,7 +25,8 @@ class AppRuntimeContext {
     _instance = AppRuntimeContext._internal();
   }
 
-  DateTime selectedDateTime = DateTime.now();
+  DateTime _selectedDateTime = DateTime.now();
+  JournalFile? _currentJournalFile;
 
   // 数据管理器实例
   final RuntimeData _data = RuntimeData();
@@ -87,51 +86,49 @@ class AppRuntimeContext {
 
   // 获取当前的日记文件。
   JournalFile get currentJournalFile {
-    //final currentDate = _data.selectedDateTime;
-
-    // 读一下试试
-    final makeStorageKeyDateTime = DateTime(
-      selectedDateTime.year,
-      selectedDateTime.month,
-      selectedDateTime.day,
-    );
-    final journalFileStorage = _storage.getJournalFile(
-      Utils.formatDateTimeToIso(makeStorageKeyDateTime),
-    );
-    if (journalFileStorage == null) {
-      return JournalFile.createEmpty();
-    }
-    return journalStorageToJournalFile(journalFileStorage);
-  }
-
-  // 将 JournalFileStorage 转换为 JournalFile
-  JournalFile journalStorageToJournalFile(
-    JournalFileStorage journalFileStorage,
-  ) {
-    final jsonDecode =
-        json.decode(journalFileStorage.content) as Map<String, dynamic>;
-    return JournalFile.fromJson(jsonDecode);
+    return _currentJournalFile ??
+        JournalFile.createEmpty(); // 如果没有绑定，则返回一个空的日记文件
   }
 
   //
-  List<JournalFile> get allJournalFiles {
-    final index = _storage.getJournalIndex();
-    if (index.files.isEmpty) {
-      return [];
-    }
+  DateTime get selectedDateTime {
+    return _selectedDateTime;
+  }
 
-    List<JournalFile> ret = [];
-    for (var fileMeta in index.files) {
-      final journalFileStorage = _storage.getJournalFile(fileMeta.fileName);
-      if (journalFileStorage != null) {
-        final journalFile = journalStorageToJournalFile(journalFileStorage);
-        ret.add(journalFile);
-      } else {
-        Logger().w('Journal file not found: ${fileMeta.fileName}');
+  //
+  void selectDateTime(DateTime dateTime) {
+    _selectedDateTime = dateTime;
+    _associateActiveJournalFile();
+  }
+
+  //
+  void addJournalFile(JournalFile journalFile) {
+    _data.journalFiles.value = [..._data.journalFiles.value, journalFile];
+    _associateActiveJournalFile();
+  }
+
+  //
+  void initializeJournalFiles(List<JournalFile> files) {
+    _data.journalFiles.value = files;
+    _associateActiveJournalFile();
+  }
+
+  //
+  void _associateActiveJournalFile() {
+    // 绑定当前的日记文件
+    _currentJournalFile = null;
+    for (var journalFile in journalFiles) {
+      if (journalFile.time_stamp ==
+          Utils.formatDateTimeToIso(_selectedDateTime)) {
+        _currentJournalFile = journalFile;
       }
     }
+  }
 
-    return ret;
+  //
+  List<JournalFile> get journalFiles {
+    // 获取所有的日记文件
+    return data.journalFiles.value;
   }
 
   //
@@ -139,7 +136,7 @@ class AppRuntimeContext {
   Map<String, SocialEntity2> genGlobalSocialEntitiesMap() {
     // 获取全局社交实体的映射
     final Map<String, SocialEntity2> map = {};
-    for (var journalFile in allJournalFiles) {
+    for (var journalFile in journalFiles) {
       Map<String, SocialEntity2> subMap = journalFile.socialEntities;
       for (var key in subMap.keys) {
         if (!map.containsKey(key)) {

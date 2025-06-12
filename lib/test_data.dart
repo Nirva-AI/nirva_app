@@ -31,10 +31,7 @@ class TestData {
       DateTime(2025, 5, 9),
     );
 
-    AppRuntimeContext().selectedDateTime = DateTime(2025, 4, 19);
-
-    // 添加todo数据
-    //AppRuntimeContext().data.tasks = TestData.createTestTasks();
+    AppRuntimeContext().selectDateTime(DateTime(2025, 4, 19));
 
     // 添加日记数据
     AppRuntimeContext().data.legacyJournals.add(
@@ -69,13 +66,11 @@ class TestData {
       debugPrint('事件数量: ${loadJournalFile.events.length}');
 
       await AppRuntimeContext().storage.createJournalFile(
-        //fileName: dateTime.toIso8601String(),
         fileName: Utils.formatDateTimeToIso(dateTime),
         content: jsonEncode(jsonData),
       );
 
       final journalFileStorage = AppRuntimeContext().storage.getJournalFile(
-        //dateTime.toIso8601String(),
         Utils.formatDateTimeToIso(dateTime),
       );
       if (journalFileStorage != null) {
@@ -92,22 +87,6 @@ class TestData {
       debugPrint('加载日记文件时出错: $error');
     }
   }
-
-  // 添加日记的最爱数据
-  // static void initializeTestFavorites(JournalFile journalFile) {
-  //   // 设置测试数据
-  //   List<EventAnalysis> events = journalFile.events;
-
-  //   //
-  //   if (events.isNotEmpty) {
-  //     EventAnalysis randomEvent = events[random.nextInt(events.length)];
-  //     debugPrint('随机选中的日记: ${randomEvent.event_title}');
-  //     AppRuntimeContext().data.favorites.value = [randomEvent.event_id];
-  //     debugPrint('已添加到最爱: ${randomEvent.event_id}');
-  //   } else {
-  //     debugPrint('diaryEntries 列表为空');
-  //   }
-  // }
 
   // 添加日记的笔记数据
   static void initializeTestMyNotes(JournalFile journalFile) {
@@ -138,21 +117,6 @@ class TestData {
     //final random = Random();
     return impacts[random.nextInt(impacts.length)];
   }
-
-  // 测试数据： 初始化待办事项数据
-  // static List<Task> createTestTasks() {
-  //   return [
-  //     Task(id: "", tag: 'Wellness', description: 'Morning meditation'),
-  //     Task(id: "", tag: 'Wellness', description: 'Evening reading - 30 mins'),
-  //     Task(
-  //       id: "",
-  //       tag: 'Work',
-  //       description: 'Prepare presentation for meeting',
-  //     ),
-  //     Task(id: "", tag: 'Personal', description: 'Call mom', isCompleted: true),
-  //     Task(id: "", tag: 'Health', description: 'Schedule dentist appointment'),
-  //   ];
-  // }
 
   static List<ArchivedHighlights> createTestWeeklyArchivedHighlights() {
     return [

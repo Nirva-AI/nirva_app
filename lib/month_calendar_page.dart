@@ -18,7 +18,7 @@ class MonthCalendarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // 示例：标记特定日期为红色
     Set<DateTime> journalDates = {};
-    var allJournalFiles = AppRuntimeContext().allJournalFiles;
+    var allJournalFiles = AppRuntimeContext().journalFiles;
     for (var file in allJournalFiles) {
       DateTime date = DateTime.parse(file.time_stamp);
       journalDates.add(date);

@@ -66,4 +66,9 @@ Future<void> initializeHiveStorage() async {
   //notes
   final retrievedNotes = AppRuntimeContext().storage.getAllNotes();
   AppRuntimeContext().data.notes.value = retrievedNotes;
+
+  //journal files
+  AppRuntimeContext().initializeJournalFiles(
+    AppRuntimeContext().storage.retrieveJournalFiles(),
+  );
 }

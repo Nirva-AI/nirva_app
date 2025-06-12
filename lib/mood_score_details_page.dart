@@ -94,7 +94,9 @@ class SlidingChartData {
       return null;
     }
 
-    return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
+    // 返回4～10之间的值
+    double value = 4 + random.nextDouble() * 6;
+    return value;
   }
 }
 
@@ -333,7 +335,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
             maxY: maxY,
             containerHeight: containerHeight,
             offset: offset,
-            text: '${value.toInt()}h',
+            text: '${value.toInt()}',
           ),
         )
         .toList();
