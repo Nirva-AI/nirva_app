@@ -5,39 +5,35 @@ import 'package:intl/intl.dart';
 
 class SlidingChartData {
   static final random = Random();
+  static const double minY = 0;
+  static const double maxY = 12;
+  static List<double> yAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
+  static const double unitWidth = 50.0;
+
   final DateTime date;
-  final double? value; // 修改为可空类型
+  final double? value;
 
   SlidingChartData({required this.date, this.value});
 
   static int daysToShow(DateTime startDate) {
-    // 计算去年同月同日的日期
     final lastYearSameDate = DateTime(
       startDate.year - 1,
       startDate.month,
       startDate.day,
     );
-
-    // 计算从去年同日到今天的天数
     final daysBetween = startDate.difference(lastYearSameDate).inDays;
     return daysBetween;
   }
 
-  // 生成数据的大列表
   static List<SlidingChartData> generate(DateTime startDate) {
-    // 计算去年同月同日的日期
     final lastYearSameDate = DateTime(
       startDate.year - 1,
       startDate.month,
       startDate.day,
     );
 
-    // 计算从去年同日到今天的天数
     final daysBetween = startDate.difference(lastYearSameDate).inDays;
-
     final List<SlidingChartData> data = [];
-
-    // 从去年同日开始，生成每一天的数据
     for (int i = 0; i <= daysBetween; i++) {
       final date = lastYearSameDate.add(Duration(days: i));
       data.add(SlidingChartData(date: date, value: genRandomValue(date)));
@@ -48,25 +44,16 @@ class SlidingChartData {
 
   static double? genRandomValue(DateTime date) {
     if (random.nextDouble() < 0.1) {
-      return null; // 模拟数据缺失
+      return null;
     }
     return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
   }
 }
 
 class SlidingLineChart extends StatefulWidget {
-  final List<SlidingChartData> initialData;
-  final double minY;
-  final double maxY;
   final Color lineColor;
 
-  const SlidingLineChart({
-    super.key,
-    required this.initialData,
-    this.minY = 0,
-    this.maxY = 12, // 假设最大值为12小时
-    this.lineColor = Colors.white,
-  });
+  const SlidingLineChart({super.key, this.lineColor = Colors.white});
 
   @override
   State<SlidingLineChart> createState() => _SlidingLineChartState();
@@ -75,19 +62,17 @@ class SlidingLineChart extends StatefulWidget {
 class _SlidingLineChartState extends State<SlidingLineChart> {
   late ScrollController _scrollController;
   late List<SlidingChartData> _chartData;
-  static const double _defaultChartWidth = 50.0; // 每天的默认宽度
 
   double get chartWidth {
     return SlidingChartData.daysToShow(DateTime.now()) *
-        _defaultChartWidth; // 每天60逻辑像素宽度
+        SlidingChartData.unitWidth;
   }
 
   @override
   void initState() {
     super.initState();
-    _chartData = List.from(widget.initialData);
+    _chartData = SlidingChartData.generate(DateTime.now());
     _scrollController = ScrollController();
-    // 在初始化后滚动到最右侧（最新数据）
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -103,12 +88,12 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
   @override
   Widget build(BuildContext context) {
+    final minY = SlidingChartData.minY;
+    final maxY = SlidingChartData.maxY;
     return Stack(
       children: [
-        // 使用Row来分配空间
         Row(
           children: [
-            // 左侧滚动区域
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,
@@ -127,8 +112,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                     LineChartData(
                       minX: 0,
                       maxX: _chartData.length.toDouble() - 1,
-                      minY: widget.minY,
-                      maxY: widget.maxY,
+                      minY: minY,
+                      maxY: maxY,
                       lineTouchData: LineTouchData(enabled: false),
                       gridData: FlGridData(
                         show: true,
@@ -148,25 +133,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                         border: Border.all(color: Colors.red, width: 2),
                       ),
                       titlesData: FlTitlesData(
-                        // 启用右侧刻度并设置显示逻辑
                         rightTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: false,
-                            reservedSize: 32,
-                            getTitlesWidget: (value, meta) {
-                              // 只显示0,2,4,6,8,10,12这些刻度值
-                              if (value % 2 == 0 && value >= 0 && value <= 12) {
-                                return Text(
-                                  '${value.toInt()}',
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 12,
-                                  ),
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
+                          sideTitles: SideTitles(showTitles: false),
                         ),
                         topTitles: AxisTitles(
                           sideTitles: SideTitles(showTitles: false),
@@ -234,14 +202,12 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                           ),
                         ),
                       ),
-                      lineBarsData:
-                          _getLineChartBars(), // 正确位置在这里，作为LineChartData的直接属性
+                      lineBarsData: _getLineChartBars(),
                     ),
                   ),
                 ),
               ),
             ),
-            //右侧预留固定宽度区域
             SizedBox(
               width: 40,
               height: 300,
@@ -258,100 +224,13 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                       final containerHeight = constraints.maxHeight;
                       final offsize = 17.0 / 2;
                       return Stack(
-                        children: [
-                          // 刻度值 10
-                          Positioned(
-                            top:
-                                _calculateYPosition(
-                                  10,
-                                  widget.minY,
-                                  widget.maxY,
-                                  containerHeight,
-                                ) -
-                                offsize,
-                            child: const Text(
-                              '10h',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          // 刻度值 8
-                          Positioned(
-                            top:
-                                _calculateYPosition(
-                                  8,
-                                  widget.minY,
-                                  widget.maxY,
-                                  containerHeight,
-                                ) -
-                                offsize,
-                            child: const Text(
-                              '8h',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          // 刻度值 6
-                          Positioned(
-                            top:
-                                _calculateYPosition(
-                                  6,
-                                  widget.minY,
-                                  widget.maxY,
-                                  containerHeight,
-                                ) -
-                                offsize,
-                            child: const Text(
-                              '6h',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          // 刻度值 4
-                          Positioned(
-                            top:
-                                _calculateYPosition(
-                                  4,
-                                  widget.minY,
-                                  widget.maxY,
-                                  containerHeight,
-                                ) -
-                                offsize,
-                            child: const Text(
-                              '4h',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          // 刻度值 2
-                          Positioned(
-                            top:
-                                _calculateYPosition(
-                                  2,
-                                  widget.minY,
-                                  widget.maxY,
-                                  containerHeight,
-                                ) -
-                                offsize,
-                            child: const Text(
-                              '2h',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ],
+                        children: _buildAllYAxisLabels(
+                          minY: minY,
+                          maxY: maxY,
+                          containerHeight: containerHeight,
+                          offset: offsize,
+                        ),
                       );
-                      //);
                     },
                   ),
                 ),
@@ -361,6 +240,45 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
         ),
       ],
     );
+  }
+
+  // 封装创建Y轴刻度标签的方法
+  Widget _buildYAxisLabel({
+    required double value,
+    required double minY,
+    required double maxY,
+    required double containerHeight,
+    required double offset,
+    required String text,
+  }) {
+    return Positioned(
+      top: _calculateYPosition(value, minY, maxY, containerHeight) - offset,
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.white70, fontSize: 12),
+      ),
+    );
+  }
+
+  List<Widget> _buildAllYAxisLabels({
+    required double minY,
+    required double maxY,
+    required double containerHeight,
+    required double offset,
+  }) {
+    // 可以根据需要自动计算间隔
+    return SlidingChartData.yAxisLabels
+        .map(
+          (value) => _buildYAxisLabel(
+            value: value,
+            minY: minY,
+            maxY: maxY,
+            containerHeight: containerHeight,
+            offset: offset,
+            text: '${value.toInt()}h',
+          ),
+        )
+        .toList();
   }
 
   // 创建固定的Y轴刻度
@@ -426,10 +344,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     double maxY,
     double containerHeight,
   ) {
-    // 反转Y轴映射(因为Flutter绘制坐标是从上到下)
     final double heightRatio = 1.0 - (value - minY) / (maxY - minY);
-    // 计算位置
-    return containerHeight * heightRatio; // 减去17是为了调整文本位置，使其居中
+    return containerHeight * heightRatio;
   }
 }
 
@@ -439,11 +355,10 @@ class TestChartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //title: '测试图表',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        scaffoldBackgroundColor: Colors.black, // 深色背景
+        scaffoldBackgroundColor: Colors.black,
       ),
       home: const TestChartPage(),
     );
@@ -458,12 +373,6 @@ class TestChartPage extends StatefulWidget {
 }
 
 class _TestChartPageState extends State<TestChartPage> {
-  // 生成测试数据
-  List<SlidingChartData> _initTestData() {
-    final samples = SlidingChartData.generate(DateTime.now());
-    return samples;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -478,10 +387,7 @@ class _TestChartPageState extends State<TestChartPage> {
           children: [
             SizedBox(
               height: 300,
-              child: SlidingLineChart(
-                initialData: _initTestData(),
-                lineColor: Colors.white,
-              ),
+              child: SlidingLineChart(lineColor: Colors.white),
             ),
           ],
         ),
