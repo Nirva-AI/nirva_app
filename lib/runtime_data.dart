@@ -2,6 +2,30 @@
 import 'package:nirva_app/data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:nirva_app/utils.dart';
+import 'dart:math';
+
+class Dashboard2 {
+  static final random = Random();
+  //
+  final DateTime dateTime;
+  JournalFile? journalFile;
+  double? moodScoreAverage;
+  double? stressLevelAverage;
+
+  //
+  Dashboard2({required this.dateTime});
+
+  void updateDataFromJournalFile() {
+    // 从日记文件中更新仪表板数据
+    if (journalFile == null) {
+      return;
+    }
+
+    moodScoreAverage = journalFile!.moodScoreAverage;
+    stressLevelAverage = journalFile!.stressLevelAverage;
+  }
+}
 
 // 管理全局数据的类
 class RuntimeData {
@@ -29,6 +53,9 @@ class RuntimeData {
 
   //
   List<Dashboard> dashboards = [];
+
+  //
+  List<Dashboard2> dashboards2 = [];
 
   //
   LegacyJournal get currentLegacyJournal {
@@ -139,7 +166,7 @@ class RuntimeData {
   }
 
   //
-  List<JournalFile> sortJournalFilesByDate() {
+  List<JournalFile> _sortJournalFilesByDate() {
     // 按照时间戳排序日记文件
     journalFiles.value =
         journalFiles.value.where((file) => file.time_stamp.isNotEmpty).toList()
@@ -152,10 +179,48 @@ class RuntimeData {
     return journalFiles.value;
   }
 
+  void _rebuildDashboard2() {
+    dashboards2.clear();
+    if (journalFiles.value.isEmpty) {
+      return; // 如果没有日记文件，则不进行任何操作
+    }
+
+    final firstDayTimeStamp = journalFiles.value.first.time_stamp;
+    final firstDay = DateTime.parse(firstDayTimeStamp);
+    final currentDay = DateTime.now();
+    final daysBetween = currentDay.difference(firstDay).inDays;
+
+    for (int i = 0; i <= daysBetween; i++) {
+      final date = firstDay.add(Duration(days: i));
+      dashboards2.add(Dashboard2(dateTime: date));
+    }
+
+    for (var dashboard in dashboards2) {
+      // 遍历每个仪表板，填充数据
+      final journalFile = getJournalFileByDate(dashboard.dateTime);
+      if (journalFile != null) {
+        dashboard.journalFile = journalFile;
+        dashboard.updateDataFromJournalFile();
+      }
+    }
+  }
+
+  JournalFile? getJournalFileByDate(DateTime date) {
+    // 根据日期获取日记文件
+    final dateString = Utils.formatDateTimeToIso(date);
+    for (var file in journalFiles.value) {
+      if (file.time_stamp.startsWith(dateString)) {
+        return file; // 返回匹配的日记文件
+      }
+    }
+    return null; // 如果没有找到匹配的日记文件，则返回null
+  }
+
   //
   void setupJournalFiles(List<JournalFile> files) {
     // 初始化日记文件列表
     journalFiles.value = files;
-    sortJournalFilesByDate(); // 排序
+    _sortJournalFilesByDate(); // 排序
+    _rebuildDashboard2();
   }
 }

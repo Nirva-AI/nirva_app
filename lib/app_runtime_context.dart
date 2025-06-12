@@ -104,7 +104,6 @@ class AppRuntimeContext {
   //
   void selectDateTime(DateTime dateTime) {
     _selectedDateTime = dateTime;
-    _data.sortJournalFilesByDate();
     _onActiveJournalFile();
   }
 
