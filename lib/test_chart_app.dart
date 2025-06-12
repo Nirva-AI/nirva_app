@@ -50,7 +50,6 @@ class SlidingChartData {
     if (random.nextDouble() < 0.1) {
       return null; // 模拟数据缺失
     }
-
     //return 12;
     return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
   }
@@ -123,7 +122,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                     left: 16,
                     top: 16,
                     bottom: 16,
-                    right: 16 * 2,
+                    right: 0,
                   ),
                   child: LineChart(
                     LineChartData(
@@ -145,11 +144,30 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                           );
                         },
                       ),
-                      borderData: FlBorderData(show: false),
+                      borderData: FlBorderData(
+                        show: true,
+                        border: Border.all(color: Colors.red, width: 2),
+                      ),
                       titlesData: FlTitlesData(
-                        // 禁用右侧刻度
+                        // 启用右侧刻度并设置显示逻辑
                         rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
+                          sideTitles: SideTitles(
+                            showTitles: false,
+                            reservedSize: 32,
+                            getTitlesWidget: (value, meta) {
+                              // 只显示0,2,4,6,8,10,12这些刻度值
+                              if (value % 2 == 0 && value >= 0 && value <= 12) {
+                                return Text(
+                                  '${value.toInt()}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
                         ),
                         topTitles: AxisTitles(
                           sideTitles: SideTitles(showTitles: false),
@@ -224,8 +242,12 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                 ),
               ),
             ),
-            // 右侧预留固定宽度区域
-            const SizedBox(width: 32),
+            //右侧预留固定宽度区域
+            Container(
+              width: 40,
+              height: 300 - 32,
+              color: Colors.blue, // 半透明蓝色
+            ),
           ],
         ),
       ],
