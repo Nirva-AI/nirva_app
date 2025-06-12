@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
-//import 'package:nirva_app/mood_score_details_page.dart';
+import 'package:nirva_app/mood_score_details_page.dart';
 
 class MoodScoreCard extends StatelessWidget {
   const MoodScoreCard({super.key});
@@ -23,17 +23,17 @@ class MoodScoreCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween, // 两端对齐
                 children: [
                   Text('Mood Score', style: const TextStyle(fontSize: 16)),
-                  // IconButton(
-                  //   icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => MoodScoreDetailsPage(),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MoodScoreDetailsPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
               const SizedBox(height: 8),

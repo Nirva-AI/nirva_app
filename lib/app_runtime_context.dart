@@ -41,12 +41,10 @@ class AppRuntimeContext {
   // URL 配置实例
   final URLConfiguration _urlConfig = URLConfiguration();
 
-  //static const String _baseUrl = 'http://192.168.192.100:8000';
-
   // 用于基础app服务的 Dio 实例
   final Dio _appserviceDio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.192.104:8000',
+        baseUrl: 'http://192.168.192.59:8000',
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
