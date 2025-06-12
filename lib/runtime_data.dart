@@ -30,6 +30,7 @@ class RuntimeData {
   //
   List<Dashboard> dashboards = [];
 
+  //
   LegacyJournal get currentLegacyJournal {
     // 获取当前的日记条目
     if (legacyJournals.isNotEmpty) {
@@ -135,5 +136,26 @@ class RuntimeData {
     }
     // 通知监听者
     notes.value = List.from(notes.value);
+  }
+
+  //
+  List<JournalFile> sortJournalFilesByDate() {
+    // 按照时间戳排序日记文件
+    journalFiles.value =
+        journalFiles.value.where((file) => file.time_stamp.isNotEmpty).toList()
+          ..sort(
+            (a, b) => DateTime.parse(
+              a.time_stamp,
+            ).compareTo(DateTime.parse(b.time_stamp)),
+          );
+
+    return journalFiles.value;
+  }
+
+  //
+  void setupJournalFiles(List<JournalFile> files) {
+    // 初始化日记文件列表
+    journalFiles.value = files;
+    sortJournalFilesByDate(); // 排序
   }
 }
