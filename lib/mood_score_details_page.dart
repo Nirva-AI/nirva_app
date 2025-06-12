@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
+import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/runtime_data.dart';
 
 class MoodScoreDetailsPage extends StatefulWidget {
   const MoodScoreDetailsPage({super.key});
@@ -14,6 +15,7 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final double settingHeight = 400;
+    final double unitWidth = 50; // 每个数据点的宽度
 
     return Scaffold(
       appBar: AppBar(
@@ -39,6 +41,7 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
                 // 更改线条颜色为蓝色以适应浅色主题
                 lineColor: Colors.blue,
                 settingHeight: settingHeight,
+                unitWidth: unitWidth,
               ),
             ),
           ],
@@ -48,65 +51,15 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
   }
 }
 
-// 滑动图表数据结构保持不变
-class SlidingChartData {
-  static final random = Random();
-  static const double minY = 0;
-  static const double maxY = 12;
-  static List<double> yAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
-  static const double unitWidth = 50.0;
-
-  /// 生成的图表数据
-  final DateTime date;
-  final double? value;
-
-  SlidingChartData({required this.date, this.value});
-
-  static int daysToShow(DateTime startDate) {
-    final lastYearSameDate = DateTime(
-      startDate.year - 1,
-      startDate.month,
-      startDate.day,
-    );
-    final daysBetween = startDate.difference(lastYearSameDate).inDays;
-    return daysBetween;
-  }
-
-  static List<SlidingChartData> generate(DateTime startDate) {
-    final lastYearSameDate = DateTime(
-      startDate.year - 1,
-      startDate.month,
-      startDate.day,
-    );
-
-    final daysBetween = startDate.difference(lastYearSameDate).inDays;
-    final List<SlidingChartData> data = [];
-    for (int i = 0; i <= daysBetween; i++) {
-      final date = lastYearSameDate.add(Duration(days: i));
-      data.add(SlidingChartData(date: date, value: genRandomValue(date)));
-    }
-
-    return data;
-  }
-
-  static double? genRandomValue(DateTime date) {
-    if (random.nextDouble() < 0.1) {
-      return null;
-    }
-
-    // 返回4～10之间的值
-    double value = 4 + random.nextDouble() * 6;
-    return value;
-  }
-}
-
 class SlidingLineChart extends StatefulWidget {
   final Color lineColor;
   final double settingHeight;
+  final double unitWidth;
 
   const SlidingLineChart({
     super.key,
     required this.settingHeight,
+    required this.unitWidth,
     this.lineColor = Colors.blue, // 默认颜色改为蓝色
   });
 
@@ -116,17 +69,16 @@ class SlidingLineChart extends StatefulWidget {
 
 class _SlidingLineChartState extends State<SlidingLineChart> {
   late ScrollController _scrollController;
-  late List<SlidingChartData> _chartData;
+  late List<Dashboard2> _chartData;
 
   double get chartWidth {
-    return SlidingChartData.daysToShow(DateTime.now()) *
-        SlidingChartData.unitWidth;
+    return AppRuntimeContext().data.dashboards2.length * widget.unitWidth;
   }
 
   @override
   void initState() {
     super.initState();
-    _chartData = SlidingChartData.generate(DateTime.now());
+    _chartData = AppRuntimeContext().data.dashboards2;
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -143,8 +95,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    final minY = SlidingChartData.minY;
-    final maxY = SlidingChartData.maxY;
+    final minY = Dashboard2.moodScoreMinY;
+    final maxY = Dashboard2.moodScoreMaxY;
     return Stack(
       children: [
         Row(
@@ -209,7 +161,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                                 return const SizedBox.shrink();
                               }
 
-                              final date = _chartData[index].date;
+                              final date = _chartData[index].dateTime;
                               final isToday = _isToday(date);
 
                               String weekday = DateFormat('E').format(date);
@@ -327,7 +279,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     required double offset,
   }) {
     // 可以根据需要自动计算间隔
-    return SlidingChartData.yAxisLabels
+    return Dashboard2.moodScoreYAxisLabels
         .map(
           (value) => _buildYAxisLabel(
             value: value,
@@ -347,9 +299,11 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     List<FlSpot> currentSegment = [];
 
     for (int i = 0; i < _chartData.length; i++) {
-      if (_chartData[i].value != null) {
+      if (_chartData[i].moodScoreAverage != null) {
         // 有数据的点，添加到当前线段
-        currentSegment.add(FlSpot(i.toDouble(), _chartData[i].value!));
+        currentSegment.add(
+          FlSpot(i.toDouble(), _chartData[i].moodScoreAverage!),
+        );
       } else if (currentSegment.isNotEmpty) {
         // 遇到空值且当前线段不为空，结束当前线段
         result.add(_createLineChartBarData(currentSegment));
@@ -375,7 +329,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
         show: true,
         getDotPainter: (spot, percent, barData, index) {
           int originalIndex = spot.x.toInt();
-          final date = _chartData[originalIndex].date;
+          final date = _chartData[originalIndex].dateTime;
           final isToday = _isToday(date);
 
           return FlDotCirclePainter(
