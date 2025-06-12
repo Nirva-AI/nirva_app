@@ -7,6 +7,9 @@ import 'dart:math';
 
 class Dashboard2 {
   static final random = Random();
+  static const double moodScoreMinY = 0;
+  static const double moodScoreMaxY = 12;
+  static List<double> moodScoreYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
   //
   final DateTime dateTime;
   JournalFile? journalFile;
@@ -17,13 +20,22 @@ class Dashboard2 {
   Dashboard2({required this.dateTime});
 
   void updateDataFromJournalFile() {
-    // 从日记文件中更新仪表板数据
     if (journalFile == null) {
+      moodScoreAverage = null;
+      stressLevelAverage = null;
       return;
     }
 
     moodScoreAverage = journalFile!.moodScoreAverage;
     stressLevelAverage = journalFile!.stressLevelAverage;
+  }
+
+  void randomizeData() {
+    if (random.nextDouble() < 0.1) {
+      return;
+    }
+    moodScoreAverage = 4 + random.nextDouble() * 6;
+    stressLevelAverage = 4 + random.nextDouble() * 6;
   }
 }
 
@@ -182,17 +194,27 @@ class RuntimeData {
   void _rebuildDashboard2() {
     dashboards2.clear();
     if (journalFiles.value.isEmpty) {
-      return; // 如果没有日记文件，则不进行任何操作
+      return;
     }
 
     final firstDayTimeStamp = journalFiles.value.first.time_stamp;
-    final firstDay = DateTime.parse(firstDayTimeStamp);
     final currentDay = DateTime.now();
-    final daysBetween = currentDay.difference(firstDay).inDays;
+
+    var firstDay = DateTime.parse(firstDayTimeStamp);
+    var daysBetween = currentDay.difference(firstDay).inDays;
+    if (daysBetween < 14) {
+      // 如果当前日期早于第一个日记文件的日期，则不需要创建仪表板
+      firstDay = currentDay.subtract(Duration(days: 14));
+      daysBetween = 14; // 确保至少有14天的数据
+      debugPrint(
+        'Rebuilding Dashboard2 with first day: $firstDay, days between: $daysBetween',
+      );
+    }
 
     for (int i = 0; i <= daysBetween; i++) {
       final date = firstDay.add(Duration(days: i));
       dashboards2.add(Dashboard2(dateTime: date));
+      dashboards2.last.randomizeData();
     }
 
     for (var dashboard in dashboards2) {
