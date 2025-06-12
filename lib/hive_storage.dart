@@ -372,6 +372,27 @@ class HiveStorage {
     return true;
   }
 
+  List<JournalFile> retrieveJournalFiles() {
+    final index = getJournalIndex();
+    if (index.files.isEmpty) {
+      return [];
+    }
+
+    List<JournalFile> ret = [];
+    for (var fileMeta in index.files) {
+      final journalFileStorage = getJournalFile(fileMeta.fileName);
+      if (journalFileStorage == null) {
+        continue;
+      }
+      final jsonDecode =
+          json.decode(journalFileStorage.content) as Map<String, dynamic>;
+      final journalFile = JournalFile.fromJson(jsonDecode);
+      ret.add(journalFile);
+    }
+
+    return ret;
+  }
+
   // 获取所有任务
   List<Task> getAllTasks() {
     final box = Hive.box<HiveTasks>(_tasksBox);
