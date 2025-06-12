@@ -20,7 +20,7 @@ class MoodScoreCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // 两端对齐
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Mood Score', style: const TextStyle(fontSize: 16)),
                   IconButton(
@@ -38,28 +38,12 @@ class MoodScoreCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                moodScore.toStringAsFixed(1), // 显示分数，保留一位小数
+                moodScore.toStringAsFixed(1),
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              //const SizedBox(height: 8),
-              // Row(
-              //   children: [
-              //     Icon(
-              //       changeColor == Colors.green
-              //           ? Icons.arrow_upward
-              //           : Icons.arrow_downward,
-              //       color: changeColor,
-              //       size: 16,
-              //     ),
-              //     Text(
-              //       _formatChange(data.change),
-              //       style: TextStyle(color: changeColor),
-              //     ),
-              //   ],
-              // ),
             ],
           ),
         ),
