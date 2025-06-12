@@ -144,7 +144,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                         },
                       ),
                       borderData: FlBorderData(
-                        show: true,
+                        show: false,
                         border: Border.all(color: Colors.red, width: 2),
                       ),
                       titlesData: FlTitlesData(
@@ -250,37 +250,108 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                 child: Padding(
                   padding: const EdgeInsets.only(
                     top: 16.0,
+                    left: 16.0,
                     bottom: 16.0 + 45.0,
                   ),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       final containerHeight = constraints.maxHeight;
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.yellow, width: 2.0),
-                        ),
-                        child: Stack(
-                          children: [
-                            // 刻度值 10
-                            Positioned(
-                              top: _calculateYPosition(
-                                10,
-                                widget.minY,
-                                widget.maxY,
-                                containerHeight,
-                              ),
-                              child: const Text(
-                                '10',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
+                      final offsize = 17.0 / 2;
+                      return Stack(
+                        children: [
+                          // 刻度值 10
+                          Positioned(
+                            top:
+                                _calculateYPosition(
+                                  10,
+                                  widget.minY,
+                                  widget.maxY,
+                                  containerHeight,
+                                ) -
+                                offsize,
+                            child: const Text(
+                              '10h',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
                               ),
                             ),
-                            // 其他刻度...
-                          ],
-                        ),
+                          ),
+                          // 刻度值 8
+                          Positioned(
+                            top:
+                                _calculateYPosition(
+                                  8,
+                                  widget.minY,
+                                  widget.maxY,
+                                  containerHeight,
+                                ) -
+                                offsize,
+                            child: const Text(
+                              '8h',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          // 刻度值 6
+                          Positioned(
+                            top:
+                                _calculateYPosition(
+                                  6,
+                                  widget.minY,
+                                  widget.maxY,
+                                  containerHeight,
+                                ) -
+                                offsize,
+                            child: const Text(
+                              '6h',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          // 刻度值 4
+                          Positioned(
+                            top:
+                                _calculateYPosition(
+                                  4,
+                                  widget.minY,
+                                  widget.maxY,
+                                  containerHeight,
+                                ) -
+                                offsize,
+                            child: const Text(
+                              '4h',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          // 刻度值 2
+                          Positioned(
+                            top:
+                                _calculateYPosition(
+                                  2,
+                                  widget.minY,
+                                  widget.maxY,
+                                  containerHeight,
+                                ) -
+                                offsize,
+                            child: const Text(
+                              '2h',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
                       );
+                      //);
                     },
                   ),
                 ),
@@ -352,15 +423,13 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   double _calculateYPosition(
     double value,
     double minY,
-    double maxY, [
-    double containerHeight = 219,
-  ]) {
-    // 容器总高度
-    // final double containerHeight = 219; //300 - 16.0 - (16.0 + 45.0);
+    double maxY,
+    double containerHeight,
+  ) {
     // 反转Y轴映射(因为Flutter绘制坐标是从上到下)
     final double heightRatio = 1.0 - (value - minY) / (maxY - minY);
     // 计算位置
-    return containerHeight * heightRatio;
+    return containerHeight * heightRatio; // 减去17是为了调整文本位置，使其居中
   }
 }
 
