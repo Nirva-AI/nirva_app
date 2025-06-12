@@ -98,19 +98,35 @@ class AppRuntimeContext {
   //
   void selectDateTime(DateTime dateTime) {
     _selectedDateTime = dateTime;
+    _sortJournalFilesByDate();
     _associateActiveJournalFile();
   }
 
   //
   void addJournalFile(JournalFile journalFile) {
     _data.journalFiles.value = [..._data.journalFiles.value, journalFile];
+    _sortJournalFilesByDate();
     _associateActiveJournalFile();
   }
 
   //
   void initializeJournalFiles(List<JournalFile> files) {
     _data.journalFiles.value = files;
+    _sortJournalFilesByDate();
     _associateActiveJournalFile();
+  }
+
+  //
+  List<JournalFile> _sortJournalFilesByDate() {
+    // 按照时间戳排序日记文件
+    return _data.journalFiles.value
+        .where((file) => file.time_stamp.isNotEmpty)
+        .toList()
+      ..sort(
+        (a, b) => DateTime.parse(
+          a.time_stamp,
+        ).compareTo(DateTime.parse(b.time_stamp)),
+      );
   }
 
   //
