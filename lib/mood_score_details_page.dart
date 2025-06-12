@@ -24,9 +24,10 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Colors.grey,
+        // 使用默认的AppBar背景色
       ),
-      backgroundColor: Colors.black,
+      // 使用白色背景
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -35,7 +36,8 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
             SizedBox(
               height: settingHeight,
               child: SlidingLineChart(
-                lineColor: Colors.white,
+                // 更改线条颜色为蓝色以适应浅色主题
+                lineColor: Colors.blue,
                 settingHeight: settingHeight,
               ),
             ),
@@ -46,7 +48,7 @@ class _MoodScoreDetailsPageState extends State<MoodScoreDetailsPage> {
   }
 }
 
-// 滑动图表数据结构
+// 滑动图表数据结构保持不变
 class SlidingChartData {
   static final random = Random();
   static const double minY = 0;
@@ -103,7 +105,7 @@ class SlidingLineChart extends StatefulWidget {
   const SlidingLineChart({
     super.key,
     required this.settingHeight,
-    this.lineColor = Colors.white,
+    this.lineColor = Colors.blue, // 默认颜色改为蓝色
   });
 
   @override
@@ -173,7 +175,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                         drawVerticalLine: false,
                         getDrawingHorizontalLine: (value) {
                           return FlLine(
-                            color: Color.fromRGBO(255, 255, 255, 0.2),
+                            // 修改网格线为浅灰色，使用withAlpha替代withOpacity
+                            color: Colors.grey.withAlpha(77), // 约等于0.3的透明度
                             strokeWidth: 1,
                             dashArray: [5, 5],
                           );
@@ -197,7 +200,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                           sideTitles: SideTitles(
                             showTitles: true,
                             reservedSize: 45,
-                            interval: 1, // 确保每个数据点之间有固定间隔
+                            interval: 1,
                             getTitlesWidget: (value, meta) {
                               final index = value.toInt();
                               if (index < 0 || index >= _chartData.length) {
@@ -207,9 +210,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                               final date = _chartData[index].date;
                               final isToday = _isToday(date);
 
-                              // 获取星期几的简写
                               String weekday = DateFormat('E').format(date);
-                              // 添加日期信息，更清晰地识别不同日期
                               String dayMonth = DateFormat('d/M').format(date);
 
                               return Container(
@@ -218,9 +219,12 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
+                                  // 修改今日高亮背景为浅蓝色
                                   color:
                                       isToday
-                                          ? Colors.white
+                                          ? Colors.blue.withAlpha(
+                                            51,
+                                          ) // 约等于0.2的透明度
                                           : Colors.transparent,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
@@ -229,20 +233,22 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                                     Text(
                                       weekday,
                                       style: TextStyle(
+                                        // 修改文字颜色为黑色
                                         color:
                                             isToday
-                                                ? Colors.black
-                                                : Colors.white,
+                                                ? Colors.blue.shade800
+                                                : Colors.black,
                                         fontSize: 12,
                                       ),
                                     ),
                                     Text(
                                       dayMonth,
                                       style: TextStyle(
+                                        // 修改日期颜色为灰色
                                         color:
                                             isToday
-                                                ? Colors.black
-                                                : Colors.white70,
+                                                ? Colors.blue.shade600
+                                                : Colors.grey.shade700,
                                         fontSize: 10,
                                       ),
                                     ),
@@ -293,7 +299,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     );
   }
 
-  // 封装创建Y轴刻度标签的方法
+  // Y轴标签修改
   Widget _buildYAxisLabel({
     required double value,
     required double minY,
@@ -306,7 +312,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
       top: _calculateYPosition(value, minY, maxY, containerHeight) - offset,
       child: Text(
         text,
-        style: const TextStyle(color: Colors.white70, fontSize: 12),
+        // 修改Y轴标签为深灰色
+        style: const TextStyle(color: Colors.grey, fontSize: 12),
       ),
     );
   }
@@ -358,22 +365,22 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
   LineChartBarData _createLineChartBarData(List<FlSpot> spots) {
     return LineChartBarData(
-      spots: List.from(spots), // 创建副本避免引用问题
+      spots: List.from(spots),
       isCurved: true,
       barWidth: 3,
       color: widget.lineColor,
       dotData: FlDotData(
         show: true,
         getDotPainter: (spot, percent, barData, index) {
-          // 找到对应原始数据的索引
           int originalIndex = spot.x.toInt();
           final date = _chartData[originalIndex].date;
           final isToday = _isToday(date);
 
           return FlDotCirclePainter(
-            radius: isToday ? 4 : 4,
-            color: Colors.white,
-            strokeColor: isToday ? Colors.white : Colors.transparent,
+            radius: isToday ? 5 : 4,
+            // 修改点的颜色为蓝色，配合线条颜色
+            color: widget.lineColor,
+            strokeColor: isToday ? Colors.blue.shade800 : Colors.transparent,
             strokeWidth: 2,
           );
         },
