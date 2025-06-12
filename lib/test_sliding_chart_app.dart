@@ -356,8 +356,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   }
 }
 
-class TestChartApp extends StatelessWidget {
-  const TestChartApp({super.key});
+class TestSlidingChartApp extends StatelessWidget {
+  const TestSlidingChartApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -367,19 +367,19 @@ class TestChartApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: Colors.black,
       ),
-      home: const TestChartPage(),
+      home: const TestSlidingChartPage(),
     );
   }
 }
 
-class TestChartPage extends StatefulWidget {
-  const TestChartPage({super.key});
+class TestSlidingChartPage extends StatefulWidget {
+  const TestSlidingChartPage({super.key});
 
   @override
-  State<TestChartPage> createState() => _TestChartPageState();
+  State<TestSlidingChartPage> createState() => _TestSlidingChartPageState();
 }
 
-class _TestChartPageState extends State<TestChartPage> {
+class _TestSlidingChartPageState extends State<TestSlidingChartPage> {
   @override
   Widget build(BuildContext context) {
     final double settingHeight = 400;
