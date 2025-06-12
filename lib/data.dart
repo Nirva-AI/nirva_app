@@ -759,6 +759,14 @@ extension JournalFileExtensions on JournalFile {
     return totalStressLevel / events.length;
   }
 
+  double get energyLevelAverage {
+    double totalEnergyLevel = 0;
+    for (var event in events) {
+      totalEnergyLevel += event.energy_level;
+    }
+    return totalEnergyLevel / events.length;
+  }
+
   double get totalDurationMinutes {
     double totalDuration = 0;
     for (var event in events) {

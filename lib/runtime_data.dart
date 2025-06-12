@@ -19,10 +19,16 @@ class Dashboard2 {
   static List<double> stressLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
 
   //
+  static const double energyLevelMinY = 0;
+  static const double energyLevelMaxY = 12;
+  static List<double> energyLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
+
+  //
   final DateTime dateTime;
   JournalFile? journalFile;
   double? moodScoreAverage;
   double? stressLevelAverage;
+  double? energyLevelAverage;
 
   //
   Dashboard2({required this.dateTime});
@@ -36,6 +42,7 @@ class Dashboard2 {
 
     moodScoreAverage = journalFile!.moodScoreAverage;
     stressLevelAverage = journalFile!.stressLevelAverage;
+    energyLevelAverage = journalFile!.energyLevelAverage;
   }
 
   void randomizeData() {
@@ -44,6 +51,7 @@ class Dashboard2 {
     }
     moodScoreAverage = 4 + random.nextDouble() * 6;
     stressLevelAverage = 4 + random.nextDouble() * 6;
+    energyLevelAverage = 4 + random.nextDouble() * 6;
   }
 }
 
