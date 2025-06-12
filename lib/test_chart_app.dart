@@ -47,13 +47,12 @@ class SlidingChartData {
   }
 
   static double? genRandomValue(DateTime date) {
-    // 有10%的概率返回null，模拟数据缺失
     if (random.nextDouble() < 0.1) {
       return null; // 模拟数据缺失
     }
-    // 生成一个0到12之间的随机值
-    return 12;
-    //return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
+
+    //return 12;
+    return (6 + (date.day % 5) + (date.day % 2 == 0 ? 0.5 : 0.0));
   }
 }
 
@@ -108,109 +107,126 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 滚动图表(不包含右侧刻度)
-        SingleChildScrollView(
-          controller: _scrollController,
-          scrollDirection: Axis.horizontal,
-          physics: const ClampingScrollPhysics(),
-          child: Container(
-            width: chartWidth,
-            height: 300,
-            padding: EdgeInsets.only(
-              left: 16,
-              top: 16,
-              bottom: 16,
-              right: 16,
-            ), // 右侧留出空间
-            child: LineChart(
-              LineChartData(
-                minX: 0,
-                maxX: _chartData.length.toDouble() - 1,
-                minY: widget.minY,
-                maxY: widget.maxY,
-                lineTouchData: LineTouchData(enabled: false),
-                gridData: FlGridData(
-                  show: true,
-                  horizontalInterval: 2,
-                  drawHorizontalLine: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: Color.fromRGBO(255, 255, 255, 0.2),
-                      strokeWidth: 1,
-                      dashArray: [5, 5],
-                    );
-                  },
-                ),
-                borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
-                  // 禁用右侧刻度
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+        // 使用Row来分配空间
+        Row(
+          children: [
+            // 左侧滚动区域
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                physics: const ClampingScrollPhysics(),
+                child: Container(
+                  width: chartWidth,
+                  height: 300,
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    top: 16,
+                    bottom: 16,
+                    right: 16 * 2,
                   ),
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 45,
-                      interval: 1, // 确保每个数据点之间有固定间隔
-                      getTitlesWidget: (value, meta) {
-                        final index = value.toInt();
-                        if (index < 0 || index >= _chartData.length) {
-                          return const SizedBox.shrink();
-                        }
+                  child: LineChart(
+                    LineChartData(
+                      minX: 0,
+                      maxX: _chartData.length.toDouble() - 1,
+                      minY: widget.minY,
+                      maxY: widget.maxY,
+                      lineTouchData: LineTouchData(enabled: false),
+                      gridData: FlGridData(
+                        show: true,
+                        horizontalInterval: 2,
+                        drawHorizontalLine: true,
+                        drawVerticalLine: false,
+                        getDrawingHorizontalLine: (value) {
+                          return FlLine(
+                            color: Color.fromRGBO(255, 255, 255, 0.2),
+                            strokeWidth: 1,
+                            dashArray: [5, 5],
+                          );
+                        },
+                      ),
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                        // 禁用右侧刻度
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 45,
+                            interval: 1, // 确保每个数据点之间有固定间隔
+                            getTitlesWidget: (value, meta) {
+                              final index = value.toInt();
+                              if (index < 0 || index >= _chartData.length) {
+                                return const SizedBox.shrink();
+                              }
 
-                        final date = _chartData[index].date;
-                        final isToday = _isToday(date);
+                              final date = _chartData[index].date;
+                              final isToday = _isToday(date);
 
-                        // 获取星期几的简写
-                        String weekday = DateFormat('E').format(date);
-                        // 添加日期信息，更清晰地识别不同日期
-                        String dayMonth = DateFormat('d/M').format(date);
+                              // 获取星期几的简写
+                              String weekday = DateFormat('E').format(date);
+                              // 添加日期信息，更清晰地识别不同日期
+                              String dayMonth = DateFormat('d/M').format(date);
 
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isToday ? Colors.white : Colors.transparent,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                weekday,
-                                style: TextStyle(
-                                  color: isToday ? Colors.black : Colors.white,
-                                  fontSize: 12,
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 4,
                                 ),
-                              ),
-                              Text(
-                                dayMonth,
-                                style: TextStyle(
+                                decoration: BoxDecoration(
                                   color:
-                                      isToday ? Colors.black : Colors.white70,
-                                  fontSize: 10,
+                                      isToday
+                                          ? Colors.white
+                                          : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                              ),
-                            ],
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      weekday,
+                                      style: TextStyle(
+                                        color:
+                                            isToday
+                                                ? Colors.black
+                                                : Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Text(
+                                      dayMonth,
+                                      style: TextStyle(
+                                        color:
+                                            isToday
+                                                ? Colors.black
+                                                : Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
+                        ),
+                      ),
+                      lineBarsData:
+                          _getLineChartBars(), // 正确位置在这里，作为LineChartData的直接属性
                     ),
                   ),
                 ),
-                lineBarsData:
-                    _getLineChartBars(), // 正确位置在这里，作为LineChartData的直接属性
               ),
             ),
-          ),
+            // 右侧预留固定宽度区域
+            const SizedBox(width: 32),
+          ],
         ),
       ],
     );
