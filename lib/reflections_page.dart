@@ -14,7 +14,7 @@ class ReflectionSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fullDateTime = Utils.fullDiaryDateTime(
+    final fullDateTime = Utils.fullFormatEventDateTime(
       AppRuntimeContext().selectedDateTime,
     );
     return Container(

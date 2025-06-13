@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:nirva_app/data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/apis.dart';
 import 'package:tuple/tuple.dart';
-//import 'package:nirva_app/utils.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -155,7 +155,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     String filePath,
   ) async {
     // 解析文件名
-    final parsedData = Utils.parseDataFromSpecialFilename(fileName);
+    final parsedData = Utils.parseDataFromSpecialUploadFilename(fileName);
 
     if (parsedData == null) {
       Logger().d('未能解析文件名或内容');
@@ -178,7 +178,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     final uploadResponse = await APIs.uploadTranscript(
       content,
       //parsedData.item1.toIso8601String(),
-      Utils.formatDateTimeToIso(parsedData.item1),
+      JournalFile.dateTimeToKey(parsedData.item1),
       parsedData.item2,
       parsedData.item3,
     );
@@ -192,7 +192,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     // 尝试分析数据 BackgroundTaskResponse
     final backgroundTaskResponse = await APIs.analyze(
-      Utils.formatDateTimeToIso(parsedData.item1),
+      JournalFile.dateTimeToKey(parsedData.item1),
       parsedData.item2,
     );
 
@@ -238,7 +238,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     try {
       // 获取文件名和时间戳
       final fileName = _selectedFilePath.split('/').last;
-      final parsedData = Utils.parseDataFromSpecialFilename(fileName);
+      final parsedData = Utils.parseDataFromSpecialUploadFilename(fileName);
       if (parsedData == null) {
         Logger().d('未能解析文件名或内容');
         return;
@@ -269,7 +269,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
       // 获取结果
       final journalFile = await APIs.getJournalFile(
-        Utils.formatDateTimeToIso(parsedData.item1),
+        JournalFile.dateTimeToKey(parsedData.item1),
       );
       if (journalFile != null) {
         setState(() {

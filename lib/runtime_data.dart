@@ -2,7 +2,6 @@
 import 'package:nirva_app/data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:nirva_app/utils.dart';
 import 'dart:math';
 
 class Dashboard2 {
@@ -60,15 +59,8 @@ class RuntimeData {
   // 用户信息
   User user = User(username: "", password: "", displayName: "");
 
-  // 当前的日记和仪表板数据
-  List<LegacyJournal> legacyJournals = []; // 旧的数据。！
-
   // 当前的待办事项数据
   ValueNotifier<List<Task>> tasks = ValueNotifier([]);
-
-  // 当前的高亮数据
-  List<ArchivedHighlights> weeklyArchivedHighlights = [];
-  List<ArchivedHighlights> monthlyArchivedHighlights = [];
 
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
   ValueNotifier<List<String>> favorites = ValueNotifier([]);
@@ -80,35 +72,7 @@ class RuntimeData {
   ValueNotifier<List<JournalFile>> journalFiles = ValueNotifier([]);
 
   //
-  List<Dashboard> dashboards = [];
-
-  //
   List<Dashboard2> dashboards2 = [];
-
-  //
-  LegacyJournal get currentLegacyJournal {
-    // 获取当前的日记条目
-    if (legacyJournals.isNotEmpty) {
-      return legacyJournals.last;
-    } else {
-      return LegacyJournal(
-        id: "",
-        dateTime: DateTime.now(),
-        highlights: [],
-        moodTrackings: [],
-        awakeTimeAllocations: [],
-      );
-    }
-  }
-
-  Dashboard get currentDashboard {
-    // 获取当前的仪表板
-    if (dashboards.isNotEmpty) {
-      return dashboards.last;
-    } else {
-      return Dashboard.createEmpty();
-    }
-  }
 
   bool hasTask(String tag, String description) {
     // 检查是否存在指定标签和描述的任务
@@ -245,7 +209,7 @@ class RuntimeData {
 
   JournalFile? getJournalFileByDate(DateTime date) {
     // 根据日期获取日记文件
-    final dateString = Utils.formatDateTimeToIso(date);
+    final dateString = JournalFile.dateTimeToKey(date);
     for (var file in journalFiles.value) {
       if (file.time_stamp.startsWith(dateString)) {
         return file; // 返回匹配的日记文件
