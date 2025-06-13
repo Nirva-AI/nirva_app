@@ -7,47 +7,6 @@ import 'package:tuple/tuple.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
-  // 计算对应的月份标签
-  static const List<String> shortMonthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
-  static const List<String> fullMonthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
-  static const List<String> weekDayNames = [
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-    'Sun',
-  ];
-
   // 静态方法：加载 JSON 文件并解析为 Map
   static Future<Map<String, dynamic>> loadJsonAsset(String path) async {
     // 加载 JSON 文件内容
@@ -76,42 +35,12 @@ class Utils {
     }
   }
 
-  static String fullDiaryDateTime(DateTime dateTime) {
-    return '${fullMonthNames[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
+  static String fullFormatEventDateTime(DateTime dateTime) {
+    final formatter = DateFormat('MMMM d, yyyy');
+    return formatter.format(dateTime);
   }
 
-  /// 格式化月份标题
-  static String formatMonthTitleForDashboardChart(
-    int widgetIndexValue,
-    int currentMonth,
-    int monthsCount,
-  ) {
-    int startMonth = (currentMonth - monthsCount) % 12;
-    if (startMonth < 0) startMonth += 12;
-    int targetMonth = (startMonth + widgetIndexValue) % 12;
-    return Utils.shortMonthNames[targetMonth];
-  }
-
-  // 格式化每天的标题 formatDayTitleForDashboardChart
-  static String formatDayTitleForDashboardChart(
-    int widgetIndexValue,
-    int currentWeekDay,
-    int dayCount,
-  ) {
-    // 计算从当前月份开始的正序排列
-    int startWeekDay = (currentWeekDay - dayCount) % 7;
-    if (startWeekDay < 0) startWeekDay += 7;
-    int targetWeekDay = (startWeekDay + widgetIndexValue) % 7;
-    return Utils.weekDayNames[targetWeekDay];
-  }
-
-  /// 先写死，就显示最近的4个周 formateWeekTitleForDashboardChart
-  static String formateWeekTitleForDashboardChart(int widgetIndexValue) {
-    List<String> weekNames = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-    return weekNames[widgetIndexValue];
-  }
-
-  static Tuple2<DateTime, DateTime> parseTimeRange(
+  static Tuple2<DateTime, DateTime> extractEventTimeRange(
     DateTime referenceDateTime,
     String timeRange,
   ) {
@@ -150,7 +79,7 @@ class Utils {
   /// 文件名格式为"nirva-YYYY-MM-DD-NN.txt"
   /// 返回一个包含日期时间对象、文件编号和后缀的元组
   /// 如果文件名格式不正确或解析失败，返回null
-  static Tuple3<DateTime, int, String>? parseDataFromSpecialFilename(
+  static Tuple3<DateTime, int, String>? parseDataFromSpecialUploadFilename(
     String filename,
   ) {
     // 用"-"分割文件名
@@ -194,11 +123,5 @@ class Utils {
       debugPrint("无法从文件名 $filename 中解析出日期时间、文件编号或后缀。");
       return null;
     }
-  }
-
-  static String formatDateTimeToIso(DateTime date) {
-    // 格式 "yyyy-MM-ddTHH:mm:ss" 完全符合 ISO8601 格式但不含毫秒
-    final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    return formatter.format(date);
   }
 }

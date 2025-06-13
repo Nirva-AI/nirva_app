@@ -6,7 +6,6 @@ import 'package:nirva_app/url_configuration.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/utils.dart';
 
 // 管理全局数据的类
 class AppRuntimeContext {
@@ -49,7 +48,7 @@ class AppRuntimeContext {
   // 用于基础app服务的 Dio 实例
   final Dio _appserviceDio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.2.70:8000',
+        baseUrl: 'http://192.168.192.105:8000',
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -124,7 +123,7 @@ class AppRuntimeContext {
     _currentJournalFile = null;
     for (var journalFile in journalFiles) {
       if (journalFile.time_stamp ==
-          Utils.formatDateTimeToIso(_selectedDateTime)) {
+          JournalFile.dateTimeToKey(_selectedDateTime)) {
         _currentJournalFile = journalFile;
       }
     }

@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 part 'data.freezed.dart';
 part 'data.g.dart';
 
@@ -145,34 +146,6 @@ class Note with _$Note {
 }
 
 @freezed
-class Highlight with _$Highlight {
-  const factory Highlight({
-    required String category,
-    required String content,
-    @Default(0xFF00FF00) int color, // 默认颜色为绿色
-  }) = _Highlight;
-
-  factory Highlight.fromJson(Map<String, dynamic> json) =>
-      _$HighlightFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _Highlight).toJson();
-}
-
-@freezed
-class ArchivedHighlights with _$ArchivedHighlights {
-  const factory ArchivedHighlights({
-    required DateTime beginTime,
-    required DateTime endTime,
-    required List<Highlight> highlights,
-  }) = _ArchivedHighlights;
-
-  factory ArchivedHighlights.fromJson(Map<String, dynamic> json) =>
-      _$ArchivedHighlightsFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _ArchivedHighlights).toJson();
-}
-
-@freezed
 class Task with _$Task {
   const factory Task({
     required String id,
@@ -185,299 +158,6 @@ class Task with _$Task {
   @override
   Map<String, dynamic> toJson() => (this as _Task).toJson();
 }
-
-@freezed
-class MoodTracking with _$MoodTracking {
-  const factory MoodTracking({
-    required String name,
-    required double value,
-    @Default(0xFF000000) int color, // 默认颜色为绿色
-  }) = _MoodTracking;
-
-  factory MoodTracking.fromJson(Map<String, dynamic> json) =>
-      _$MoodTrackingFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _MoodTracking).toJson();
-}
-
-@freezed
-class AwakeTimeAllocation with _$AwakeTimeAllocation {
-  const factory AwakeTimeAllocation({
-    required String name,
-    required double value,
-    @Default(0xFF00FF00) int color, // 默认颜色为绿色
-  }) = _AwakeTimeAllocation;
-
-  factory AwakeTimeAllocation.fromJson(Map<String, dynamic> json) =>
-      _$AwakeTimeAllocationFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _AwakeTimeAllocation).toJson();
-}
-
-// @freezed
-// class SocialEntity with _$SocialEntity {
-//   const factory SocialEntity({
-//     required String id,
-//     required String name,
-//     required String description,
-//     required List<String> tips,
-//     required double hours,
-//     @Default('') String impact,
-//   }) = _SocialEntity;
-
-//   factory SocialEntity.fromJson(Map<String, dynamic> json) =>
-//       _$SocialEntityFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _SocialEntity).toJson();
-// }
-
-// @freezed
-// class SocialMap with _$SocialMap {
-//   const factory SocialMap({
-//     required String id,
-//     required List<SocialEntity> socialEntities,
-//   }) = _SocialMap;
-
-//   factory SocialMap.fromJson(Map<String, dynamic> json) =>
-//       _$SocialMapFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _SocialMap).toJson();
-// }
-
-@freezed
-class LegacyJournal with _$LegacyJournal {
-  const factory LegacyJournal({
-    required String id,
-    required DateTime dateTime,
-    //required List<Quote> quotes,
-    //required MoodScore moodScore,
-    //required StressLevel stressLevel,
-    required List<Highlight> highlights,
-    //required List<EnergyLevel> energyLevels,
-    required List<MoodTracking> moodTrackings,
-    required List<AwakeTimeAllocation> awakeTimeAllocations,
-    //required SocialMap socialMap,
-  }) = _Journal;
-
-  factory LegacyJournal.fromJson(Map<String, dynamic> json) =>
-      _$LegacyJournalFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _Journal).toJson();
-}
-
-// extension JournalExtensions on Journal {
-//   Map<MoodTracking, double> get moodTrackingMap {
-//     double totalValue = 0.0;
-//     for (var mood in moodTrackings) {
-//       totalValue += mood.value;
-//     }
-//     final Map<MoodTracking, double> moodMap = {};
-//     if (totalValue == 0) {
-//       return moodMap;
-//     }
-//     for (var mood in moodTrackings) {
-//       moodMap[mood] = mood.value / totalValue;
-//     }
-//     return moodMap;
-//   }
-// }
-
-// @freezed
-// class MoodScoreDashboard with _$MoodScoreDashboard {
-//   const factory MoodScoreDashboard({
-//     required List<String> insights,
-//     required List<double> scores,
-//     required List<double> day,
-//     required List<double> week,
-//     required List<double> month,
-//   }) = _MoodScoreDashboard;
-
-//   factory MoodScoreDashboard.fromJson(Map<String, dynamic> json) =>
-//       _$MoodScoreDashboardFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _MoodScoreDashboard).toJson();
-// }
-
-// @freezed
-// class StressLevelDashboard with _$StressLevelDashboard {
-//   const factory StressLevelDashboard({
-//     required List<String> insights,
-//     required List<double> scores,
-//     required List<double> day,
-//     required List<double> week,
-//     required List<double> month,
-//   }) = _StressLevelDashboard;
-
-//   factory StressLevelDashboard.fromJson(Map<String, dynamic> json) =>
-//       _$StressLevelDashboardFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _StressLevelDashboard).toJson();
-// }
-
-// @freezed
-// class EnergyLevelDashboard with _$EnergyLevelDashboard {
-//   const factory EnergyLevelDashboard({
-//     required List<String> insights,
-//     required List<double> scores,
-//     required List<double> day,
-//     required List<double> week,
-//     required List<double> month,
-//   }) = _EnergyLevelDashboard;
-
-//   factory EnergyLevelDashboard.fromJson(Map<String, dynamic> json) =>
-//       _$EnergyLevelDashboardFromJson(json);
-//   @override
-//   Map<String, dynamic> toJson() => (this as _EnergyLevelDashboard).toJson();
-// }
-
-@freezed
-class MoodTrackingDashboardEntry with _$MoodTrackingDashboardEntry {
-  const factory MoodTrackingDashboardEntry({
-    required MoodTracking moodTracking,
-    required List<double> day,
-    required List<double> week,
-    required List<double> month,
-  }) = _MoodTrackingDashboardEntry;
-
-  factory MoodTrackingDashboardEntry.fromJson(Map<String, dynamic> json) =>
-      _$MoodTrackingDashboardEntryFromJson(json);
-  @override
-  Map<String, dynamic> toJson() =>
-      (this as _MoodTrackingDashboardEntry).toJson();
-}
-
-@freezed
-class MoodTrackingDashboard with _$MoodTrackingDashboard {
-  const factory MoodTrackingDashboard({
-    required List<MoodTrackingDashboardEntry> entries,
-    required List<String> insights,
-  }) = _MoodTrackingDashboard;
-
-  factory MoodTrackingDashboard.fromJson(Map<String, dynamic> json) =>
-      _$MoodTrackingDashboardFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _MoodTrackingDashboard).toJson();
-}
-
-extension MoodTrackingDashboardExtensions on MoodTrackingDashboard {
-  Map<String, MoodTrackingDashboardEntry> get moodTrackingMap {
-    final Map<String, MoodTrackingDashboardEntry> moodMap = {};
-    for (var entry in entries) {
-      moodMap[entry.moodTracking.name] = entry;
-    }
-    return moodMap;
-  }
-}
-
-@freezed
-class AwakeTimeAllocationDashboardEntry
-    with _$AwakeTimeAllocationDashboardEntry {
-  const factory AwakeTimeAllocationDashboardEntry({
-    required AwakeTimeAllocation awakeTimeAllocation,
-    required List<double> day,
-    required List<double> week,
-    required List<double> month,
-  }) = _AwakeTimeAllocationDashboardEntry;
-
-  factory AwakeTimeAllocationDashboardEntry.fromJson(
-    Map<String, dynamic> json,
-  ) => _$AwakeTimeAllocationDashboardEntryFromJson(json);
-  @override
-  Map<String, dynamic> toJson() =>
-      (this as _AwakeTimeAllocationDashboardEntry).toJson();
-}
-
-@freezed
-class AwakeTimeAllocationDashboard with _$AwakeTimeAllocationDashboard {
-  const factory AwakeTimeAllocationDashboard({
-    required List<AwakeTimeAllocationDashboardEntry> entries,
-    required List<String> insights,
-  }) = _AwakeTimeAllocationDashboard;
-
-  factory AwakeTimeAllocationDashboard.fromJson(Map<String, dynamic> json) =>
-      _$AwakeTimeAllocationDashboardFromJson(json);
-  @override
-  Map<String, dynamic> toJson() =>
-      (this as _AwakeTimeAllocationDashboard).toJson();
-}
-
-extension AwakeTimeAllocationDashboardExtensions
-    on AwakeTimeAllocationDashboard {
-  Map<String, AwakeTimeAllocationDashboardEntry> get awakeTimeAllocationMap {
-    final Map<String, AwakeTimeAllocationDashboardEntry> allocationMap = {};
-    for (var entry in entries) {
-      allocationMap[entry.awakeTimeAllocation.name] = entry;
-    }
-    return allocationMap;
-  }
-}
-
-@freezed
-class Dashboard with _$Dashboard {
-  const factory Dashboard({
-    required DateTime dateTime,
-    // required MoodScoreDashboard moodScore,
-    // required StressLevelDashboard stressLevel,
-    // required EnergyLevelDashboard energyLevel,
-    required MoodTrackingDashboard moodTracking,
-    required AwakeTimeAllocationDashboard awakeTimeAllocation,
-  }) = _Dashboard;
-
-  factory Dashboard.fromJson(Map<String, dynamic> json) =>
-      _$DashboardFromJson(json);
-  @override
-  Map<String, dynamic> toJson() => (this as _Dashboard).toJson();
-
-  static Dashboard createEmpty() {
-    return Dashboard(
-      dateTime: DateTime.now(),
-      // moodScore: MoodScoreDashboard(
-      //   insights: [],
-      //   scores: [],
-      //   day: [],
-      //   week: [],
-      //   month: [],
-      // ),
-      // stressLevel: StressLevelDashboard(
-      //   insights: [],
-      //   scores: [],
-      //   day: [],
-      //   week: [],
-      //   month: [],
-      // ),
-      // energyLevel: EnergyLevelDashboard(
-      //   insights: [],
-      //   scores: [],
-      //   day: [],
-      //   week: [],
-      //   month: [],
-      // ),
-      moodTracking: MoodTrackingDashboard(entries: [], insights: []),
-      awakeTimeAllocation: AwakeTimeAllocationDashboard(
-        entries: [],
-        insights: [],
-      ),
-    );
-  }
-}
-
-// @freezed
-// class LabelExtraction with _$LabelExtraction {
-//   const factory LabelExtraction({required List<EventAnalysis> events}) =
-//       _LabelExtraction;
-
-//   factory LabelExtraction.fromJson(Map<String, dynamic> json) =>
-//       _$LabelExtractionFromJson(json);
-// }
-
-// @freezed
-// class ReflectionData with _$ReflectionData {
-//   const factory ReflectionData({required DailyReflection daily_reflection}) =
-//       _ReflectionData;
-
-//   factory ReflectionData.fromJson(Map<String, dynamic> json) =>
-//       _$ReflectionDataFromJson(json);
-// }
 
 class MoodTracking2 {
   static const peacefulColor = 0xFF2196F3; // 蓝色
@@ -576,17 +256,7 @@ class AwakeTimeAllocation2 {
   }
 }
 
-// inferred_impact_on_user_name: str = Field(
-//     description="For social interactions, infer if it seemed 'energizing', 'draining', or 'neutral' for user_name, based on their language, tone, and reactions. For non-social, use 'N/A'."
-// )
-
-//  interaction_dynamic: str = Field(
-//       description="If social, describe the dynamic (e.g., 'collaborative', 'supportive', 'tense', 'neutral', 'instructional', 'one-sided'). If not social, use 'N/A'."
-//   )
-
 class SocialEntity2 {
-  //'energizing', 'draining', or 'neutral
-
   static const energizingColor = 0xFF4CAF50; // 绿色
   static const drainingColor = 0xFFF44336; // 红色
   static const neutralColor = 0xFF9E9E9E; // 灰色
@@ -621,9 +291,6 @@ class SocialEntity2 {
     return minutes / 60.0; // 将分钟转换为小时
   }
 
-  // inferred_impact_on_user_name: str = Field(
-  //     description="For social interactions, infer if it seemed 'energizing', 'draining', or 'neutral' for user_name, based on their language, tone, and reactions. For non-social, use 'N/A'."
-  // )
   String get impact {
     if (impacts.isEmpty) return 'N/A';
     // 假设影响是正面、中性或负面
@@ -672,6 +339,12 @@ class JournalFile with _$JournalFile {
 
   @override
   Map<String, dynamic> toJson() => (this as _JournalFile).toJson();
+
+  static String dateTimeToKey(DateTime date) {
+    // 格式 "yyyy-MM-ddTHH:mm:ss" 完全符合 ISO8601 格式但不含毫秒
+    final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    return formatter.format(date);
+  }
 
   static JournalFile createEmpty() {
     // 创建一个空的 JournalFile

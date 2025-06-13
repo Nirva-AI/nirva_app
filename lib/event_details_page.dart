@@ -30,8 +30,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final fullDateTime = Utils.fullDiaryDateTime(
-      AppRuntimeContext().data.currentLegacyJournal.dateTime,
+    final fullDateTime = Utils.fullFormatEventDateTime(
+      AppRuntimeContext().selectedDateTime,
     );
     return Scaffold(
       appBar: PreferredSize(

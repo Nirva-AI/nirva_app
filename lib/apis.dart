@@ -7,7 +7,6 @@ import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/utils.dart';
 
 class APIs {
   // 获取 URL 配置，故意不抓留给外面抓。
@@ -295,8 +294,7 @@ class APIs {
         id: uuid.v4(), // 使用uuid生成唯一ID
         role: MessageRole.human,
         content: content,
-        time_stamp: Utils.formatDateTimeToIso(DateTime.now()),
-        //DateTime.now().toIso8601String(),
+        time_stamp: JournalFile.dateTimeToKey(DateTime.now()),
       ),
       chat_history: appRuntimeContext.chat.chatHistory.value,
     );
