@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 part 'data.freezed.dart';
 part 'data.g.dart';
 
@@ -159,7 +160,7 @@ class Task with _$Task {
   Map<String, dynamic> toJson() => (this as _Task).toJson();
 }
 
-class MoodTracking2 {
+class MoodTracking {
   static const peacefulColor = 0xFF2196F3; // 蓝色
   static const energizedColor = 0xFFFF9800; // 橙色
   static const engagedColor = 0xFF4CAF50; // 绿色
@@ -177,7 +178,7 @@ class MoodTracking2 {
 
   final String name;
   double percentage;
-  MoodTracking2({required this.name, required this.percentage});
+  MoodTracking({required this.name, required this.percentage});
 
   int get color {
     switch (name.toLowerCase()) {
@@ -213,7 +214,7 @@ class MoodTracking2 {
   }
 }
 
-class AwakeTimeAllocation2 {
+class AwakeTimeAllocation {
   static const workColor = 0xFF2196F3; // 蓝色
   static const exerciseColor = 0xFFFF9800; // 橙色
   static const socialColor = 0xFF4CAF50; // 绿色
@@ -228,7 +229,7 @@ class AwakeTimeAllocation2 {
   final String name;
   double minutes;
 
-  AwakeTimeAllocation2({required this.name, required this.minutes});
+  AwakeTimeAllocation({required this.name, required this.minutes});
 
   int get color {
     switch (name.toLowerCase()) {
@@ -256,7 +257,7 @@ class AwakeTimeAllocation2 {
   }
 }
 
-class SocialEntity2 {
+class SocialEntity {
   static const energizingColor = 0xFF4CAF50; // 绿色
   static const drainingColor = 0xFFF44336; // 红色
   static const neutralColor = 0xFF9E9E9E; // 灰色
@@ -266,7 +267,7 @@ class SocialEntity2 {
   final Set<String> interactionDynamics;
   final Set<String> impacts;
 
-  SocialEntity2({
+  SocialEntity({
     required this.name,
     required this.minutes,
     required this.interactionDynamics,
@@ -274,11 +275,11 @@ class SocialEntity2 {
   });
 
   // 写一个方法，和另外一个 SocialEntity2 合并，并返回自身。
-  SocialEntity2 merge(SocialEntity2 other) {
+  SocialEntity merge(SocialEntity other) {
     if (name != other.name) {
       throw ArgumentError('Cannot merge different social entities');
     }
-    return SocialEntity2(
+    return SocialEntity(
       name: name,
       minutes: minutes + other.minutes,
       interactionDynamics: Set.from(interactionDynamics)
@@ -478,21 +479,21 @@ extension JournalFileExtensions on JournalFile {
     return activityTimeMap;
   }
 
-  List<MoodTracking2> get moodTracking2 {
-    List<MoodTracking2> ret = [];
+  List<MoodTracking> get moodTracking {
+    List<MoodTracking> ret = [];
     final totalTime = totalDurationMinutes;
     for (var entry in moodTimeMap.entries) {
       double percentage = entry.value / totalTime;
-      ret.add(MoodTracking2(name: entry.key, percentage: percentage));
+      ret.add(MoodTracking(name: entry.key, percentage: percentage));
     }
 
     return ret;
   }
 
-  List<AwakeTimeAllocation2> get awakeTimeAllocation2 {
-    List<AwakeTimeAllocation2> ret = [];
+  List<AwakeTimeAllocation> get awakeTimeAllocation {
+    List<AwakeTimeAllocation> ret = [];
     for (var entry in activityTimeMap.entries) {
-      ret.add(AwakeTimeAllocation2(name: entry.key, minutes: entry.value));
+      ret.add(AwakeTimeAllocation(name: entry.key, minutes: entry.value));
     }
     return ret;
   }
@@ -505,8 +506,8 @@ extension JournalFileExtensions on JournalFile {
     return peoples;
   }
 
-  Map<String, SocialEntity2> get socialEntities {
-    Map<String, SocialEntity2> socialMap = {};
+  Map<String, SocialEntity> get socialEntities {
+    Map<String, SocialEntity> socialMap = {};
     for (var event in events) {
       for (var person in event.people_involved) {
         if (socialMap.containsKey(person)) {
@@ -514,7 +515,7 @@ extension JournalFileExtensions on JournalFile {
           socialMap[person]!.interactionDynamics.add(event.interaction_dynamic);
           socialMap[person]!.impacts.add(event.inferred_impact_on_user_name);
         } else {
-          socialMap[person] = SocialEntity2(
+          socialMap[person] = SocialEntity(
             name: person,
             minutes: event.duration_minutes.toDouble(),
             interactionDynamics: {event.interaction_dynamic},
@@ -550,5 +551,55 @@ extension JournalFileExtensions on JournalFile {
     }
 
     return quotes;
+  }
+}
+
+class Dashboard {
+  static final random = Random();
+
+  //
+  static const double moodScoreMinY = 0;
+  static const double moodScoreMaxY = 12;
+  static List<double> moodScoreYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
+
+  //
+  static const double stressLevelMinY = 0;
+  static const double stressLevelMaxY = 12;
+  static List<double> stressLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
+
+  //
+  static const double energyLevelMinY = 0;
+  static const double energyLevelMaxY = 12;
+  static List<double> energyLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
+
+  //
+  final DateTime dateTime;
+  JournalFile? journalFile;
+  double? moodScoreAverage;
+  double? stressLevelAverage;
+  double? energyLevelAverage;
+
+  //
+  Dashboard({required this.dateTime});
+
+  void syncDataWithJournalFile() {
+    if (journalFile == null) {
+      moodScoreAverage = null;
+      stressLevelAverage = null;
+      return;
+    }
+
+    moodScoreAverage = journalFile!.moodScoreAverage;
+    stressLevelAverage = journalFile!.stressLevelAverage;
+    energyLevelAverage = journalFile!.energyLevelAverage;
+  }
+
+  void shuffleData() {
+    if (random.nextDouble() < 0.1) {
+      return;
+    }
+    moodScoreAverage = 4 + random.nextDouble() * 6;
+    stressLevelAverage = 4 + random.nextDouble() * 6;
+    energyLevelAverage = 4 + random.nextDouble() * 6;
   }
 }

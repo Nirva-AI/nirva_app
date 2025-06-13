@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:nirva_app/app_runtime_context.dart';
-import 'package:nirva_app/runtime_data.dart';
+import 'package:nirva_app/data.dart';
 
 class EnergyLevelDetailsPage extends StatefulWidget {
   const EnergyLevelDetailsPage({super.key});
@@ -69,16 +69,16 @@ class SlidingLineChart extends StatefulWidget {
 
 class _SlidingLineChartState extends State<SlidingLineChart> {
   late ScrollController _scrollController;
-  late List<Dashboard2> _chartData;
+  late List<Dashboard> _chartData;
 
   double get chartWidth {
-    return AppRuntimeContext().data.dashboards2.length * widget.unitWidth;
+    return AppRuntimeContext().data.dashboards.length * widget.unitWidth;
   }
 
   @override
   void initState() {
     super.initState();
-    _chartData = AppRuntimeContext().data.dashboards2;
+    _chartData = AppRuntimeContext().data.dashboards;
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -95,8 +95,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    final minY = Dashboard2.energyLevelMinY;
-    final maxY = Dashboard2.energyLevelMaxY;
+    final minY = Dashboard.energyLevelMinY;
+    final maxY = Dashboard.energyLevelMaxY;
     return Stack(
       children: [
         Row(
@@ -279,7 +279,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     required double offset,
   }) {
     // 可以根据需要自动计算间隔
-    return Dashboard2.energyLevelYAxisLabels
+    return Dashboard.energyLevelYAxisLabels
         .map(
           (value) => _buildYAxisLabel(
             value: value,
