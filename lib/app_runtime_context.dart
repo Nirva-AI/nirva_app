@@ -137,11 +137,11 @@ class AppRuntimeContext {
 
   //
   // 获取当前的社交地图
-  Map<String, SocialEntity2> buildSocialMap() {
+  Map<String, SocialEntity> buildSocialMap() {
     // 获取全局社交实体的映射
-    final Map<String, SocialEntity2> map = {};
+    final Map<String, SocialEntity> map = {};
     for (var journalFile in journalFiles) {
-      Map<String, SocialEntity2> subMap = journalFile.socialEntities;
+      Map<String, SocialEntity> subMap = journalFile.socialEntities;
       for (var key in subMap.keys) {
         if (!map.containsKey(key)) {
           map[key] = subMap[key]!;

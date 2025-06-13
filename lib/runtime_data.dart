@@ -2,57 +2,6 @@
 import 'package:nirva_app/data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:math';
-
-class Dashboard2 {
-  static final random = Random();
-
-  //
-  static const double moodScoreMinY = 0;
-  static const double moodScoreMaxY = 12;
-  static List<double> moodScoreYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
-
-  //
-  static const double stressLevelMinY = 0;
-  static const double stressLevelMaxY = 12;
-  static List<double> stressLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
-
-  //
-  static const double energyLevelMinY = 0;
-  static const double energyLevelMaxY = 12;
-  static List<double> energyLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
-
-  //
-  final DateTime dateTime;
-  JournalFile? journalFile;
-  double? moodScoreAverage;
-  double? stressLevelAverage;
-  double? energyLevelAverage;
-
-  //
-  Dashboard2({required this.dateTime});
-
-  void updateDataFromJournalFile() {
-    if (journalFile == null) {
-      moodScoreAverage = null;
-      stressLevelAverage = null;
-      return;
-    }
-
-    moodScoreAverage = journalFile!.moodScoreAverage;
-    stressLevelAverage = journalFile!.stressLevelAverage;
-    energyLevelAverage = journalFile!.energyLevelAverage;
-  }
-
-  void randomizeData() {
-    if (random.nextDouble() < 0.1) {
-      return;
-    }
-    moodScoreAverage = 4 + random.nextDouble() * 6;
-    stressLevelAverage = 4 + random.nextDouble() * 6;
-    energyLevelAverage = 4 + random.nextDouble() * 6;
-  }
-}
 
 // 管理全局数据的类
 class RuntimeData {
@@ -72,7 +21,7 @@ class RuntimeData {
   ValueNotifier<List<JournalFile>> journalFiles = ValueNotifier([]);
 
   //
-  List<Dashboard2> dashboards2 = [];
+  List<Dashboard> dashboards = [];
 
   bool hasTask(String tag, String description) {
     // 检查是否存在指定标签和描述的任务
@@ -171,8 +120,8 @@ class RuntimeData {
     return journalFiles.value;
   }
 
-  void _rebuildDashboard2() {
-    dashboards2.clear();
+  void _refreshDashboardData() {
+    dashboards.clear();
     if (journalFiles.value.isEmpty) {
       return;
     }
@@ -193,16 +142,16 @@ class RuntimeData {
 
     for (int i = 0; i <= daysBetween; i++) {
       final date = firstDay.add(Duration(days: i));
-      dashboards2.add(Dashboard2(dateTime: date));
-      dashboards2.last.randomizeData();
+      dashboards.add(Dashboard(dateTime: date));
+      dashboards.last.shuffleData();
     }
 
-    for (var dashboard in dashboards2) {
+    for (var dashboard in dashboards) {
       // 遍历每个仪表板，填充数据
       final journalFile = getJournalFileByDate(dashboard.dateTime);
       if (journalFile != null) {
         dashboard.journalFile = journalFile;
-        dashboard.updateDataFromJournalFile();
+        dashboard.syncDataWithJournalFile();
       }
     }
   }
@@ -223,6 +172,6 @@ class RuntimeData {
     // 初始化日记文件列表
     journalFiles.value = files;
     _sortJournalFilesByDate(); // 排序
-    _rebuildDashboard2();
+    _refreshDashboardData();
   }
 }

@@ -14,7 +14,7 @@ class MoodTrackingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sections =
-        AppRuntimeContext().currentJournalFile.moodTracking2.map((entry) {
+        AppRuntimeContext().currentJournalFile.moodTracking.map((entry) {
           return PieChartSectionData(
             value: entry.percentage.toDouble(),
             color: Color(entry.color),
