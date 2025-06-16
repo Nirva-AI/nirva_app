@@ -498,4 +498,16 @@ class HiveStorage {
     );
     await saveUpdateDataTasks(updateDataTaskList);
   }
+
+  //
+  Future<void> updateUpdateDataTaskStatus(String id, int status) async {
+    final updateDataTaskList = getAllUpdateDataTasks();
+    for (var task in updateDataTaskList) {
+      if (task.id == id) {
+        task.status = status; // 更新任务状态
+        break;
+      }
+    }
+    await saveUpdateDataTasks(updateDataTaskList);
+  }
 }
