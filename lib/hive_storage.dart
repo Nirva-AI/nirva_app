@@ -32,6 +32,10 @@ class HiveStorage {
   static const String _notesBox = 'notesBox';
   static const String _notesKey = 'notes';
 
+  // 更新数据任务相关常量
+  static const String _updateDataTasksBox = 'updateDataTasksBox';
+  static const String _updateDataTasksKey = 'updateDataTasks';
+
   Future<void> _initialize() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
@@ -51,6 +55,7 @@ class HiveStorage {
       Hive.deleteBoxFromDisk(_journalFilesBox),
       Hive.deleteBoxFromDisk(_tasksBox),
       Hive.deleteBoxFromDisk(_notesBox),
+      Hive.deleteBoxFromDisk(_updateDataTasksBox), // 添加这一行
     ]);
 
     // 这两个操作需要顺序执行，不能并行化
@@ -68,6 +73,7 @@ class HiveStorage {
       _initJournalSystem(),
       _initTasks(), // 添加任务存储初始化
       _initNotes(), // 添加笔记存储初始化
+      _initUpdateDataTasks(), // 添加更新数据任务存储初始化
     ]);
   }
 
@@ -148,6 +154,19 @@ class HiveStorage {
     }
   }
 
+  // 初始化更新数据任务的 Box
+  Future<void> _initUpdateDataTasks() async {
+    if (!Hive.isAdapterRegistered(10)) {
+      Hive.registerAdapter(UpdateDataTaskAdapter());
+    }
+    if (!Hive.isAdapterRegistered(11)) {
+      Hive.registerAdapter(UpdateDataTaskListAdapter());
+    }
+    if (!Hive.isBoxOpen(_updateDataTasksBox)) {
+      await Hive.openBox<UpdateDataTaskList>(_updateDataTasksBox);
+    }
+  }
+
   // 获取所有 Hive 数据的统计信息和内容
   Map<String, dynamic> getAllData() {
     final Map<String, dynamic> data = {};
@@ -206,6 +225,18 @@ class HiveStorage {
       final notesBox = Hive.box<HiveNotes>(_notesBox);
       final notes = notesBox.get(_notesKey);
       data['notes'] = notes;
+    }
+
+    // 获取更新数据任务数据
+    if (Hive.isBoxOpen(_updateDataTasksBox)) {
+      final updateDataTasksBox = Hive.box<UpdateDataTaskList>(
+        _updateDataTasksBox,
+      );
+      final updateDataTasks = updateDataTasksBox.get(_updateDataTasksKey);
+      data['updateDataTasks'] = updateDataTasks;
+      if (updateDataTasks != null) {
+        data['updateDataTasksCount'] = updateDataTasks.tasks.length;
+      }
     }
 
     return data;
@@ -427,5 +458,21 @@ class HiveStorage {
     final noteJsonList =
         notes.map((note) => jsonEncode(note.toJson())).toList();
     await box.put(_notesKey, HiveNotes(noteJsonList: noteJsonList));
+  }
+
+  // 获取所有更新数据任务
+  List<UpdateDataTask> getAllUpdateDataTasks() {
+    final box = Hive.box<UpdateDataTaskList>(_updateDataTasksBox);
+    final updateDataTaskList = box.get(_updateDataTasksKey);
+    if (updateDataTaskList == null) {
+      return [];
+    }
+    return updateDataTaskList.tasks;
+  }
+
+  // 保存更新数据任务
+  Future<void> saveUpdateDataTasks(List<UpdateDataTask> tasks) async {
+    final box = Hive.box<UpdateDataTaskList>(_updateDataTasksBox);
+    await box.put(_updateDataTasksKey, UpdateDataTaskList(tasks: tasks));
   }
 }

@@ -92,7 +92,6 @@ class AppRuntimeContext {
   // 获取当前的日记文件。
   JournalFile get currentJournalFile {
     return _currentJournalFile ?? emptyJournalFile;
-    //JournalFile.createEmpty(); // 如果没有绑定，则返回一个空的日记文件
   }
 
   //

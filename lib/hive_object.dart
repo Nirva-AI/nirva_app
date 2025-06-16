@@ -224,3 +224,24 @@ class HiveNotes extends HiveObject {
         .toList();
   }
 }
+
+// 更新数据任务
+@HiveType(typeId: 10)
+class UpdateDataTask extends HiveObject {
+  @HiveField(0)
+  String id;
+
+  @HiveField(1)
+  int status;
+
+  UpdateDataTask({required this.id, required this.status});
+}
+
+// 更新数据任务列表
+@HiveType(typeId: 11)
+class UpdateDataTaskList extends HiveObject {
+  @HiveField(0)
+  List<UpdateDataTask> tasks;
+
+  UpdateDataTaskList({required this.tasks});
+}
