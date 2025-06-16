@@ -69,14 +69,45 @@ class _ReflectionCardState extends State<ReflectionCard> {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            Text(
-              widget.content,
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
-            ),
+            // 替换普通Text为富文本解析
+            _buildRichText(widget.content),
           ],
         ),
       ),
     );
+  }
+
+  // 添加新方法解析富文本
+  Widget _buildRichText(String content) {
+    final lines = content.split('\n');
+    final textSpans = <TextSpan>[];
+
+    for (var line in lines) {
+      // 检查是否以**开头并以**结尾（整行粗体）
+      if (line.startsWith('**') && line.endsWith('**')) {
+        final text = line.substring(2, line.length - 2);
+        textSpans.add(
+          TextSpan(
+            text: '$text\n',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+        );
+      } else {
+        // 普通文本
+        textSpans.add(
+          TextSpan(
+            text: '$line\n',
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
+          ),
+        );
+      }
+    }
+
+    return RichText(text: TextSpan(children: textSpans));
   }
 }
 
@@ -265,46 +296,48 @@ class ReflectionsPage extends StatelessWidget {
 
     final StringBuffer buffer = StringBuffer();
 
-    // Gratitude summary
+    // Gratitude summary - 添加粗体标记
     if (gratitude.gratitude_summary.isNotEmpty) {
-      buffer.writeln('📝 Things I\'m grateful for:');
+      buffer.writeln('**📝 Things I\'m grateful for:**');
       for (var item in gratitude.gratitude_summary) {
         buffer.writeln('• $item');
       }
       buffer.writeln();
     }
 
-    // Gratitude details
+    // Gratitude details - 添加粗体标记
     if (gratitude.gratitude_details.isNotEmpty) {
-      buffer.writeln('💭 Gratitude details:');
+      buffer.writeln('**💭 Gratitude details:**');
       buffer.writeln(gratitude.gratitude_details);
       buffer.writeln();
     }
 
-    // Win summary
+    // Win summary - 添加粗体标记
     if (gratitude.win_summary.isNotEmpty) {
-      buffer.writeln('🏆 Today\'s wins:');
+      buffer.writeln('**🏆 Today\'s wins:**');
       for (var item in gratitude.win_summary) {
         buffer.writeln('• $item');
       }
       buffer.writeln();
     }
 
-    // Win details
+    // Win details - 添加粗体标记
     if (gratitude.win_details.isNotEmpty) {
-      buffer.writeln('✨ Win details:');
+      buffer.writeln('**✨ Win details:**');
       buffer.writeln(gratitude.win_details);
       buffer.writeln();
     }
 
-    // Feel alive moments
+    // Feel alive moments - 添加粗体标记
     if (gratitude.feel_alive_moments.isNotEmpty) {
-      buffer.writeln('⚡ Moments I felt alive:');
+      buffer.writeln('**⚡ Moments I felt alive:**');
       buffer.writeln(gratitude.feel_alive_moments);
     }
 
     return buffer.toString().trim();
   }
+
+  // 修改 _parseChallengesContent 方法，添加粗体标记
 
   String _parseChallengesContent(ChallengesAndGrowth challenges) {
     if (challenges.toString().isEmpty) {
@@ -315,7 +348,7 @@ class ReflectionsPage extends StatelessWidget {
 
     // Growth summary
     if (challenges.growth_summary.isNotEmpty) {
-      buffer.writeln('🌱 Areas of growth:');
+      buffer.writeln('**🌱 Areas of growth:**');
       for (var item in challenges.growth_summary) {
         buffer.writeln('• $item');
       }
@@ -324,26 +357,28 @@ class ReflectionsPage extends StatelessWidget {
 
     // Obstacles faced
     if (challenges.obstacles_faced.isNotEmpty) {
-      buffer.writeln('🧗 Obstacles faced:');
+      buffer.writeln('**🧗 Obstacles faced:**');
       buffer.writeln(challenges.obstacles_faced);
       buffer.writeln();
     }
 
     // Unfinished intentions
     if (challenges.unfinished_intentions.isNotEmpty) {
-      buffer.writeln('📝 Unfinished intentions:');
+      buffer.writeln('**📝 Unfinished intentions:**');
       buffer.writeln(challenges.unfinished_intentions);
       buffer.writeln();
     }
 
     // Contributing factors
     if (challenges.contributing_factors.isNotEmpty) {
-      buffer.writeln('🔍 Contributing factors:');
+      buffer.writeln('**🔍 Contributing factors:**');
       buffer.writeln(challenges.contributing_factors);
     }
 
     return buffer.toString().trim();
   }
+
+  // 修改 _parseLearningContent 方法，添加粗体标记
 
   String _parseLearningContent(LearningAndInsights learning) {
     if (learning.toString().isEmpty) {
@@ -354,34 +389,35 @@ class ReflectionsPage extends StatelessWidget {
 
     // New knowledge
     if (learning.new_knowledge.isNotEmpty) {
-      buffer.writeln('💡 New knowledge:');
+      buffer.writeln('**💡 New knowledge:**');
       buffer.writeln(learning.new_knowledge);
       buffer.writeln();
     }
 
     // Self discovery
     if (learning.self_discovery.isNotEmpty) {
-      buffer.writeln('🔮 Self discovery:');
+      buffer.writeln('**🔮 Self discovery:**');
       buffer.writeln(learning.self_discovery);
       buffer.writeln();
     }
 
     // Insights about others
     if (learning.insights_about_others.isNotEmpty) {
-      buffer.writeln('👥 Insights about others:');
+      buffer.writeln('**👥 Insights about others:**');
       buffer.writeln(learning.insights_about_others);
       buffer.writeln();
     }
 
     // Broader lessons
     if (learning.broader_lessons.isNotEmpty) {
-      buffer.writeln('🌍 Broader lessons:');
+      buffer.writeln('**🌍 Broader lessons:**');
       buffer.writeln(learning.broader_lessons);
     }
 
     return buffer.toString().trim();
   }
 
+  // 修改 _parseConnectionsContent 方法，添加粗体标记
   String _parseConnectionsContent(ConnectionsAndRelationships connections) {
     if (connections.toString().isEmpty) {
       return 'N/A';
@@ -391,21 +427,21 @@ class ReflectionsPage extends StatelessWidget {
 
     // Meaningful interactions
     if (connections.meaningful_interactions.isNotEmpty) {
-      buffer.writeln('🤝 Meaningful interactions:');
+      buffer.writeln('**🤝 Meaningful interactions:**');
       buffer.writeln(connections.meaningful_interactions);
       buffer.writeln();
     }
 
     // Notable about people
     if (connections.notable_about_people.isNotEmpty) {
-      buffer.writeln('✨ Notable observations:');
+      buffer.writeln('**✨ Notable observations:**');
       buffer.writeln(connections.notable_about_people);
       buffer.writeln();
     }
 
     // Follow up needed
     if (connections.follow_up_needed.isNotEmpty) {
-      buffer.writeln('📅 Follow-up needed:');
+      buffer.writeln('**📅 Follow-up needed:**');
       buffer.writeln(connections.follow_up_needed);
     }
 
