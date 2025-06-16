@@ -293,6 +293,18 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          // 添加刷新按钮
+          //IconButton(icon: const Icon(Icons.refresh), onPressed: _loadAppFiles),
+          // 添加新的"+"按钮
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              debugPrint('Add button pressed');
+              _pickFileFromiOSFilesAndHandle();
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -301,18 +313,18 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: ElevatedButton(
-                      onPressed: _pickFileFromiOSFilesAndHandle,
-                      child: const Text(
-                        'Pick From iOS Files',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: Padding(
+                //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                //     child: ElevatedButton(
+                //       onPressed: _pickFileFromiOSFilesAndHandle,
+                //       child: const Text(
+                //         'Pick From iOS Files',
+                //         overflow: TextOverflow.ellipsis,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -368,3 +380,8 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     );
   }
 }
+
+
+/*
+请将 Pick From iOS Files 这个文本对应的按钮的实现，
+*/
