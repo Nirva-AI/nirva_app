@@ -36,7 +36,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hive 数据管理'),
+        title: const Text('Hive Data Manager'),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadHiveData),
         ],
@@ -50,25 +50,37 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
 
   Widget _buildDataView() {
     if (_hiveData.isEmpty) {
-      return const Center(child: Text('没有存储的 Hive 数据'));
+      return const Center(child: Text('No Hive data stored'));
     }
 
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        _buildDataCard('收藏夹数据', _hiveData['favorites']),
+        _buildDataCard('Favorites Data', _hiveData['favorites']),
         const SizedBox(height: 16),
-        _buildDataCard('用户令牌', _hiveData['userToken'], isToken: true),
+        _buildDataCard('User Token', _hiveData['userToken'], isToken: true),
         const SizedBox(height: 16),
-        _buildDataCard('日记索引', _hiveData['journalIndex'], isJournalIndex: true),
+        _buildDataCard(
+          'Journal Index',
+          _hiveData['journalIndex'],
+          isJournalIndex: true,
+        ),
       ],
     );
   }
 
-  Widget _buildDataCard(String title, dynamic data, {bool isToken = false, bool isJournalIndex = false}) {
+  Widget _buildDataCard(
+    String title,
+    dynamic data, {
+    bool isToken = false,
+    bool isJournalIndex = false,
+  }) {
     if (data == null) {
       return Card(
-        child: ListTile(title: Text(title), subtitle: const Text('暂无数据')),
+        child: ListTile(
+          title: Text(title),
+          subtitle: const Text('No data available'),
+        ),
       );
     }
 
@@ -92,10 +104,10 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
       dataWidget = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('收藏数量: ${data.favoriteIds.length}'),
+          Text('Favorite count: ${data.favoriteIds.length}'),
           const SizedBox(height: 8),
           if (data.favoriteIds.isNotEmpty) ...[
-            const Text('收藏 IDs:'),
+            const Text('Favorite IDs:'),
             ...data.favoriteIds.map(
               (id) => Padding(
                 padding: const EdgeInsets.only(left: 16, top: 4),
@@ -110,15 +122,21 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
       final journalIndex = data as JournalFileIndex;
       final journalCount = _hiveData['journalCount'] ?? 0;
       final filesCount = _hiveData['journalFilesCount'] ?? 0;
-      
+
       dataWidget = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('日记索引数量: $journalCount', style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text('存储文件数量: $filesCount'),
+          Text(
+            'Journal index count: $journalCount',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text('Stored files count: $filesCount'),
           const SizedBox(height: 12),
           if (journalIndex.files.isNotEmpty) ...[
-            const Text('日记文件列表:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Journal files list:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             ...journalIndex.files.map(
               (file) => Card(
@@ -165,7 +183,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('清除数据'),
+                  child: const Text('Clear Data'),
                 ),
               ],
             ),
@@ -184,45 +202,53 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
   void _deleteData(String dataType) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text('是否确定删除$dataType？此操作不可恢复。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              if (dataType == '收藏夹数据') {
-                await AppRuntimeContext().storage.saveFavorites(
-                  Favorites(favoriteIds: []),
-                );
-                AppRuntimeContext().data.favorites.value = [];
-              } else if (dataType == '用户令牌') {
-                await AppRuntimeContext().storage.deleteUserToken();
-              } else if (dataType == '日记索引') {
-                // 清空日记索引
-                final emptyIndex = JournalFileIndex();
-                await AppRuntimeContext().storage.saveJournalIndex(emptyIndex);
-                
-                // 获取所有文件名
-                final journalIndex = _hiveData['journalIndex'] as JournalFileIndex?;
-                if (journalIndex != null) {
-                  // 删除所有日记文件
-                  for (var file in journalIndex.files) {
-                    await AppRuntimeContext().storage.deleteJournalFile(file.fileName);
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirm Deletion'),
+            content: Text(
+              'Are you sure you want to delete $dataType? This operation cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  if (dataType == '收藏夹数据') {
+                    await AppRuntimeContext().storage.saveFavorites(
+                      Favorites(favoriteIds: []),
+                    );
+                    AppRuntimeContext().data.favorites.value = [];
+                  } else if (dataType == '用户令牌') {
+                    await AppRuntimeContext().storage.deleteUserToken();
+                  } else if (dataType == '日记索引') {
+                    // 清空日记索引
+                    final emptyIndex = JournalFileIndex();
+                    await AppRuntimeContext().storage.saveJournalIndex(
+                      emptyIndex,
+                    );
+
+                    // 获取所有文件名
+                    final journalIndex =
+                        _hiveData['journalIndex'] as JournalFileIndex?;
+                    if (journalIndex != null) {
+                      // 删除所有日记文件
+                      for (var file in journalIndex.files) {
+                        await AppRuntimeContext().storage.deleteJournalFile(
+                          file.fileName,
+                        );
+                      }
+                    }
                   }
-                }
-              }
-              // 重新加载数据
-              _loadHiveData();
-            },
-            child: const Text('删除'),
+                  // 重新加载数据
+                  _loadHiveData();
+                },
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -230,24 +256,27 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
   void _deleteJournalFile(String fileName) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text('是否确定删除日记文件: $fileName？此操作不可恢复。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirm Deletion'),
+            content: Text(
+              'Are you sure you want to delete the journal file: $fileName? This operation cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await AppRuntimeContext().storage.deleteJournal(fileName);
+                  _loadHiveData();
+                },
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              await AppRuntimeContext().storage.deleteJournal(fileName);
-              _loadHiveData();
-            },
-            child: const Text('删除'),
-          ),
-        ],
-      ),
     );
   }
 }

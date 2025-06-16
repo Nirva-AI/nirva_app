@@ -521,6 +521,26 @@ extension JournalFileExtensions on JournalFile {
     return peoples;
   }
 
+  SocialEntity getSocialEntity(String name) {
+    // 根据名字获取社交实体
+    for (var event in events) {
+      if (event.people_involved.contains(name)) {
+        return SocialEntity(
+          name: name,
+          minutes: event.duration_minutes.toDouble(),
+          interactionDynamics: {event.interaction_dynamic},
+          impacts: {event.inferred_impact_on_user_name},
+        );
+      }
+    }
+    return SocialEntity(
+      name: name,
+      minutes: 0.0,
+      interactionDynamics: {},
+      impacts: {},
+    );
+  }
+
   Map<String, SocialEntity> get socialEntities {
     Map<String, SocialEntity> socialMap = {};
     for (var event in events) {
