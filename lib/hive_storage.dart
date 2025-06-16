@@ -475,4 +475,27 @@ class HiveStorage {
     final box = Hive.box<UpdateDataTaskList>(_updateDataTasksBox);
     await box.put(_updateDataTasksKey, UpdateDataTaskList(tasks: tasks));
   }
+
+  // 添加或更新更新数据任务
+  Future<bool> addUpdateDataTask(UpdateDataTask task) async {
+    final updateDataTaskList = getAllUpdateDataTasks();
+    for (var existingTask in updateDataTaskList) {
+      if (existingTask.id == task.id ||
+          existingTask.fileName == task.fileName) {
+        return false; // 重复的任务，返回 false
+      }
+    }
+    updateDataTaskList.add(task);
+    await saveUpdateDataTasks(updateDataTaskList);
+    return true;
+  }
+
+  // 删除更新数据任务
+  Future<void> deleteUpdateDataTask(String id, String fileName) async {
+    final updateDataTaskList = getAllUpdateDataTasks();
+    updateDataTaskList.removeWhere(
+      (task) => task.id == id || task.fileName == fileName,
+    );
+    await saveUpdateDataTasks(updateDataTaskList);
+  }
 }
