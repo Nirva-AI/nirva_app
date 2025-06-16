@@ -194,19 +194,37 @@ class ReflectionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const ReflectionSummary(),
-            const SizedBox(height: 16),
-            _buildReflectionCards(),
-            const SizedBox(height: 16),
-            _buildGoalCards(),
-          ],
-        ),
+    if (!_checkValidity()) {
+      return Scaffold(body: _createEmptyBody());
+    }
+    return Scaffold(body: _createBody());
+  }
+
+  bool _checkValidity() {
+    return AppRuntimeContext().currentJournalFile.events.isNotEmpty;
+  }
+
+  Widget _createEmptyBody() {
+    return Center(
+      child: Text(
+        'No reflections available for this date.',
+        style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+      ),
+    );
+  }
+
+  Widget _createBody() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const ReflectionSummary(),
+          const SizedBox(height: 16),
+          _buildReflectionCards(),
+          const SizedBox(height: 16),
+          _buildGoalCards(),
+        ],
       ),
     );
   }

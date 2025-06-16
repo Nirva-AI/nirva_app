@@ -418,6 +418,9 @@ extension JournalFileExtensions on JournalFile {
   }
 
   double get moodScoreAverage {
+    if (events.isEmpty) {
+      return 0.0; // 避免除以零
+    }
     double totalMoodScore = 0;
     for (var event in events) {
       totalMoodScore += event.mood_score;
@@ -426,6 +429,9 @@ extension JournalFileExtensions on JournalFile {
   }
 
   double get stressLevelAverage {
+    if (events.isEmpty) {
+      return 0.0; // 避免除以零
+    }
     double totalStressLevel = 0;
     for (var event in events) {
       totalStressLevel += event.stress_level;
@@ -434,6 +440,9 @@ extension JournalFileExtensions on JournalFile {
   }
 
   double get energyLevelAverage {
+    if (events.isEmpty) {
+      return 0.0; // 避免除以零
+    }
     double totalEnergyLevel = 0;
     for (var event in events) {
       totalEnergyLevel += event.energy_level;
@@ -442,6 +451,9 @@ extension JournalFileExtensions on JournalFile {
   }
 
   double get totalDurationMinutes {
+    if (events.isEmpty) {
+      return 0.0; // 避免除以零
+    }
     double totalDuration = 0;
     for (var event in events) {
       totalDuration += event.duration_minutes.toDouble();
@@ -480,8 +492,11 @@ extension JournalFileExtensions on JournalFile {
   }
 
   List<MoodTracking> get moodTracking {
-    List<MoodTracking> ret = [];
     final totalTime = totalDurationMinutes;
+    if (totalTime == 0) {
+      return []; // 如果没有事件，返回空列表
+    }
+    List<MoodTracking> ret = [];
     for (var entry in moodTimeMap.entries) {
       double percentage = entry.value / totalTime;
       ret.add(MoodTracking(name: entry.key, percentage: percentage));

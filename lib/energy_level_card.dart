@@ -152,22 +152,22 @@ class EnergyLevelCard extends StatelessWidget {
                   maxY: EnergyLabel.highPlus.measurementValue,
                   minX: 0,
                   maxX: (energyLevels.length - 1).toDouble(),
-                  // gridData: FlGridData(
-                  //   show: true,
-                  //   drawVerticalLine: true,
-                  //   horizontalInterval: 1,
-                  //   verticalInterval: 1,
-                  //   getDrawingHorizontalLine:
-                  //       (value) => FlLine(
-                  //         color: Colors.grey.withAlpha(51),
-                  //         strokeWidth: 1,
-                  //       ),
-                  //   getDrawingVerticalLine:
-                  //       (value) => FlLine(
-                  //         color: Colors.grey.withAlpha(51),
-                  //         strokeWidth: 1,
-                  //       ),
-                  // ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: 1,
+                    verticalInterval: 1,
+                    getDrawingHorizontalLine:
+                        (value) => FlLine(
+                          color: Colors.grey.withAlpha(51),
+                          strokeWidth: 1,
+                        ),
+                    getDrawingVerticalLine:
+                        (value) => FlLine(
+                          color: Colors.grey.withAlpha(51),
+                          strokeWidth: 1,
+                        ),
+                  ),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -203,7 +203,7 @@ class EnergyLevelCard extends StatelessWidget {
                     ),
                   ),
                   borderData: FlBorderData(
-                    show: true,
+                    show: false,
                     border: Border.all(
                       color: Colors.grey.withAlpha(128),
                       width: 1,
