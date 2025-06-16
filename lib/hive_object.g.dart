@@ -346,17 +346,20 @@ class UpdateDataTaskAdapter extends TypeAdapter<UpdateDataTask> {
     return UpdateDataTask(
       id: fields[0] as String,
       status: fields[1] as int,
+      fileName: fields[2] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, UpdateDataTask obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.status);
+      ..write(obj.status)
+      ..writeByte(2)
+      ..write(obj.fileName);
   }
 
   @override

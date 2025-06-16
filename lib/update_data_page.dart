@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/apis.dart';
 import 'package:tuple/tuple.dart';
+import 'package:nirva_app/hive_object.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -20,7 +22,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   final List<FileSystemEntity> _files = [];
   String _selectedFilePath = '';
   String _fileContent = '';
-  String _taskId = '';
+  //String _taskId = '';
 
   // 定义过滤列表，可以根据需要进行修改
   static const Set<String> _filteredExtensions = {
@@ -45,9 +47,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     // 应用过滤规则
     final filteredFiles =
         allFiles.where((file) {
-          // 如果显示所有文件，则不过滤
-          //if (_showFilteredFiles) return true;
-
           final fileName = file.path.split('/').last;
 
           // 检查是否应该过滤此文件
@@ -166,7 +165,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     Logger().d('解析后的数据: $parsedData');
 
     // 尝试上传转录数据
-    await _uploadAndAnalyzeData(content, parsedData);
+    await _uploadAndAnalyzeData(content, parsedData, fileName);
     _updateUIAfterProcess(filePath, content, '已导入并读取: $fileName');
   }
 
@@ -174,10 +173,10 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   Future<void> _uploadAndAnalyzeData(
     String content,
     Tuple3<DateTime, int, String> parsedData,
+    String fileName,
   ) async {
     final uploadResponse = await APIs.uploadTranscript(
       content,
-      //parsedData.item1.toIso8601String(),
       JournalFile.dateTimeToKey(parsedData.item1),
       parsedData.item2,
       parsedData.item3,
@@ -198,7 +197,15 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     if (backgroundTaskResponse != null) {
       Logger().d('分析数据成功');
-      _taskId = backgroundTaskResponse.task_id;
+      //_taskId = backgroundTaskResponse.task_id;
+
+      AppRuntimeContext().storage.addUpdateDataTask(
+        UpdateDataTask(
+          id: backgroundTaskResponse.task_id,
+          fileName: fileName,
+          status: 0,
+        ),
+      );
     } else {
       Logger().d('分析数据失败');
     }
@@ -245,27 +252,27 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       }
       Logger().d('解析后的数据: $parsedData');
 
-      if (_taskId != '') {
-        // 如果记录了任务ID，检查任务状态，
-        final taskStatus = await APIs.getTaskStatus(_taskId);
-        if (taskStatus == null) {
-          _showSnackBar('任务状态获取失败');
-          return;
-        }
+      // if (_taskId != '') {
+      //   // 如果记录了任务ID，检查任务状态，
+      //   final taskStatus = await APIs.getTaskStatus(_taskId);
+      //   if (taskStatus == null) {
+      //     _showSnackBar('任务状态获取失败');
+      //     return;
+      //   }
 
-        final status = taskStatus["status"];
-        Logger().d('任务状态: $status');
-        if (status == 'pending' || status == 'processing') {
-          _showSnackBar('任务仍在进行中，请稍后再试');
-          return;
-        } else if (status == 'failed') {
-          _showSnackBar('任务执行失败，请检查日志');
-          return;
-        } else if (status != 'completed') {
-          _showSnackBar('未知任务状态: $status');
-          return;
-        }
-      }
+      //   final status = taskStatus["status"];
+      //   Logger().d('任务状态: $status');
+      //   if (status == 'pending' || status == 'processing') {
+      //     _showSnackBar('任务仍在进行中，请稍后再试');
+      //     return;
+      //   } else if (status == 'failed') {
+      //     _showSnackBar('任务执行失败，请检查日志');
+      //     return;
+      //   } else if (status != 'completed') {
+      //     _showSnackBar('未知任务状态: $status');
+      //     return;
+      //   }
+      // }
 
       // 获取结果
       final journalFile = await APIs.getJournalFile(
@@ -313,18 +320,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Expanded(
-                //   child: Padding(
-                //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                //     child: ElevatedButton(
-                //       onPressed: _pickFileFromiOSFilesAndHandle,
-                //       child: const Text(
-                //         'Pick From iOS Files',
-                //         overflow: TextOverflow.ellipsis,
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -380,8 +375,3 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     );
   }
 }
-
-
-/*
-请将 Pick From iOS Files 这个文本对应的按钮的实现，
-*/

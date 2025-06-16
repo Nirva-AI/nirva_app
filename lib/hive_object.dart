@@ -234,7 +234,14 @@ class UpdateDataTask extends HiveObject {
   @HiveField(1)
   int status;
 
-  UpdateDataTask({required this.id, required this.status});
+  @HiveField(2)
+  String fileName; // 可选字段，用于存储文件名
+
+  UpdateDataTask({
+    required this.id,
+    required this.status,
+    required this.fileName,
+  });
 }
 
 // 更新数据任务列表
