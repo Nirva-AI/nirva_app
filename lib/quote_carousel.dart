@@ -28,7 +28,11 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
   Widget build(BuildContext context) {
     var quotes = AppRuntimeContext().currentJournalFile.genQuotes();
     if (quotes.isEmpty) {
-      quotes = ['N/A'];
+      if (_checkValidity()) {
+        quotes = ['No quotes available for this date.'];
+      } else {
+        quotes = ['N/A'];
+      }
     }
 
     return Column(
@@ -85,5 +89,9 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
         ),
       ],
     );
+  }
+
+  bool _checkValidity() {
+    return AppRuntimeContext().currentJournalFile.events.isNotEmpty;
   }
 }

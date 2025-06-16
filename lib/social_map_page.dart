@@ -22,7 +22,7 @@ class SocialMapPage extends StatelessWidget {
             // Relationship Details 标题
             const Text(
               'Relationship Details',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 16),
@@ -62,7 +62,7 @@ class SocialInteractionsCard extends StatelessWidget {
             // 标题
             const Text(
               'Social Interactions',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
@@ -83,6 +83,7 @@ class SocialInteractionsCard extends StatelessWidget {
                     child: Text(
                       'Name',
                       style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey,
                       ),
@@ -93,6 +94,7 @@ class SocialInteractionsCard extends StatelessWidget {
                     child: Text(
                       'Hours',
                       style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey,
                       ),
@@ -103,6 +105,7 @@ class SocialInteractionsCard extends StatelessWidget {
                     child: Text(
                       'Energy Impact',
                       style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey,
                       ),
@@ -168,8 +171,6 @@ class SocialInteractionsCard extends StatelessWidget {
 }
 
 class RelationshipDetailsCard extends StatelessWidget {
-  //final List<SocialEntity> socialEntities;
-
   const RelationshipDetailsCard({super.key});
 
   @override
@@ -208,7 +209,7 @@ class RelationshipDetailsCard extends StatelessWidget {
                   Text(
                     entity.name,
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -216,7 +217,7 @@ class RelationshipDetailsCard extends StatelessWidget {
                     children: [
                       Text(
                         '${entity.hours} hours',
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 14),
                       ),
                       const SizedBox(width: 8),
                       Container(
@@ -234,7 +235,7 @@ class RelationshipDetailsCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               // 描述
-              Text(entity.discription, style: const TextStyle(fontSize: 16)),
+              Text(entity.discription, style: const TextStyle(fontSize: 14)),
               const SizedBox(height: 16),
 
               // 关系提示标题
@@ -258,12 +259,12 @@ class RelationshipDetailsCard extends StatelessWidget {
                       const Text(
                         '• ',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Expanded(
-                        child: Text(tip, style: const TextStyle(fontSize: 16)),
+                        child: Text(tip, style: const TextStyle(fontSize: 14)),
                       ),
                     ],
                   ),
