@@ -132,17 +132,17 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
                   minHeight: 36.0,
                 ),
               ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () => debugPrint('点击了搜索图标'),
-                color: Colors.grey,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 36.0,
-                  minHeight: 36.0,
-                ),
-              ),
+              // const SizedBox(width: 16),
+              // IconButton(
+              //   icon: const Icon(Icons.search),
+              //   onPressed: () => debugPrint('点击了搜索图标'),
+              //   color: Colors.grey,
+              //   padding: EdgeInsets.zero,
+              //   constraints: const BoxConstraints(
+              //     minWidth: 36.0,
+              //     minHeight: 36.0,
+              //   ),
+              // ),
             ],
           ),
         ],

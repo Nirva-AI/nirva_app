@@ -152,6 +152,7 @@ class EnergyLevelCard extends StatelessWidget {
                   maxY: EnergyLabel.highPlus.measurementValue,
                   minX: 0,
                   maxX: (energyLevels.length - 1).toDouble(),
+                  lineTouchData: LineTouchData(enabled: false),
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
@@ -213,7 +214,7 @@ class EnergyLevelCard extends StatelessWidget {
                     LineChartBarData(
                       spots: spots,
                       isCurved: true,
-                      color: Colors.purple,
+                      color: Colors.green,
                       barWidth: 4,
                       isStrokeCapRound: true,
                       belowBarData: BarAreaData(show: false),
@@ -223,7 +224,7 @@ class EnergyLevelCard extends StatelessWidget {
                             (spot, percent, barData, index) =>
                                 FlDotCirclePainter(
                                   radius: 4,
-                                  color: Colors.purple,
+                                  color: Colors.green,
                                   strokeWidth: 0,
                                 ),
                       ),

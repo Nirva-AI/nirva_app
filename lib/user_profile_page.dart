@@ -131,7 +131,13 @@ class UserProfilePage extends StatelessWidget {
                         minimumSize: const Size.fromHeight(48),
                       ),
                       onPressed: () {
-                        debugPrint('Log Out tapped');
+                        // 使用 SnackBar 显示消息而不是 debugPrint
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Logging out...'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
                       },
                       child: const Text('Log Out'),
                     ),
@@ -145,3 +151,7 @@ class UserProfilePage extends StatelessWidget {
     );
   }
 }
+
+/*
+
+*/

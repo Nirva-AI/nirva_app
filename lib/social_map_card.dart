@@ -5,14 +5,14 @@ import 'package:nirva_app/social_map_page.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 
-class SocialMapGraphCard extends StatefulWidget {
-  const SocialMapGraphCard({super.key});
+class SocialMapCard extends StatefulWidget {
+  const SocialMapCard({super.key});
 
   @override
-  State<SocialMapGraphCard> createState() => _SocialMapGraphCardState();
+  State<SocialMapCard> createState() => _SocialMapCardState();
 }
 
-class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
+class _SocialMapCardState extends State<SocialMapCard> {
   // 图形相关变量
   late Graph graph;
   late CustomFruchtermanReingoldAlgorithm algorithm;
@@ -144,7 +144,7 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
                         width: nodeWidth,
                         height: nodeHeight,
                         child: Card(
-                          color: Colors.deepPurple,
+                          color: _parseNodeColor(nodeValue),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Center(
@@ -152,7 +152,7 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
                                 nodeValue,
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               ),
                             ),
@@ -168,5 +168,16 @@ class _SocialMapGraphCardState extends State<SocialMapGraphCard> {
         ),
       ),
     );
+  }
+
+  Color? _parseNodeColor(String nodeName) {
+    // 根据节点名称返回不同的颜色
+    if (nodeName == AppRuntimeContext().data.user.displayName) {
+      return Colors.yellow[100];
+    }
+
+    SocialEntity entity = AppRuntimeContext().currentJournalFile
+        .getSocialEntity(nodeName);
+    return Color(entity.color);
   }
 }

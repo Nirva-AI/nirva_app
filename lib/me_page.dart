@@ -49,49 +49,9 @@ class _MePageState extends State<MePage> {
                 ),
               ),
 
-              const SizedBox(height: 16),
-
-              // Nirva Necklace 卡片
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.water_drop,
-                    size: 40,
-                    color: Colors.amber,
-                  ),
-                  title: const Text(
-                    'Nirva Necklace',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Row(
-                    children: const [
-                      Icon(Icons.circle, size: 8, color: Colors.green),
-                      SizedBox(width: 4),
-                      Text('Connected', style: TextStyle(color: Colors.green)),
-                    ],
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        '88%',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 4),
-                      Icon(Icons.arrow_forward_ios, size: 16),
-                    ],
-                  ),
-                  onTap: () {
-                    debugPrint('Nirva Necklace tapped');
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 16),
+              // const SizedBox(height: 16),
+              // _buildHardwareCard(), // Nirva Necklace 卡片
+              // const SizedBox(height: 16),
 
               // 设置选项卡片
               Card(
@@ -101,33 +61,33 @@ class _MePageState extends State<MePage> {
                 elevation: 2,
                 child: Column(
                   children: [
-                    _buildSettingsOption(
-                      icon: Icons.restart_alt,
-                      title: 'Onboarding',
-                      subtitle: 'Restart the setup process',
-                      onTap: () {
-                        debugPrint('Onboarding tapped');
-                      },
-                    ),
-                    const Divider(height: 1),
-                    _buildSettingsOption(
-                      icon: Icons.access_time,
-                      title: 'Reflection Time',
-                      subtitle: 'Set when you want daily reflections',
-                      onTap: () {
-                        debugPrint('Reflection Time tapped');
-                      },
-                    ),
-                    const Divider(height: 1),
-                    _buildSettingsOption(
-                      icon: Icons.privacy_tip,
-                      title: 'Privacy Controls',
-                      subtitle: 'Manage your data and sharing preferences',
-                      onTap: () {
-                        debugPrint('Privacy Controls tapped');
-                      },
-                    ),
-                    const Divider(height: 1),
+                    // _buildSettingsOption(
+                    //   icon: Icons.restart_alt,
+                    //   title: 'Onboarding',
+                    //   subtitle: 'Restart the setup process',
+                    //   onTap: () {
+                    //     debugPrint('Onboarding tapped');
+                    //   },
+                    // ),
+                    // const Divider(height: 1),
+                    // _buildSettingsOption(
+                    //   icon: Icons.access_time,
+                    //   title: 'Reflection Time',
+                    //   subtitle: 'Set when you want daily reflections',
+                    //   onTap: () {
+                    //     debugPrint('Reflection Time tapped');
+                    //   },
+                    // ),
+                    // const Divider(height: 1),
+                    // _buildSettingsOption(
+                    //   icon: Icons.privacy_tip,
+                    //   title: 'Privacy Controls',
+                    //   subtitle: 'Manage your data and sharing preferences',
+                    //   onTap: () {
+                    //     debugPrint('Privacy Controls tapped');
+                    //   },
+                    // ),
+                    // const Divider(height: 1),
                     _buildSettingsOption(
                       icon: Icons.upload,
                       title: 'Update Data',
@@ -158,14 +118,14 @@ class _MePageState extends State<MePage> {
                       },
                     ),
                     const Divider(height: 1),
-                    _buildSettingsOption(
-                      icon: Icons.settings,
-                      title: 'Nirva Settings',
-                      subtitle: 'Customize Nirva\'s voice',
-                      onTap: () {
-                        debugPrint('Nirva Settings tapped');
-                      },
-                    ),
+                    // _buildSettingsOption(
+                    //   icon: Icons.settings,
+                    //   title: 'Nirva Settings',
+                    //   subtitle: 'Customize Nirva\'s voice',
+                    //   onTap: () {
+                    //     debugPrint('Nirva Settings tapped');
+                    //   },
+                    // ),
                   ],
                 ),
               ),
@@ -194,6 +154,40 @@ class _MePageState extends State<MePage> {
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
+    );
+  }
+
+  // Nirva Necklace 卡片
+  // ignore: unused_element
+  Widget _buildHardwareCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: ListTile(
+        leading: const Icon(Icons.water_drop, size: 40, color: Colors.amber),
+        title: const Text(
+          'Nirva Necklace',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Row(
+          children: const [
+            Icon(Icons.circle, size: 8, color: Colors.green),
+            SizedBox(width: 4),
+            Text('Connected', style: TextStyle(color: Colors.green)),
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text('88%', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Icon(Icons.arrow_forward_ios, size: 16),
+          ],
+        ),
+        onTap: () {
+          debugPrint('Nirva Necklace tapped');
+        },
+      ),
     );
   }
 }
