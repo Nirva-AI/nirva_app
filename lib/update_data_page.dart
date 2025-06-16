@@ -21,12 +21,12 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   final List<FileSystemEntity> _files = [];
   List<UpdateDataTask> _tasks = [];
 
-  // 定义过滤列表，可以根据需要进行修改
+  // 定义过滤列表
   static const Set<String> _filteredExtensions = {
     '.hive',
     '.lock',
     '.Trash',
-    '.DS_Store', // macOS系统文件
+    '.DS_Store',
     '.log',
   };
 
@@ -44,58 +44,65 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     });
   }
 
-  // 加载应用自身文档目录中的文件，添加过滤功能
+  // 加载并过滤应用文档目录中的文件
   Future<void> _loadAppFiles() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final allFiles = directory.listSync();
-
-    // 应用过滤规则
-    final filteredFiles =
-        allFiles.where((file) {
-          final fileName = file.path.split('/').last;
-
-          // 检查是否应该过滤此文件
-          for (final extension in _filteredExtensions) {
-            if (fileName.endsWith(extension) || fileName == extension) {
-              return false;
-            }
-          }
-
-          return true;
-        }).toList();
-
-    if (!mounted) return;
-
-    setState(() {
-      _files.clear();
-      _files.addAll(filteredFiles);
-    });
-  }
-
-  // 从iOS文件应用选择文件并直接读取内容
-  Future<void> _pickFileFromiOSFilesAndHandle() async {
     try {
-      final selectedFile = await _pickFile();
-      if (selectedFile == null) return;
+      final directory = await getApplicationDocumentsDirectory();
+      final allFiles = directory.listSync();
 
-      final (file, fileName, newPath) = selectedFile;
-      final content = await _readFileContent(newPath, fileName);
-      if (content == null) return;
+      final filteredFiles = allFiles.where(_shouldIncludeFile).toList();
 
-      await _processFileContent(fileName, content, newPath);
-      await _loadAppFiles(); // 刷新文件列表
-      _loadTasks(); // 刷新任务列表
-    } catch (e) {
-      Logger().d('Error selecting or importing file: $e');
       if (!mounted) return;
 
-      setState(() {});
-      _showSnackBar('Failed to select or import file: $e');
+      setState(() {
+        _files.clear();
+        _files.addAll(filteredFiles);
+      });
+    } catch (e) {
+      Logger().d('Error loading app files: $e');
+      _showDialog('Failed to load app files');
     }
   }
 
-  // 选择文件并复制到应用文档目录
-  Future<(File, String, String)?> _pickFile() async {
+  // 文件过滤逻辑
+  bool _shouldIncludeFile(FileSystemEntity file) {
+    final fileName = file.path.split('/').last;
+
+    for (final extension in _filteredExtensions) {
+      if (fileName.endsWith(extension) || fileName == extension) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // 处理文件选择流程
+  Future<void> _handleFileSelection() async {
+    try {
+      // 1. 选择文件
+      final selectedFileResult = await _selectAndImportFile();
+      if (selectedFileResult == null) return;
+
+      final (file, fileName, newPath) = selectedFileResult;
+
+      // 2. 读取文件内容
+      final content = await _readFileContent(newPath, fileName);
+      if (content == null) return;
+
+      // 3. 处理文件内容
+      await _processFileContent(fileName, content);
+
+      // 4. 刷新UI
+      await _loadAppFiles();
+      _loadTasks();
+    } catch (e) {
+      Logger().d('Error in file selection process: $e');
+      _showDialog('Error processing file: $e');
+    }
+  }
+
+  // 选择并导入文件到应用目录
+  Future<(File, String, String)?> _selectAndImportFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
@@ -121,165 +128,159 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       final copiedFile = File(filePath);
       if (!await copiedFile.exists()) {
         Logger().d('File does not exist: $filePath');
-        _showSnackBar('File does not exist');
+        _showDialog('File does not exist');
         return null;
       }
 
       final content = await copiedFile.readAsString();
-
-      // 在控制台记录日志
-      Logger().d('File imported and read: $fileName');
-      Logger().d('File path: $filePath');
-      Logger().d(
-        'File content preview: ${content.length > 100 ? '${content.substring(0, 100)}...' : content}',
-      );
-
+      Logger().d('File imported: $fileName');
       return content;
     } catch (readError) {
       Logger().d('Error reading file: $readError');
-      if (mounted) {
-        setState(() {});
-        _showSnackBar('File imported, but failed to read');
-      }
+      _showDialog('Failed to read file content');
       return null;
     }
   }
 
   // 处理文件内容
-  Future<void> _processFileContent(
-    String fileName,
-    String content,
-    String filePath,
-  ) async {
-    // 解析文件名
+  Future<void> _processFileContent(String fileName, String content) async {
+    // 1. 解析文件名
     final parsedData = Utils.parseDataFromSpecialUploadFilename(fileName);
-
     if (parsedData == null) {
       Logger().d('Failed to parse filename or content');
-      _updateUIAfterProcess(
-        filePath,
-        content,
-        'Imported and read: $fileName (not parsed)',
-      );
+      _showDialog('Invalid file format or name');
       return;
     }
 
-    Logger().d('Parsed data: $parsedData');
+    // 2. 上传数据
+    final success = await _uploadAndAnalyzeData(content, parsedData, fileName);
 
-    // 尝试上传转录数据
-    await _uploadAndAnalyzeData(content, parsedData, fileName);
-    _updateUIAfterProcess(filePath, content, 'Imported and read: $fileName');
+    // 3. 显示结果
+    if (success) {
+      //_showSnackBar('File processed successfully');
+    } else {
+      _showDialog('Failed to process file');
+    }
   }
 
   // 上传和分析数据
-  Future<void> _uploadAndAnalyzeData(
+  Future<bool> _uploadAndAnalyzeData(
     String content,
     Tuple3<DateTime, int, String> parsedData,
     String fileName,
   ) async {
+    // 1. 上传转录数据
+    final dateKey = JournalFile.dateTimeToKey(parsedData.item1);
     final uploadResponse = await APIs.uploadTranscript(
       content,
-      JournalFile.dateTimeToKey(parsedData.item1),
+      dateKey,
       parsedData.item2,
       parsedData.item3,
     );
 
     if (uploadResponse == null) {
       Logger().d('Failed to upload transcript data');
-      return;
+      return false;
     }
 
     Logger().d(
       'Successfully uploaded transcript data: ${uploadResponse.message}',
     );
 
-    // 尝试分析数据 BackgroundTaskResponse
+    // 2. 分析数据
     final backgroundTaskResponse = await APIs.analyze(
-      JournalFile.dateTimeToKey(parsedData.item1),
+      dateKey,
       parsedData.item2,
     );
 
     if (backgroundTaskResponse != null) {
-      Logger().d('Data analysis successful');
+      Logger().d('Data analysis task created');
 
+      // 添加任务到本地存储
       AppRuntimeContext().storage.addUpdateDataTask(
         UpdateDataTask(
           id: backgroundTaskResponse.task_id,
           fileName: fileName,
-          status: 0,
+          status: 0, // 处理中
         ),
       );
 
-      // 刷新任务列表
-      _loadTasks();
+      return true;
     } else {
       Logger().d('Data analysis failed');
+      return false;
     }
   }
 
-  // 更新UI显示
-  void _updateUIAfterProcess(String filePath, String content, String message) {
-    if (!mounted) return;
-
-    setState(() {});
-
-    _showSnackBar(message);
-  }
-
-  // 显示提示信息
-  void _showSnackBar(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  // 获取结果
-  Future<void> _getResults(String taskId, String fileName) async {
+  // 获取分析结果
+  Future<void> _getTaskResults(String taskId, String fileName) async {
     try {
-      // 获取文件名和时间戳
+      // 解析文件名获取日期信息
       final parsedData = Utils.parseDataFromSpecialUploadFilename(fileName);
       if (parsedData == null) {
-        Logger().d('Failed to parse filename or content');
-        _showSnackBar('Failed to parse filename or content');
+        _showDialog('Invalid file name format');
         return;
       }
-      Logger().d('Parsed data: $parsedData');
 
-      // 获取结果
-      final journalFile = await APIs.getJournalFile(
-        JournalFile.dateTimeToKey(parsedData.item1),
-      );
+      final dateKey = JournalFile.dateTimeToKey(parsedData.item1);
+      final journalFile = await APIs.getJournalFile(dateKey);
 
       if (journalFile != null) {
-        //_showSnackBar('Results retrieved successfully');
-
-        //
+        // 更新任务状态为已完成
         await AppRuntimeContext().storage.updateUpdateDataTaskStatus(taskId, 1);
-
-        setState(() {});
+        _loadTasks();
+        //_showSnackBar('Results retrieved successfully');
       } else {
-        _showSnackBar('Failed to retrieve results');
+        _showDialog('Failed to retrieve results');
       }
     } catch (e) {
-      _showSnackBar('Error: $e');
+      Logger().d('Error retrieving task results: $e');
+      _showDialog('Error: $e');
     }
   }
 
   // 删除任务
   Future<void> _deleteTask(String id, String fileName) async {
-    await AppRuntimeContext().storage.deleteUpdateDataTask(id, fileName);
-    _loadTasks(); // 刷新任务列表
-    _showSnackBar('Task deleted: $fileName');
+    try {
+      await AppRuntimeContext().storage.deleteUpdateDataTask(id, fileName);
+      _loadTasks();
+      //_showSnackBar('Task deleted: $fileName');
+    } catch (e) {
+      Logger().d('Error deleting task: $e');
+      _showDialog('Failed to delete task');
+    }
   }
 
-  // 构建任务卡片
-  Widget _buildTaskCard(UpdateDataTask task) {
-    String statusText = 'unknown';
-    Color statusColor = Colors.grey;
+  // 更轻量级的模态提示 - 自动消失
+  // 显示提示信息 - 使用模态对话框替代SnackBar
+  void _showDialog(String message) {
+    if (!mounted) return;
 
-    switch (task.status) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Message'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 构建任务状态指示器
+  Widget _buildStatusIndicator(int status) {
+    String statusText;
+    Color statusColor;
+
+    switch (status) {
       case 0:
         statusText = 'processing';
         statusColor = Colors.blue;
@@ -292,8 +293,29 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         statusText = 'failed';
         statusColor = Colors.red;
         break;
+      default:
+        statusText = 'unknown';
+        statusColor = Colors.grey;
     }
 
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: statusColor.withAlpha(
+          (0.2 * 255).round(),
+        ), // 修改此行，使用withAlpha替代withOpacity
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: statusColor),
+      ),
+      child: Text(
+        statusText,
+        style: TextStyle(color: statusColor, fontSize: 12),
+      ),
+    );
+  }
+
+  // 构建任务卡片
+  Widget _buildTaskCard(UpdateDataTask task) {
     return Card(
       margin: const EdgeInsets.all(8.0),
       elevation: 2.0,
@@ -311,7 +333,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Text('Task ID: ', style: const TextStyle(fontSize: 12)),
+                const Text('Task ID: ', style: TextStyle(fontSize: 12)),
                 Expanded(
                   child: Text(
                     task.id,
@@ -326,32 +348,13 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(
-                      statusColor.r.toInt(),
-                      statusColor.g.toInt(),
-                      statusColor.b.toInt(),
-                      0.2,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor),
-                  ),
-                  child: Text(
-                    statusText,
-                    style: TextStyle(color: statusColor, fontSize: 12),
-                  ),
-                ),
+                _buildStatusIndicator(task.status),
                 Row(
                   children: [
                     IconButton(
                       icon: const Icon(Icons.refresh),
                       tooltip: 'View Results',
-                      onPressed: () => _getResults(task.id, task.fileName),
+                      onPressed: () => _getTaskResults(task.id, task.fileName),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
@@ -368,6 +371,16 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     );
   }
 
+  // 构建空任务提示
+  Widget _buildEmptyTasksMessage() {
+    return const Center(
+      child: Text(
+        'No tasks yet.\nClick the "+" button in the top right to add data',
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -375,52 +388,26 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         title: const Text('Test Update Data'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // 添加新的"+"按钮
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-              _pickFileFromiOSFilesAndHandle();
-            },
+            onPressed: _handleFileSelection,
           ),
         ],
       ),
       body: Column(
         children: [
-          // 任务列表标题
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Text(
-                //   'Update Data Task List',
-                //   style: Theme.of(context).textTheme.titleLarge,
-                // ),
-                Text('Total: ${_tasks.length} tasks'),
-              ],
-            ),
-          ),
-
-          // 任务列表
           Expanded(
             flex: 3,
             child:
                 _tasks.isEmpty
-                    ? const Center(
-                      child: Text(
-                        'No tasks yet.\nClick the "+" button in the top right to add data',
-                      ),
-                    )
+                    ? _buildEmptyTasksMessage()
                     : ListView.builder(
                       itemCount: _tasks.length,
-                      itemBuilder: (context, index) {
-                        return _buildTaskCard(_tasks[index]);
-                      },
+                      itemBuilder:
+                          (context, index) => _buildTaskCard(_tasks[index]),
                     ),
           ),
         ],
