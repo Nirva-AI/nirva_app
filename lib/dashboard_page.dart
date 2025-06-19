@@ -12,28 +12,28 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!_checkValidity()) {
-      return Scaffold(body: _createEmptyBody());
-    }
+    // if (!_checkValidity()) {
+    //   return Scaffold(body: _createEmptyBody());
+    // }
 
     return Scaffold(body: _createBody());
   }
 
-  Widget _createEmptyBody() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildMoodScoreCardAndStressLevelCard(),
-            const SizedBox(height: 16),
-            _buildEnergyLevelCard(),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _createEmptyBody() {
+  //   return SingleChildScrollView(
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16.0),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           _buildMoodScoreCardAndStressLevelCard(),
+  //           const SizedBox(height: 16),
+  //           _buildEnergyLevelCard(),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _createBody() {
     return SingleChildScrollView(
@@ -87,7 +87,7 @@ class DashboardPage extends StatelessWidget {
   //   return TodayHighlightsCard();
   // }
 
-  bool _checkValidity() {
-    return AppRuntimeContext().currentJournalFile.events.isNotEmpty;
-  }
+  // bool _checkValidity() {
+  //   return AppRuntimeContext().currentJournalFile.events.isNotEmpty;
+  // }
 }

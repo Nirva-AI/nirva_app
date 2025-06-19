@@ -177,8 +177,8 @@ class MoodTracking {
   static const neutralColor = 0xFF9E9E9E; // 灰色
 
   final String name;
-  double percentage;
-  MoodTracking({required this.name, required this.percentage});
+  double ratio;
+  MoodTracking({required this.name, required this.ratio});
 
   int get color {
     switch (name.toLowerCase()) {
@@ -498,8 +498,8 @@ extension JournalFileExtensions on JournalFile {
     }
     List<MoodTracking> ret = [];
     for (var entry in moodTimeMap.entries) {
-      double percentage = entry.value / totalTime;
-      ret.add(MoodTracking(name: entry.key, percentage: percentage));
+      final ratio = entry.value / totalTime;
+      ret.add(MoodTracking(name: entry.key, ratio: ratio));
     }
 
     return ret;
@@ -608,11 +608,18 @@ class Dashboard {
   static List<double> energyLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
 
   //
+  static const double moodTrackingMinY = 0;
+  static const double moodTrackingMaxY = 100;
+  static List<double> moodTrackingYAxisLabels = [20, 40, 60, 80];
+
+  //
   final DateTime dateTime;
   JournalFile? journalFile;
   double? moodScoreAverage;
   double? stressLevelAverage;
   double? energyLevelAverage;
+  Map<String, double> moodTrackingMap = {};
+  bool _isShuffled = false;
 
   //
   Dashboard({required this.dateTime});
@@ -627,14 +634,29 @@ class Dashboard {
     moodScoreAverage = journalFile!.moodScoreAverage;
     stressLevelAverage = journalFile!.stressLevelAverage;
     energyLevelAverage = journalFile!.energyLevelAverage;
+    for (var entry in journalFile!.moodTracking) {
+      moodTrackingMap[entry.name] = entry.ratio;
+    }
   }
 
   void shuffleData() {
     if (random.nextDouble() < 0.1) {
       return;
     }
+    _isShuffled = true;
     moodScoreAverage = 4 + random.nextDouble() * 6;
     stressLevelAverage = 4 + random.nextDouble() * 6;
     energyLevelAverage = 4 + random.nextDouble() * 6;
+  }
+
+  //
+  double? getMoodTrackingRatio(String moodName) {
+    if (_isShuffled) {
+      return 0.2 + random.nextDouble() * 0.6;
+    }
+    if (moodTrackingMap.containsKey(moodName)) {
+      return moodTrackingMap[moodName];
+    }
+    return null;
   }
 }
