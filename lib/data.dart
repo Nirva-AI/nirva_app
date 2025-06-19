@@ -161,20 +161,6 @@ class Task with _$Task {
 }
 
 class MoodTracking {
-  static const peacefulColor = 0xFF2196F3; // 蓝色
-  static const energizedColor = 0xFFFF9800; // 橙色
-  static const engagedColor = 0xFF4CAF50; // 绿色
-  static const disengagedColor = 0xFF9E9E9E; // 灰色
-  static const happyColor = 0xFFFFEB3B; // 黄色
-  static const sadColor = 0xFF9C27B0; // 紫色
-  static const anxiousColor = 0xFFF44336; // 红色
-  static const stressedColor = 0xFFCDDC39; // 浅绿色
-  static const relaxedColor = 0xFF00BCD4; // 青色
-  static const excitedColor = 0xFFFFC107; // 深黄色
-  static const boredColor = 0xFF673AB7; // 深紫色
-  static const frustratedColor = 0xFF3F51B5; // 深蓝色
-  static const contentColor = 0xFF8BC34A; // 浅绿色
-  static const neutralColor = 0xFF9E9E9E; // 灰色
   static const List<String> moodNames = [
     'peaceful',
     'energized',
@@ -199,49 +185,40 @@ class MoodTracking {
   int get color {
     switch (name.toLowerCase()) {
       case 'peaceful':
-        return peacefulColor;
+        return 0xFF2196F3;
       case 'energized':
-        return energizedColor;
+        return 0xFFFF9800;
       case 'engaged':
-        return engagedColor;
+        return 0xFF4CAF50;
       case 'disengaged':
-        return disengagedColor;
+        return 0xFF9E9E9E;
       case 'happy':
-        return happyColor;
+        return 0xFFFFEB3B;
       case 'sad':
-        return sadColor;
+        return 0xFF9C27B0;
       case 'anxious':
-        return anxiousColor;
+        return 0xFFF44336;
       case 'stressed':
-        return stressedColor;
+        return 0xFFCDDC39;
       case 'relaxed':
-        return relaxedColor;
+        return 0xFF00BCD4;
       case 'excited':
-        return excitedColor;
+        return 0xFFFFC107;
       case 'bored':
-        return boredColor;
+        return 0xFF673AB7;
       case 'frustrated':
-        return frustratedColor;
+        return 0xFF3F51B5;
       case 'content':
-        return contentColor;
+        return 0xFF8BC34A;
+      case 'neutral':
+        return 0xFF9E9E9E; // 中性情绪的颜色
       default:
-        return neutralColor; // 默认颜色为灰色
+        return 0xFF9E9E9E; // 默认颜色为灰色
     }
   }
 }
 
 class AwakeTimeAllocation {
-  static const workColor = 0xFF2196F3; // 蓝色
-  static const exerciseColor = 0xFFFF9800; // 橙色
-  static const socialColor = 0xFF4CAF50; // 绿色
-  static const learningColor = 0xFF9E9E9E; // 灰色
-  static const selfCareColor = 0xFFFFEB3B; // 黄色
-  static const choresColor = 0xFF9C27B0; // 紫色
-  static const commuteColor = 0xFFF44336; // 红色
-  static const mealColor = 0xFFCDDC39; // 浅绿色
-  static const leisureColor = 0xFF00BCD4; // 青色
-  static const unknownColor = 0xFF9E9E9E; // 灰色
-
   static const List<String> activityNames = [
     'work',
     'exercise',
@@ -262,25 +239,25 @@ class AwakeTimeAllocation {
   int get color {
     switch (name.toLowerCase()) {
       case 'work':
-        return workColor;
+        return 0xFF2196F3; // 蓝色
       case 'exercise':
-        return exerciseColor;
+        return 0xFFFF9800; // 橙色
       case 'social':
-        return socialColor;
+        return 0xFF4CAF50; // 绿色
       case 'learning':
-        return learningColor;
+        return 0xFF9E9E9E; // 灰色
       case 'self-care':
-        return selfCareColor;
+        return 0xFFFFEB3B; // 黄色
       case 'chores':
-        return choresColor;
+        return 0xFF9C27B0; // 紫色
       case 'commute':
-        return commuteColor;
+        return 0xFFF44336; // 红色
       case 'meal':
-        return mealColor;
+        return 0xFFCDDC39; // 浅绿色
       case 'leisure':
-        return leisureColor;
+        return 0xFF00BCD4; // 青色
       default:
-        return unknownColor; // 默认颜色为灰色
+        return 0xFF9E9E9E; // 默认颜色为灰色
     }
   }
 }
