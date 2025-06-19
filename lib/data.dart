@@ -623,7 +623,7 @@ class Dashboard {
   static List<double> awakeTimeAllocationYAxisLabels = [2, 4, 6, 8];
 
   // 测试用的随机数生成器
-  bool _isShuffled = false;
+  bool _isTestShuffled = false;
 
   // 仪表盘的日期
   final DateTime dateTime;
@@ -673,12 +673,11 @@ class Dashboard {
     }
   }
 
-  void shuffleData() {
-    //return;
+  void testShuffle() {
     if (random.nextDouble() < 0.1) {
       return;
     }
-    _isShuffled = true;
+    _isTestShuffled = true;
     moodScoreAverage = 4 + random.nextDouble() * 6;
     stressLevelAverage = 4 + random.nextDouble() * 6;
     energyLevelAverage = 4 + random.nextDouble() * 6;
@@ -686,7 +685,7 @@ class Dashboard {
 
   //
   double? getMoodTrackingRatio(String moodName) {
-    if (_isShuffled && !moodTrackingMap.containsKey(moodName)) {
+    if (_isTestShuffled && !moodTrackingMap.containsKey(moodName)) {
       moodTrackingMap[moodName] = 0.2 + random.nextDouble() * 0.6;
     }
     if (moodTrackingMap.containsKey(moodName)) {
@@ -696,7 +695,7 @@ class Dashboard {
   }
 
   double? getAwakeTimeAllocationMinutes(String activityName) {
-    if (_isShuffled && !awakeTimeAllocationMap.containsKey(activityName)) {
+    if (_isTestShuffled && !awakeTimeAllocationMap.containsKey(activityName)) {
       // 返回2h~8h 即（60 * 2 与 60 * 8）之间的数字
       awakeTimeAllocationMap[activityName] =
           120 + random.nextDouble() * 360; // 2小时到8小时之间
