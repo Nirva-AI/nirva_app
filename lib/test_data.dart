@@ -32,7 +32,8 @@ class TestData {
     );
 
     //AppRuntimeContext().selectDateTime(DateTime(2025, 4, 19));
-    AppRuntimeContext().selectDateTime(DateTime.now());
+    AppRuntimeContext().selectDateTime(DateTime(2025, 5, 9));
+    //AppRuntimeContext().selectDateTime(DateTime.now());
   }
 
   // 加载测试日记文件 Future<void> initializeTestData() async
