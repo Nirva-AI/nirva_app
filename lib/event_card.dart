@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/event_details_page.dart';
 import 'package:nirva_app/app_runtime_context.dart';
-import 'package:nirva_app/hive_object.dart';
 
 class EventCard extends StatefulWidget {
   final EventAnalysis eventData;
@@ -35,14 +34,14 @@ class _EventCardState extends State<EventCard> {
     }
 
     // 将收藏夹数据存储到 Hive
-    final diaryFavorites = Favorites(favoriteIds: favoritesNotifier.value);
+    //final diaryFavorites = Favorites(favoriteIds: favoritesNotifier.value);
 
     // 异步保存，不阻塞当前线程
-    AppRuntimeContext().storage.saveFavorites(diaryFavorites).catchError((
-      error,
-    ) {
-      debugPrint('保存收藏夹数据失败: $error');
-    });
+    AppRuntimeContext().storage
+        .saveFavoriteIds(favoritesNotifier.value)
+        .catchError((error) {
+          debugPrint('保存收藏夹数据失败: $error');
+        });
   }
 
   bool get isFavorite {

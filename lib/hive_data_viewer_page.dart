@@ -217,9 +217,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   if (dataType == '收藏夹数据') {
-                    await AppRuntimeContext().storage.saveFavorites(
-                      Favorites(favoriteIds: []),
-                    );
+                    await AppRuntimeContext().storage.saveFavoriteIds([]);
                     AppRuntimeContext().data.favorites.value = [];
                   } else if (dataType == '用户令牌') {
                     await AppRuntimeContext().storage.deleteUserToken();

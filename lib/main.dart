@@ -30,30 +30,23 @@ void main() async {
 }
 
 Future<void> initializeApp() async {
-  // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
-  //await AppRuntimeContext().storage.deleteFromDisk(); // 这句是测试的，清空之前的数据
-  await AppRuntimeContext().storage.initializeAdapters();
+  // 这句是测试的，清空之前的数据
+  await AppRuntimeContext().storage.deleteFromDisk();
 
-  // 在这里执行任何需要的初始化操作，例如加载配置文件
-  // 例如：await loadConfig();
-  // 或者其他异步操作
+  // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
+  await AppRuntimeContext().storage.initializeAdapters();
 
   // 填充测试数据。
   await TestData.initializeTestData();
 
   // 正式步骤：初始初始化 Hive 存储。
-  await initializeHiveStorage();
+  await setupHiveStorage();
 }
 
-Future<void> initializeHiveStorage() async {
+Future<void> setupHiveStorage() async {
   // 喜爱的日记数据
-  final retrievedFavorites = AppRuntimeContext().storage.getFavorites();
-  if (retrievedFavorites != null && retrievedFavorites.favoriteIds.isNotEmpty) {
-    debugPrint('DiaryFavorites 测试通过: 收藏夹数据存在');
-    AppRuntimeContext().data.favorites.value = retrievedFavorites.favoriteIds;
-  } else {
-    debugPrint('DiaryFavorites 测试失败: 收藏夹数据不存在或为空');
-  }
+  AppRuntimeContext().data.favorites.value =
+      AppRuntimeContext().storage.getFavoritesIds();
 
   // 对话列表
   final storageChatHistory = AppRuntimeContext().storage.getChatHistory();

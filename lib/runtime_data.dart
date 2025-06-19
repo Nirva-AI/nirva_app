@@ -143,7 +143,8 @@ class RuntimeData {
     for (int i = 0; i <= daysBetween; i++) {
       final date = firstDay.add(Duration(days: i));
       dashboards.add(Dashboard(dateTime: date));
-      dashboards.last.shuffleData();
+      // 如果是测试模式，则测试仪表板的随机打乱
+      dashboards.last.testShuffle();
     }
 
     for (var dashboard in dashboards) {

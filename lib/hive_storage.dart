@@ -242,16 +242,30 @@ class HiveStorage {
     return data;
   }
 
-  // 保存 DiaryFavorites 数据
-  Future<void> saveFavorites(Favorites diaryFavorites) async {
+  //
+  Future<void> _saveFavorites(Favorites favorites) async {
     final box = Hive.box<Favorites>(_favoritesBox);
-    await box.put(_favoritesKey, diaryFavorites); // 使用固定的 key 保存
+    await box.put(_favoritesKey, favorites);
   }
 
-  // 获取 DiaryFavorites 数据
-  Favorites? getFavorites() {
+  Future<void> saveFavoriteIds(List<String> favoriteIds) async {
+    final favorites = _getFavorites() ?? Favorites(favoriteIds: []);
+    favorites.favoriteIds = favoriteIds;
+    await _saveFavorites(favorites);
+  }
+
+  //
+  Favorites? _getFavorites() {
     final box = Hive.box<Favorites>(_favoritesBox);
     return box.get(_favoritesKey); // 使用固定的 key 获取
+  }
+
+  List<String> getFavoritesIds() {
+    final favorites = _getFavorites();
+    if (favorites == null || favorites.favoriteIds.isEmpty) {
+      return [];
+    }
+    return favorites.favoriteIds;
   }
 
   // 新增: 保存 Token 数据
