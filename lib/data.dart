@@ -175,6 +175,22 @@ class MoodTracking {
   static const frustratedColor = 0xFF3F51B5; // 深蓝色
   static const contentColor = 0xFF8BC34A; // 浅绿色
   static const neutralColor = 0xFF9E9E9E; // 灰色
+  static const List<String> moodNames = [
+    'peaceful',
+    'energized',
+    'engaged',
+    'disengaged',
+    'happy',
+    'sad',
+    'anxious',
+    'stressed',
+    'relaxed',
+    'excited',
+    'bored',
+    'frustrated',
+    'content',
+    'neutral', // 添加一个中性情绪
+  ];
 
   final String name;
   double ratio;
@@ -651,8 +667,8 @@ class Dashboard {
 
   //
   double? getMoodTrackingRatio(String moodName) {
-    if (_isShuffled) {
-      return 0.2 + random.nextDouble() * 0.6;
+    if (_isShuffled && !moodTrackingMap.containsKey(moodName)) {
+      moodTrackingMap[moodName] = 0.2 + random.nextDouble() * 0.6;
     }
     if (moodTrackingMap.containsKey(moodName)) {
       return moodTrackingMap[moodName];

@@ -13,9 +13,11 @@ class MoodTrackingDetailsPage extends StatefulWidget {
 }
 
 class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
+  String? selectedMoodType;
+
   @override
   Widget build(BuildContext context) {
-    final double settingHeight = 400;
+    final double settingHeight = 300;
     final double unitWidth = 50; // 每个数据点的宽度
 
     return Scaffold(
@@ -39,10 +41,110 @@ class _MoodTrackingDetailsPageState extends State<MoodTrackingDetailsPage> {
             SizedBox(
               height: settingHeight,
               child: SlidingLineChart(
-                // 更改线条颜色为蓝色以适应浅色主题
+                // 传递选中的情绪类型
+                selectedMoodType: selectedMoodType,
                 lineColor: Colors.blue,
                 settingHeight: settingHeight,
                 unitWidth: unitWidth,
+              ),
+            ),
+            // 添加一个标题
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0, bottom: 8.0),
+              child: Row(
+                children: [
+                  const Text(
+                    'Mood Types',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  // 添加清除选择按钮
+                  if (selectedMoodType != null)
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedMoodType = null; // 清除选择
+                        });
+                      },
+                      child: const Text('Clear Selection'),
+                    ),
+                ],
+              ),
+            ),
+            // 添加情绪类型列表
+            Expanded(
+              child: ListView.builder(
+                itemCount: MoodTracking.moodNames.length,
+                itemBuilder: (context, index) {
+                  String moodType = MoodTracking.moodNames[index];
+                  // 获取对应的颜色
+                  Color moodColor = Color(
+                    MoodTracking(name: moodType, ratio: 0).color,
+                  );
+
+                  // 检查当前项是否被选中
+                  bool isSelected = selectedMoodType == moodType;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // 如果被选中添加背景色 - 修复withOpacity弃用警告
+                        color:
+                            isSelected
+                                ? Colors.blue.withAlpha(26)
+                                : null, // 26约等于0.1的透明度
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          // 添加颜色指示器
+                          Container(
+                            width: 16,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: moodColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // 情绪类型名称
+                          Expanded(
+                            child: Text(
+                              moodType,
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight:
+                                    isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          // View按钮
+                          ElevatedButton(
+                            onPressed: () {
+                              // 记录选择的情绪类型并刷新页面
+                              setState(() {
+                                selectedMoodType = moodType;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              // 如果被选中则使用不同的样式
+                              backgroundColor: isSelected ? Colors.blue : null,
+                              foregroundColor: isSelected ? Colors.white : null,
+                            ),
+                            child: const Text('View'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -56,12 +158,15 @@ class SlidingLineChart extends StatefulWidget {
   final Color lineColor;
   final double settingHeight;
   final double unitWidth;
+  // 添加选中的情绪类型参数
+  final String? selectedMoodType;
 
   const SlidingLineChart({
     super.key,
     required this.settingHeight,
     required this.unitWidth,
-    this.lineColor = Colors.blue, // 默认颜色改为蓝色
+    this.lineColor = Colors.blue,
+    this.selectedMoodType, // 添加这个参数接收选中的情绪类型
   });
 
   @override
@@ -116,106 +221,119 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
                     bottom: 16,
                     right: 16,
                   ),
-                  child: LineChart(
-                    LineChartData(
-                      minX: 0,
-                      maxX: _chartData.length.toDouble() - 1,
-                      minY: minY,
-                      maxY: maxY,
-                      lineTouchData: LineTouchData(enabled: false),
-                      gridData: FlGridData(
-                        show: true,
-                        horizontalInterval: 20,
-                        drawHorizontalLine: true,
-                        drawVerticalLine: false,
-                        getDrawingHorizontalLine: (value) {
-                          return FlLine(
-                            color: Colors.grey.withAlpha(77),
-                            strokeWidth: 1,
-                            dashArray: [5, 5],
-                          );
-                        },
-                      ),
-                      borderData: FlBorderData(
-                        show: false,
-                        border: Border.all(color: Colors.red, width: 2),
-                      ),
-                      titlesData: FlTitlesData(
-                        rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 45,
-                            interval: 1,
-                            getTitlesWidget: (value, meta) {
-                              final index = value.toInt();
-                              if (index < 0 || index >= _chartData.length) {
-                                return const SizedBox.shrink();
-                              }
-
-                              final date = _chartData[index].dateTime;
-                              final isToday = _isToday(date);
-
-                              String weekday = DateFormat('E').format(date);
-                              String dayMonth = DateFormat('d/M').format(date);
-
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                  vertical: 4,
+                  child:
+                      widget.selectedMoodType == null
+                          ? const Center(
+                            child: Text(
+                              'Please select a mood type to view data',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                          : LineChart(
+                            LineChartData(
+                              minX: 0,
+                              maxX: _chartData.length.toDouble() - 1,
+                              minY: minY,
+                              maxY: maxY,
+                              lineTouchData: LineTouchData(enabled: false),
+                              gridData: FlGridData(
+                                show: true,
+                                horizontalInterval: 20,
+                                drawHorizontalLine: true,
+                                drawVerticalLine: false,
+                                getDrawingHorizontalLine: (value) {
+                                  return FlLine(
+                                    color: Colors.grey.withAlpha(77),
+                                    strokeWidth: 1,
+                                    dashArray: [5, 5],
+                                  );
+                                },
+                              ),
+                              borderData: FlBorderData(
+                                show: false,
+                                border: Border.all(color: Colors.red, width: 2),
+                              ),
+                              titlesData: FlTitlesData(
+                                rightTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
                                 ),
-                                decoration: BoxDecoration(
-                                  // 修改今日高亮背景为浅蓝色
-                                  color:
-                                      isToday
-                                          ? Colors.blue.withAlpha(
-                                            51,
-                                          ) // 约等于0.2的透明度
-                                          : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(4),
+                                topTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
                                 ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      weekday,
-                                      style: TextStyle(
-                                        // 修改文字颜色为黑色
-                                        color:
-                                            isToday
-                                                ? Colors.blue.shade800
-                                                : Colors.black,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    Text(
-                                      dayMonth,
-                                      style: TextStyle(
-                                        // 修改日期颜色为灰色
-                                        color:
-                                            isToday
-                                                ? Colors.blue.shade600
-                                                : Colors.grey.shade700,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ],
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
                                 ),
-                              );
-                            },
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 45,
+                                    interval: 1,
+                                    getTitlesWidget: (value, meta) {
+                                      final index = value.toInt();
+                                      if (index < 0 ||
+                                          index >= _chartData.length) {
+                                        return const SizedBox.shrink();
+                                      }
+
+                                      final date = _chartData[index].dateTime;
+                                      final isToday = _isToday(date);
+
+                                      String weekday = DateFormat(
+                                        'E',
+                                      ).format(date);
+                                      String dayMonth = DateFormat(
+                                        'd/M',
+                                      ).format(date);
+
+                                      return Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              isToday
+                                                  ? Colors.blue.withAlpha(51)
+                                                  : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              weekday,
+                                              style: TextStyle(
+                                                color:
+                                                    isToday
+                                                        ? Colors.blue.shade800
+                                                        : Colors.black,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            Text(
+                                              dayMonth,
+                                              style: TextStyle(
+                                                color:
+                                                    isToday
+                                                        ? Colors.blue.shade600
+                                                        : Colors.grey.shade700,
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              lineBarsData: _getLineChartBars(),
+                            ),
                           ),
-                        ),
-                      ),
-                      lineBarsData: _getLineChartBars(),
-                    ),
-                  ),
                 ),
               ),
             ),
@@ -266,7 +384,6 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
       top: _calculateYPosition(value, minY, maxY, containerHeight) - offset,
       child: Text(
         text,
-        // 修改Y轴标签为深灰色
         style: const TextStyle(color: Colors.grey, fontSize: 12),
       ),
     );
@@ -278,7 +395,6 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     required double containerHeight,
     required double offset,
   }) {
-    // 可以根据需要自动计算间隔
     return Dashboard.moodTrackingYAxisLabels
         .map(
           (value) => _buildYAxisLabel(
@@ -293,13 +409,21 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
         .toList();
   }
 
-  // 创建固定的Y轴刻度
+  // 创建固定的Y轴刻度 - 修改为基于选中的情绪类型
   List<LineChartBarData> _getLineChartBars() {
+    // 如果没有选中情绪类型，返回空列表
+    if (widget.selectedMoodType == null) {
+      return [];
+    }
+
     List<LineChartBarData> result = [];
     List<FlSpot> currentSegment = [];
 
     for (int i = 0; i < _chartData.length; i++) {
-      final moodTrackingRatio = _chartData[i].getMoodTrackingRatio('work');
+      // 使用所选的情绪类型获取比例值
+      final moodTrackingRatio = _chartData[i].getMoodTrackingRatio(
+        widget.selectedMoodType!,
+      );
 
       if (moodTrackingRatio != null) {
         final moodTrackingPercentage = moodTrackingRatio * 100;
@@ -321,11 +445,19 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   }
 
   LineChartBarData _createLineChartBarData(List<FlSpot> spots) {
+    // 如果有选中的情绪类型，使用对应的颜色
+    Color lineColor =
+        widget.selectedMoodType != null
+            ? Color(
+              MoodTracking(name: widget.selectedMoodType!, ratio: 0).color,
+            )
+            : widget.lineColor;
+
     return LineChartBarData(
       spots: List.from(spots),
       isCurved: true,
       barWidth: 3,
-      color: widget.lineColor,
+      color: lineColor,
       dotData: FlDotData(
         show: true,
         getDotPainter: (spot, percent, barData, index) {
@@ -335,8 +467,7 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
 
           return FlDotCirclePainter(
             radius: isToday ? 5 : 4,
-            // 修改点的颜色为蓝色，配合线条颜色
-            color: widget.lineColor,
+            color: lineColor,
             strokeColor: isToday ? Colors.blue.shade800 : Colors.transparent,
             strokeWidth: 2,
           );
@@ -363,3 +494,8 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
     return containerHeight * heightRatio;
   }
 }
+
+
+/*
+
+*/
