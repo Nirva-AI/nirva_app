@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
-//import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
+import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
 
 // mood_labels: List[str] = Field(
 //       description="Identify 1 to 3 mood labels that best describe user_name's personal mood during this event, based on their speech and reactions. Choose from: peaceful, energized, engaged, disengaged, happy, sad, anxious, stressed, relaxed, excited, bored, frustrated, content, neutral. The first label should be the most dominant mood for user_name. If only one strong mood is evident for user_name, use only that one label. If user_name's mood is unclear or mixed without a dominant feeling, use 'neutral'. These labels should reflect user_name's state, not the general atmosphere or the mood of other people involved, unless it clearly dictates user_name's mood."
@@ -43,18 +43,18 @@ class MoodTrackingCard extends StatelessWidget {
             Row(
               children: [
                 const Text('Mood Tracking', style: TextStyle(fontSize: 16)),
-                // const Spacer(), // 添加Spacer将按钮推到最右侧
-                // IconButton(
-                //   icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                //   onPressed: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => MoodTrackingDetailsPage(),
-                //       ),
-                //     );
-                //   },
-                // ),
+                const Spacer(), // 添加Spacer将按钮推到最右侧
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MoodTrackingDetailsPage(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 16),

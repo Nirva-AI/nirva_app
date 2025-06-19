@@ -143,7 +143,7 @@ class RuntimeData {
     for (int i = 0; i <= daysBetween; i++) {
       final date = firstDay.add(Duration(days: i));
       dashboards.add(Dashboard(dateTime: date));
-      //dashboards.last.shuffleData();
+      dashboards.last.shuffleData();
     }
 
     for (var dashboard in dashboards) {

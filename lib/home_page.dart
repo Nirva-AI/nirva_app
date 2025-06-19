@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // 使用枚举类型替代整数
-  HomePageNavigationType _selectedPage = HomePageNavigationType.smartDiary;
+  HomePageNavigationType _selectedPage = HomePageNavigationType.dashboard;
 
   final TextEditingController _textController = TextEditingController();
 
@@ -122,13 +122,13 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _floatingActionButtonPressed,
         tooltip: 'FloatingActionButton',
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.yellow,
         shape: const CircleBorder(),
         child: const Text(
           'N',
           style: TextStyle(
             fontSize: 24,
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
