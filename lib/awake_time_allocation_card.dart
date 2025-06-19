@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nirva_app/app_runtime_context.dart';
-//import 'package:nirva_app/awake_time_allocation_details_page.dart';
+import 'package:nirva_app/awake_time_allocation_details_page.dart';
 import 'package:nirva_app/data.dart';
 
 class AwakeTimeAllocationCard extends StatelessWidget {
@@ -36,20 +36,20 @@ class AwakeTimeAllocationCard extends StatelessWidget {
                   'Awake Time Allocation',
                   style: TextStyle(fontSize: 16),
                 ),
-                // const Spacer(),
-                // IconButton(
-                //   icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                //   onPressed: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => AwakeTimeAllocationDetailsPage(),
-                //       ),
-                //     );
-                //   },
-                //   padding: EdgeInsets.zero,
-                //   constraints: const BoxConstraints(),
-                // ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AwakeTimeAllocationDetailsPage(),
+                      ),
+                    );
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
               ],
             ),
             const SizedBox(height: 16),

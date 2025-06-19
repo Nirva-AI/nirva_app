@@ -242,6 +242,18 @@ class AwakeTimeAllocation {
   static const leisureColor = 0xFF00BCD4; // 青色
   static const unknownColor = 0xFF9E9E9E; // 灰色
 
+  static const List<String> activityNames = [
+    'work',
+    'exercise',
+    'social',
+    'learning',
+    'self-care',
+    'chores',
+    'commute',
+    'meal',
+    'leisure',
+  ];
+
   final String name;
   double minutes;
 
@@ -608,34 +620,54 @@ extension JournalFileExtensions on JournalFile {
 class Dashboard {
   static final random = Random();
 
-  //
+  // 指数1～10
   static const double moodScoreMinY = 0;
   static const double moodScoreMaxY = 12;
   static List<double> moodScoreYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
 
-  //
+  // 指数1～10
   static const double stressLevelMinY = 0;
   static const double stressLevelMaxY = 12;
   static List<double> stressLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
 
-  //
+  // 指数1～10
   static const double energyLevelMinY = 0;
   static const double energyLevelMaxY = 12;
   static List<double> energyLevelYAxisLabels = [2.0, 4.0, 6.0, 8.0, 10.0];
 
-  //
+  // 全天的百分率
   static const double moodTrackingMinY = 0;
   static const double moodTrackingMaxY = 100;
   static List<double> moodTrackingYAxisLabels = [20, 40, 60, 80];
 
-  //
-  final DateTime dateTime;
-  JournalFile? journalFile;
-  double? moodScoreAverage;
-  double? stressLevelAverage;
-  double? energyLevelAverage;
-  Map<String, double> moodTrackingMap = {};
+  // 小时
+  static const double awakeTimeAllocationMinY = 0;
+  static const double awakeTimeAllocationMaxY = 10;
+  static List<double> awakeTimeAllocationYAxisLabels = [2, 4, 6, 8];
+
+  // 测试用的随机数生成器
   bool _isShuffled = false;
+
+  // 仪表盘的日期
+  final DateTime dateTime;
+
+  // 仪表盘对应的 JournalFile
+  JournalFile? journalFile;
+
+  // 平均情绪分数
+  double? moodScoreAverage;
+
+  // 平均压力水平
+  double? stressLevelAverage;
+
+  // 平均能量水平
+  double? energyLevelAverage;
+
+  //moodTrackingMap 用于存储情绪追踪数据
+  Map<String, double> moodTrackingMap = {};
+
+  // awakeTimeAllocationMap 用于存储清醒时间分配数据
+  Map<String, double> awakeTimeAllocationMap = {};
 
   //
   Dashboard({required this.dateTime});
@@ -650,12 +682,22 @@ class Dashboard {
     moodScoreAverage = journalFile!.moodScoreAverage;
     stressLevelAverage = journalFile!.stressLevelAverage;
     energyLevelAverage = journalFile!.energyLevelAverage;
+
+    // 清空之前的数据
+    moodTrackingMap.clear();
     for (var entry in journalFile!.moodTracking) {
       moodTrackingMap[entry.name] = entry.ratio;
+    }
+
+    // 清空之前的 awakeTimeAllocationMap
+    awakeTimeAllocationMap.clear();
+    for (var entry in journalFile!.awakeTimeAllocation) {
+      awakeTimeAllocationMap[entry.name] = entry.minutes;
     }
   }
 
   void shuffleData() {
+    //return;
     if (random.nextDouble() < 0.1) {
       return;
     }
@@ -672,6 +714,18 @@ class Dashboard {
     }
     if (moodTrackingMap.containsKey(moodName)) {
       return moodTrackingMap[moodName];
+    }
+    return null;
+  }
+
+  double? getAwakeTimeAllocationMinutes(String activityName) {
+    if (_isShuffled && !awakeTimeAllocationMap.containsKey(activityName)) {
+      // 返回2h~8h 即（60 * 2 与 60 * 8）之间的数字
+      awakeTimeAllocationMap[activityName] =
+          120 + random.nextDouble() * 360; // 2小时到8小时之间
+    }
+    if (awakeTimeAllocationMap.containsKey(activityName)) {
+      return awakeTimeAllocationMap[activityName];
     }
     return null;
   }
