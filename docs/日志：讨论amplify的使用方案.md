@@ -1,4 +1,4 @@
-# 日志：仅使用amplify的aws transcribe
+# 日志：讨论amplify的使用方案
 
 ## AWS Transcribe 服务概述
 
