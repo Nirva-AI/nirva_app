@@ -1,4 +1,4 @@
-# amplify的使用
+# 日志：amplify的使用
 
 ## ✅ 第一阶段：添加 Flutter Amplify 依赖包
 
