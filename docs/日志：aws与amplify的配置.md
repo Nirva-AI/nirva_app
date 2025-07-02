@@ -1,4 +1,4 @@
-# aws与amplify的配置
+# 日志：aws与amplify的配置
 
 ## 首先清空所有aws与amplify的配置，并保证aws-cli和amplify-cli正确安装，再进行后续操作
 
