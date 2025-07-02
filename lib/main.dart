@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 //import 'package:nirva_app/hive_object.dart';
-import 'package:nirva_app/main_app.dart';
+//import 'package:nirva_app/main_app.dart';
 import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
@@ -9,13 +9,14 @@ import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/hive_data.dart';
 //import 'package:nirva_app/test_file_access_app.dart'; // 添加这一行
 //import 'package:nirva_app/test_sliding_chart_app.dart';
+import 'package:nirva_app/test_speech_to_text_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
 
   // 这里必须一起调用。
   await initializeApp(); // 执行异步操作，例如加载配置文件
-  runApp(const MainApp()); // 运行核心应用
+  //runApp(const MainApp()); // 运行核心应用
 
   //如果需要测试应用，可以取消下面的注释，下面会进入测试应用，隔离主应用进行专项测试
   //runApp(TestChatApp());
@@ -27,6 +28,8 @@ void main() async {
   //runApp(const TestFileAccessApp());
   //如果需要测试图表，可以取消下面的注释
   //runApp(const TestSlidingChartApp());
+  //如果需要测试语音转文本，可以取消下面的注释
+  runApp(const TestSpeechToTextApp());
 }
 
 Future<void> initializeApp() async {
