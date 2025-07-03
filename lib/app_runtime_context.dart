@@ -48,7 +48,7 @@ class AppRuntimeContext {
   // 用于基础app服务的 Dio 实例
   final Dio _appserviceDio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.2.78:8001',
+        baseUrl: 'http://192.168.192.113:8001',
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
