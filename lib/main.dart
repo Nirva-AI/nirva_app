@@ -13,6 +13,7 @@ import 'package:nirva_app/test_speech_to_text_app.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'amplifyconfiguration.dart';
 
 void main() async {
@@ -81,6 +82,7 @@ Future<void> _configureAmplify() async {
     // 添加 Amplify 插件
     await Amplify.addPlugin(AmplifyAPI());
     await Amplify.addPlugin(AmplifyAuthCognito());
+    await Amplify.addPlugin(AmplifyStorageS3());
 
     // 配置 Amplify
     await Amplify.configure(amplifyconfig);
