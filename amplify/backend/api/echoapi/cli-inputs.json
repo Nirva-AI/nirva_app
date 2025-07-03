@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/echo": {
+      "name": "/echo",
+      "lambdaFunction": "echofunc",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

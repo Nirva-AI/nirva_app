@@ -10,6 +10,17 @@
       "StackName": "amplify-nirvaapp-dev-0e8a7",
       "StackId": "arn:aws:cloudformation:us-east-1:256105712922:stack/amplify-nirvaapp-dev-0e8a7/2c48ef40-5721-11f0-85aa-0e15aa6b23bd",
       "AmplifyAppId": "d225ugs7osuhtk"
+    },
+    "categories": {
+      "function": {
+        "echofunc": {
+          "deploymentBucketName": "amplify-nirvaapp-dev-0e8a7-deployment",
+          "s3Key": "amplify-builds/echofunc-5a2b704139664a535864-build.zip"
+        }
+      },
+      "api": {
+        "echoapi": {}
+      }
     }
   }
 }
