@@ -29,6 +29,22 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     try {
       safePrint('开始调用 Amplify API...');
 
+      // 检查认证状态
+      try {
+        final session = await Amplify.Auth.fetchAuthSession();
+        safePrint('Auth session: ${session.isSignedIn}');
+
+        if (!session.isSignedIn) {
+          safePrint('用户未登录，将使用未认证凭证调用API...');
+          // 对于未认证用户，Amplify 会自动尝试获取临时凭证
+        } else {
+          safePrint('用户已登录，将使用认证凭证调用API...');
+        }
+      } catch (e) {
+        safePrint('获取认证状态失败: $e');
+        // 即使获取认证状态失败，也继续尝试调用API
+      }
+
       // 使用 Amplify API 调用 REST 端点
       final restOperation = Amplify.API.get(
         '/echo',
@@ -74,10 +90,14 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             '❌ API 调用出错!\n\n'
             '错误信息: ${e.toString()}\n\n'
             '🔍 可能的原因:\n'
-            '1. 网络连接问题\n'
-            '2. Amplify 配置问题\n'
-            '3. API 端点不可用\n'
-            '4. 权限不足';
+            '1. Cognito Identity Pool 不允许未认证访问\n'
+            '2. 需要用户登录后才能调用 API\n'
+            '3. Identity Pool 权限配置问题\n'
+            '4. API Gateway 权限配置问题\n\n'
+            '💡 建议解决方案:\n'
+            '1. 在 AWS Console 中启用 Identity Pool 的未认证访问\n'
+            '2. 或者实现用户登录功能\n'
+            '3. 检查 IAM 角色权限';
         Logger().e('API 调用失败: $e');
       });
     } finally {
