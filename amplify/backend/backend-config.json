@@ -15,7 +15,38 @@
       "service": "API Gateway"
     }
   },
+  "auth": {
+    "nirvaapp5b3b44fb": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
   "function": {
+    "S3Trigger0f8e56ad": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "echofunc": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -23,6 +54,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_S3Trigger0f8e56ad_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger0f8e56ad"
+        }
+      ]
+    },
+    "AMPLIFY_function_S3Trigger0f8e56ad_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger0f8e56ad"
+        }
+      ]
+    },
     "AMPLIFY_function_echofunc_deploymentBucketName": {
       "usedBy": [
         {
@@ -38,6 +85,23 @@
           "resourceName": "echofunc"
         }
       ]
+    }
+  },
+  "storage": {
+    "audioStorage": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "LambdaExecutionRole"
+          ],
+          "category": "function",
+          "resourceName": "S3Trigger0f8e56ad"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
     }
   }
 }

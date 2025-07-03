@@ -16,10 +16,20 @@
         "echofunc": {
           "deploymentBucketName": "amplify-nirvaapp-dev-0e8a7-deployment",
           "s3Key": "amplify-builds/echofunc-5a2b704139664a535864-build.zip"
+        },
+        "S3Trigger0f8e56ad": {
+          "deploymentBucketName": "amplify-nirvaapp-dev-0e8a7-deployment",
+          "s3Key": "amplify-builds/S3Trigger0f8e56ad-77476655326b50754277-build.zip"
         }
       },
       "api": {
         "echoapi": {}
+      },
+      "auth": {
+        "nirvaapp5b3b44fb": {}
+      },
+      "storage": {
+        "audioStorage": {}
       }
     }
   }
