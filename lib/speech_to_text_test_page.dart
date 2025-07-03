@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 
 import 'package:logger/logger.dart';
@@ -109,7 +111,89 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
   // 功能3：上传音频到S3->事件触发Lambda->启动Transcribe任务
   Future<void> _testFileUploadAndTranscribe() async {
-    debugPrint('_testFileUploadAndTranscribe...');
+    setState(() {
+      _isLoading = true;
+      _apiResult = '正在上传音频文件到 S3...';
+    });
+
+    try {
+      safePrint('开始上传音频文件到 S3...');
+
+      // 从 assets 加载音频文件
+      final ByteData audioData = await rootBundle.load('assets/test_audio.mp3');
+      final Uint8List audioBytes = audioData.buffer.asUint8List();
+
+      safePrint('音频文件大小: ${audioBytes.length} bytes');
+
+      // 生成唯一的文件名
+      final fileName =
+          'test_audio_${DateTime.now().millisecondsSinceEpoch}.mp3';
+
+      setState(() {
+        _apiResult =
+            '正在上传音频文件到 S3...\n\n'
+            '📁 文件信息:\n'
+            '• 文件名: $fileName\n'
+            '• 文件大小: ${(audioBytes.length / 1024).toStringAsFixed(2)} KB\n'
+            '• 目标桶: nirvaappaudiostorage0e8a7-dev\n\n'
+            '⏳ 上传进行中...';
+      });
+
+      // 上传文件到 S3
+      final uploadResult =
+          await Amplify.Storage.uploadData(
+            data: S3DataPayload.bytes(audioBytes),
+            path: StoragePath.fromString(fileName),
+            options: const StorageUploadDataOptions(
+              metadata: {
+                'fileType': 'audio',
+                'originalName': 'test_audio.mp3',
+                'uploadTime': 'auto-generated',
+              },
+            ),
+          ).result;
+
+      safePrint('文件上传成功: ${uploadResult.uploadedItem.path}');
+
+      setState(() {
+        _apiResult =
+            '✅ 音频文件上传成功!\n\n'
+            '📁 文件信息:\n'
+            '• 文件名: $fileName\n'
+            '• 文件大小: ${(audioBytes.length / 1024).toStringAsFixed(2)} KB\n'
+            '• S3 路径: ${uploadResult.uploadedItem.path}\n'
+            '• 目标桶: nirvaappaudiostorage0e8a7-dev\n\n'
+            '🎯 上传结果:\n'
+            '• 状态: 成功\n'
+            '• ETag: ${uploadResult.uploadedItem.eTag ?? "N/A"}\n\n'
+            '📋 下一步:\n'
+            '• S3 事件应该已经触发 Lambda 函数\n'
+            '• 检查 AWS CloudWatch 日志查看 Lambda 执行情况\n'
+            '• Lambda 函数名: S3Trigger0f8e56ad-dev';
+      });
+    } catch (e) {
+      safePrint('文件上传失败: $e');
+      setState(() {
+        _apiResult =
+            '❌ 音频文件上传失败!\n\n'
+            '错误信息: ${e.toString()}\n\n'
+            '🔍 可能的原因:\n'
+            '1. S3 存储桶权限问题\n'
+            '2. Cognito Identity Pool 权限不足\n'
+            '3. 网络连接问题\n'
+            '4. 文件格式或大小限制\n\n'
+            '💡 建议解决方案:\n'
+            '1. 检查 S3 存储桶策略\n'
+            '2. 确认 Identity Pool 角色权限\n'
+            '3. 检查网络连接\n'
+            '4. 尝试使用更小的文件';
+        Logger().e('文件上传失败: $e');
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -168,9 +252,24 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
                     // 文件上传测试按钮
                     ElevatedButton.icon(
-                      onPressed: _testFileUploadAndTranscribe,
-                      icon: const Icon(Icons.upload_file),
-                      label: Text('上传音频到S3->事件触发Lambda->启动Transcribe任务'),
+                      onPressed:
+                          _isLoading ? null : _testFileUploadAndTranscribe,
+                      icon:
+                          _isLoading && _apiResult.contains('上传')
+                              ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : const Icon(Icons.upload_file),
+                      label: Text(
+                        _isLoading && _apiResult.contains('上传')
+                            ? '上传中...'
+                            : '上传音频到S3->事件触发Lambda->启动Transcribe任务',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange.shade600,
                         foregroundColor: Colors.white,
