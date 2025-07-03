@@ -14,6 +14,22 @@ packages:
     description: dart
     source: sdk
     version: "0.3.3"
+  amplify_api:
+    dependency: "direct main"
+    description:
+      name: amplify_api
+      sha256: "1f6a688fb20674dbad95a9bc6ad8a4a510083fdec0f8e42614ffc2b47a41d247"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.1"
+  amplify_api_dart:
+    dependency: transitive
+    description:
+      name: amplify_api_dart
+      sha256: "35982534da4a5dbee1495818bb4e591fc18a02775eb082a3140628beb25bb4cc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.9"
   amplify_core:
     dependency: transitive
     description:
@@ -202,18 +218,18 @@ packages:
     dependency: "direct main"
     description:
       name: connectivity_plus
-      sha256: "224a77051d52a11fbad53dd57827594d3bd24f945af28bd70bab376d68d437f0"
+      sha256: "051849e2bd7c7b3bc5844ea0d096609ddc3a859890ec3a9ac4a65a2620cc1f99"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.2"
+    version: "6.1.4"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
       name: connectivity_plus_platform_interface
-      sha256: cf1d1c28f4416f8c654d7dc3cd638ec586076255d407cef3ddbdaf178272a71a
+      sha256: "42657c1715d48b167930d5f34d00222ac100475f73d10162ddf43e714932f204"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.4"
+    version: "2.0.1"
   convert:
     dependency: transitive
     description:
@@ -1018,22 +1034,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  web_socket:
-    dependency: transitive
-    description:
-      name: web_socket
-      sha256: "34d64019aa8e36bf9842ac014bb5d2f5586ca73df5e4d9bf5c936975cae6982c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   web_socket_channel:
     dependency: transitive
     description:
       name: web_socket_channel
-      sha256: d645757fb0f4773d602444000a8131ff5d48c9e47adfe9772652dd1a4f2d45c8
+      sha256: d88238e5eac9a42bb43ca4e721edba3c08c6354d4a53063afaa568516217621b
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.3"
+    version: "2.4.0"
   win32:
     dependency: transitive
     description:
