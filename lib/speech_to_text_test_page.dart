@@ -13,9 +13,9 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     super.initState();
   }
 
-  // 功能1：API健康检查
-  Future<void> _testAPIHealth() async {
-    debugPrint('开始API健康检查...');
+  // 功能1：API Gateway测试
+  Future<void> _testAPIGateway() async {
+    debugPrint('API Gateway测试...');
   }
 
   // 功能2：验证后测试音频
@@ -58,11 +58,11 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
                     ),
                     const SizedBox(height: 12),
 
-                    // API健康检查按钮
+                    // API Gateway测试按钮
                     ElevatedButton.icon(
-                      onPressed: _testAPIHealth,
+                      onPressed: _testAPIGateway,
                       icon: const Icon(Icons.health_and_safety),
-                      label: Text('API健康检查'),
+                      label: Text('API Gateway测试'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green.shade600,
                         foregroundColor: Colors.white,

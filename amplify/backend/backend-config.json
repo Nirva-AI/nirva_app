@@ -1,1 +1,43 @@
-{}
+{
+  "api": {
+    "echoapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "echofunc"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "function": {
+    "echofunc": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_echofunc_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "echofunc"
+        }
+      ]
+    },
+    "AMPLIFY_function_echofunc_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "echofunc"
+        }
+      ]
+    }
+  }
+}
