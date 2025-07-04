@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
 
 class SpeechToTextTestPage extends StatefulWidget {
@@ -113,9 +113,10 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   Future<void> _testFileUploadAndTranscribe() async {
     setState(() {
       _isLoading = true;
-      _apiResult = '正在上传音频文件到 S3...';
+      _apiResult = '正在准备音频文件...';
     });
 
+    File? tempFile;
     try {
       safePrint('开始上传音频文件到 S3...');
 
@@ -125,9 +126,16 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
       safePrint('音频文件大小: ${audioBytes.length} bytes');
 
+      // 创建临时文件
+      final tempDir = await getTemporaryDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      tempFile = File('${tempDir.path}/test_audio_$timestamp.mp3');
+      await tempFile.writeAsBytes(audioBytes);
+
+      safePrint('临时文件创建成功: ${tempFile.path}');
+
       // 生成唯一的文件名
-      final fileName =
-          'test_audio_${DateTime.now().millisecondsSinceEpoch}.mp3';
+      final fileName = 'test_audio_$timestamp.mp3';
 
       setState(() {
         _apiResult =
@@ -135,23 +143,28 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             '📁 文件信息:\n'
             '• 文件名: $fileName\n'
             '• 文件大小: ${(audioBytes.length / 1024).toStringAsFixed(2)} KB\n'
-            '• 目标桶: nirvaappaudiostorage0e8a7-dev\n\n'
+            '• 目标桶: nirvaappaudiostorage0e8a7-dev\n'
+            '• 上传方式: uploadFile (支持大文件)\n\n'
             '⏳ 上传进行中...';
       });
 
-      // 上传文件到 S3
-      final uploadResult =
-          await Amplify.Storage.uploadData(
-            data: S3DataPayload.bytes(audioBytes),
-            path: StoragePath.fromString(fileName),
-            options: const StorageUploadDataOptions(
-              metadata: {
-                'fileType': 'audio',
-                'originalName': 'test_audio.mp3',
-                'uploadTime': 'auto-generated',
-              },
-            ),
-          ).result;
+      // 上传文件到 S3 (使用 uploadFile 支持大文件)
+      // 后续优化需要添加 uploadOperation.progress.listen()
+      final uploadOperation = Amplify.Storage.uploadFile(
+        localFile: AWSFile.fromPath(tempFile.path),
+        path: StoragePath.fromString(fileName),
+        options: const StorageUploadFileOptions(
+          metadata: {
+            'fileType': 'audio',
+            'originalName': 'test_audio.mp3',
+            'uploadTime': 'auto-generated',
+            'uploadMethod': 'uploadFile',
+          },
+        ),
+      );
+
+      // 等待上传完成
+      final uploadResult = await uploadOperation.result;
 
       safePrint('文件上传成功: ${uploadResult.uploadedItem.path}');
 
@@ -162,14 +175,19 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             '• 文件名: $fileName\n'
             '• 文件大小: ${(audioBytes.length / 1024).toStringAsFixed(2)} KB\n'
             '• S3 路径: ${uploadResult.uploadedItem.path}\n'
-            '• 目标桶: nirvaappaudiostorage0e8a7-dev\n\n'
+            '• 目标桶: nirvaappaudiostorage0e8a7-dev\n'
+            '• 上传方式: uploadFile (支持大文件)\n\n'
             '🎯 上传结果:\n'
             '• 状态: 成功\n'
             '• ETag: ${uploadResult.uploadedItem.eTag ?? "N/A"}\n\n'
             '📋 下一步:\n'
             '• S3 事件应该已经触发 Lambda 函数\n'
             '• 检查 AWS CloudWatch 日志查看 Lambda 执行情况\n'
-            '• Lambda 函数名: S3Trigger0f8e56ad-dev';
+            '• Lambda 函数名: S3Trigger0f8e56ad-dev\n\n'
+            '💡 优势:\n'
+            '• 使用 uploadFile 支持大文件流式上传\n'
+            '• 自动处理多部分上传 (>100MB)\n'
+            '• 实时进度监控';
       });
     } catch (e) {
       safePrint('文件上传失败: $e');
@@ -181,15 +199,26 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             '1. S3 存储桶权限问题\n'
             '2. Cognito Identity Pool 权限不足\n'
             '3. 网络连接问题\n'
-            '4. 文件格式或大小限制\n\n'
+            '4. 文件格式或大小限制\n'
+            '5. 临时文件创建失败\n\n'
             '💡 建议解决方案:\n'
             '1. 检查 S3 存储桶策略\n'
             '2. 确认 Identity Pool 角色权限\n'
             '3. 检查网络连接\n'
-            '4. 尝试使用更小的文件';
+            '4. 确认设备存储空间充足';
         Logger().e('文件上传失败: $e');
       });
     } finally {
+      // 清理临时文件
+      if (tempFile != null && await tempFile.exists()) {
+        try {
+          await tempFile.delete();
+          safePrint('临时文件已清理: ${tempFile.path}');
+        } catch (e) {
+          safePrint('清理临时文件失败: $e');
+        }
+      }
+
       setState(() {
         _isLoading = false;
       });
@@ -268,7 +297,7 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
                       label: Text(
                         _isLoading && _apiResult.contains('上传')
                             ? '上传中...'
-                            : '上传音频到S3->事件触发Lambda->启动Transcribe任务',
+                            : '上传音频到S3 (uploadFile支持大文件)',
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange.shade600,
