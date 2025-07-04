@@ -109,7 +109,7 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     }
   }
 
-  // 功能3：上传音频到S3->事件触发Lambda->启动Transcribe任务
+  // 功能3：上传音频到S3->事件触发Lambda->启动Transcribe任务->输出的转录结果JSON再次存入S3
   Future<void> _testFileUploadAndTranscribe() async {
     setState(() {
       _isLoading = true;
