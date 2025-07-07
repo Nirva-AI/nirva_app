@@ -14,6 +14,7 @@ exports.handler = async function (event) {
     // 处理每个 S3 事件记录
     // 注意：虽然当前测试只上传一个文件，但S3事件可能包含多个记录
     // 这是AWS Lambda S3触发器的标准处理方式
+    // 但是，多段文件会出现多个转录任务，导致多个转录结果。
     for (let i = 0; i < event.Records.length; i++) {
       const record = event.Records[i];
       const bucket = record.s3.bucket.name;
@@ -75,13 +76,17 @@ async function startTranscriptionJob(bucket, key) {
     console.log(`Output URI: ${outputUri}`);
     
     // 启动转录任务
+    // 使用自动语言识别而不是硬编码语言
     const params = {
       TranscriptionJobName: jobName,
       Media: {
         MediaFileUri: mediaUri
       },
       MediaFormat: getMediaFormat(key),
-      LanguageCode: 'en-US', // 强制英文实验下，后续这一步需要进行优化，可以根据客户端的语言版本（传上来）来进行翻译设置。
+      // 替换固定语言代码，使用自动识别
+      IdentifyLanguage: true,  // 启用自动语言识别
+      // 可以指定可能的语言列表以提高准确性（可选）
+      LanguageOptions: ['en-US', 'zh-CN'],
       OutputBucketName: bucket,
       OutputKey: outputKey,
       Settings: {
