@@ -18,9 +18,9 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   bool _isLoading = false;
 
   //下面的2个换名字测试。
-  //record_test_audio
-  //poem_audio
-  final String _fileName = 'poem_audio.mp3';
+  //record_test_audio，录制的音频，拿手机录制B站的声音，然后再用ffmpeg做数据处理，策略见日志13。
+  //poem_audio，mac say 命令生成的音频。
+  final String _fileName = 'record_test_audio.mp3';
 
   @override
   void initState() {
