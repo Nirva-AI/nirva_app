@@ -16,6 +16,7 @@ class SpeechToTextTestPage extends StatefulWidget {
 class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   String _apiResult = '点击测试按钮开始语音转文字测试...';
   bool _isLoading = false;
+  String? _lastUploadedFileName; // 保存最后上传的文件名（不含扩展名）
 
   //下面的2个换名字测试。
   //record_test_audio，录制的音频，拿手机录制B站的声音，然后再用ffmpeg做数据处理，策略见日志13。
@@ -132,6 +133,24 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
       safePrint('音频文件大小: ${audioBytes.length} bytes');
 
+      // 检查文件大小限制（99MB）
+      const int maxFileSize = 99 * 1024 * 1024; // 99MB in bytes
+      if (audioBytes.length > maxFileSize) {
+        final fileSizeMB = (audioBytes.length / (1024 * 1024)).toStringAsFixed(
+          2,
+        );
+        setState(() {
+          _apiResult =
+              '❌ 音频文件上传失败!\n\n'
+              '错误信息: 文件大小超过限制\n\n'
+              '📁 文件信息:\n'
+              '• 文件名: $_fileName\n'
+              '• 文件大小: $fileSizeMB MB\n'
+              '• 最大允许: 99 MB\n\n';
+        });
+        return;
+      }
+
       // 创建临时文件
       final tempDir = await getTemporaryDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -173,6 +192,9 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
       final uploadResult = await uploadOperation.result;
 
       safePrint('文件上传成功: ${uploadResult.uploadedItem.path}');
+
+      // 保存上传的文件名（不含扩展名），用于后续获取转录结果
+      _lastUploadedFileName = fileName.substring(0, fileName.lastIndexOf('.'));
 
       setState(() {
         _apiResult =
@@ -225,6 +247,135 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         }
       }
 
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // 功能4：获取转录结果
+  Future<void> _getTranscriptionResult() async {
+    if (_lastUploadedFileName == null) {
+      setState(() {
+        _apiResult =
+            '❌ 获取转录结果失败!\n\n'
+            '错误信息: 没有找到上传的音频文件记录\n\n'
+            '💡 解决方案:\n'
+            '请先上传音频文件，然后再获取转录结果';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _apiResult = '正在获取转录结果...';
+    });
+
+    try {
+      safePrint('开始获取转录结果...');
+
+      // 根据上传的文件名构造转录结果文件路径
+      final transcriptFileName = '$_lastUploadedFileName.json';
+      final transcriptPath = 'transcripts/$transcriptFileName';
+
+      safePrint('查找转录结果文件: $transcriptPath');
+
+      setState(() {
+        _apiResult =
+            '正在从 S3 下载转录结果...\n\n'
+            '📁 文件信息:\n'
+            '• 原音频文件: $_lastUploadedFileName\n'
+            '• 转录结果文件: $transcriptFileName\n'
+            '• S3 路径: $transcriptPath\n\n'
+            '⏳ 下载进行中...';
+      });
+
+      // 从 S3 下载转录结果文件
+      final downloadResult =
+          await Amplify.Storage.downloadData(
+            path: StoragePath.fromString(transcriptPath),
+          ).result;
+
+      safePrint('转录结果下载成功，文件大小: ${downloadResult.bytes.length} bytes');
+
+      // 解析 JSON 内容
+      final jsonString = String.fromCharCodes(downloadResult.bytes);
+      final Map<String, dynamic> transcriptionData = jsonDecode(jsonString);
+
+      // 提取转录文本
+      String transcriptText = '';
+      if (transcriptionData.containsKey('results') &&
+          transcriptionData['results'] != null &&
+          transcriptionData['results']['transcripts'] != null &&
+          transcriptionData['results']['transcripts'].isNotEmpty) {
+        transcriptText =
+            transcriptionData['results']['transcripts'][0]['transcript'] ??
+            '无转录文本';
+      } else {
+        transcriptText = '无法解析转录文本';
+      }
+
+      // 美化 JSON 显示
+      const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+      final prettyJson = encoder.convert(transcriptionData);
+
+      setState(() {
+        _apiResult =
+            '✅ 转录结果获取成功!\n\n'
+            '📁 文件信息:\n'
+            '• 原音频文件: $_lastUploadedFileName\n'
+            '• 转录结果文件: $transcriptFileName\n'
+            '• 文件大小: ${(downloadResult.bytes.length / 1024).toStringAsFixed(2)} KB\n\n'
+            '🎯 转录文本:\n'
+            '「$transcriptText」\n\n'
+            '📄 完整 JSON 结果:\n'
+            '$prettyJson';
+      });
+    } catch (e) {
+      safePrint('获取转录结果失败: $e');
+
+      String errorMessage =
+          '❌ 获取转录结果失败!\n\n'
+          '错误信息: ${e.toString()}\n\n';
+
+      // 根据错误类型提供不同的建议
+      if (e.toString().contains('NoSuchKey') ||
+          e.toString().contains('not found')) {
+        errorMessage +=
+            '🔍 可能的原因:\n'
+            '1. 转录任务尚未完成\n'
+            '2. 转录任务失败\n'
+            '3. 文件路径不正确\n\n'
+            '💡 建议解决方案:\n'
+            '1. 等待几分钟后重试（转录需要时间）\n'
+            '2. 检查 AWS CloudWatch 日志确认 Lambda 执行状态\n'
+            '3. 确认 S3 中是否存在转录结果文件';
+      } else if (e.toString().contains('AccessDenied')) {
+        errorMessage +=
+            '🔍 可能的原因:\n'
+            '1. S3 存储桶权限问题\n'
+            '2. Cognito Identity Pool 权限不足\n\n'
+            '💡 建议解决方案:\n'
+            '1. 检查 S3 存储桶策略\n'
+            '2. 确认 Identity Pool 角色权限';
+      } else {
+        errorMessage +=
+            '🔍 可能的原因:\n'
+            '1. 网络连接问题\n'
+            '2. 转录结果文件格式异常\n'
+            '3. JSON 解析失败\n\n'
+            '💡 建议解决方案:\n'
+            '1. 检查网络连接\n'
+            '2. 重新上传音频文件\n'
+            '3. 检查转录结果文件格式';
+      }
+
+      setState(() {
+        _apiResult = errorMessage;
+      });
+
+      Logger().e('获取转录结果失败: $e');
+    } finally {
       setState(() {
         _isLoading = false;
       });
@@ -313,6 +464,34 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
                     ),
 
                     const SizedBox(height: 8),
+
+                    // 获取转录结果按钮
+                    ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _getTranscriptionResult,
+                      icon:
+                          _isLoading && _apiResult.contains('获取转录结果')
+                              ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : const Icon(Icons.download),
+                      label: Text(
+                        _isLoading && _apiResult.contains('获取转录结果')
+                            ? '获取中...'
+                            : '获取转录结果',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple.shade600,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 48),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -370,7 +549,6 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   }
 }
 
-
 /*
 
-*/
+ */

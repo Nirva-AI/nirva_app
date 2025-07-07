@@ -11,35 +11,57 @@ exports.handler = async function (event) {
     const recordCount = event.Records ? event.Records.length : 0;
     console.log(`Received ${recordCount} S3 event record(s)`);
     
+    // 记录每种事件类型的数量
+    const eventTypes = {};
+    event.Records?.forEach(record => {
+      const eventName = record.eventName;
+      eventTypes[eventName] = (eventTypes[eventName] || 0) + 1;
+    });
+    console.log(`Event type summary:`, eventTypes);
+    
+    // 收集所有启动的转录任务JobNames
+    const jobNames = [];
+    
     // 处理每个 S3 事件记录
     // 注意：虽然当前测试只上传一个文件，但S3事件可能包含多个记录
     // 这是AWS Lambda S3触发器的标准处理方式
-    // 但是，多段文件会出现多个转录任务，导致多个转录结果。
     for (let i = 0; i < event.Records.length; i++) {
       const record = event.Records[i];
+      const eventName = record.eventName;
       const bucket = record.s3.bucket.name;
       const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, ' '));
       
-      console.log(`Processing record ${i + 1}/${recordCount}: ${key} from bucket: ${bucket}`);
+      console.log(`Processing record ${i + 1}/${recordCount}: ${eventName} for ${key}`);
       
-      // 1. 检查文件是否为音频文件
+      // 1. 检查事件类型
+      if (!isFileCreationEvent(eventName)) {
+        console.log(`Skipping non-creation event: ${eventName}`);
+        continue;
+      }
+      
+      // 2. 检查文件是否为音频文件
       if (!isAudioFile(key)) {
         console.log(`Skipping non-audio file: ${key}`);
         continue;
       }
       
-      console.log(`✅ File ${key} is an audio file, proceeding with transcription`);
+      console.log(`✅ File ${key} is an audio file from creation event, proceeding with transcription`);
       
-      // 2. 启动 Amazon Transcribe 任务
-      await startTranscriptionJob(bucket, key);
+      // 3. 启动 Amazon Transcribe 任务
+      const jobName = await startTranscriptionJob(bucket, key);
+      if (jobName) {
+        jobNames.push(jobName);
+      }
     }
     
     console.log(`✅ Successfully processed all ${recordCount} S3 event record(s)`);
+    console.log(`✅ Started ${jobNames.length} transcription job(s): ${jobNames.join(', ')}`);
     
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Successfully processed ${recordCount} S3 event record(s)`
+        message: `Successfully processed ${recordCount} S3 event record(s)`,
+        jobNames: jobNames
       })
     };
     
@@ -48,6 +70,17 @@ exports.handler = async function (event) {
     throw error;
   }
 };
+
+// 检查是否为文件创建事件
+function isFileCreationEvent(eventName) {
+  const creationEvents = [
+    'ObjectCreated:Put',
+    'ObjectCreated:Post', 
+    'ObjectCreated:Copy',
+    'ObjectCreated:CompleteMultipartUpload'
+  ];
+  return creationEvents.includes(eventName);
+}
 
 // 检查文件是否为音频文件
 function isAudioFile(key) {
@@ -59,7 +92,7 @@ function isAudioFile(key) {
 // 启动 Amazon Transcribe 任务
 async function startTranscriptionJob(bucket, key) {
   try {
-    // 生成唯一的任务名称
+    // 生成唯一的任务名称（保留timestamp用于任务名称唯一性）
     const timestamp = Date.now();
     const filename = key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.'));
     const jobName = `transcribe-${filename}-${timestamp}`;
@@ -67,8 +100,8 @@ async function startTranscriptionJob(bucket, key) {
     // 构建 S3 URI
     const mediaUri = `s3://${bucket}/${key}`;
     
-    // 构建输出 S3 URI
-    const outputKey = `transcripts/${filename}-${timestamp}.json`;
+    // 构建输出 S3 URI（简化文件名，去掉timestamp）
+    const outputKey = `transcripts/${filename}.json`;
     const outputUri = `s3://${bucket}/transcripts/`;
     
     console.log(`Starting transcription job: ${jobName}`);
@@ -101,11 +134,11 @@ async function startTranscriptionJob(bucket, key) {
     console.log(`Transcription job started successfully:`, result.TranscriptionJob.TranscriptionJobName);
     console.log(`Job status: ${result.TranscriptionJob.TranscriptionJobStatus}`);
     
-    return result;
+    return result.TranscriptionJob.TranscriptionJobName;
     
   } catch (error) {
     console.error(`Error starting transcription job for ${key}:`, error);
-    throw error;
+    return null; // 返回null而不是抛出错误，让主函数可以继续处理其他文件
   }
 }
 
