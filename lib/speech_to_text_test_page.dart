@@ -16,6 +16,8 @@ class SpeechToTextTestPage extends StatefulWidget {
 class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   String _apiResult = '点击测试按钮开始语音转文字测试...';
   bool _isLoading = false;
+  final String _fileName = 'test_audio.mp3';
+
   @override
   void initState() {
     super.initState();
@@ -121,7 +123,7 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
       safePrint('开始上传音频文件到 S3...');
 
       // 从 assets 加载音频文件
-      final ByteData audioData = await rootBundle.load('assets/test_audio.mp3');
+      final ByteData audioData = await rootBundle.load('assets/$_fileName');
       final Uint8List audioBytes = audioData.buffer.asUint8List();
 
       safePrint('音频文件大小: ${audioBytes.length} bytes');
@@ -153,10 +155,10 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
       final uploadOperation = Amplify.Storage.uploadFile(
         localFile: AWSFile.fromPath(tempFile.path),
         path: StoragePath.fromString(fileName),
-        options: const StorageUploadFileOptions(
+        options: StorageUploadFileOptions(
           metadata: {
             'fileType': 'audio',
-            'originalName': 'test_audio.mp3',
+            'originalName': _fileName,
             'uploadTime': 'auto-generated',
             'uploadMethod': 'uploadFile',
           },
@@ -363,3 +365,8 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     );
   }
 }
+
+
+/*
+
+*/
