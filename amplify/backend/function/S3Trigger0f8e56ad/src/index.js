@@ -81,7 +81,7 @@ async function startTranscriptionJob(bucket, key) {
         MediaFileUri: mediaUri
       },
       MediaFormat: getMediaFormat(key),
-      LanguageCode: 'zh-CN', // 中文语言代码
+      LanguageCode: 'en-US', // 强制英文实验下，后续这一步需要进行优化，可以根据客户端的语言版本（传上来）来进行翻译设置。
       OutputBucketName: bucket,
       OutputKey: outputKey,
       Settings: {

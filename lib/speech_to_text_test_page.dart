@@ -16,7 +16,11 @@ class SpeechToTextTestPage extends StatefulWidget {
 class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   String _apiResult = '点击测试按钮开始语音转文字测试...';
   bool _isLoading = false;
-  final String _fileName = 'test_audio.mp3';
+
+  //下面的2个换名字测试。
+  //record_test_audio
+  //poem_audio
+  final String _fileName = 'poem_audio.mp3';
 
   @override
   void initState() {
