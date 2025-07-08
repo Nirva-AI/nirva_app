@@ -22,6 +22,8 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   //record_test_audio，录制的音频，拿手机录制B站的声音，然后再用ffmpeg做数据处理，策略见日志13。
   //poem_audio，mac say 命令生成的音频。
   final String _fileName = 'record_test_audio.mp3';
+  static const String _uuid =
+      "1eaade33-f351-461a-8f73-59a11cba04f9"; // 生成一个唯一的UUID
 
   @override
   void initState() {
@@ -132,24 +134,6 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
       final Uint8List audioBytes = audioData.buffer.asUint8List();
 
       safePrint('音频文件大小: ${audioBytes.length} bytes');
-
-      // 检查文件大小限制（99MB）
-      const int maxFileSize = 99 * 1024 * 1024; // 99MB in bytes
-      if (audioBytes.length > maxFileSize) {
-        final fileSizeMB = (audioBytes.length / (1024 * 1024)).toStringAsFixed(
-          2,
-        );
-        setState(() {
-          _apiResult =
-              '❌ 音频文件上传失败!\n\n'
-              '错误信息: 文件大小超过限制\n\n'
-              '📁 文件信息:\n'
-              '• 文件名: $_fileName\n'
-              '• 文件大小: $fileSizeMB MB\n'
-              '• 最大允许: 99 MB\n\n';
-        });
-        return;
-      }
 
       // 创建临时文件
       final tempDir = await getTemporaryDirectory();
@@ -561,9 +545,9 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
                 child: Column(
                   children: [
                     const Text(
-                      '语音转文字测试',
+                      _uuid,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
