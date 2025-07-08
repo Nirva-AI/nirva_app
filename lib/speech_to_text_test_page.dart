@@ -382,6 +382,163 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     }
   }
 
+  // 功能5：删除上传的音频文件和转录结果
+  Future<void> _deleteUploadedFiles() async {
+    if (_lastUploadedFileName == null) {
+      setState(() {
+        _apiResult =
+            '❌ 删除文件失败!\n\n'
+            '错误信息: 没有找到上传的音频文件记录\n\n'
+            '💡 解决方案:\n'
+            '请先上传音频文件后再尝试删除';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _apiResult = '正在删除文件...';
+    });
+
+    try {
+      safePrint('开始删除上传的文件...');
+
+      // 构造文件路径
+      final audioFileName = '$_lastUploadedFileName.mp3';
+      final transcriptFileName = '$_lastUploadedFileName.json';
+      final transcriptPath = 'transcripts/$transcriptFileName';
+
+      safePrint('准备删除音频文件: $audioFileName');
+      safePrint('准备删除转录结果文件: $transcriptPath');
+
+      setState(() {
+        _apiResult =
+            '正在删除文件...\n\n'
+            '📁 文件信息:\n'
+            '• 音频文件: $audioFileName\n'
+            '• 转录结果: $transcriptPath\n\n'
+            '⏳ 删除进行中...';
+      });
+
+      int deletedCount = 0;
+      List<String> deletedFiles = [];
+      List<String> errors = [];
+
+      // 删除音频文件
+      try {
+        await Amplify.Storage.remove(
+          path: StoragePath.fromString(audioFileName),
+        ).result;
+        deletedCount++;
+        deletedFiles.add('音频文件: $audioFileName');
+        safePrint('音频文件删除成功: $audioFileName');
+      } catch (e) {
+        safePrint('删除音频文件失败: $e');
+        if (e.toString().contains('NoSuchKey') ||
+            e.toString().contains('not found')) {
+          errors.add('音频文件不存在: $audioFileName');
+        } else {
+          errors.add('删除音频文件失败: ${e.toString()}');
+        }
+      }
+
+      // 删除转录结果文件（如果存在）
+      try {
+        await Amplify.Storage.remove(
+          path: StoragePath.fromString(transcriptPath),
+        ).result;
+        deletedCount++;
+        deletedFiles.add('转录结果: $transcriptPath');
+        safePrint('转录结果文件删除成功: $transcriptPath');
+      } catch (e) {
+        safePrint('删除转录结果文件失败: $e');
+        if (e.toString().contains('NoSuchKey') ||
+            e.toString().contains('not found')) {
+          errors.add('转录结果文件不存在: $transcriptPath');
+        } else {
+          errors.add('删除转录结果文件失败: ${e.toString()}');
+        }
+      }
+
+      // 构建结果信息
+      String resultMessage;
+
+      if (deletedCount > 0) {
+        resultMessage = '✅ 文件删除完成!\n\n';
+        resultMessage += '📊 删除统计:\n';
+        resultMessage += '• 成功删除: $deletedCount 个文件\n';
+        resultMessage += '• 错误: ${errors.length} 个\n\n';
+
+        if (deletedFiles.isNotEmpty) {
+          resultMessage += '🗑️ 已删除文件:\n';
+          for (String file in deletedFiles) {
+            resultMessage += '• $file\n';
+          }
+          resultMessage += '\n';
+        }
+
+        if (errors.isNotEmpty) {
+          resultMessage += '⚠️ 错误信息:\n';
+          for (String error in errors) {
+            resultMessage += '• $error\n';
+          }
+        }
+
+        // 清空当前会话记录
+        _lastUploadedFileName = null;
+      } else {
+        resultMessage =
+            '❌ 删除文件失败!\n\n'
+            '所有文件删除都失败了\n\n';
+
+        if (errors.isNotEmpty) {
+          resultMessage += '❌ 错误列表:\n';
+          for (String error in errors) {
+            resultMessage += '• $error\n';
+          }
+          resultMessage += '\n';
+        }
+
+        resultMessage +=
+            '🔍 可能的原因:\n'
+            '1. 文件已被手动删除\n'
+            '2. S3 存储桶权限问题\n'
+            '3. Cognito Identity Pool 权限不足\n'
+            '4. 网络连接问题\n\n'
+            '💡 建议解决方案:\n'
+            '1. 检查 S3 存储桶中文件是否存在\n'
+            '2. 确认删除权限配置\n'
+            '3. 检查网络连接';
+      }
+
+      setState(() {
+        _apiResult = resultMessage;
+      });
+    } catch (e) {
+      safePrint('删除文件操作失败: $e');
+      setState(() {
+        _apiResult =
+            '❌ 删除文件操作失败!\n\n'
+            '错误信息: ${e.toString()}\n\n'
+            '🔍 可能的原因:\n'
+            '1. S3 存储桶权限问题\n'
+            '2. Cognito Identity Pool 权限不足\n'
+            '3. 网络连接问题\n'
+            '4. AWS 服务异常\n\n'
+            '💡 建议解决方案:\n'
+            '1. 检查 S3 存储桶删除权限\n'
+            '2. 确认 Identity Pool 角色权限\n'
+            '3. 检查网络连接\n'
+            '4. 稍后重试';
+        Logger().e('删除文件失败: $e');
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -492,6 +649,34 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
                     ),
 
                     const SizedBox(height: 8),
+
+                    // 删除文件按钮
+                    ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _deleteUploadedFiles,
+                      icon:
+                          _isLoading && _apiResult.contains('删除')
+                              ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : const Icon(Icons.delete),
+                      label: Text(
+                        _isLoading && _apiResult.contains('删除')
+                            ? '删除中...'
+                            : '删除上传的文件',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 48),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -551,4 +736,4 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
 /*
 
- */
+*/
