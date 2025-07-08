@@ -7,7 +7,7 @@ import 'dart:math';
 import 'package:nirva_app/utils.dart';
 import 'dart:convert';
 
-// 管理全局数据的类
+// 填充测试数据的类。
 class TestData {
   static final random = Random();
   //
@@ -36,7 +36,7 @@ class TestData {
     AppRuntimeContext().selectDateTime(DateTime.now());
   }
 
-  // 加载测试日记文件 Future<void> initializeTestData() async
+  // 加载测试日记文件
   static Future<void> loadTestJournalFile(
     String path,
     DateTime dateTime,
