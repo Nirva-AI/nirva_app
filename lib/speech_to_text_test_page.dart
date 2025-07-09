@@ -135,6 +135,25 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
       safePrint('音频文件大小: ${audioBytes.length} bytes');
 
+      // 检查文件大小限制
+      const int maxMbSize = 50;
+      const int maxFileSize = maxMbSize * 1024 * 1024;
+      if (audioBytes.length > maxFileSize) {
+        final fileSizeMB = (audioBytes.length / (1024 * 1024)).toStringAsFixed(
+          2,
+        );
+        setState(() {
+          _apiResult =
+              '❌ 音频文件上传失败!\n\n'
+              '错误信息: 文件大小超过限制\n\n'
+              '📁 文件信息:\n'
+              '• 文件名: $_fileName\n'
+              '• 文件大小: $fileSizeMB MB\n'
+              '• 最大允许: $maxMbSize MB\n\n';
+        });
+        return;
+      }
+
       // 创建临时文件
       final tempDir = await getTemporaryDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
