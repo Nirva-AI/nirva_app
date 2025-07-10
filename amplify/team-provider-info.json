@@ -19,7 +19,7 @@
         },
         "S3Trigger0f8e56ad": {
           "deploymentBucketName": "amplify-nirvaapp-dev-0e8a7-deployment",
-          "s3Key": "amplify-builds/S3Trigger0f8e56ad-514c7637326261454567-build.zip"
+          "s3Key": "amplify-builds/S3Trigger0f8e56ad-57316153707a346c7077-build.zip"
         }
       },
       "api": {
