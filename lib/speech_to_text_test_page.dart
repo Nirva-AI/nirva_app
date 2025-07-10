@@ -245,51 +245,6 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     return buffer.toString();
   }
 
-  // 公共方法：处理文件操作的通用逻辑
-  Future<OperationResult> _processFiles<T>({
-    required List<String> items,
-    required String operation,
-    required Future<T> Function(String item, int index) processor,
-    required String Function(T result, String item) resultExtractor,
-  }) async {
-    final details = <String>[];
-    final errors = <String>[];
-    int successCount = 0;
-
-    for (int i = 0; i < items.length; i++) {
-      final item = items[i];
-
-      try {
-        _updateState(
-          isLoading: true,
-          result: _buildProgressMessage(
-            operation: operation,
-            current: i + 1,
-            total: items.length,
-            currentItem: item,
-          ),
-        );
-
-        final result = await processor(item, i);
-        final detail = resultExtractor(result, item);
-        details.add(detail);
-        successCount++;
-      } catch (e) {
-        safePrint('$operation失败: $item - $e');
-        errors.add('$item: ${e.toString()}');
-      }
-    }
-
-    return OperationResult(
-      success: successCount > 0,
-      message: '',
-      successCount: successCount,
-      totalCount: items.length,
-      details: details,
-      errors: errors,
-    );
-  }
-
   // 公共方法：清理临时文件
   Future<void> _cleanupTempFiles(List<File> tempFiles) async {
     for (File tempFile in tempFiles) {
@@ -302,6 +257,57 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         }
       }
     }
+  }
+
+  // 并行处理方法：控制并发数量的并行执行
+  Future<List<dynamic>> _processInParallel({
+    required List<String> items,
+    required Future<dynamic> Function(String item, int index) processor,
+    int maxConcurrency = 8,
+    required String operation,
+  }) async {
+    final results = <dynamic>[];
+    int completed = 0;
+
+    // 分批处理，每批最多 maxConcurrency 个
+    for (int i = 0; i < items.length; i += maxConcurrency) {
+      final batch = items.skip(i).take(maxConcurrency).toList();
+      final batchIndices = List.generate(batch.length, (index) => i + index);
+
+      // 创建当前批次的 Future 列表，包装错误处理
+      final batchFutures =
+          batch.asMap().entries.map((entry) async {
+            final item = entry.value;
+            final index = batchIndices[entry.key];
+
+            try {
+              return await processor(item, index);
+            } catch (error) {
+              safePrint('$operation失败: $item - $error');
+              return {'error': error.toString(), 'item': item};
+            }
+          }).toList();
+
+      // 等待当前批次完成
+      final batchResults = await Future.wait(batchFutures);
+      results.addAll(batchResults);
+
+      completed += batch.length;
+
+      // 更新进度
+      _updateState(
+        isLoading: true,
+        result: _buildProgressMessage(
+          operation: operation,
+          current: completed,
+          total: items.length,
+          additionalInfo:
+              '• 并行处理中 (最大并发: $maxConcurrency)\n• 当前批次: ${batch.length} 个文件',
+        ),
+      );
+    }
+
+    return results;
   }
 
   // 功能1：API Gateway测试
@@ -386,9 +392,10 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     const int maxFileSize = maxMbSize * 1024 * 1024;
 
     try {
-      safePrint('开始批量上传音频文件到 S3...');
+      safePrint('开始并行批量上传音频文件到 S3...');
 
-      final result = await _processFiles<String>(
+      // 并行处理上传
+      final results = await _processInParallel(
         items: _fileNames,
         operation: '批量上传音频文件',
         processor: (currentFileName, index) async {
@@ -418,19 +425,6 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
           // 生成唯一的文件名
           final fileName = 'test_audio_${timestamp}_$index.mp3';
 
-          // 更新进度显示
-          _updateState(
-            isLoading: true,
-            result: _buildProgressMessage(
-              operation: '批量上传音频文件',
-              current: index + 1,
-              total: _fileNames.length,
-              currentItem: currentFileName,
-              additionalInfo:
-                  '• 目标文件名: $fileName\n• 文件大小: ${(audioBytes.length / 1024).toStringAsFixed(2)} KB\n\n⏳ 上传中...',
-            ),
-          );
-
           // 上传文件到 S3
           final uploadOperation = Amplify.Storage.uploadFile(
             localFile: AWSFile.fromPath(tempFile.path),
@@ -454,13 +448,23 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             0,
             fileName.lastIndexOf('.'),
           );
-          uploadedFileNames.add(uploadedFileName);
-
           return uploadedFileName;
         },
-        resultExtractor:
-            (uploadedFileName, currentFileName) => uploadedFileName,
       );
+
+      // 处理结果
+      int successCount = 0;
+      List<String> errors = [];
+
+      for (int i = 0; i < results.length; i++) {
+        final result = results[i];
+        if (result is Map && result.containsKey('error')) {
+          errors.add('${result['item']}: ${result['error']}');
+        } else if (result is String) {
+          uploadedFileNames.add(result);
+          successCount++;
+        }
+      }
 
       // 更新上传记录
       _uploadedFileNames = uploadedFileNames;
@@ -468,22 +472,33 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
       final additionalInfo =
           '🎯 上传详情:\n'
           '• 目标桶: nirvaappaudiostorage0e8a7-dev\n'
-          '• 上传方式: uploadFile (支持大文件)\n\n'
+          '• 上传方式: uploadFile (支持大文件)\n'
+          '• 并行处理: 最大并发 8 个文件\n\n'
           '📋 下一步:\n'
           '• S3 事件应该已经触发 Lambda 函数\n'
           '• 检查 AWS CloudWatch 日志查看 Lambda 执行情况\n'
           '• Lambda 函数名: S3Trigger0f8e56ad-dev\n\n'
           '💡 优势:\n'
-          '• 支持批量上传多个文件\n'
+          '• 支持批量并行上传多个文件\n'
           '• 使用 uploadFile 支持大文件流式上传\n'
           '• 自动处理多部分上传 (>100MB)\n'
-          '• 实时进度监控';
+          '• 实时进度监控\n'
+          '• 并行处理大幅提升速度';
+
+      final operationResult = OperationResult(
+        success: successCount > 0,
+        message: '',
+        successCount: successCount,
+        totalCount: _fileNames.length,
+        details: uploadedFileNames,
+        errors: errors,
+      );
 
       _updateState(
         isLoading: false,
         result: _buildSuccessMessage(
           operation: '批量音频文件上传',
-          result: result,
+          result: operationResult,
           additionalInfo: additionalInfo,
         ),
       );
@@ -522,13 +537,13 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
       return;
     }
 
-    _updateState(isLoading: true, result: '正在批量获取转录结果...');
+    _updateState(isLoading: true, result: '正在并行批量获取转录结果...');
 
     try {
-      safePrint('开始批量获取转录结果...');
-      List<Map<String, dynamic>> allResults = [];
+      safePrint('开始并行批量获取转录结果...');
 
-      final result = await _processFiles<Map<String, dynamic>>(
+      // 并行获取所有转录结果
+      final results = await _processInParallel(
         items: _uploadedFileNames,
         operation: '批量获取转录结果',
         processor: (uploadedFileName, index) async {
@@ -570,21 +585,38 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             'fullData': transcriptionData,
           };
         },
-        resultExtractor: (resultData, uploadedFileName) {
-          allResults.add(resultData);
-          return '${resultData['fileName']}: ${resultData['transcriptText']}';
-        },
       );
 
-      // 合并所有转录文本并写入文件
+      // 处理所有结果
+      List<Map<String, dynamic>> allResults = [];
+      List<String> errors = [];
+      int successCount = 0;
+
+      for (int i = 0; i < results.length; i++) {
+        final result = results[i];
+        if (result is Map && result.containsKey('error')) {
+          errors.add('${result['item']}: ${result['error']}');
+          allResults.add({
+            'fileName': result['item'],
+            'transcriptText': '获取失败: ${result['error']}',
+            'fileSize': 'N/A',
+            'error': true,
+          });
+        } else if (result is Map<String, dynamic>) {
+          allResults.add(result);
+          successCount++;
+        }
+      }
+
+      // 在所有文件获取完成后，统一进行文本合并
       String mergedTranscriptText = '';
       String savedFilePath = '';
 
-      if (result.successCount > 0) {
+      if (successCount > 0) {
         // 提取并合并所有成功的转录文本
         List<String> transcriptTexts = [];
         for (var resultData in allResults) {
-          if (resultData['fullData'] != null) {
+          if (resultData['error'] != true && resultData['fullData'] != null) {
             final fullData = resultData['fullData'] as Map<String, dynamic>;
             if (fullData.containsKey('results') &&
                 fullData['results'] != null &&
@@ -618,17 +650,42 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
       // 构建详细结果显示
       final buffer = StringBuffer();
-      buffer.write(_buildSuccessMessage(operation: '批量转录结果获取', result: result));
+      final operationResult = OperationResult(
+        success: successCount > 0,
+        message: '',
+        successCount: successCount,
+        totalCount: _uploadedFileNames.length,
+        details:
+            allResults
+                .where((r) => r['error'] != true)
+                .map((r) => '${r['fileName']}: ${r['transcriptText']}')
+                .toList(),
+        errors: errors,
+      );
+
+      buffer.write(
+        _buildSuccessMessage(
+          operation: '批量转录结果获取',
+          result: operationResult,
+          additionalInfo:
+              '🚀 并行处理优势:\n• 同时获取多个文件，大幅提升速度\n• 最大并发: 8 个文件\n• 所有文件获取完成后统一合并文本\n\n',
+        ),
+      );
 
       buffer.write('🎯 转录结果汇总:\n');
       for (int i = 0; i < allResults.length; i++) {
         final resultData = allResults[i];
         buffer.write('\n--- 文件 ${i + 1}: ${resultData['fileName']} ---\n');
-        buffer.write('📄 文件大小: ${resultData['fileSize']} KB\n');
-        buffer.write('📝 转录文本: 「${resultData['transcriptText']}」\n');
+
+        if (resultData['error'] == true) {
+          buffer.write('❌ ${resultData['transcriptText']}\n');
+        } else {
+          buffer.write('📄 文件大小: ${resultData['fileSize']} KB\n');
+          buffer.write('📝 转录文本: 「${resultData['transcriptText']}」\n');
+        }
       }
 
-      if (result.successCount > 0) {
+      if (successCount > 0) {
         buffer.write('\n📝 合并转录文本:\n');
         buffer.write('「$mergedTranscriptText」\n\n');
 
@@ -642,6 +699,7 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         buffer.write('• 可在开发者日志中查看完整 JSON 结果\n');
         buffer.write('• S3 路径格式: transcripts/[文件名].json\n');
         buffer.write('• 合并文本已保存到设备临时目录\n');
+        buffer.write('• 并行处理显著提升获取速度\n');
       }
 
       _updateState(isLoading: false, result: buffer.toString());
@@ -673,19 +731,16 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
       return;
     }
 
-    _updateState(isLoading: true, result: '正在批量删除文件...');
+    _updateState(isLoading: true, result: '正在并行批量删除文件...');
 
     try {
-      safePrint('开始批量删除上传的文件...');
-      List<String> deletedFiles = [];
-      List<String> errors = [];
+      safePrint('开始并行批量删除上传的文件...');
 
-      final result = await _processFiles<int>(
+      // 并行删除所有文件组（每个文件组包含音频文件和转录结果）
+      final results = await _processInParallel(
         items: _uploadedFileNames,
         operation: '批量删除文件',
         processor: (uploadedFileName, index) async {
-          int deletedCount = 0;
-
           // 构造文件路径
           final audioFileName = '$uploadedFileName.mp3';
           final transcriptFileName = '$uploadedFileName.json';
@@ -694,87 +749,101 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
           safePrint('准备删除音频文件: $audioFileName');
           safePrint('准备删除转录结果文件: $transcriptPath');
 
-          // 更新进度显示
-          _updateState(
-            isLoading: true,
-            result: _buildProgressMessage(
-              operation: '批量删除文件',
-              current: (index * 2) + 1,
-              total: _uploadedFileNames.length * 2,
-              currentItem: '$uploadedFileName (音频文件)',
-            ),
-          );
+          List<String> deletedFiles = [];
+          List<String> deleteErrors = [];
 
-          // 删除音频文件
-          try {
-            await Amplify.Storage.remove(
-              path: StoragePath.fromString(audioFileName),
-            ).result;
-            deletedCount++;
-            deletedFiles.add('音频文件: $audioFileName');
-            safePrint('音频文件删除成功: $audioFileName');
-          } catch (e) {
-            safePrint('删除音频文件失败: $e');
-            if (e.toString().contains('NoSuchKey') ||
-                e.toString().contains('not found')) {
-              errors.add('音频文件不存在: $audioFileName');
-            } else {
-              errors.add('删除音频文件失败: $audioFileName - ${e.toString()}');
-            }
-          }
+          // 同时删除音频文件和转录结果文件
+          final deleteFutures = [
+            // 删除音频文件
+            Amplify.Storage.remove(path: StoragePath.fromString(audioFileName))
+                .result
+                .then((_) {
+                  deletedFiles.add('音频文件: $audioFileName');
+                  safePrint('音频文件删除成功: $audioFileName');
+                })
+                .catchError((e) {
+                  safePrint('删除音频文件失败: $e');
+                  if (e.toString().contains('NoSuchKey') ||
+                      e.toString().contains('not found')) {
+                    deleteErrors.add('音频文件不存在: $audioFileName');
+                  } else {
+                    deleteErrors.add(
+                      '删除音频文件失败: $audioFileName - ${e.toString()}',
+                    );
+                  }
+                }),
 
-          // 更新进度显示
-          _updateState(
-            isLoading: true,
-            result: _buildProgressMessage(
-              operation: '批量删除文件',
-              current: (index * 2) + 2,
-              total: _uploadedFileNames.length * 2,
-              currentItem: '$uploadedFileName (转录结果)',
-            ),
-          );
+            // 删除转录结果文件
+            Amplify.Storage.remove(path: StoragePath.fromString(transcriptPath))
+                .result
+                .then((_) {
+                  deletedFiles.add('转录结果: $transcriptPath');
+                  safePrint('转录结果文件删除成功: $transcriptPath');
+                })
+                .catchError((e) {
+                  safePrint('删除转录结果文件失败: $e');
+                  if (e.toString().contains('NoSuchKey') ||
+                      e.toString().contains('not found')) {
+                    deleteErrors.add('转录结果文件不存在: $transcriptPath');
+                  } else {
+                    deleteErrors.add(
+                      '删除转录结果文件失败: $transcriptPath - ${e.toString()}',
+                    );
+                  }
+                }),
+          ];
 
-          // 删除转录结果文件
-          try {
-            await Amplify.Storage.remove(
-              path: StoragePath.fromString(transcriptPath),
-            ).result;
-            deletedCount++;
-            deletedFiles.add('转录结果: $transcriptPath');
-            safePrint('转录结果文件删除成功: $transcriptPath');
-          } catch (e) {
-            safePrint('删除转录结果文件失败: $e');
-            if (e.toString().contains('NoSuchKey') ||
-                e.toString().contains('not found')) {
-              errors.add('转录结果文件不存在: $transcriptPath');
-            } else {
-              errors.add('删除转录结果文件失败: $transcriptPath - ${e.toString()}');
-            }
-          }
+          // 等待两个删除操作完成
+          await Future.wait(deleteFutures);
 
-          return deletedCount;
+          return {
+            'fileName': uploadedFileName,
+            'deletedCount': deletedFiles.length,
+            'deletedFiles': deletedFiles,
+            'errors': deleteErrors,
+          };
         },
-        resultExtractor:
-            (deletedCount, uploadedFileName) =>
-                '$uploadedFileName: $deletedCount 个文件',
       );
+
+      // 处理所有结果
+      List<String> allDeletedFiles = [];
+      List<String> allErrors = [];
+      int totalDeleted = 0;
+
+      for (int i = 0; i < results.length; i++) {
+        final result = results[i];
+        if (result is Map && result.containsKey('error')) {
+          allErrors.add('处理文件失败: ${result['item']} - ${result['error']}');
+        } else if (result is Map<String, dynamic>) {
+          final deletedFiles = result['deletedFiles'] as List<String>;
+          final errors = result['errors'] as List<String>;
+          final deletedCount = result['deletedCount'] as int;
+
+          allDeletedFiles.addAll(deletedFiles);
+          allErrors.addAll(errors);
+          totalDeleted += deletedCount;
+        }
+      }
 
       // 构建结果信息
       String resultMessage;
-      final totalDeleted = result.details
-          .map((detail) => int.parse(detail.split(': ')[1].split(' ')[0]))
-          .reduce((a, b) => a + b);
 
       if (totalDeleted > 0) {
         final additionalInfo =
-            deletedFiles.isNotEmpty
-                ? '🗑️ 已删除文件:\n${deletedFiles.map((file) => '• $file').join('\n')}\n\n'
+            allDeletedFiles.isNotEmpty
+                ? '🗑️ 已删除文件:\n${allDeletedFiles.map((file) => '• $file').join('\n')}\n\n'
                 : '';
 
         final errorInfo =
-            errors.isNotEmpty
-                ? '⚠️ 错误信息:\n${errors.map((error) => '• $error').join('\n')}\n\n'
+            allErrors.isNotEmpty
+                ? '⚠️ 错误信息:\n${allErrors.map((error) => '• $error').join('\n')}\n\n'
                 : '';
+
+        final parallelInfo =
+            '🚀 并行处理优势:\n'
+            '• 同时删除多个文件组，大幅提升速度\n'
+            '• 最大并发: 8 个文件组\n'
+            '• 每个文件组的音频和转录文件同时删除\n\n';
 
         resultMessage = _buildSuccessMessage(
           operation: '批量文件删除',
@@ -783,10 +852,14 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             message: '',
             successCount: totalDeleted,
             totalCount: _uploadedFileNames.length * 2,
-            details: result.details,
-            errors: errors,
+            details:
+                results
+                    .where((r) => r is Map && r['deletedCount'] > 0)
+                    .map((r) => '${r['fileName']}: ${r['deletedCount']} 个文件')
+                    .toList(),
+            errors: allErrors,
           ),
-          additionalInfo: '$additionalInfo $errorInfo',
+          additionalInfo: '$parallelInfo$additionalInfo$errorInfo',
         );
 
         // 清空当前会话记录
@@ -799,13 +872,13 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
           statistics: {
             '预期删除': '${_uploadedFileNames.length * 2} 个文件',
             '成功删除': '0 个文件',
-            '错误': '${errors.length} 个',
+            '错误': '${allErrors.length} 个',
           },
         );
 
-        if (errors.isNotEmpty) {
+        if (allErrors.isNotEmpty) {
           resultMessage +=
-              '\n\n❌ 错误列表:\n${errors.map((error) => '• $error').join('\n')}';
+              '\n\n❌ 错误列表:\n${allErrors.map((error) => '• $error').join('\n')}';
         }
       }
 
@@ -988,7 +1061,3 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     );
   }
 }
-
-/*
-
-*/
