@@ -19,6 +19,7 @@ aws logs filter-log-events --log-group-name "/aws/lambda/S3Trigger0f8e56ad-dev" 
 ```
 
 **Lambda 执行结果分析：**
+
 - ✅ S3 事件成功触发 Lambda 函数
 - ✅ Lambda 正确识别音频文件：`test_audio_1751954765399.mp3`
 - ✅ 成功启动 Transcribe 任务：`transcribe-test_audio_1751954765399-1751954866859`
@@ -33,6 +34,7 @@ aws transcribe get-transcription-job --transcription-job-name "transcribe-test_a
 ```
 
 **Transcribe 任务结果：**
+
 ```json
 {
     "TranscriptionJob": {
@@ -55,6 +57,7 @@ ffprobe -i assets/record_2025_04_19.mp3 -show_format -show_streams -v quiet -of 
 ```
 
 **音频文件详细信息：**
+
 ```json
 {
     "streams": [
@@ -75,7 +78,7 @@ ffprobe -i assets/record_2025_04_19.mp3 -show_format -show_streams -v quiet -of 
 
 ## 问题根本原因
 
-**🚨 核心问题：音频时长超出 AWS Transcribe 限制**
+### 🚨 核心问题：音频时长超出 AWS Transcribe 限制
 
 - **实际音频时长**：38,719.404 秒 ≈ **10.75 小时**
 - **AWS Transcribe 限制**：**最大 4 小时**
@@ -85,7 +88,7 @@ ffprobe -i assets/record_2025_04_19.mp3 -show_format -show_streams -v quiet -of 
 
 ## 错误信息分析
 
-```
+```text
 FailureReason: "Invalid file size: file size too large. Maximum audio duration is 4.000000 hours.Check the length of the file and try your request again."
 ```
 
@@ -94,12 +97,14 @@ FailureReason: "Invalid file size: file size too large. Maximum audio duration i
 ## 解决方案
 
 ### 1. 立即解决方案
+
 - 使用时长在 4 小时以内的测试音频文件
 - 可以使用现有的 `poem_audio.mp3` 或 `record_test_audio.mp3` 进行测试
 
 ### 2. 长期解决方案
 
 #### 方案A：音频分割处理
+
 ```bash
 # 使用 ffmpeg 将长音频分割成 4 小时以内的片段
 ffmpeg -i input.mp3 -t 14400 -c copy output_part1.mp3  # 前4小时
@@ -107,7 +112,9 @@ ffmpeg -i input.mp3 -ss 14400 -t 14400 -c copy output_part2.mp3  # 第二个4小
 ```
 
 #### 方案B：Lambda 函数增强
+
 在 Lambda 函数中添加音频时长检查：
+
 ```javascript
 // 检查音频时长（需要集成音频分析库）
 const audioDuration = await getAudioDuration(mediaUri);
@@ -118,7 +125,9 @@ if (audioDuration > 4 * 60 * 60) { // 4小时
 ```
 
 #### 方案C：Flutter 端预处理
+
 在上传前检查音频时长：
+
 ```dart
 // 添加音频时长检查
 const maxDurationSeconds = 4 * 60 * 60; // 4小时限制

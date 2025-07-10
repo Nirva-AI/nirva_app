@@ -155,10 +155,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
   String _currentTaskId = ''; // 当前任务ID
 
   //支持多个音频文件测试。
-  final List<String> _fileNames = [
-    'record_test_audio.mp3',
-    'record_test_audio.mp3',
-  ];
+  final List<String> _fileNames = ['record_test_audio.mp3', 'poem_audio.mp3'];
 
   @override
   void initState() {

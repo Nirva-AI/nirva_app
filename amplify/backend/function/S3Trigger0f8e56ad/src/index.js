@@ -19,19 +19,17 @@ exports.handler = async function (event) {
     });
     console.log(`Event type summary:`, eventTypes);
     
-    // 收集所有启动的转录任务JobNames
-    const jobNames = [];
+    // 首先筛选出需要处理的音频文件记录
+    const validRecords = [];
     
-    // 处理每个 S3 事件记录
-    // 注意：虽然当前测试只上传一个文件，但S3事件可能包含多个记录
-    // 这是AWS Lambda S3触发器的标准处理方式
+    // 预处理：筛选有效的音频文件记录
     for (let i = 0; i < event.Records.length; i++) {
       const record = event.Records[i];
       const eventName = record.eventName;
       const bucket = record.s3.bucket.name;
       const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, ' '));
       
-      console.log(`Processing record ${i + 1}/${recordCount}: ${eventName} for ${key}`);
+      console.log(`Pre-processing record ${i + 1}/${recordCount}: ${eventName} for ${key}`);
       
       // 1. 检查事件类型
       if (!isFileCreationEvent(eventName)) {
@@ -52,24 +50,74 @@ exports.handler = async function (event) {
         continue;
       }
       
-      console.log(`✅ File ${key} is an audio file from creation event, proceeding with transcription`);
+      console.log(`✅ File ${key} is an audio file from creation event, will process with transcription`);
       console.log(`📂 Path info:`, pathInfo);
       
-      // 4. 启动 Amazon Transcribe 任务
-      const jobName = await startTranscriptionJob(bucket, key, pathInfo);
-      if (jobName) {
-        jobNames.push(jobName);
-      }
+      // 添加到有效记录列表
+      validRecords.push({ record, bucket, key, pathInfo });
     }
     
-    console.log(`✅ Successfully processed all ${recordCount} S3 event record(s)`);
+    console.log(`Found ${validRecords.length} valid audio files to process in parallel`);
+    
+    // 并行处理所有有效的音频文件记录
+    const transcriptionPromises = validRecords.map(async ({ record, bucket, key, pathInfo }, index) => {
+      try {
+        console.log(`Starting parallel transcription ${index + 1}/${validRecords.length} for ${key}`);
+        const jobName = await startTranscriptionJob(bucket, key, pathInfo);
+        return { success: true, jobName, key };
+      } catch (error) {
+        console.error(`Failed to start transcription for ${key}:`, error);
+        return { success: false, error: error.message, key };
+      }
+    });
+    
+    // 等待所有转录任务启动完成 (使用 allSettled 确保即使某些失败也能继续)
+    console.log(`🚀 Starting ${transcriptionPromises.length} transcription jobs in parallel...`);
+    const results = await Promise.allSettled(transcriptionPromises);
+    
+    // 收集成功启动的任务名称和处理结果统计
+    const jobNames = [];
+    const failedFiles = [];
+    let successCount = 0;
+    
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        const { success, jobName, key, error } = result.value;
+        if (success && jobName) {
+          jobNames.push(jobName);
+          successCount++;
+          console.log(`✅ Successfully started transcription job for ${key}: ${jobName}`);
+        } else {
+          failedFiles.push({ key, error });
+          console.log(`❌ Failed to start transcription job for ${key}: ${error}`);
+        }
+      } else {
+        const key = validRecords[index]?.key || `record-${index}`;
+        failedFiles.push({ key, error: result.reason });
+        console.log(`❌ Promise rejected for ${key}:`, result.reason);
+      }
+    });
+    
+    console.log(`✅ Successfully processed all ${recordCount} S3 event record(s) in parallel`);
     console.log(`✅ Started ${jobNames.length} transcription job(s): ${jobNames.join(', ')}`);
+    
+    if (failedFiles.length > 0) {
+      console.log(`⚠️ Failed to process ${failedFiles.length} file(s):`);
+      failedFiles.forEach(({ key, error }) => {
+        console.log(`   - ${key}: ${error}`);
+      });
+    }
     
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Successfully processed ${recordCount} S3 event record(s)`,
-        jobNames: jobNames
+        message: `Successfully processed ${recordCount} S3 event record(s) in parallel`,
+        totalRecords: recordCount,
+        validAudioFiles: validRecords.length,
+        successfulJobs: successCount,
+        failedFiles: failedFiles.length,
+        jobNames: jobNames,
+        parallelProcessing: true
       })
     };
     
