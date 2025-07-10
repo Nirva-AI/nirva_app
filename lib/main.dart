@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 //import 'package:nirva_app/hive_object.dart';
 //import 'package:nirva_app/main_app.dart';
-//import 'package:nirva_app/test_data.dart';
+import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
 //import 'package:nirva_app/test_calendar_app.dart';
@@ -45,7 +45,7 @@ Future<void> _initializeApp() async {
   await AppRuntimeContext().storage.initializeAdapters();
 
   // 填充测试数据。
-  //await TestData.initializeTestData();
+  await TestData.initializeTestData();
 
   // 正式步骤：初始初始化 Hive 存储。
   await _setupHiveStorage();

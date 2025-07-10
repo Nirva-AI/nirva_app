@@ -16,6 +16,7 @@ class TestData {
 
     // 添加用户信息, 目前必须和服务器对上，否则无法登录。
     AppRuntimeContext().data.user = User(
+      id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
       username: 'weilyupku@gmail.com',
       password: 'secret',
       displayName: 'wei',

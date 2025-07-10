@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 // 管理全局数据的类
 class RuntimeData {
   // 用户信息
-  User user = User(username: "", password: "", displayName: "");
+  User user = User(id: "", username: "", password: "", displayName: "");
 
   // 当前的待办事项数据
   ValueNotifier<List<Task>> tasks = ValueNotifier([]);
