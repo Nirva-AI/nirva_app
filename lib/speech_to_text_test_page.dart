@@ -503,8 +503,13 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         }
       }
 
-      // 更新上传记录
-      _uploadedFileNames = uploadedFileNames;
+      // 严格成功判断：只有所有文件都上传成功才算成功
+      bool isCompleteSuccess = successCount == _fileNames.length;
+
+      // 更新上传记录（只有完全成功时才更新）
+      if (isCompleteSuccess) {
+        _uploadedFileNames = uploadedFileNames;
+      }
 
       final additionalInfo =
           '🎯 上传详情:\n'
@@ -529,7 +534,7 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
           '• 任务级别的文件组织';
 
       final operationResult = OperationResult(
-        success: successCount > 0,
+        success: isCompleteSuccess, // 严格成功判断：必须所有文件都成功
         message: '',
         successCount: successCount,
         totalCount: _fileNames.length,
@@ -537,14 +542,34 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         errors: errors,
       );
 
-      _updateState(
-        isLoading: false,
-        result: _buildSuccessMessage(
-          operation: '批量音频文件上传',
-          result: operationResult,
-          additionalInfo: additionalInfo,
-        ),
-      );
+      if (isCompleteSuccess) {
+        // 完全成功：显示成功消息
+        _updateState(
+          isLoading: false,
+          result: _buildSuccessMessage(
+            operation: '批量音频文件上传',
+            result: operationResult,
+            additionalInfo: additionalInfo,
+          ),
+        );
+      } else {
+        // 有任何失败：显示失败消息
+        _updateState(
+          isLoading: false,
+          result: _buildErrorMessage(
+            operation: '批量音频文件上传',
+            error: '批量上传未完全成功，存在失败文件',
+            errorType: 'upload',
+            statistics: {
+              '总文件数': _fileNames.length,
+              '成功上传': successCount,
+              '失败文件': _fileNames.length - successCount,
+              '成功率':
+                  '${(successCount / _fileNames.length * 100).toStringAsFixed(1)}%',
+            },
+          ),
+        );
+      }
     } catch (e) {
       safePrint('批量文件上传失败: $e');
       _updateState(
@@ -656,11 +681,14 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         }
       }
 
-      // 在所有文件获取完成后，统一进行文本合并
+      // 严格成功判断：只有所有转录结果都获取成功才算成功
+      bool isCompleteSuccess = successCount == _uploadedFileNames.length;
+
+      // 在所有文件获取完成后，统一进行文本合并（只有完全成功时才合并）
       String mergedTranscriptText = '';
       String savedFilePath = '';
 
-      if (successCount > 0) {
+      if (isCompleteSuccess) {
         // 提取并合并所有成功的转录文本
         List<String> transcriptTexts = [];
         for (var resultData in allResults) {
@@ -681,25 +709,26 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
         mergedTranscriptText = transcriptTexts.join('\n\n');
 
-        // 将合并的文本写入临时目录
+        // 将合并的文本写入Documents目录（iOS Files App可见）
         try {
-          final tempDir = await getTemporaryDirectory();
+          // 使用Documents目录而不是临时目录，使文件在iOS Files App中可见
+          final appDocDir = await getApplicationDocumentsDirectory();
           final timestamp = DateTime.now().millisecondsSinceEpoch;
           final file = File(
-            '${tempDir.path}/merged_transcripts_$timestamp.txt',
+            '${appDocDir.path}/merged_transcripts_$timestamp.txt',
           );
           await file.writeAsString(mergedTranscriptText, encoding: utf8);
           savedFilePath = file.path;
-          safePrint('合并转录文本已保存到: $savedFilePath');
+          safePrint('合并转录文本已保存到Documents目录: $savedFilePath');
+          safePrint('提示: 在iOS中，此文件可通过Files App访问（如果已启用文件共享）');
         } catch (e) {
           safePrint('保存合并转录文本失败: $e');
         }
       }
 
       // 构建详细结果显示
-      final buffer = StringBuffer();
       final operationResult = OperationResult(
-        success: successCount > 0,
+        success: isCompleteSuccess, // 严格成功判断：必须所有文件都成功
         message: '',
         successCount: successCount,
         totalCount: _uploadedFileNames.length,
@@ -711,29 +740,26 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         errors: errors,
       );
 
-      buffer.write(
-        _buildSuccessMessage(
-          operation: '批量转录结果获取',
-          result: operationResult,
-          additionalInfo:
-              '🚀 并行处理优势:\n• 同时获取多个文件，大幅提升速度\n• 最大并发: 8 个文件\n• 所有文件获取完成后统一合并文本\n• 使用新的路径结构: private/{userId}/tasks/{taskId}/transcripts/\n\n',
-        ),
-      );
+      if (isCompleteSuccess) {
+        // 完全成功：显示成功消息和完整结果
+        final buffer = StringBuffer();
+        buffer.write(
+          _buildSuccessMessage(
+            operation: '批量转录结果获取',
+            result: operationResult,
+            additionalInfo:
+                '🚀 并行处理优势:\n• 同时获取多个文件，大幅提升速度\n• 最大并发: 8 个文件\n• 所有文件获取完成后统一合并文本\n• 使用新的路径结构: private/{userId}/tasks/{taskId}/transcripts/\n\n',
+          ),
+        );
 
-      buffer.write('🎯 转录结果汇总:\n');
-      for (int i = 0; i < allResults.length; i++) {
-        final resultData = allResults[i];
-        buffer.write('\n--- 文件 ${i + 1}: ${resultData['fileName']} ---\n');
-
-        if (resultData['error'] == true) {
-          buffer.write('❌ ${resultData['transcriptText']}\n');
-        } else {
+        buffer.write('🎯 转录结果汇总:\n');
+        for (int i = 0; i < allResults.length; i++) {
+          final resultData = allResults[i];
+          buffer.write('\n--- 文件 ${i + 1}: ${resultData['fileName']} ---\n');
           buffer.write('📄 文件大小: ${resultData['fileSize']} KB\n');
           buffer.write('📝 转录文本: 「${resultData['transcriptText']}」\n');
         }
-      }
 
-      if (successCount > 0) {
         buffer.write('\n📝 合并转录文本:\n');
         buffer.write('「$mergedTranscriptText」\n\n');
 
@@ -750,9 +776,46 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         );
         buffer.write('• 合并文本已保存到设备临时目录\n');
         buffer.write('• 并行处理显著提升获取速度\n');
-      }
 
-      _updateState(isLoading: false, result: buffer.toString());
+        _updateState(isLoading: false, result: buffer.toString());
+      } else {
+        // 有任何失败：显示失败消息和部分结果
+        final buffer = StringBuffer();
+        buffer.write(
+          _buildErrorMessage(
+            operation: '批量转录结果获取',
+            error: '转录结果获取未完全成功，存在失败文件',
+            statistics: {
+              '总文件数': _uploadedFileNames.length,
+              '成功获取': successCount,
+              '失败文件': _uploadedFileNames.length - successCount,
+              '成功率':
+                  '${(successCount / _uploadedFileNames.length * 100).toStringAsFixed(1)}%',
+            },
+          ),
+        );
+
+        // 即使失败也显示部分结果供参考
+        if (successCount > 0) {
+          buffer.write('\n📋 部分成功的转录结果 (仅供参考):\n');
+          for (int i = 0; i < allResults.length; i++) {
+            final resultData = allResults[i];
+            buffer.write('\n--- 文件 ${i + 1}: ${resultData['fileName']} ---\n');
+
+            if (resultData['error'] == true) {
+              buffer.write('❌ ${resultData['transcriptText']}\n');
+            } else {
+              buffer.write('✅ 文件大小: ${resultData['fileSize']} KB\n');
+              buffer.write('📝 转录文本: 「${resultData['transcriptText']}」\n');
+            }
+          }
+
+          buffer.write('\n⚠️ 注意: 由于存在失败文件，未生成合并文本文件\n');
+          buffer.write('💡 建议: 请重新上传音频文件或等待转录任务完成后重试\n');
+        }
+
+        _updateState(isLoading: false, result: buffer.toString());
+      }
     } catch (e) {
       safePrint('批量获取转录结果失败: $e');
       _updateState(
@@ -1250,16 +1313,6 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
                     const SizedBox(height: 8),
 
-                    // _buildTestButton(
-                    //   label: '批量删除上传的文件',
-                    //   loadingLabel: '批量删除中...',
-                    //   icon: Icons.delete,
-                    //   backgroundColor: Colors.red.shade600,
-                    //   onPressed: _deleteUploadedFiles,
-                    //   loadingKeyword: '删除',
-                    // ),
-
-                    // const SizedBox(height: 8),
                     _buildTestButton(
                       label: '删除整个任务文件夹',
                       loadingLabel: '删除中...',
