@@ -9,7 +9,7 @@ import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/hive_data.dart';
 //import 'package:nirva_app/test_file_access_app.dart'; // 添加这一行
 //import 'package:nirva_app/test_sliding_chart_app.dart';
-import 'package:nirva_app/test_speech_to_text_app.dart';
+import 'package:nirva_app/test_aws_amplify_s3_transcribe_app.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -34,7 +34,7 @@ void main() async {
   //如果需要测试图表，可以取消下面的注释
   //runApp(const TestSlidingChartApp());
   //如果需要测试语音转文本，可以取消下面的注释
-  runApp(const TestSpeechToTextApp());
+  runApp(const TestAWSAmplifyS3TranscribeApp());
 }
 
 Future<void> _initializeApp() async {

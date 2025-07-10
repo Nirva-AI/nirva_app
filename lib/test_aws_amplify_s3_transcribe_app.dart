@@ -8,11 +8,26 @@ import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 
-class SpeechToTextTestPage extends StatefulWidget {
-  const SpeechToTextTestPage({super.key});
+class TestAWSAmplifyS3TranscribeApp extends StatelessWidget {
+  const TestAWSAmplifyS3TranscribeApp({super.key});
 
   @override
-  State<SpeechToTextTestPage> createState() => _SpeechToTextTestPageState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Speech to Text Test App',
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      home: const TestAWSAmplifyS3TranscribeTestPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class TestAWSAmplifyS3TranscribeTestPage extends StatefulWidget {
+  const TestAWSAmplifyS3TranscribeTestPage({super.key});
+
+  @override
+  State<TestAWSAmplifyS3TranscribeTestPage> createState() =>
+      _TestAWSAmplifyS3TranscribeTestPageState();
 }
 
 // 操作结果封装类
@@ -132,21 +147,18 @@ class ErrorMessages {
   };
 }
 
-class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
+class _TestAWSAmplifyS3TranscribeTestPageState
+    extends State<TestAWSAmplifyS3TranscribeTestPage> {
   String _apiResult = '点击测试按钮开始语音转文字测试...';
   bool _isLoading = false;
   List<String> _uploadedFileNames = []; // 保存所有上传的文件名（不含扩展名）
   String _currentTaskId = ''; // 当前任务ID
 
   //支持多个音频文件测试。
-  //record_test_audio，录制的音频，拿手机录制B站的声音，然后再用ffmpeg做数据处理，策略见日志13。
-  //poem_audio，mac say 命令生成的音频。
   final List<String> _fileNames = [
     'record_test_audio.mp3',
     'record_test_audio.mp3',
   ];
-  // static const String _uuid =
-  //     "1eaade33-f351-461a-8f73-59a11cba04f9"; // 模拟用户UUID
 
   @override
   void initState() {
