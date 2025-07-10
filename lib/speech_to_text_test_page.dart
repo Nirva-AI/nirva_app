@@ -13,6 +13,106 @@ class SpeechToTextTestPage extends StatefulWidget {
   State<SpeechToTextTestPage> createState() => _SpeechToTextTestPageState();
 }
 
+// 操作结果封装类
+class OperationResult {
+  final bool success;
+  final String message;
+  final int successCount;
+  final int totalCount;
+  final List<String> details;
+  final List<String> errors;
+
+  OperationResult({
+    required this.success,
+    required this.message,
+    this.successCount = 0,
+    this.totalCount = 0,
+    this.details = const [],
+    this.errors = const [],
+  });
+}
+
+// 错误提示常量
+class ErrorMessages {
+  static const Map<String, Map<String, String>> messages = {
+    'apiGateway': {
+      'reasons':
+          '🔍 可能的原因:\n'
+          '1. Cognito Identity Pool 不允许未认证访问\n'
+          '2. 需要用户登录后才能调用 API\n'
+          '3. Identity Pool 权限配置问题\n'
+          '4. API Gateway 权限配置问题',
+      'solutions':
+          '💡 建议解决方案:\n'
+          '1. 在 AWS Console 中启用 Identity Pool 的未认证访问\n'
+          '2. 或者实现用户登录功能\n'
+          '3. 检查 IAM 角色权限',
+    },
+    'fileUpload': {
+      'reasons':
+          '🔍 可能的原因:\n'
+          '1. S3 存储桶权限问题\n'
+          '2. Cognito Identity Pool 权限不足\n'
+          '3. 网络连接问题\n'
+          '4. 文件格式或大小限制\n'
+          '5. 临时文件创建失败',
+      'solutions':
+          '💡 建议解决方案:\n'
+          '1. 检查 S3 存储桶策略\n'
+          '2. 确认 Identity Pool 角色权限\n'
+          '3. 检查网络连接\n'
+          '4. 确认设备存储空间充足',
+    },
+    'transcriptionNotFound': {
+      'reasons':
+          '🔍 可能的原因:\n'
+          '1. 转录任务尚未完成\n'
+          '2. 转录任务失败\n'
+          '3. 文件路径不正确',
+      'solutions':
+          '💡 建议解决方案:\n'
+          '1. 等待几分钟后重试（转录需要时间）\n'
+          '2. 检查 AWS CloudWatch 日志确认 Lambda 执行状态\n'
+          '3. 确认 S3 中是否存在转录结果文件',
+    },
+    'accessDenied': {
+      'reasons':
+          '🔍 可能的原因:\n'
+          '1. S3 存储桶权限问题\n'
+          '2. Cognito Identity Pool 权限不足',
+      'solutions':
+          '💡 建议解决方案:\n'
+          '1. 检查 S3 存储桶策略\n'
+          '2. 确认 Identity Pool 角色权限',
+    },
+    'general': {
+      'reasons':
+          '🔍 可能的原因:\n'
+          '1. 网络连接问题\n'
+          '2. 转录结果文件格式异常\n'
+          '3. JSON 解析失败',
+      'solutions':
+          '💡 建议解决方案:\n'
+          '1. 检查网络连接\n'
+          '2. 重新上传音频文件\n'
+          '3. 检查转录结果文件格式',
+    },
+    'deletion': {
+      'reasons':
+          '🔍 可能的原因:\n'
+          '1. 文件已被手动删除\n'
+          '2. S3 存储桶权限问题\n'
+          '3. Cognito Identity Pool 权限不足\n'
+          '4. 网络连接问题',
+      'solutions':
+          '💡 建议解决方案:\n'
+          '1. 检查 S3 存储桶中文件是否存在\n'
+          '2. 确认删除权限配置\n'
+          '3. 检查网络连接',
+    },
+  };
+}
+
 class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
   String _apiResult = '点击测试按钮开始语音转文字测试...';
   bool _isLoading = false;
@@ -33,12 +133,180 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
     super.initState();
   }
 
+  // 公共方法：更新加载状态和结果
+  void _updateState({required bool isLoading, required String result}) {
+    setState(() {
+      _isLoading = isLoading;
+      _apiResult = result;
+    });
+  }
+
+  // 公共方法：构建进度信息
+  String _buildProgressMessage({
+    required String operation,
+    required int current,
+    required int total,
+    String? currentItem,
+    String? additionalInfo,
+  }) {
+    final buffer = StringBuffer();
+    buffer.write('正在$operation...\n\n');
+    buffer.write('📊 $operation统计:\n');
+    buffer.write('• 总文件数: $total\n');
+    buffer.write('• 进度: $current/$total\n');
+
+    if (currentItem != null) {
+      buffer.write('• 当前文件: $currentItem\n');
+    }
+
+    if (additionalInfo != null) {
+      buffer.write('$additionalInfo\n');
+    }
+
+    buffer.write('\n⏳ 处理中...');
+    return buffer.toString();
+  }
+
+  // 公共方法：构建错误消息
+  String _buildErrorMessage({
+    required String operation,
+    required String error,
+    String? errorType,
+    Map<String, dynamic>? statistics,
+  }) {
+    final buffer = StringBuffer();
+    buffer.write('❌ $operation失败!\n\n');
+    buffer.write('错误信息: $error\n\n');
+
+    if (statistics != null) {
+      buffer.write('📊 统计信息:\n');
+      statistics.forEach((key, value) {
+        buffer.write('• $key: $value\n');
+      });
+      buffer.write('\n');
+    }
+
+    // 根据错误类型添加相应的提示
+    String messageKey = 'general';
+    if (errorType != null) {
+      if (error.contains('NoSuchKey') || error.contains('not found')) {
+        messageKey = 'transcriptionNotFound';
+      } else if (error.contains('AccessDenied')) {
+        messageKey = 'accessDenied';
+      } else if (errorType == 'upload') {
+        messageKey = 'fileUpload';
+      } else if (errorType == 'api') {
+        messageKey = 'apiGateway';
+      } else if (errorType == 'deletion') {
+        messageKey = 'deletion';
+      }
+    }
+
+    final messages = ErrorMessages.messages[messageKey]!;
+    buffer.write('${messages['reasons']}\n\n');
+    buffer.write(messages['solutions']);
+
+    return buffer.toString();
+  }
+
+  // 公共方法：构建成功消息
+  String _buildSuccessMessage({
+    required String operation,
+    required OperationResult result,
+    String? additionalInfo,
+  }) {
+    final buffer = StringBuffer();
+    buffer.write('✅ $operation完成!\n\n');
+    buffer.write('📊 统计信息:\n');
+    buffer.write('• 总文件数: ${result.totalCount}\n');
+    buffer.write('• 成功处理: ${result.successCount}\n');
+    buffer.write('• 失败文件: ${result.totalCount - result.successCount}\n\n');
+
+    if (result.details.isNotEmpty) {
+      buffer.write('📁 处理详情:\n');
+      for (String detail in result.details) {
+        buffer.write('• $detail\n');
+      }
+      buffer.write('\n');
+    }
+
+    if (result.errors.isNotEmpty) {
+      buffer.write('⚠️ 错误信息:\n');
+      for (String error in result.errors) {
+        buffer.write('• $error\n');
+      }
+      buffer.write('\n');
+    }
+
+    if (additionalInfo != null) {
+      buffer.write('$additionalInfo\n');
+    }
+
+    return buffer.toString();
+  }
+
+  // 公共方法：处理文件操作的通用逻辑
+  Future<OperationResult> _processFiles<T>({
+    required List<String> items,
+    required String operation,
+    required Future<T> Function(String item, int index) processor,
+    required String Function(T result, String item) resultExtractor,
+  }) async {
+    final details = <String>[];
+    final errors = <String>[];
+    int successCount = 0;
+
+    for (int i = 0; i < items.length; i++) {
+      final item = items[i];
+
+      try {
+        _updateState(
+          isLoading: true,
+          result: _buildProgressMessage(
+            operation: operation,
+            current: i + 1,
+            total: items.length,
+            currentItem: item,
+          ),
+        );
+
+        final result = await processor(item, i);
+        final detail = resultExtractor(result, item);
+        details.add(detail);
+        successCount++;
+      } catch (e) {
+        safePrint('$operation失败: $item - $e');
+        errors.add('$item: ${e.toString()}');
+      }
+    }
+
+    return OperationResult(
+      success: successCount > 0,
+      message: '',
+      successCount: successCount,
+      totalCount: items.length,
+      details: details,
+      errors: errors,
+    );
+  }
+
+  // 公共方法：清理临时文件
+  Future<void> _cleanupTempFiles(List<File> tempFiles) async {
+    for (File tempFile in tempFiles) {
+      if (await tempFile.exists()) {
+        try {
+          await tempFile.delete();
+          safePrint('临时文件已清理: ${tempFile.path}');
+        } catch (e) {
+          safePrint('清理临时文件失败: $e');
+        }
+      }
+    }
+  }
+
   // 功能1：API Gateway测试
   Future<void> _testAPIGateway() async {
-    setState(() {
-      _isLoading = true;
-      _apiResult = '正在调用 API Gateway...';
-    });
+    _updateState(isLoading: true, result: '正在调用 API Gateway...');
 
     try {
       safePrint('开始调用 Amplify API...');
@@ -50,160 +318,118 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
         if (!session.isSignedIn) {
           safePrint('用户未登录，将使用未认证凭证调用API...');
-          // 对于未认证用户，Amplify 会自动尝试获取临时凭证
         } else {
           safePrint('用户已登录，将使用认证凭证调用API...');
         }
       } catch (e) {
         safePrint('获取认证状态失败: $e');
-        // 即使获取认证状态失败，也继续尝试调用API
       }
 
       // 使用 Amplify API 调用 REST 端点
       final restOperation = Amplify.API.get(
         '/echo',
-        apiName: 'echoapi', // 这是在 amplifyconfiguration.dart 中定义的 API 名称
+        apiName: 'echoapi',
         queryParameters: {'message': 'Hello'},
       );
 
       final response = await restOperation.response;
-
       safePrint('API 调用成功，状态码: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        // 解析响应体
         final responseBody = response.decodeBody();
         safePrint('响应内容: $responseBody');
 
-        // 美化 JSON 显示
         final Map<String, dynamic> jsonData = jsonDecode(responseBody);
         const JsonEncoder encoder = JsonEncoder.withIndent('  ');
         final prettyJson = encoder.convert(jsonData);
 
-        setState(() {
-          _apiResult =
+        _updateState(
+          isLoading: false,
+          result:
               '✅ API 调用成功!\n\n📡 请求信息:\n'
               '• API: echoapi\n'
               '• 路径: /echo\n'
               '• 参数: message=Hello\n'
               '• 状态码: ${response.statusCode}\n\n'
-              '📄 响应内容:\n$prettyJson';
-        });
+              '📄 响应内容:\n$prettyJson',
+        );
       } else {
-        setState(() {
-          _apiResult =
+        _updateState(
+          isLoading: false,
+          result:
               '❌ API 调用失败!\n\n'
               '状态码: ${response.statusCode}\n'
-              '响应: ${response.decodeBody()}';
-        });
+              '响应: ${response.decodeBody()}',
+        );
       }
     } catch (e) {
       safePrint('API 调用出错: $e');
-      setState(() {
-        _apiResult =
-            '❌ API 调用出错!\n\n'
-            '错误信息: ${e.toString()}\n\n'
-            '🔍 可能的原因:\n'
-            '1. Cognito Identity Pool 不允许未认证访问\n'
-            '2. 需要用户登录后才能调用 API\n'
-            '3. Identity Pool 权限配置问题\n'
-            '4. API Gateway 权限配置问题\n\n'
-            '💡 建议解决方案:\n'
-            '1. 在 AWS Console 中启用 Identity Pool 的未认证访问\n'
-            '2. 或者实现用户登录功能\n'
-            '3. 检查 IAM 角色权限';
-        Logger().e('API 调用失败: $e');
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      _updateState(
+        isLoading: false,
+        result: _buildErrorMessage(
+          operation: 'API 调用',
+          error: e.toString(),
+          errorType: 'api',
+        ),
+      );
+      Logger().e('API 调用失败: $e');
     }
   }
 
   // 功能3：批量上传音频到S3->事件触发Lambda->启动Transcribe任务->输出的转录结果JSON再次存入S3
   Future<void> _testFileUploadAndTranscribe() async {
-    setState(() {
-      _isLoading = true;
-      _apiResult = '正在准备批量上传音频文件...';
-    });
+    _updateState(isLoading: true, result: '正在准备批量上传音频文件...');
 
     List<File> tempFiles = [];
     List<String> uploadedFileNames = [];
-    int successCount = 0;
-    int totalFiles = _fileNames.length;
+    const int maxMbSize = 50;
+    const int maxFileSize = maxMbSize * 1024 * 1024;
 
     try {
       safePrint('开始批量上传音频文件到 S3...');
 
-      setState(() {
-        _apiResult =
-            '正在批量上传音频文件...\n\n'
-            '📊 上传统计:\n'
-            '• 总文件数: $totalFiles\n'
-            '• 进度: 0/$totalFiles\n\n'
-            '⏳ 准备中...';
-      });
-
-      // 遍历所有文件名进行上传
-      for (int i = 0; i < _fileNames.length; i++) {
-        final currentFileName = _fileNames[i];
-        File? tempFile;
-
-        try {
-          safePrint('开始处理文件 ${i + 1}/$totalFiles: $currentFileName');
-
-          setState(() {
-            _apiResult =
-                '正在批量上传音频文件...\n\n'
-                '📊 上传统计:\n'
-                '• 总文件数: $totalFiles\n'
-                '• 进度: ${i + 1}/$totalFiles\n'
-                '• 当前文件: $currentFileName\n\n'
-                '⏳ 处理中...';
-          });
-
+      final result = await _processFiles<String>(
+        items: _fileNames,
+        operation: '批量上传音频文件',
+        processor: (currentFileName, index) async {
           // 从 assets 加载音频文件
           final ByteData audioData = await rootBundle.load(
             'assets/$currentFileName',
           );
           final Uint8List audioBytes = audioData.buffer.asUint8List();
-
           safePrint('音频文件大小: ${audioBytes.length} bytes');
 
           // 检查文件大小限制
-          const int maxMbSize = 50;
-          const int maxFileSize = maxMbSize * 1024 * 1024;
           if (audioBytes.length > maxFileSize) {
             final fileSizeMB = (audioBytes.length / (1024 * 1024))
                 .toStringAsFixed(2);
-            safePrint('文件 $currentFileName 大小超过限制: $fileSizeMB MB');
-            continue; // 跳过这个文件，继续处理下一个
+            throw Exception('文件大小超过限制: $fileSizeMB MB');
           }
 
           // 创建临时文件
           final tempDir = await getTemporaryDirectory();
           final timestamp = DateTime.now().millisecondsSinceEpoch;
-          tempFile = File('${tempDir.path}/test_audio_${timestamp}_$i.mp3');
+          final tempFile = File(
+            '${tempDir.path}/test_audio_${timestamp}_$index.mp3',
+          );
           await tempFile.writeAsBytes(audioBytes);
           tempFiles.add(tempFile);
 
-          safePrint('临时文件创建成功: ${tempFile.path}');
-
           // 生成唯一的文件名
-          final fileName = 'test_audio_${timestamp}_$i.mp3';
+          final fileName = 'test_audio_${timestamp}_$index.mp3';
 
-          setState(() {
-            _apiResult =
-                '正在批量上传音频文件...\n\n'
-                '📊 上传统计:\n'
-                '• 总文件数: $totalFiles\n'
-                '• 进度: ${i + 1}/$totalFiles\n'
-                '• 当前文件: $currentFileName\n'
-                '• 目标文件名: $fileName\n'
-                '• 文件大小: ${(audioBytes.length / 1024).toStringAsFixed(2)} KB\n\n'
-                '⏳ 上传中...';
-          });
+          // 更新进度显示
+          _updateState(
+            isLoading: true,
+            result: _buildProgressMessage(
+              operation: '批量上传音频文件',
+              current: index + 1,
+              total: _fileNames.length,
+              currentItem: currentFileName,
+              additionalInfo:
+                  '• 目标文件名: $fileName\n• 文件大小: ${(audioBytes.length / 1024).toStringAsFixed(2)} KB\n\n⏳ 上传中...',
+            ),
+          );
 
           // 上传文件到 S3
           final uploadOperation = Amplify.Storage.uploadFile(
@@ -215,14 +441,12 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
                 'originalName': currentFileName,
                 'uploadTime': 'auto-generated',
                 'uploadMethod': 'uploadFile',
-                'batchIndex': i.toString(),
+                'batchIndex': index.toString(),
               },
             ),
           );
 
-          // 等待上传完成
           final uploadResult = await uploadOperation.result;
-
           safePrint('文件上传成功: ${uploadResult.uploadedItem.path}');
 
           // 保存上传的文件名（不含扩展名）
@@ -231,131 +455,83 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             fileName.lastIndexOf('.'),
           );
           uploadedFileNames.add(uploadedFileName);
-          successCount++;
-        } catch (e) {
-          safePrint('文件 $currentFileName 上传失败: $e');
-          // 继续处理下一个文件
-        }
-      }
+
+          return uploadedFileName;
+        },
+        resultExtractor:
+            (uploadedFileName, currentFileName) => uploadedFileName,
+      );
 
       // 更新上传记录
       _uploadedFileNames = uploadedFileNames;
 
-      setState(() {
-        _apiResult =
-            '✅ 批量音频文件上传完成!\n\n'
-            '📊 上传统计:\n'
-            '• 总文件数: $totalFiles\n'
-            '• 成功上传: $successCount\n'
-            '• 失败文件: ${totalFiles - successCount}\n\n'
-            '📁 成功上传的文件:\n'
-            '${uploadedFileNames.map((name) => '• $name').join('\n')}\n\n'
-            '🎯 上传详情:\n'
-            '• 目标桶: nirvaappaudiostorage0e8a7-dev\n'
-            '• 上传方式: uploadFile (支持大文件)\n\n'
-            '📋 下一步:\n'
-            '• S3 事件应该已经触发 Lambda 函数\n'
-            '• 检查 AWS CloudWatch 日志查看 Lambda 执行情况\n'
-            '• Lambda 函数名: S3Trigger0f8e56ad-dev\n\n'
-            '💡 优势:\n'
-            '• 支持批量上传多个文件\n'
-            '• 使用 uploadFile 支持大文件流式上传\n'
-            '• 自动处理多部分上传 (>100MB)\n'
-            '• 实时进度监控';
-      });
+      final additionalInfo =
+          '🎯 上传详情:\n'
+          '• 目标桶: nirvaappaudiostorage0e8a7-dev\n'
+          '• 上传方式: uploadFile (支持大文件)\n\n'
+          '📋 下一步:\n'
+          '• S3 事件应该已经触发 Lambda 函数\n'
+          '• 检查 AWS CloudWatch 日志查看 Lambda 执行情况\n'
+          '• Lambda 函数名: S3Trigger0f8e56ad-dev\n\n'
+          '💡 优势:\n'
+          '• 支持批量上传多个文件\n'
+          '• 使用 uploadFile 支持大文件流式上传\n'
+          '• 自动处理多部分上传 (>100MB)\n'
+          '• 实时进度监控';
+
+      _updateState(
+        isLoading: false,
+        result: _buildSuccessMessage(
+          operation: '批量音频文件上传',
+          result: result,
+          additionalInfo: additionalInfo,
+        ),
+      );
     } catch (e) {
       safePrint('批量文件上传失败: $e');
-      setState(() {
-        _apiResult =
-            '❌ 批量音频文件上传失败!\n\n'
-            '错误信息: ${e.toString()}\n\n'
-            '📊 上传统计:\n'
-            '• 总文件数: $totalFiles\n'
-            '• 成功上传: $successCount\n'
-            '• 失败文件: ${totalFiles - successCount}\n\n'
-            '🔍 可能的原因:\n'
-            '1. S3 存储桶权限问题\n'
-            '2. Cognito Identity Pool 权限不足\n'
-            '3. 网络连接问题\n'
-            '4. 文件格式或大小限制\n'
-            '5. 临时文件创建失败\n\n'
-            '💡 建议解决方案:\n'
-            '1. 检查 S3 存储桶策略\n'
-            '2. 确认 Identity Pool 角色权限\n'
-            '3. 检查网络连接\n'
-            '4. 确认设备存储空间充足';
-        Logger().e('批量文件上传失败: $e');
-      });
+      _updateState(
+        isLoading: false,
+        result: _buildErrorMessage(
+          operation: '批量音频文件上传',
+          error: e.toString(),
+          errorType: 'upload',
+          statistics: {
+            '总文件数': _fileNames.length,
+            '成功上传': uploadedFileNames.length,
+            '失败文件': _fileNames.length - uploadedFileNames.length,
+          },
+        ),
+      );
+      Logger().e('批量文件上传失败: $e');
     } finally {
-      // 清理所有临时文件
-      for (File tempFile in tempFiles) {
-        if (await tempFile.exists()) {
-          try {
-            await tempFile.delete();
-            safePrint('临时文件已清理: ${tempFile.path}');
-          } catch (e) {
-            safePrint('清理临时文件失败: $e');
-          }
-        }
-      }
-
-      setState(() {
-        _isLoading = false;
-      });
+      await _cleanupTempFiles(tempFiles);
     }
   }
 
   // 功能4：批量获取转录结果
   Future<void> _getTranscriptionResult() async {
     if (_uploadedFileNames.isEmpty) {
-      setState(() {
-        _apiResult =
+      _updateState(
+        isLoading: false,
+        result:
             '❌ 获取转录结果失败!\n\n'
             '错误信息: 没有找到上传的音频文件记录\n\n'
             '💡 解决方案:\n'
-            '请先上传音频文件，然后再获取转录结果';
-      });
+            '请先上传音频文件，然后再获取转录结果',
+      );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _apiResult = '正在批量获取转录结果...';
-    });
+    _updateState(isLoading: true, result: '正在批量获取转录结果...');
 
     try {
       safePrint('开始批量获取转录结果...');
-
-      int totalFiles = _uploadedFileNames.length;
-      int successCount = 0;
       List<Map<String, dynamic>> allResults = [];
 
-      setState(() {
-        _apiResult =
-            '正在批量获取转录结果...\n\n'
-            '📊 获取统计:\n'
-            '• 总文件数: $totalFiles\n'
-            '• 进度: 0/$totalFiles\n\n'
-            '⏳ 处理中...';
-      });
-
-      // 遍历所有上传的文件获取转录结果
-      for (int i = 0; i < _uploadedFileNames.length; i++) {
-        final uploadedFileName = _uploadedFileNames[i];
-
-        try {
-          safePrint('获取转录结果 ${i + 1}/$totalFiles: $uploadedFileName');
-
-          setState(() {
-            _apiResult =
-                '正在批量获取转录结果...\n\n'
-                '📊 获取统计:\n'
-                '• 总文件数: $totalFiles\n'
-                '• 进度: ${i + 1}/$totalFiles\n'
-                '• 当前文件: $uploadedFileName\n\n'
-                '⏳ 下载中...';
-          });
-
+      final result = await _processFiles<Map<String, dynamic>>(
+        items: _uploadedFileNames,
+        operation: '批量获取转录结果',
+        processor: (uploadedFileName, index) async {
           // 根据上传的文件名构造转录结果文件路径
           final transcriptFileName = '$uploadedFileName.json';
           final transcriptPath = 'transcripts/$transcriptFileName';
@@ -387,37 +563,29 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             transcriptText = '无法解析转录文本';
           }
 
-          // 添加到结果列表
-          allResults.add({
+          return {
             'fileName': uploadedFileName,
             'transcriptText': transcriptText,
             'fileSize': (downloadResult.bytes.length / 1024).toStringAsFixed(2),
             'fullData': transcriptionData,
-          });
-
-          successCount++;
-        } catch (e) {
-          safePrint('获取转录结果失败: $uploadedFileName - $e');
-          // 添加错误记录
-          allResults.add({
-            'fileName': uploadedFileName,
-            'transcriptText': '获取失败: ${e.toString()}',
-            'fileSize': 'N/A',
-            'error': true,
-          });
-        }
-      }
+          };
+        },
+        resultExtractor: (resultData, uploadedFileName) {
+          allResults.add(resultData);
+          return '${resultData['fileName']}: ${resultData['transcriptText']}';
+        },
+      );
 
       // 合并所有转录文本并写入文件
       String mergedTranscriptText = '';
       String savedFilePath = '';
 
-      if (successCount > 0) {
+      if (result.successCount > 0) {
         // 提取并合并所有成功的转录文本
         List<String> transcriptTexts = [];
-        for (var result in allResults) {
-          if (result['error'] != true && result['fullData'] != null) {
-            final fullData = result['fullData'] as Map<String, dynamic>;
+        for (var resultData in allResults) {
+          if (resultData['fullData'] != null) {
+            final fullData = resultData['fullData'] as Map<String, dynamic>;
             if (fullData.containsKey('results') &&
                 fullData['results'] != null &&
                 fullData['results']['transcripts'] != null) {
@@ -431,7 +599,6 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
           }
         }
 
-        // 合并所有转录文本
         mergedTranscriptText = transcriptTexts.join('\n\n');
 
         // 将合并的文本写入临时目录
@@ -449,147 +616,75 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
         }
       }
 
-      // 构建最终结果显示
-      String resultMessage = '✅ 批量转录结果获取完成!\n\n';
-      resultMessage += '📊 获取统计:\n';
-      resultMessage += '• 总文件数: $totalFiles\n';
-      resultMessage += '• 成功获取: $successCount\n';
-      resultMessage += '• 失败文件: ${totalFiles - successCount}\n\n';
+      // 构建详细结果显示
+      final buffer = StringBuffer();
+      buffer.write(_buildSuccessMessage(operation: '批量转录结果获取', result: result));
 
-      resultMessage += '🎯 转录结果汇总:\n';
+      buffer.write('🎯 转录结果汇总:\n');
       for (int i = 0; i < allResults.length; i++) {
-        final result = allResults[i];
-        resultMessage += '\n--- 文件 ${i + 1}: ${result['fileName']} ---\n';
-
-        if (result['error'] == true) {
-          resultMessage += '❌ ${result['transcriptText']}\n';
-        } else {
-          resultMessage += '📄 文件大小: ${result['fileSize']} KB\n';
-          resultMessage += '📝 转录文本: 「${result['transcriptText']}」\n';
-        }
+        final resultData = allResults[i];
+        buffer.write('\n--- 文件 ${i + 1}: ${resultData['fileName']} ---\n');
+        buffer.write('📄 文件大小: ${resultData['fileSize']} KB\n');
+        buffer.write('📝 转录文本: 「${resultData['transcriptText']}」\n');
       }
 
-      if (successCount > 0) {
-        resultMessage += '\n📝 合并转录文本:\n';
-        resultMessage += '「$mergedTranscriptText」\n\n';
+      if (result.successCount > 0) {
+        buffer.write('\n📝 合并转录文本:\n');
+        buffer.write('「$mergedTranscriptText」\n\n');
 
         if (savedFilePath.isNotEmpty) {
-          resultMessage += '💾 文本文件已保存:\n';
-          resultMessage += '• 路径: $savedFilePath\n';
-          resultMessage += '• 文件大小: ${mergedTranscriptText.length} 字符\n\n';
+          buffer.write('💾 文本文件已保存:\n');
+          buffer.write('• 路径: $savedFilePath\n');
+          buffer.write('• 文件大小: ${mergedTranscriptText.length} 字符\n\n');
         }
 
-        resultMessage += '💡 详细信息:\n';
-        resultMessage += '• 可在开发者日志中查看完整 JSON 结果\n';
-        resultMessage += '• S3 路径格式: transcripts/[文件名].json\n';
-        resultMessage += '• 合并文本已保存到设备临时目录\n';
+        buffer.write('💡 详细信息:\n');
+        buffer.write('• 可在开发者日志中查看完整 JSON 结果\n');
+        buffer.write('• S3 路径格式: transcripts/[文件名].json\n');
+        buffer.write('• 合并文本已保存到设备临时目录\n');
       }
 
-      setState(() {
-        _apiResult = resultMessage;
-      });
+      _updateState(isLoading: false, result: buffer.toString());
     } catch (e) {
       safePrint('批量获取转录结果失败: $e');
-
-      String errorMessage =
-          '❌ 批量获取转录结果失败!\n\n'
-          '错误信息: ${e.toString()}\n\n';
-
-      // 根据错误类型提供不同的建议
-      if (e.toString().contains('NoSuchKey') ||
-          e.toString().contains('not found')) {
-        errorMessage +=
-            '🔍 可能的原因:\n'
-            '1. 转录任务尚未完成\n'
-            '2. 转录任务失败\n'
-            '3. 文件路径不正确\n\n'
-            '💡 建议解决方案:\n'
-            '1. 等待几分钟后重试（转录需要时间）\n'
-            '2. 检查 AWS CloudWatch 日志确认 Lambda 执行状态\n'
-            '3. 确认 S3 中是否存在转录结果文件';
-      } else if (e.toString().contains('AccessDenied')) {
-        errorMessage +=
-            '🔍 可能的原因:\n'
-            '1. S3 存储桶权限问题\n'
-            '2. Cognito Identity Pool 权限不足\n\n'
-            '💡 建议解决方案:\n'
-            '1. 检查 S3 存储桶策略\n'
-            '2. 确认 Identity Pool 角色权限';
-      } else {
-        errorMessage +=
-            '🔍 可能的原因:\n'
-            '1. 网络连接问题\n'
-            '2. 转录结果文件格式异常\n'
-            '3. JSON 解析失败\n\n'
-            '💡 建议解决方案:\n'
-            '1. 检查网络连接\n'
-            '2. 重新上传音频文件\n'
-            '3. 检查转录结果文件格式';
-      }
-
-      setState(() {
-        _apiResult = errorMessage;
-      });
-
+      _updateState(
+        isLoading: false,
+        result: _buildErrorMessage(
+          operation: '批量获取转录结果',
+          error: e.toString(),
+          statistics: {'总文件数': _uploadedFileNames.length},
+        ),
+      );
       Logger().e('批量获取转录结果失败: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
   // 功能5：批量删除上传的音频文件和转录结果
   Future<void> _deleteUploadedFiles() async {
     if (_uploadedFileNames.isEmpty) {
-      setState(() {
-        _apiResult =
+      _updateState(
+        isLoading: false,
+        result:
             '❌ 删除文件失败!\n\n'
             '错误信息: 没有找到上传的音频文件记录\n\n'
             '💡 解决方案:\n'
-            '请先上传音频文件后再尝试删除';
-      });
+            '请先上传音频文件后再尝试删除',
+      );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _apiResult = '正在批量删除文件...';
-    });
+    _updateState(isLoading: true, result: '正在批量删除文件...');
 
     try {
       safePrint('开始批量删除上传的文件...');
-
-      int totalFiles = _uploadedFileNames.length;
-      int deletedCount = 0;
       List<String> deletedFiles = [];
       List<String> errors = [];
 
-      setState(() {
-        _apiResult =
-            '正在批量删除文件...\n\n'
-            '📊 删除统计:\n'
-            '• 总文件数: ${totalFiles * 2} (音频+转录)\n'
-            '• 进度: 0/${totalFiles * 2}\n\n'
-            '⏳ 处理中...';
-      });
-
-      // 遍历所有上传的文件进行删除
-      for (int i = 0; i < _uploadedFileNames.length; i++) {
-        final uploadedFileName = _uploadedFileNames[i];
-
-        try {
-          safePrint('删除文件 ${i + 1}/$totalFiles: $uploadedFileName');
-
-          setState(() {
-            _apiResult =
-                '正在批量删除文件...\n\n'
-                '📊 删除统计:\n'
-                '• 总文件数: ${totalFiles * 2} (音频+转录)\n'
-                '• 进度: ${(i * 2) + 1}/${totalFiles * 2}\n'
-                '• 当前文件: $uploadedFileName\n\n'
-                '⏳ 删除中...';
-          });
+      final result = await _processFiles<int>(
+        items: _uploadedFileNames,
+        operation: '批量删除文件',
+        processor: (uploadedFileName, index) async {
+          int deletedCount = 0;
 
           // 构造文件路径
           final audioFileName = '$uploadedFileName.mp3';
@@ -598,6 +693,17 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
 
           safePrint('准备删除音频文件: $audioFileName');
           safePrint('准备删除转录结果文件: $transcriptPath');
+
+          // 更新进度显示
+          _updateState(
+            isLoading: true,
+            result: _buildProgressMessage(
+              operation: '批量删除文件',
+              current: (index * 2) + 1,
+              total: _uploadedFileNames.length * 2,
+              currentItem: '$uploadedFileName (音频文件)',
+            ),
+          );
 
           // 删除音频文件
           try {
@@ -617,17 +723,18 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
             }
           }
 
-          setState(() {
-            _apiResult =
-                '正在批量删除文件...\n\n'
-                '📊 删除统计:\n'
-                '• 总文件数: ${totalFiles * 2} (音频+转录)\n'
-                '• 进度: ${(i * 2) + 2}/${totalFiles * 2}\n'
-                '• 当前文件: $uploadedFileName (转录结果)\n\n'
-                '⏳ 删除中...';
-          });
+          // 更新进度显示
+          _updateState(
+            isLoading: true,
+            result: _buildProgressMessage(
+              operation: '批量删除文件',
+              current: (index * 2) + 2,
+              total: _uploadedFileNames.length * 2,
+              currentItem: '$uploadedFileName (转录结果)',
+            ),
+          );
 
-          // 删除转录结果文件（如果存在）
+          // 删除转录结果文件
           try {
             await Amplify.Storage.remove(
               path: StoragePath.fromString(transcriptPath),
@@ -644,90 +751,113 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
               errors.add('删除转录结果文件失败: $transcriptPath - ${e.toString()}');
             }
           }
-        } catch (e) {
-          safePrint('处理文件 $uploadedFileName 时出错: $e');
-          errors.add('处理文件失败: $uploadedFileName - ${e.toString()}');
-        }
-      }
+
+          return deletedCount;
+        },
+        resultExtractor:
+            (deletedCount, uploadedFileName) =>
+                '$uploadedFileName: $deletedCount 个文件',
+      );
 
       // 构建结果信息
       String resultMessage;
+      final totalDeleted = result.details
+          .map((detail) => int.parse(detail.split(': ')[1].split(' ')[0]))
+          .reduce((a, b) => a + b);
 
-      if (deletedCount > 0) {
-        resultMessage = '✅ 批量文件删除完成!\n\n';
-        resultMessage += '📊 删除统计:\n';
-        resultMessage += '• 预期删除: ${totalFiles * 2} 个文件\n';
-        resultMessage += '• 成功删除: $deletedCount 个文件\n';
-        resultMessage += '• 错误: ${errors.length} 个\n\n';
+      if (totalDeleted > 0) {
+        final additionalInfo =
+            deletedFiles.isNotEmpty
+                ? '🗑️ 已删除文件:\n${deletedFiles.map((file) => '• $file').join('\n')}\n\n'
+                : '';
 
-        if (deletedFiles.isNotEmpty) {
-          resultMessage += '🗑️ 已删除文件:\n';
-          for (String file in deletedFiles) {
-            resultMessage += '• $file\n';
-          }
-          resultMessage += '\n';
-        }
+        final errorInfo =
+            errors.isNotEmpty
+                ? '⚠️ 错误信息:\n${errors.map((error) => '• $error').join('\n')}\n\n'
+                : '';
 
-        if (errors.isNotEmpty) {
-          resultMessage += '⚠️ 错误信息:\n';
-          for (String error in errors) {
-            resultMessage += '• $error\n';
-          }
-        }
+        resultMessage = _buildSuccessMessage(
+          operation: '批量文件删除',
+          result: OperationResult(
+            success: true,
+            message: '',
+            successCount: totalDeleted,
+            totalCount: _uploadedFileNames.length * 2,
+            details: result.details,
+            errors: errors,
+          ),
+          additionalInfo: '$additionalInfo $errorInfo',
+        );
 
         // 清空当前会话记录
         _uploadedFileNames.clear();
       } else {
-        resultMessage =
-            '❌ 批量删除文件失败!\n\n'
-            '所有文件删除都失败了\n\n';
+        resultMessage = _buildErrorMessage(
+          operation: '批量删除文件',
+          error: '所有文件删除都失败了',
+          errorType: 'deletion',
+          statistics: {
+            '预期删除': '${_uploadedFileNames.length * 2} 个文件',
+            '成功删除': '0 个文件',
+            '错误': '${errors.length} 个',
+          },
+        );
 
         if (errors.isNotEmpty) {
-          resultMessage += '❌ 错误列表:\n';
-          for (String error in errors) {
-            resultMessage += '• $error\n';
-          }
-          resultMessage += '\n';
+          resultMessage +=
+              '\n\n❌ 错误列表:\n${errors.map((error) => '• $error').join('\n')}';
         }
-
-        resultMessage +=
-            '🔍 可能的原因:\n'
-            '1. 文件已被手动删除\n'
-            '2. S3 存储桶权限问题\n'
-            '3. Cognito Identity Pool 权限不足\n'
-            '4. 网络连接问题\n\n'
-            '💡 建议解决方案:\n'
-            '1. 检查 S3 存储桶中文件是否存在\n'
-            '2. 确认删除权限配置\n'
-            '3. 检查网络连接';
       }
 
-      setState(() {
-        _apiResult = resultMessage;
-      });
+      _updateState(isLoading: false, result: resultMessage);
     } catch (e) {
       safePrint('批量删除文件操作失败: $e');
-      setState(() {
-        _apiResult =
-            '❌ 批量删除文件操作失败!\n\n'
-            '错误信息: ${e.toString()}\n\n'
-            '🔍 可能的原因:\n'
-            '1. S3 存储桶权限问题\n'
-            '2. Cognito Identity Pool 权限不足\n'
-            '3. 网络连接问题\n'
-            '4. AWS 服务异常\n\n'
-            '💡 建议解决方案:\n'
-            '1. 检查 S3 存储桶删除权限\n'
-            '2. 确认 Identity Pool 角色权限\n'
-            '3. 检查网络连接\n'
-            '4. 稍后重试';
-        Logger().e('批量删除文件失败: $e');
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      _updateState(
+        isLoading: false,
+        result: _buildErrorMessage(
+          operation: '批量删除文件操作',
+          error: e.toString(),
+          errorType: 'deletion',
+          statistics: {'AWS 服务': '可能异常'},
+        ),
+      );
+      Logger().e('批量删除文件失败: $e');
     }
+  }
+
+  // UI辅助方法：创建测试按钮
+  Widget _buildTestButton({
+    required String label,
+    required String loadingLabel,
+    required IconData icon,
+    required Color backgroundColor,
+    required VoidCallback? onPressed,
+    String? loadingKeyword,
+  }) {
+    final isCurrentlyLoading =
+        _isLoading &&
+        (loadingKeyword == null || _apiResult.contains(loadingKeyword));
+
+    return ElevatedButton.icon(
+      onPressed: _isLoading ? null : onPressed,
+      icon:
+          isCurrentlyLoading
+              ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+              : Icon(icon),
+      label: Text(isCurrentlyLoading ? loadingLabel : label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: Colors.white,
+        minimumSize: const Size(double.infinity, 48),
+      ),
+    );
   }
 
   @override
@@ -760,111 +890,45 @@ class _SpeechToTextTestPageState extends State<SpeechToTextTestPage> {
                     ),
                     const SizedBox(height: 12),
 
-                    // API Gateway测试按钮
-                    ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _testAPIGateway,
-                      icon:
-                          _isLoading
-                              ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                              : const Icon(Icons.health_and_safety),
-                      label: Text(_isLoading ? '测试中...' : 'API Gateway测试'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade600,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                      ),
+                    _buildTestButton(
+                      label: 'API Gateway测试',
+                      loadingLabel: '测试中...',
+                      icon: Icons.health_and_safety,
+                      backgroundColor: Colors.green.shade600,
+                      onPressed: _testAPIGateway,
                     ),
 
                     const SizedBox(height: 8),
 
-                    // 文件上传测试按钮
-                    ElevatedButton.icon(
-                      onPressed:
-                          _isLoading ? null : _testFileUploadAndTranscribe,
-                      icon:
-                          _isLoading && _apiResult.contains('上传')
-                              ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                              : const Icon(Icons.upload_file),
-                      label: Text(
-                        _isLoading && _apiResult.contains('上传')
-                            ? '批量上传中...'
-                            : '批量上传音频到S3 (uploadFile支持大文件)',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange.shade600,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                      ),
+                    _buildTestButton(
+                      label: '批量上传音频到S3 (uploadFile支持大文件)',
+                      loadingLabel: '批量上传中...',
+                      icon: Icons.upload_file,
+                      backgroundColor: Colors.orange.shade600,
+                      onPressed: _testFileUploadAndTranscribe,
+                      loadingKeyword: '上传',
                     ),
 
                     const SizedBox(height: 8),
 
-                    // 获取转录结果按钮
-                    ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _getTranscriptionResult,
-                      icon:
-                          _isLoading && _apiResult.contains('获取转录结果')
-                              ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                              : const Icon(Icons.download),
-                      label: Text(
-                        _isLoading && _apiResult.contains('获取转录结果')
-                            ? '批量获取中...'
-                            : '批量获取转录结果',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple.shade600,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                      ),
+                    _buildTestButton(
+                      label: '批量获取转录结果',
+                      loadingLabel: '批量获取中...',
+                      icon: Icons.download,
+                      backgroundColor: Colors.purple.shade600,
+                      onPressed: _getTranscriptionResult,
+                      loadingKeyword: '获取转录结果',
                     ),
 
                     const SizedBox(height: 8),
 
-                    // 删除文件按钮
-                    ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _deleteUploadedFiles,
-                      icon:
-                          _isLoading && _apiResult.contains('删除')
-                              ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                              : const Icon(Icons.delete),
-                      label: Text(
-                        _isLoading && _apiResult.contains('删除')
-                            ? '批量删除中...'
-                            : '批量删除上传的文件',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade600,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                      ),
+                    _buildTestButton(
+                      label: '批量删除上传的文件',
+                      loadingLabel: '批量删除中...',
+                      icon: Icons.delete,
+                      backgroundColor: Colors.red.shade600,
+                      onPressed: _deleteUploadedFiles,
+                      loadingKeyword: '删除',
                     ),
 
                     const SizedBox(height: 8),
