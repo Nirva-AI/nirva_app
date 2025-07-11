@@ -5,9 +5,8 @@ import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
-import 'package:nirva_app/utils.dart';
+import 'package:nirva_app/transcribe_file_name.dart';
 import 'package:nirva_app/apis.dart';
-import 'package:tuple/tuple.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 
 class UpdateDataPage extends StatefulWidget {
@@ -18,17 +17,7 @@ class UpdateDataPage extends StatefulWidget {
 }
 
 class _UpdateDataPageState extends State<UpdateDataPage> {
-  final List<FileSystemEntity> _files = [];
   List<UpdateDataTask> _tasks = [];
-
-  // 定义过滤列表
-  static const Set<String> _filteredExtensions = {
-    '.hive',
-    '.lock',
-    '.Trash',
-    '.DS_Store',
-    '.log',
-  };
 
   @override
   void initState() {
@@ -47,33 +36,13 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 加载并过滤应用文档目录中的文件
   Future<void> _loadAppFiles() async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final allFiles = directory.listSync();
-
-      final filteredFiles = allFiles.where(_shouldIncludeFile).toList();
-
       if (!mounted) return;
 
-      setState(() {
-        _files.clear();
-        _files.addAll(filteredFiles);
-      });
+      setState(() {});
     } catch (e) {
       Logger().d('Error loading app files: $e');
       _showDialog('Failed to load app files');
     }
-  }
-
-  // 文件过滤逻辑
-  bool _shouldIncludeFile(FileSystemEntity file) {
-    final fileName = file.path.split('/').last;
-
-    for (final extension in _filteredExtensions) {
-      if (fileName.endsWith(extension) || fileName == extension) {
-        return false;
-      }
-    }
-    return true;
   }
 
   // 处理文件选择流程
@@ -145,15 +114,19 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 处理文件内容
   Future<void> _processFileContent(String fileName, String content) async {
     // 1. 解析文件名
-    final parsedData = Utils.parseDataFromSpecialUploadFilename(fileName);
-    if (parsedData == null) {
+    final transcribeFileName = TranscribeFileName.tryFromFilename(fileName);
+    if (transcribeFileName == null) {
       Logger().d('Failed to parse filename or content');
       _showDialog('Invalid file format or name');
       return;
     }
 
     // 2. 上传数据
-    final success = await _uploadAndAnalyzeData(content, parsedData, fileName);
+    final success = await _uploadAndAnalyzeData(
+      content,
+      transcribeFileName,
+      fileName,
+    );
 
     // 3. 显示结果
     if (success) {
@@ -166,16 +139,16 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 上传和分析数据
   Future<bool> _uploadAndAnalyzeData(
     String content,
-    Tuple3<DateTime, int, String> parsedData,
+    TranscribeFileName transcribeFileName,
     String fileName,
   ) async {
     // 1. 上传转录数据
-    final dateKey = JournalFile.dateTimeToKey(parsedData.item1);
+    final dateKey = JournalFile.dateTimeToKey(transcribeFileName.dateTime);
     final uploadResponse = await APIs.uploadTranscript(
       content,
       dateKey,
-      parsedData.item2,
-      parsedData.item3,
+      transcribeFileName.fileNumber,
+      transcribeFileName.fileSuffix,
     );
 
     if (uploadResponse == null) {
@@ -190,7 +163,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     // 2. 分析数据
     final backgroundTaskResponse = await APIs.analyze(
       dateKey,
-      parsedData.item2,
+      transcribeFileName.fileNumber,
     );
 
     if (backgroundTaskResponse != null) {
@@ -216,13 +189,13 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   Future<void> _getTaskResults(String taskId, String fileName) async {
     try {
       // 解析文件名获取日期信息
-      final parsedData = Utils.parseDataFromSpecialUploadFilename(fileName);
-      if (parsedData == null) {
+      final transcribeFileName = TranscribeFileName.tryFromFilename(fileName);
+      if (transcribeFileName == null) {
         _showDialog('Invalid file name format');
         return;
       }
 
-      final dateKey = JournalFile.dateTimeToKey(parsedData.item1);
+      final dateKey = JournalFile.dateTimeToKey(transcribeFileName.dateTime);
       final journalFile = await APIs.getJournalFile(dateKey);
 
       if (journalFile != null) {

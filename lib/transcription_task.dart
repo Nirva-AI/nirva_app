@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'transcribe_file_name.dart';
 
 /// S3路径辅助类
 /// 用于生成标准的S3存储路径
@@ -172,9 +173,6 @@ class UploadAndTranscribeTask {
     final startTime = DateTime.now();
     final List<String> uploadedFileNames = [];
     final List<String> errors = [];
-
-    // const int maxMbSize = 50;
-    // const int maxFileSize = maxMbSize * 1024 * 1024;
 
     try {
       safePrint('UploadAndTranscribeTask: 开始上传文件...');
@@ -352,18 +350,7 @@ class UploadAndTranscribeTask {
         mergedText = transcripts.map((t) => t.transcriptText).join('\n\n');
 
         // 保存合并文本到文件
-        try {
-          final appDocDir = await getApplicationDocumentsDirectory();
-          final timestamp = DateTime.now().millisecondsSinceEpoch;
-          final file = File(
-            '${appDocDir.path}/merged_transcripts_$timestamp.txt',
-          );
-          await file.writeAsString(mergedText, encoding: utf8);
-          savedFilePath = file.path;
-          safePrint('UploadAndTranscribeTask: 合并文本已保存: $savedFilePath');
-        } catch (e) {
-          safePrint('UploadAndTranscribeTask: 保存合并文本失败: $e');
-        }
+        savedFilePath = await _saveMergedTextToFile(mergedText);
 
         _isTranscribed = true;
         safePrint('UploadAndTranscribeTask: 所有转录结果获取成功');
@@ -498,6 +485,33 @@ class UploadAndTranscribeTask {
   bool get isUploaded => _isUploaded;
   bool get isTranscribed => _isTranscribed;
   List<String> get uploadedFileNames => List.unmodifiable(_uploadedFileNames);
+
+  /// 保存合并文本到文件
+  ///
+  /// 将合并的转录文本保存到应用文档目录中，使用TranscribeFileName生成标准格式的文件名
+  /// 返回保存的文件路径，如果保存失败则返回空字符串
+  Future<String> _saveMergedTextToFile(String mergedText) async {
+    try {
+      final appDocDir = await getApplicationDocumentsDirectory();
+
+      // 使用TranscribeFileName生成标准格式的文件名
+      final transcribeFileName = TranscribeFileName(
+        dateTime: DateTime.now(),
+        fileNumber: 1,
+        fileSuffix: 'txt',
+      );
+
+      final filename = transcribeFileName.generateFilename();
+      final file = File('${appDocDir.path}/$filename');
+
+      await file.writeAsString(mergedText, encoding: utf8);
+      safePrint('UploadAndTranscribeTask: 合并文本已保存: ${file.path}');
+      return file.path;
+    } catch (e) {
+      safePrint('UploadAndTranscribeTask: 保存合并文本失败: $e');
+      return '';
+    }
+  }
 }
 
 /// 上传结果数据结构

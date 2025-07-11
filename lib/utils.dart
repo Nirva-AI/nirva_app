@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io'; // 用于文件操作
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -73,55 +73,5 @@ class Utils {
     );
 
     return Tuple2(startDateTime, endDateTime);
-  }
-
-  /// 从特定格式的文件名中提取日期时间、文件编号和后缀
-  /// 文件名格式为"nirva-YYYY-MM-DD-NN.txt"
-  /// 返回一个包含日期时间对象、文件编号和后缀的元组
-  /// 如果文件名格式不正确或解析失败，返回null
-  static Tuple3<DateTime, int, String>? parseDataFromSpecialUploadFilename(
-    String filename,
-  ) {
-    // 用"-"分割文件名
-    final parts = filename.split("-");
-
-    // 检查分割后的数组长度是否至少为5
-    if (parts.length < 5) {
-      debugPrint("文件名格式不正确: $filename");
-      return null;
-    }
-
-    // 检查第一部分是否为"nirva"
-    if (parts[0] != "nirva") {
-      debugPrint("文件名不符合预期格式: $filename");
-      return null;
-    }
-
-    try {
-      // 解析年、月、日
-      final year = int.parse(parts[1]);
-      final month = int.parse(parts[2]);
-      final day = int.parse(parts[3]);
-
-      // 解析文件编号和后缀
-      final fileNumAndSuffix = parts[4].split(".");
-      if (fileNumAndSuffix.length < 2) {
-        debugPrint("文件名后缀格式不正确: $filename");
-        return null;
-      }
-
-      final fileNumber = int.parse(fileNumAndSuffix[0]);
-      final fileSuffix = fileNumAndSuffix.last; // 使用last获取最后一个元素，处理多个点的情况
-
-      // 创建日期时间对象
-      final dateTime = DateTime(year, month, day);
-
-      // 返回元组
-      return Tuple3(dateTime, fileNumber, fileSuffix);
-    } catch (e) {
-      debugPrint("解析文件名时出错: $e, 文件名: $filename");
-      debugPrint("无法从文件名 $filename 中解析出日期时间、文件编号或后缀。");
-      return null;
-    }
   }
 }
