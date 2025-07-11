@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/api_models.dart';
 
-class NirvaChat {
+class ChatManager {
   // 存储对话记录
   final ValueNotifier<List<ChatMessage>> _chatHistory = ValueNotifier([]);
 
@@ -10,7 +10,7 @@ class NirvaChat {
     return _chatHistory;
   }
 
-  void appendConversation(List<ChatMessage> conversation) {
+  void addMessages(List<ChatMessage> conversation) {
     _chatHistory.value = [..._chatHistory.value, ...conversation];
   }
 }

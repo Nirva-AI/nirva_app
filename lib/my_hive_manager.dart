@@ -1,12 +1,12 @@
 //import 'dart:io'; // 用于获取应用的文档目录
 import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
-import 'package:nirva_app/hive_object.dart';
+import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
 import 'dart:convert';
 
-class HiveStorage {
+class MyHiveManager {
   // 现有的常量定义
   static const String _favoritesBox = 'favoritesBox';
   static const String _favoritesKey = 'favorites';

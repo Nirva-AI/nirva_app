@@ -1,11 +1,15 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:nirva_app/runtime_data.dart';
-import 'package:nirva_app/nirva_chat.dart';
-import 'package:nirva_app/hive_storage.dart';
+import 'package:nirva_app/chat_manager.dart';
+import 'package:nirva_app/my_hive_manager.dart';
 import 'package:nirva_app/url_configuration.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
+
+const String serverAddress = '192.168.192.107';
+const int basePort = 8001;
+const String devHttpUrl = 'http://$serverAddress:$basePort';
 
 // 管理全局数据的类
 class AppRuntimeContext {
@@ -34,21 +38,21 @@ class AppRuntimeContext {
   final emptyJournalFile = JournalFile.createEmpty();
 
   // 数据管理器实例
-  final RuntimeData _data = RuntimeData();
+  final RuntimeData _runtimeData = RuntimeData();
 
   // 聊天管理器实例
-  final NirvaChat _chat = NirvaChat();
+  final ChatManager _chatManager = ChatManager();
 
   // Hive 存储实例
-  final HiveStorage _storage = HiveStorage();
+  final MyHiveManager _hiveManager = MyHiveManager();
 
   // URL 配置实例
   final URLConfiguration _urlConfig = URLConfiguration();
 
   // 用于基础app服务的 Dio 实例
-  final Dio _appserviceDio = Dio(
+  final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http:// 192.168.192.107:8001',
+        baseUrl: devHttpUrl,
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -63,30 +67,29 @@ class AppRuntimeContext {
       ),
     ]);
 
-  RuntimeData get data {
-    return _data;
+  RuntimeData get runtimeData {
+    return _runtimeData;
   }
 
-  NirvaChat get chat {
-    return _chat;
+  ChatManager get chatManager {
+    return _chatManager;
   }
 
-  HiveStorage get storage {
-    return _storage;
+  MyHiveManager get hiveManager {
+    return _hiveManager;
   }
 
   URLConfiguration get urlConfig {
     return _urlConfig;
   }
 
-  Dio get appserviceDio {
-    return _appserviceDio;
+  Dio get dio {
+    return _dio;
   }
 
-  // 清除对话历史!
-  Future<void> clearChatHistory() async {
-    chat.chatHistory.value = [];
-    await AppRuntimeContext().storage.clearChatHistory();
+  //
+  DateTime get selectedDateTime {
+    return _selectedDateTime;
   }
 
   // 获取当前的日记文件。
@@ -94,9 +97,13 @@ class AppRuntimeContext {
     return _currentJournalFile ?? emptyJournalFile;
   }
 
-  //
-  DateTime get selectedDateTime {
-    return _selectedDateTime;
+  // 清除对话历史!
+  Future<void> clearChatHistory() async {
+    // 运行时数据清除
+    chatManager.chatHistory.value = [];
+
+    // Hive 存储清除
+    await AppRuntimeContext().hiveManager.clearChatHistory();
   }
 
   //
@@ -107,13 +114,13 @@ class AppRuntimeContext {
 
   //
   void addJournalFile(JournalFile journalFile) {
-    _data.setupJournalFiles(journalFiles + [journalFile]);
+    _runtimeData.setupJournalFiles(journalFiles + [journalFile]);
     _onActiveJournalFile();
   }
 
   //
   void initializeJournalFiles(List<JournalFile> files) {
-    _data.setupJournalFiles(files);
+    _runtimeData.setupJournalFiles(files);
     _onActiveJournalFile();
   }
 
@@ -131,7 +138,7 @@ class AppRuntimeContext {
   //
   List<JournalFile> get journalFiles {
     // 获取所有的日记文件
-    return _data.journalFiles.value;
+    return _runtimeData.journalFiles.value;
   }
 
   //

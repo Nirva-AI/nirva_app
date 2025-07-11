@@ -39,10 +39,10 @@ void main() async {
 
 Future<void> _initializeApp() async {
   // 这句是测试的，清空之前的数据
-  await AppRuntimeContext().storage.deleteFromDisk();
+  await AppRuntimeContext().hiveManager.deleteFromDisk();
 
   // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
-  await AppRuntimeContext().storage.initializeAdapters();
+  await AppRuntimeContext().hiveManager.initializeAdapters();
 
   // 填充测试数据。
   await TestData.initializeTestData();
@@ -56,24 +56,25 @@ Future<void> _initializeApp() async {
 
 Future<void> _setupHiveStorage() async {
   // 喜爱的日记数据
-  AppRuntimeContext().data.favorites.value =
-      AppRuntimeContext().storage.getFavoritesIds();
+  AppRuntimeContext().runtimeData.favorites.value =
+      AppRuntimeContext().hiveManager.getFavoritesIds();
 
   // 对话列表
-  final storageChatHistory = AppRuntimeContext().storage.getChatHistory();
-  AppRuntimeContext().chat.chatHistory.value = storageChatHistory; // 清空之前的聊天记录
+  final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();
+  AppRuntimeContext().chatManager.chatHistory.value =
+      storageChatHistory; // 清空之前的聊天记录
 
   // 任务列表
-  final retrievedTasks = AppRuntimeContext().storage.getAllTasks();
-  AppRuntimeContext().data.tasks.value = retrievedTasks;
+  final retrievedTasks = AppRuntimeContext().hiveManager.getAllTasks();
+  AppRuntimeContext().runtimeData.tasks.value = retrievedTasks;
 
   //notes
-  final retrievedNotes = AppRuntimeContext().storage.getAllNotes();
-  AppRuntimeContext().data.notes.value = retrievedNotes;
+  final retrievedNotes = AppRuntimeContext().hiveManager.getAllNotes();
+  AppRuntimeContext().runtimeData.notes.value = retrievedNotes;
 
   //journal files
   AppRuntimeContext().initializeJournalFiles(
-    AppRuntimeContext().storage.retrieveJournalFiles(),
+    AppRuntimeContext().hiveManager.retrieveJournalFiles(),
   );
 }
 

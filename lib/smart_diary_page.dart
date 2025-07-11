@@ -154,7 +154,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     List<EventAnalysis> finalEvents = [];
     if (_isFavorite) {
       for (var entry in events) {
-        if (AppRuntimeContext().data.checkFavorite(entry)) {
+        if (AppRuntimeContext().runtimeData.checkFavorite(entry)) {
           finalEvents.add(entry);
         }
       }

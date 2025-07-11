@@ -48,7 +48,7 @@ class _SocialMapCardState extends State<SocialMapCard> {
   Graph createGraph() {
     final newGraph = Graph();
 
-    User user = AppRuntimeContext().data.user;
+    User user = AppRuntimeContext().runtimeData.user;
     Node userNode = Node.Id(user.displayName);
     newGraph.addNode(userNode);
 
@@ -172,7 +172,7 @@ class _SocialMapCardState extends State<SocialMapCard> {
 
   Color? _parseNodeColor(String nodeName) {
     // 根据节点名称返回不同的颜色
-    if (nodeName == AppRuntimeContext().data.user.displayName) {
+    if (nodeName == AppRuntimeContext().runtimeData.user.displayName) {
       return Colors.yellow[100];
     }
 

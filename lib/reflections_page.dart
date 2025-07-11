@@ -189,17 +189,17 @@ class _GoalCardState extends State<GoalCard> {
     debugPrint('Task added: ${widget.title}');
     bool hasChanged = false;
     for (var content in widget.contents) {
-      if (AppRuntimeContext().data.hasTask(widget.title, content)) {
+      if (AppRuntimeContext().runtimeData.hasTask(widget.title, content)) {
         // 如果任务已存在，则不添加
         continue;
       }
-      AppRuntimeContext().data.addTask(widget.title, content);
+      AppRuntimeContext().runtimeData.addTask(widget.title, content);
       hasChanged = true;
     }
 
     if (hasChanged) {
-      await AppRuntimeContext().storage.saveTasks(
-        AppRuntimeContext().data.tasks.value,
+      await AppRuntimeContext().hiveManager.saveTasks(
+        AppRuntimeContext().runtimeData.tasks.value,
       );
     }
   }

@@ -15,12 +15,14 @@ class EventDetailsPage extends StatefulWidget {
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
   bool get isFavorite {
-    return AppRuntimeContext().data.checkFavorite(widget.eventData);
+    return AppRuntimeContext().runtimeData.checkFavorite(widget.eventData);
   }
 
   void _toggleFavorite() {
     setState(() {
-      AppRuntimeContext().data.switchEventFavoriteStatus(widget.eventData);
+      AppRuntimeContext().runtimeData.switchEventFavoriteStatus(
+        widget.eventData,
+      );
       //AppRuntimeContext().data.switchDiaryFavoriteStatus(widget.diaryData);
       debugPrint(
         'Star button pressed: ${isFavorite ? "Added to favorites" : "Removed from favorites"}',
@@ -132,7 +134,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     ValueListenableBuilder(
-                      valueListenable: AppRuntimeContext().data.notes,
+                      valueListenable: AppRuntimeContext().runtimeData.notes,
                       builder: (context, List<Note> notes, _) {
                         final note = notes.firstWhere(
                           (element) => element.id == widget.eventData.event_id,

@@ -417,7 +417,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
     _updateState(isLoading: true, result: '正在准备批量上传音频文件...');
 
     // 生成新的任务ID
-    final String userId = AppRuntimeContext().data.user.id;
+    final String userId = AppRuntimeContext().runtimeData.user.id;
     _currentTaskId = 'task_${DateTime.now().millisecondsSinceEpoch}';
 
     List<File> tempFiles = [];
@@ -615,7 +615,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
     }
 
     _updateState(isLoading: true, result: '正在并行批量获取转录结果...');
-    final String userId = AppRuntimeContext().data.user.id;
+    final String userId = AppRuntimeContext().runtimeData.user.id;
 
     try {
       safePrint('开始并行批量获取转录结果...');
@@ -856,7 +856,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
 
     _updateState(isLoading: true, result: '正在并行批量删除文件...');
 
-    final String userId = AppRuntimeContext().data.user.id;
+    final String userId = AppRuntimeContext().runtimeData.user.id;
 
     try {
       safePrint('开始并行批量删除上传的文件...');
@@ -1046,7 +1046,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
     }
 
     _updateState(isLoading: true, result: '正在删除整个任务文件夹...');
-    final String userId = AppRuntimeContext().data.user.id;
+    final String userId = AppRuntimeContext().runtimeData.user.id;
 
     try {
       safePrint('开始删除整个任务文件夹...');

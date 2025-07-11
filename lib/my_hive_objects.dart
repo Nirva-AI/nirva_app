@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
-part 'hive_object.g.dart';
+part 'my_hive_objects.g.dart';
 
 // 本机存储的日记收藏列表
 @HiveType(typeId: 1)
