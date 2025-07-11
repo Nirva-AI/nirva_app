@@ -34,10 +34,11 @@ class UploadAndTranscribeTask {
   final String taskId;
   final String userId;
   final List<String> assetFileNames;
+  final List<String> pickedFileNames;
 
   // 内部状态
+  List<File> _availableFiles = [];
   List<String> _uploadedFileNames = [];
-  final List<File> _tempFiles = [];
   bool _isUploaded = false;
   bool _isTranscribed = false;
 
@@ -45,12 +46,15 @@ class UploadAndTranscribeTask {
   ///
   /// [userId] 用户ID
   /// [assetFileNames] 来自assets的源文件名列表，测试用。
-  UploadAndTranscribeTask({required this.userId, required this.assetFileNames})
-    : taskId = 'task_${DateTime.now().millisecondsSinceEpoch}';
+  UploadAndTranscribeTask({
+    required this.userId,
+    required this.assetFileNames,
+    required this.pickedFileNames,
+  }) : taskId = 'task_${DateTime.now().millisecondsSinceEpoch}';
 
   /// 获取源文件名列表
   List<String> get sourceFileNames {
-    return List.unmodifiable(assetFileNames);
+    return assetFileNames + pickedFileNames;
   }
 
   /// 从assets准备临时文件
@@ -77,11 +81,87 @@ class UploadAndTranscribeTask {
       await tempFile.writeAsBytes(audioBytes);
 
       // 添加到管理列表和返回列表
-      _tempFiles.add(tempFile);
       preparedFiles.add(tempFile);
     }
 
     return preparedFiles;
+  }
+
+  /// 从文件选择器准备临时文件
+  Future<List<File>> _prepareFilesFromFilePicker() async {
+    final List<File> pickedFiles = [];
+
+    // 将已选择的文件路径转换为 File 对象
+    for (final filePath in pickedFileNames) {
+      final file = File(filePath);
+      if (await file.exists()) {
+        pickedFiles.add(file);
+      } else {
+        safePrint('UploadAndTranscribeTask: 文件不存在: $filePath');
+      }
+    }
+
+    return pickedFiles;
+  }
+
+  /// 步骤0：准备临时文件
+  ///
+  Future<bool> prepareFiles() async {
+    const int maxMbSize = 50;
+    const int maxFileSize = maxMbSize * 1024 * 1024;
+
+    _availableFiles.clear();
+
+    // 记录需要清理的临时文件（从assets创建的）
+    List<File> tempFilesToCleanup = [];
+
+    try {
+      // 从assets准备临时文件
+      final preparedFilesFromAssets = await _prepareFilesFromAssets();
+      tempFilesToCleanup.addAll(preparedFilesFromAssets); // 记录需要清理的文件
+
+      final preparedFilesFromPicker = await _prepareFilesFromFilePicker();
+      final tempFiles = preparedFilesFromAssets + preparedFilesFromPicker;
+
+      // 空的，如果没有准备好的文件，抛出异常
+      if (tempFiles.isEmpty) {
+        throw Exception('没有可上传的文件，请检查 assetFileNames 和 pickedFileNames 是否正确');
+      }
+
+      // 检查上传文件大小限制
+      for (final checkFile in tempFiles) {
+        safePrint('检查上传文件: ${checkFile.path}');
+        // 检查文件大小限制
+        final audioBytes = await checkFile.readAsBytes();
+        if (audioBytes.length > maxFileSize) {
+          final fileSizeMB = (audioBytes.length / (1024 * 1024))
+              .toStringAsFixed(2);
+
+          // 直接截断，就不允许再进行了。
+          throw Exception('${checkFile.path} 文件大小超过限制: $fileSizeMB MB');
+        }
+      }
+
+      _availableFiles = tempFiles;
+      safePrint(
+        'UploadAndTranscribeTask: 准备完成，共 ${_availableFiles.length} 个临时文件',
+      );
+      return true;
+    } catch (e) {
+      // 清理已创建的临时文件（只清理从assets创建的，不清理用户选择的文件）
+      for (final file in tempFilesToCleanup) {
+        try {
+          if (await file.exists()) {
+            await file.delete();
+            safePrint('已清理临时文件: ${file.path}');
+          }
+        } catch (deleteError) {
+          safePrint('清理临时文件失败: ${file.path} - $deleteError');
+        }
+      }
+      safePrint('UploadAndTranscribeTask: 准备临时文件异常: $e');
+      return false;
+    }
   }
 
   /// 步骤1：上传文件到S3
@@ -93,29 +173,18 @@ class UploadAndTranscribeTask {
     final List<String> uploadedFileNames = [];
     final List<String> errors = [];
 
-    const int maxMbSize = 50;
-    const int maxFileSize = maxMbSize * 1024 * 1024;
+    // const int maxMbSize = 50;
+    // const int maxFileSize = maxMbSize * 1024 * 1024;
 
     try {
       safePrint('UploadAndTranscribeTask: 开始上传文件...');
       safePrint('用户ID: $userId, 任务ID: $taskId');
 
-      // 从assets准备临时文件
-      final preparedFiles = await _prepareFilesFromAssets();
-
       // 并行上传所有文件
       final results = await _processFilesInParallel(
-        items: preparedFiles.map((file) => file.path).toList(),
+        items: _availableFiles.map((file) => file.path).toList(),
         processor: (filePath, index) async {
-          final file = preparedFiles[index];
-
-          // 检查文件大小限制
-          final audioBytes = await file.readAsBytes();
-          if (audioBytes.length > maxFileSize) {
-            final fileSizeMB = (audioBytes.length / (1024 * 1024))
-                .toStringAsFixed(2);
-            throw Exception('文件大小超过限制: $fileSizeMB MB');
-          }
+          final file = _availableFiles[index];
 
           // 获取已生成的唯一文件名
           final uniqueFileName = file.path.split('/').last;
@@ -134,7 +203,7 @@ class UploadAndTranscribeTask {
             options: StorageUploadFileOptions(
               metadata: {
                 'fileType': 'audio',
-                'originalName': assetFileNames[index],
+                'originalName': uniqueFileName,
                 'uploadTime': DateTime.now().toIso8601String(),
                 'uploadMethod': 'uploadFile',
                 'batchIndex': index.toString(),
@@ -147,7 +216,10 @@ class UploadAndTranscribeTask {
           await uploadOperation.result;
 
           // 返回上传的文件名（不含扩展名）
-          return uniqueFileName.substring(0, uniqueFileName.lastIndexOf('.'));
+          final lastDotIndex = uniqueFileName.lastIndexOf('.');
+          return lastDotIndex > 0
+              ? uniqueFileName.substring(0, lastDotIndex)
+              : uniqueFileName;
         },
       );
 
@@ -162,15 +234,14 @@ class UploadAndTranscribeTask {
         }
       }
 
-      // 严格成功判断：所有文件都必须上传成功
-      final isSuccess = successCount == sourceFileNames.length;
+      // 严格成功判断：所有准备好的文件都必须上传成功
+      final isSuccess = successCount == _availableFiles.length;
 
       if (isSuccess) {
         _uploadedFileNames = uploadedFileNames;
         _isUploaded = true;
         safePrint('UploadAndTranscribeTask: 所有文件上传成功');
       } else {
-        await _cleanupTempFiles();
         safePrint('UploadAndTranscribeTask: 上传失败，已清理临时文件');
       }
 
@@ -182,7 +253,6 @@ class UploadAndTranscribeTask {
         duration: DateTime.now().difference(startTime),
       );
     } catch (e) {
-      await _cleanupTempFiles();
       safePrint('UploadAndTranscribeTask: 上传异常: $e');
       return UploadResult(
         success: false,
@@ -345,18 +415,16 @@ class UploadAndTranscribeTask {
 
       if (listResult.items.isEmpty) {
         safePrint('UploadAndTranscribeTask: 没有文件需要删除');
-        await _cleanupTempFiles();
         return true;
       }
 
       // 并行删除所有文件
-      int successCount = 0;
+      final List<bool> deleteResults = [];
       final deleteFutures = listResult.items.map((item) async {
         try {
           await Amplify.Storage.remove(
             path: StoragePath.fromString(item.path),
           ).result;
-          successCount++;
           return true;
         } catch (e) {
           safePrint('UploadAndTranscribeTask: 删除文件失败: ${item.path} - $e');
@@ -364,16 +432,30 @@ class UploadAndTranscribeTask {
         }
       });
 
-      await Future.wait(deleteFutures);
-      await _cleanupTempFiles();
+      deleteResults.addAll(await Future.wait(deleteFutures));
+      final successCount = deleteResults.where((result) => result).length;
+
+      // 清理本地临时文件
+      int localFilesDeleted = 0;
+      for (final file in _availableFiles) {
+        try {
+          if (await file.exists()) {
+            await file.delete();
+            localFilesDeleted++;
+            safePrint('已删除本地临时文件: ${file.path}');
+          }
+        } catch (e) {
+          safePrint('删除本地临时文件失败: ${file.path} - $e');
+        }
+      }
+      _availableFiles.clear();
 
       safePrint(
-        'UploadAndTranscribeTask: 删除完成，成功删除 $successCount/${listResult.items.length} 个文件',
+        'UploadAndTranscribeTask: 删除完成，成功删除 $successCount/${listResult.items.length} 个S3文件，$localFilesDeleted 个本地临时文件',
       );
       return successCount > 0;
     } catch (e) {
       safePrint('UploadAndTranscribeTask: 删除任务文件异常: $e');
-      await _cleanupTempFiles();
       return false;
     }
   }
@@ -410,21 +492,6 @@ class UploadAndTranscribeTask {
     }
 
     return results;
-  }
-
-  /// 内部辅助方法：清理临时文件
-  Future<void> _cleanupTempFiles() async {
-    for (final tempFile in _tempFiles) {
-      if (await tempFile.exists()) {
-        try {
-          await tempFile.delete();
-          safePrint('UploadAndTranscribeTask: 临时文件已清理: ${tempFile.path}');
-        } catch (e) {
-          safePrint('UploadAndTranscribeTask: 清理临时文件失败: $e');
-        }
-      }
-    }
-    _tempFiles.clear();
   }
 
   // 状态查询方法
@@ -489,3 +556,8 @@ class TranscriptData {
     required this.fileSizeKB,
   });
 }
+
+
+/*
+
+*/
