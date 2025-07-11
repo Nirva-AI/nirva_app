@@ -42,8 +42,8 @@ class _TodoListViewState extends State<TodoListView> {
                       onPressed: () async {
                         Navigator.of(context).pop();
 
-                        await AppRuntimeContext().storage.saveTasks(
-                          AppRuntimeContext().data.tasks.value,
+                        await AppRuntimeContext().hiveManager.saveTasks(
+                          AppRuntimeContext().runtimeData.tasks.value,
                         );
                       },
                     ),
@@ -55,7 +55,7 @@ class _TodoListViewState extends State<TodoListView> {
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
                   children:
-                      AppRuntimeContext().data.groupedTasks.entries.map((
+                      AppRuntimeContext().runtimeData.groupedTasks.entries.map((
                         entry,
                       ) {
                         final category = entry.key;
@@ -76,13 +76,16 @@ class _TodoListViewState extends State<TodoListView> {
                               return InkWell(
                                 onTap: () async {
                                   setState(() {
-                                    AppRuntimeContext().data.switchTaskStatus(
-                                      task,
-                                    );
+                                    AppRuntimeContext().runtimeData
+                                        .switchTaskStatus(task);
                                   });
-                                  await AppRuntimeContext().storage.saveTasks(
-                                    AppRuntimeContext().data.tasks.value,
-                                  );
+                                  await AppRuntimeContext().hiveManager
+                                      .saveTasks(
+                                        AppRuntimeContext()
+                                            .runtimeData
+                                            .tasks
+                                            .value,
+                                      );
                                   debugPrint(
                                     'Task tapped: ${task.description}',
                                   );

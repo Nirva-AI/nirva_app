@@ -15,7 +15,7 @@ class TestData {
     AppRuntimeContext.clear();
 
     // 添加用户信息, 目前必须和服务器对上，否则无法登录。
-    AppRuntimeContext().data.user = User(
+    AppRuntimeContext().runtimeData.user = User(
       id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
       username: 'weilyupku@gmail.com',
       password: 'secret',
@@ -47,12 +47,12 @@ class TestData {
       final loadJournalFile = JournalFile.fromJson(jsonData);
       debugPrint('事件数量: ${loadJournalFile.events.length}');
 
-      await AppRuntimeContext().storage.createJournalFile(
+      await AppRuntimeContext().hiveManager.createJournalFile(
         fileName: JournalFile.dateTimeToKey(dateTime),
         content: jsonEncode(jsonData),
       );
 
-      final journalFileStorage = AppRuntimeContext().storage.getJournalFile(
+      final journalFileStorage = AppRuntimeContext().hiveManager.getJournalFile(
         JournalFile.dateTimeToKey(dateTime),
       );
       if (journalFileStorage != null) {
@@ -79,7 +79,7 @@ class TestData {
     if (events.isNotEmpty) {
       EventAnalysis randomEvent = events[random.nextInt(events.length)];
       debugPrint('随机选中的日记: ${randomEvent.event_title}');
-      AppRuntimeContext().data.notes.value = [
+      AppRuntimeContext().runtimeData.notes.value = [
         Note(
           id: randomEvent.event_id,
           content:

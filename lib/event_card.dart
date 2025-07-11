@@ -18,7 +18,7 @@ class _EventCardState extends State<EventCard> {
   @override
   void initState() {
     super.initState();
-    favoritesNotifier = AppRuntimeContext().data.favorites;
+    favoritesNotifier = AppRuntimeContext().runtimeData.favorites;
     favoritesNotifier.addListener(_onFavoriteChanged);
   }
 
@@ -37,7 +37,7 @@ class _EventCardState extends State<EventCard> {
     //final diaryFavorites = Favorites(favoriteIds: favoritesNotifier.value);
 
     // 异步保存，不阻塞当前线程
-    AppRuntimeContext().storage
+    AppRuntimeContext().hiveManager
         .saveFavoriteIds(favoritesNotifier.value)
         .catchError((error) {
           debugPrint('保存收藏夹数据失败: $error');
@@ -45,7 +45,7 @@ class _EventCardState extends State<EventCard> {
   }
 
   bool get isFavorite {
-    return AppRuntimeContext().data.checkFavorite(widget.eventData);
+    return AppRuntimeContext().runtimeData.checkFavorite(widget.eventData);
   }
 
   @override
@@ -97,9 +97,8 @@ class _EventCardState extends State<EventCard> {
                         color: isFavorite ? Colors.amber : Colors.grey,
                       ),
                       onPressed: () {
-                        AppRuntimeContext().data.switchEventFavoriteStatus(
-                          widget.eventData,
-                        );
+                        AppRuntimeContext().runtimeData
+                            .switchEventFavoriteStatus(widget.eventData);
                       },
                     ),
                   ],

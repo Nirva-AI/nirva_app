@@ -72,13 +72,13 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   late List<Dashboard> _chartData;
 
   double get chartWidth {
-    return AppRuntimeContext().data.dashboards.length * widget.unitWidth;
+    return AppRuntimeContext().runtimeData.dashboards.length * widget.unitWidth;
   }
 
   @override
   void initState() {
     super.initState();
-    _chartData = AppRuntimeContext().data.dashboards;
+    _chartData = AppRuntimeContext().runtimeData.dashboards;
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {

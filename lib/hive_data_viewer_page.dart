@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/hive_object.dart';
+import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 
 class HiveDataViewerPage extends StatefulWidget {
@@ -24,7 +24,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
       _isLoading = true;
     });
 
-    final data = AppRuntimeContext().storage.getAllData();
+    final data = AppRuntimeContext().hiveManager.getAllData();
 
     setState(() {
       _hiveData = data;
@@ -217,14 +217,14 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   if (dataType == '收藏夹数据') {
-                    await AppRuntimeContext().storage.saveFavoriteIds([]);
-                    AppRuntimeContext().data.favorites.value = [];
+                    await AppRuntimeContext().hiveManager.saveFavoriteIds([]);
+                    AppRuntimeContext().runtimeData.favorites.value = [];
                   } else if (dataType == '用户令牌') {
-                    await AppRuntimeContext().storage.deleteUserToken();
+                    await AppRuntimeContext().hiveManager.deleteUserToken();
                   } else if (dataType == '日记索引') {
                     // 清空日记索引
                     final emptyIndex = JournalFileIndex();
-                    await AppRuntimeContext().storage.saveJournalIndex(
+                    await AppRuntimeContext().hiveManager.saveJournalIndex(
                       emptyIndex,
                     );
 
@@ -234,7 +234,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                     if (journalIndex != null) {
                       // 删除所有日记文件
                       for (var file in journalIndex.files) {
-                        await AppRuntimeContext().storage.deleteJournalFile(
+                        await AppRuntimeContext().hiveManager.deleteJournalFile(
                           file.fileName,
                         );
                       }
@@ -268,7 +268,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
               TextButton(
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  await AppRuntimeContext().storage.deleteJournal(fileName);
+                  await AppRuntimeContext().hiveManager.deleteJournal(fileName);
                   _loadHiveData();
                 },
                 child: const Text('Delete'),

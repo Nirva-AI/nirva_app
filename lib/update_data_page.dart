@@ -8,7 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/apis.dart';
 import 'package:tuple/tuple.dart';
-import 'package:nirva_app/hive_object.dart';
+import 'package:nirva_app/my_hive_objects.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -40,7 +40,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 加载更新数据任务列表
   void _loadTasks() {
     setState(() {
-      _tasks = AppRuntimeContext().storage.getAllUpdateDataTasks();
+      _tasks = AppRuntimeContext().hiveManager.getAllUpdateDataTasks();
     });
   }
 
@@ -197,7 +197,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       Logger().d('Data analysis task created');
 
       // 添加任务到本地存储
-      AppRuntimeContext().storage.addUpdateDataTask(
+      AppRuntimeContext().hiveManager.addUpdateDataTask(
         UpdateDataTask(
           id: backgroundTaskResponse.task_id,
           fileName: fileName,
@@ -227,7 +227,10 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
       if (journalFile != null) {
         // 更新任务状态为已完成
-        await AppRuntimeContext().storage.updateUpdateDataTaskStatus(taskId, 1);
+        await AppRuntimeContext().hiveManager.updateUpdateDataTaskStatus(
+          taskId,
+          1,
+        );
         _loadTasks();
         //_showSnackBar('Results retrieved successfully');
       } else {
@@ -242,7 +245,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 删除任务
   Future<void> _deleteTask(String id, String fileName) async {
     try {
-      await AppRuntimeContext().storage.deleteUpdateDataTask(id, fileName);
+      await AppRuntimeContext().hiveManager.deleteUpdateDataTask(id, fileName);
       _loadTasks();
       //_showSnackBar('Task deleted: $fileName');
     } catch (e) {
