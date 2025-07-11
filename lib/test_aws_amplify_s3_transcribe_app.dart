@@ -66,6 +66,420 @@ class S3PathHelper {
   }
 }
 
+// 上传和转录任务类
+class UploadAndTranscribeTask {
+  // 核心属性
+  final String taskId;
+  final String userId;
+  final List<String> sourceFileNames;
+
+  // 内部状态
+  List<String> _uploadedFileNames = [];
+  List<File> _tempFiles = [];
+  bool _isUploaded = false;
+  bool _isTranscribed = false;
+
+  // 构造函数
+  UploadAndTranscribeTask({required this.userId, required this.sourceFileNames})
+    : taskId = 'task_${DateTime.now().millisecondsSinceEpoch}';
+
+  // 步骤1：上传文件
+  Future<UploadResult> uploadFiles() async {
+    final startTime = DateTime.now();
+    final List<String> uploadedFileNames = [];
+    final List<String> errors = [];
+    _tempFiles.clear();
+
+    const int maxMbSize = 50;
+    const int maxFileSize = maxMbSize * 1024 * 1024;
+
+    try {
+      safePrint('UploadAndTranscribeTask: 开始上传文件...');
+      safePrint('用户ID: $userId, 任务ID: $taskId');
+
+      // 并行上传所有文件
+      final results = await _processFilesInParallel(
+        items: sourceFileNames,
+        processor: (fileName, index) async {
+          // 从 assets 加载音频文件
+          final ByteData audioData = await rootBundle.load('assets/$fileName');
+          final Uint8List audioBytes = audioData.buffer.asUint8List();
+
+          // 检查文件大小限制
+          if (audioBytes.length > maxFileSize) {
+            final fileSizeMB = (audioBytes.length / (1024 * 1024))
+                .toStringAsFixed(2);
+            throw Exception('文件大小超过限制: $fileSizeMB MB');
+          }
+
+          // 创建临时文件
+          final tempDir = await getTemporaryDirectory();
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final tempFile = File(
+            '${tempDir.path}/test_audio_${timestamp}_$index.mp3',
+          );
+          await tempFile.writeAsBytes(audioBytes);
+          _tempFiles.add(tempFile);
+
+          // 生成唯一的文件名
+          final uniqueFileName = 'test_audio_${timestamp}_$index.mp3';
+
+          // 构建S3路径
+          final s3Path = S3PathHelper.getAudioPath(
+            userId,
+            taskId,
+            uniqueFileName,
+          );
+
+          // 上传文件到 S3
+          final uploadOperation = Amplify.Storage.uploadFile(
+            localFile: AWSFile.fromPath(tempFile.path),
+            path: StoragePath.fromString(s3Path),
+            options: StorageUploadFileOptions(
+              metadata: {
+                'fileType': 'audio',
+                'originalName': fileName,
+                'uploadTime': DateTime.now().toIso8601String(),
+                'uploadMethod': 'uploadFile',
+                'batchIndex': index.toString(),
+                'userId': userId,
+                'taskId': taskId,
+              },
+            ),
+          );
+
+          await uploadOperation.result;
+
+          // 返回上传的文件名（不含扩展名）
+          return uniqueFileName.substring(0, uniqueFileName.lastIndexOf('.'));
+        },
+      );
+
+      // 处理结果
+      int successCount = 0;
+      for (final result in results) {
+        if (result is Map && result.containsKey('error')) {
+          errors.add('${result['item']}: ${result['error']}');
+        } else if (result is String) {
+          uploadedFileNames.add(result);
+          successCount++;
+        }
+      }
+
+      // 严格成功判断：所有文件都必须上传成功
+      final isSuccess = successCount == sourceFileNames.length;
+
+      if (isSuccess) {
+        _uploadedFileNames = uploadedFileNames;
+        _isUploaded = true;
+        safePrint('UploadAndTranscribeTask: 所有文件上传成功');
+      } else {
+        await _cleanupTempFiles();
+        safePrint('UploadAndTranscribeTask: 上传失败，已清理临时文件');
+      }
+
+      return UploadResult(
+        success: isSuccess,
+        taskId: taskId,
+        uploadedFileNames: uploadedFileNames,
+        errors: errors,
+        duration: DateTime.now().difference(startTime),
+      );
+    } catch (e) {
+      await _cleanupTempFiles();
+      safePrint('UploadAndTranscribeTask: 上传异常: $e');
+      return UploadResult(
+        success: false,
+        taskId: taskId,
+        uploadedFileNames: [],
+        errors: [e.toString()],
+        duration: DateTime.now().difference(startTime),
+      );
+    }
+  }
+
+  // 步骤2：获取转录结果
+  Future<TranscriptionResult> getTranscriptionResults() async {
+    final startTime = DateTime.now();
+
+    // 检查前置条件
+    if (!_isUploaded || _uploadedFileNames.isEmpty) {
+      return TranscriptionResult(
+        success: false,
+        taskId: taskId,
+        transcripts: [],
+        mergedText: '',
+        savedFilePath: '',
+        errors: ['任务未完成上传或上传文件记录为空'],
+        duration: DateTime.now().difference(startTime),
+      );
+    }
+
+    try {
+      safePrint('UploadAndTranscribeTask: 开始获取转录结果...');
+
+      // 并行获取所有转录结果
+      final results = await _processFilesInParallel(
+        items: _uploadedFileNames,
+        processor: (uploadedFileName, index) async {
+          final transcriptFileName = '$uploadedFileName.json';
+          final transcriptPath = S3PathHelper.getTranscriptPath(
+            userId,
+            taskId,
+            transcriptFileName,
+          );
+
+          // 从 S3 下载转录结果文件
+          final downloadResult =
+              await Amplify.Storage.downloadData(
+                path: StoragePath.fromString(transcriptPath),
+              ).result;
+
+          // 解析 JSON 内容
+          final jsonString = String.fromCharCodes(downloadResult.bytes);
+          final Map<String, dynamic> transcriptionData = jsonDecode(jsonString);
+
+          // 提取转录文本
+          String transcriptText = '';
+          if (transcriptionData.containsKey('results') &&
+              transcriptionData['results'] != null &&
+              transcriptionData['results']['transcripts'] != null &&
+              transcriptionData['results']['transcripts'].isNotEmpty) {
+            transcriptText =
+                transcriptionData['results']['transcripts'][0]['transcript'] ??
+                '无转录文本';
+          } else {
+            transcriptText = '无法解析转录文本';
+          }
+
+          return TranscriptData(
+            fileName: uploadedFileName,
+            transcriptText: transcriptText,
+            fileSizeKB: (downloadResult.bytes.length / 1024).round(),
+          );
+        },
+      );
+
+      // 处理结果
+      final List<TranscriptData> transcripts = [];
+      final List<String> errors = [];
+
+      for (final result in results) {
+        if (result is Map && result.containsKey('error')) {
+          errors.add('${result['item']}: ${result['error']}');
+        } else if (result is TranscriptData) {
+          transcripts.add(result);
+        }
+      }
+
+      // 严格成功判断：所有转录结果都必须获取成功
+      final isSuccess = transcripts.length == _uploadedFileNames.length;
+
+      String mergedText = '';
+      String savedFilePath = '';
+
+      if (isSuccess) {
+        // 合并所有转录文本
+        mergedText = transcripts.map((t) => t.transcriptText).join('\n\n');
+
+        // 保存合并文本到文件
+        try {
+          final appDocDir = await getApplicationDocumentsDirectory();
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final file = File(
+            '${appDocDir.path}/merged_transcripts_$timestamp.txt',
+          );
+          await file.writeAsString(mergedText, encoding: utf8);
+          savedFilePath = file.path;
+          safePrint('UploadAndTranscribeTask: 合并文本已保存: $savedFilePath');
+        } catch (e) {
+          safePrint('UploadAndTranscribeTask: 保存合并文本失败: $e');
+        }
+
+        _isTranscribed = true;
+        safePrint('UploadAndTranscribeTask: 所有转录结果获取成功');
+      }
+
+      return TranscriptionResult(
+        success: isSuccess,
+        taskId: taskId,
+        transcripts: transcripts,
+        mergedText: mergedText,
+        savedFilePath: savedFilePath,
+        errors: errors,
+        duration: DateTime.now().difference(startTime),
+      );
+    } catch (e) {
+      safePrint('UploadAndTranscribeTask: 获取转录结果异常: $e');
+      return TranscriptionResult(
+        success: false,
+        taskId: taskId,
+        transcripts: [],
+        mergedText: '',
+        savedFilePath: '',
+        errors: [e.toString()],
+        duration: DateTime.now().difference(startTime),
+      );
+    }
+  }
+
+  // 步骤3：删除任务文件
+  Future<bool> deleteTaskFiles() async {
+    try {
+      safePrint('UploadAndTranscribeTask: 开始删除任务文件...');
+
+      // 构造任务文件夹路径前缀
+      final taskFolderPrefix = 'private/$userId/tasks/$taskId/';
+
+      // 列出所有匹配前缀的文件
+      final listResult =
+          await Amplify.Storage.list(
+            path: StoragePath.fromString(taskFolderPrefix),
+            options: StorageListOptions(
+              pageSize: 1000,
+              pluginOptions: S3ListPluginOptions(excludeSubPaths: false),
+            ),
+          ).result;
+
+      if (listResult.items.isEmpty) {
+        safePrint('UploadAndTranscribeTask: 没有文件需要删除');
+        await _cleanupTempFiles();
+        return true;
+      }
+
+      // 并行删除所有文件
+      int successCount = 0;
+      final deleteFutures = listResult.items.map((item) async {
+        try {
+          await Amplify.Storage.remove(
+            path: StoragePath.fromString(item.path),
+          ).result;
+          successCount++;
+          return true;
+        } catch (e) {
+          safePrint('UploadAndTranscribeTask: 删除文件失败: ${item.path} - $e');
+          return false;
+        }
+      });
+
+      await Future.wait(deleteFutures);
+      await _cleanupTempFiles();
+
+      safePrint(
+        'UploadAndTranscribeTask: 删除完成，成功删除 $successCount/${listResult.items.length} 个文件',
+      );
+      return successCount > 0;
+    } catch (e) {
+      safePrint('UploadAndTranscribeTask: 删除任务文件异常: $e');
+      await _cleanupTempFiles();
+      return false;
+    }
+  }
+
+  // 内部辅助方法：并行处理文件
+  Future<List<dynamic>> _processFilesInParallel({
+    required List<String> items,
+    required Future<dynamic> Function(String item, int index) processor,
+    int maxConcurrency = 8,
+  }) async {
+    final results = <dynamic>[];
+
+    for (int i = 0; i < items.length; i += maxConcurrency) {
+      final batch = items.skip(i).take(maxConcurrency).toList();
+      final batchIndices = List.generate(batch.length, (index) => i + index);
+
+      final batchFutures =
+          batch.asMap().entries.map((entry) async {
+            final item = entry.value;
+            final index = batchIndices[entry.key];
+
+            try {
+              return await processor(item, index);
+            } catch (error) {
+              safePrint('UploadAndTranscribeTask: 处理失败: $item - $error');
+              return {'error': error.toString(), 'item': item};
+            }
+          }).toList();
+
+      final batchResults = await Future.wait(batchFutures);
+      results.addAll(batchResults);
+    }
+
+    return results;
+  }
+
+  // 内部辅助方法：清理临时文件
+  Future<void> _cleanupTempFiles() async {
+    for (final tempFile in _tempFiles) {
+      if (await tempFile.exists()) {
+        try {
+          await tempFile.delete();
+          safePrint('UploadAndTranscribeTask: 临时文件已清理: ${tempFile.path}');
+        } catch (e) {
+          safePrint('UploadAndTranscribeTask: 清理临时文件失败: $e');
+        }
+      }
+    }
+    _tempFiles.clear();
+  }
+
+  // 状态查询方法
+  bool get isUploaded => _isUploaded;
+  bool get isTranscribed => _isTranscribed;
+  List<String> get uploadedFileNames => List.unmodifiable(_uploadedFileNames);
+}
+
+// 上传结果数据结构
+class UploadResult {
+  final bool success;
+  final String taskId;
+  final List<String> uploadedFileNames;
+  final List<String> errors;
+  final Duration duration;
+
+  const UploadResult({
+    required this.success,
+    required this.taskId,
+    required this.uploadedFileNames,
+    required this.errors,
+    required this.duration,
+  });
+}
+
+// 转录结果数据结构
+class TranscriptionResult {
+  final bool success;
+  final String taskId;
+  final List<TranscriptData> transcripts;
+  final String mergedText;
+  final String savedFilePath;
+  final List<String> errors;
+  final Duration duration;
+
+  const TranscriptionResult({
+    required this.success,
+    required this.taskId,
+    required this.transcripts,
+    required this.mergedText,
+    required this.savedFilePath,
+    required this.errors,
+    required this.duration,
+  });
+}
+
+// 转录数据结构
+class TranscriptData {
+  final String fileName;
+  final String transcriptText;
+  final int fileSizeKB;
+
+  const TranscriptData({
+    required this.fileName,
+    required this.transcriptText,
+    required this.fileSizeKB,
+  });
+}
+
 // 错误提示常量
 class ErrorMessages {
   static const Map<String, Map<String, String>> messages = {
@@ -153,6 +567,11 @@ class _TestAWSAmplifyS3TranscribeTestPageState
   bool _isLoading = false;
   List<String> _uploadedFileNames = []; // 保存所有上传的文件名（不含扩展名）
   String _currentTaskId = ''; // 当前任务ID
+
+  // 新增：任务管理
+  UploadAndTranscribeTask? _currentTask;
+  bool _canGetResults = false;
+  bool _canDelete = false;
 
   //支持多个音频文件测试。
   final List<String> _fileNames = ['record_test_audio.mp3', 'poem_audio.mp3'];
@@ -338,6 +757,287 @@ class _TestAWSAmplifyS3TranscribeTestPageState
     }
 
     return results;
+  }
+
+  // 新方法：步骤1 - 使用任务类上传文件
+  Future<void> _taskStep1Upload() async {
+    _updateState(isLoading: true, result: '正在创建新任务并上传文件...');
+
+    try {
+      // 创建新任务
+      _currentTask = UploadAndTranscribeTask(
+        userId: AppRuntimeContext().runtimeData.user.id,
+        sourceFileNames: _fileNames,
+      );
+
+      // 执行上传
+      final uploadResult = await _currentTask!.uploadFiles();
+
+      if (uploadResult.success) {
+        setState(() {
+          _canGetResults = true;
+          _canDelete = false;
+        });
+
+        _updateState(
+          isLoading: false,
+          result: _buildTaskUploadSuccessMessage(uploadResult),
+        );
+      } else {
+        // 上传失败，清理任务
+        _currentTask = null;
+        setState(() {
+          _canGetResults = false;
+          _canDelete = false;
+        });
+
+        _updateState(
+          isLoading: false,
+          result: _buildTaskUploadErrorMessage(uploadResult),
+        );
+      }
+    } catch (e) {
+      _currentTask = null;
+      setState(() {
+        _canGetResults = false;
+        _canDelete = false;
+      });
+
+      _updateState(isLoading: false, result: '❌ 创建任务失败!\n\n错误信息: $e');
+    }
+  }
+
+  // 新方法：步骤2 - 获取转录结果
+  Future<void> _taskStep2GetResults() async {
+    if (_currentTask == null) {
+      _updateState(isLoading: false, result: '❌ 没有活动的任务!\n\n请先执行步骤1上传文件。');
+      return;
+    }
+
+    _updateState(isLoading: true, result: '正在获取转录结果...');
+
+    try {
+      final transcriptionResult = await _currentTask!.getTranscriptionResults();
+
+      if (transcriptionResult.success) {
+        setState(() {
+          _canDelete = true;
+        });
+
+        _updateState(
+          isLoading: false,
+          result: _buildTaskTranscriptionSuccessMessage(transcriptionResult),
+        );
+      } else {
+        _updateState(
+          isLoading: false,
+          result: _buildTaskTranscriptionErrorMessage(transcriptionResult),
+        );
+      }
+    } catch (e) {
+      _updateState(isLoading: false, result: '❌ 获取转录结果失败!\n\n错误信息: $e');
+    }
+  }
+
+  // 新方法：步骤3 - 删除任务文件
+  Future<void> _taskStep3Delete() async {
+    if (_currentTask == null) {
+      _updateState(isLoading: false, result: '❌ 没有活动的任务!\n\n请先执行前面的步骤。');
+      return;
+    }
+
+    _updateState(isLoading: true, result: '正在删除任务文件...');
+
+    try {
+      final deleteSuccess = await _currentTask!.deleteTaskFiles();
+
+      // 清理任务状态
+      _currentTask = null;
+      setState(() {
+        _canGetResults = false;
+        _canDelete = false;
+      });
+
+      if (deleteSuccess) {
+        _updateState(
+          isLoading: false,
+          result: _buildTaskDeleteSuccessMessage(),
+        );
+      } else {
+        _updateState(isLoading: false, result: _buildTaskDeleteErrorMessage());
+      }
+    } catch (e) {
+      _updateState(isLoading: false, result: '❌ 删除任务文件失败!\n\n错误信息: $e');
+    }
+  }
+
+  // 构建任务上传成功消息
+  String _buildTaskUploadSuccessMessage(UploadResult result) {
+    final buffer = StringBuffer();
+    buffer.write('✅ 步骤1：文件上传完成!\n\n');
+    buffer.write('📊 上传统计:\n');
+    buffer.write('• 任务ID: ${result.taskId}\n');
+    buffer.write('• 总文件数: ${_fileNames.length}\n');
+    buffer.write('• 成功上传: ${result.uploadedFileNames.length}\n');
+    buffer.write('• 耗时: ${result.duration.inSeconds} 秒\n\n');
+
+    buffer.write('📁 上传文件:\n');
+    for (String fileName in result.uploadedFileNames) {
+      buffer.write('• $fileName\n');
+    }
+
+    buffer.write('\n🎯 任务详情:\n');
+    buffer.write('• 使用任务类封装业务逻辑\n');
+    buffer.write('• 并行上传，最大并发8个文件\n');
+    buffer.write('• 严格成功标准：全部成功才算成功\n');
+    buffer.write('• 自动生成唯一文件名避免冲突\n');
+    buffer.write('• S3路径: private/{userId}/tasks/{taskId}/audio/\n\n');
+
+    buffer.write('📋 下一步:\n');
+    buffer.write('• ⏳ 等待转录中...\n');
+    buffer.write('• 🔄 S3事件已触发Lambda启动转录任务\n');
+    buffer.write('• 📥 请手动点击"步骤2"获取转录结果\n');
+    buffer.write('• 💡 建议等待30-60秒后再获取结果\n');
+
+    return buffer.toString();
+  }
+
+  // 构建任务上传错误消息
+  String _buildTaskUploadErrorMessage(UploadResult result) {
+    final buffer = StringBuffer();
+    buffer.write('❌ 步骤1：文件上传失败!\n\n');
+    buffer.write('📊 上传统计:\n');
+    buffer.write('• 任务ID: ${result.taskId}\n');
+    buffer.write('• 总文件数: ${_fileNames.length}\n');
+    buffer.write('• 成功上传: ${result.uploadedFileNames.length}\n');
+    buffer.write(
+      '• 失败文件: ${_fileNames.length - result.uploadedFileNames.length}\n',
+    );
+    buffer.write('• 耗时: ${result.duration.inSeconds} 秒\n\n');
+
+    if (result.errors.isNotEmpty) {
+      buffer.write('❌ 错误信息:\n');
+      for (String error in result.errors) {
+        buffer.write('• $error\n');
+      }
+      buffer.write('\n');
+    }
+
+    buffer.write('💡 解决方案:\n');
+    buffer.write('• 任务已自动清理，请重新创建新任务\n');
+    buffer.write('• 检查网络连接和AWS权限配置\n');
+    buffer.write('• 确认文件大小不超过50MB限制\n');
+
+    return buffer.toString();
+  }
+
+  // 构建任务转录成功消息
+  String _buildTaskTranscriptionSuccessMessage(TranscriptionResult result) {
+    final buffer = StringBuffer();
+    buffer.write('✅ 步骤2：转录结果获取完成!\n\n');
+    buffer.write('📊 转录统计:\n');
+    buffer.write('• 任务ID: ${result.taskId}\n');
+    buffer.write('• 总文件数: ${result.transcripts.length}\n');
+    buffer.write('• 成功转录: ${result.transcripts.length}\n');
+    buffer.write('• 合并文本长度: ${result.mergedText.length} 字符\n');
+    buffer.write('• 耗时: ${result.duration.inSeconds} 秒\n\n');
+
+    buffer.write('🎯 转录结果:\n');
+    for (int i = 0; i < result.transcripts.length; i++) {
+      final transcript = result.transcripts[i];
+      buffer.write('\n--- 文件 ${i + 1}: ${transcript.fileName} ---\n');
+      buffer.write('📄 大小: ${transcript.fileSizeKB} KB\n');
+      buffer.write('📝 内容: 「${transcript.transcriptText}」\n');
+    }
+
+    buffer.write('\n📝 合并文本:\n');
+    buffer.write('「${result.mergedText}」\n\n');
+
+    if (result.savedFilePath.isNotEmpty) {
+      buffer.write('💾 文件已保存:\n');
+      buffer.write('• 路径: ${result.savedFilePath}\n\n');
+    }
+
+    buffer.write('✨ 任务优势:\n');
+    buffer.write('• 使用任务类封装，业务逻辑清晰\n');
+    buffer.write('• 并行获取，提升处理速度\n');
+    buffer.write('• 严格成功标准：全部成功才算成功\n');
+    buffer.write('• 自动合并文本并保存到文件\n\n');
+
+    buffer.write('📋 下一步:\n');
+    buffer.write('• 🗑️ 可以点击"步骤3"清理任务文件\n');
+    buffer.write('• 📄 转录文本已完整获取并合并\n');
+    buffer.write('• 💾 可以进行后续的文本处理工作\n');
+
+    return buffer.toString();
+  }
+
+  // 构建任务转录错误消息
+  String _buildTaskTranscriptionErrorMessage(TranscriptionResult result) {
+    final buffer = StringBuffer();
+    buffer.write('❌ 步骤2：转录结果获取失败!\n\n');
+    buffer.write('📊 转录统计:\n');
+    buffer.write('• 任务ID: ${result.taskId}\n');
+    buffer.write('• 成功获取: ${result.transcripts.length}\n');
+    buffer.write('• 预期文件数: 通过步骤1上传的文件数\n');
+    buffer.write('• 耗时: ${result.duration.inSeconds} 秒\n\n');
+
+    if (result.errors.isNotEmpty) {
+      buffer.write('❌ 错误信息:\n');
+      for (String error in result.errors) {
+        buffer.write('• $error\n');
+      }
+      buffer.write('\n');
+    }
+
+    buffer.write('💡 可能原因:\n');
+    buffer.write('• 转录任务尚未完成（需要更多时间）\n');
+    buffer.write('• Lambda函数执行失败\n');
+    buffer.write('• 音频文件格式不支持或质量问题\n');
+    buffer.write('• S3权限配置问题\n\n');
+
+    buffer.write('🔧 建议解决方案:\n');
+    buffer.write('• 等待更长时间后重试步骤2\n');
+    buffer.write('• 检查AWS CloudWatch日志\n');
+    buffer.write('• 确认Lambda函数是否正常执行\n');
+    buffer.write('• 任务状态保持，可以继续重试\n');
+
+    return buffer.toString();
+  }
+
+  // 构建任务删除成功消息
+  String _buildTaskDeleteSuccessMessage() {
+    return '✅ 步骤3：任务清理完成!\n\n'
+        '🗑️ 删除操作:\n'
+        '• 已删除S3中的所有任务文件\n'
+        '• 包括音频文件和转录结果\n'
+        '• 已清理本地临时文件\n'
+        '• 任务状态已重置\n\n'
+        '✨ 任务优势:\n'
+        '• 一键清理所有相关文件\n'
+        '• 自动管理资源生命周期\n'
+        '• 避免S3存储费用累积\n\n'
+        '📋 任务完成:\n'
+        '• 🎉 完整的转录流程已结束\n'
+        '• 🆕 可以创建新任务开始下一轮测试\n'
+        '• 💾 转录文本已保存到本地文件\n';
+  }
+
+  // 构建任务删除错误消息
+  String _buildTaskDeleteErrorMessage() {
+    return '⚠️ 步骤3：任务清理未完全成功!\n\n'
+        '🗑️ 删除状态:\n'
+        '• 部分文件可能删除失败\n'
+        '• 任务状态已重置\n'
+        '• 本地临时文件已清理\n\n'
+        '💡 说明:\n'
+        '• 删除失败不影响任务完成\n'
+        '• 可能是文件已被手动删除\n'
+        '• 或者网络连接问题\n\n'
+        '📋 后续操作:\n'
+        '• 任务流程已完成\n'
+        '• 可以创建新任务\n'
+        '• 如需彻底清理，可手动检查S3\n';
   }
 
   // 功能1：API Gateway测试
@@ -1329,6 +2029,59 @@ class _TestAWSAmplifyS3TranscribeTestPageState
                       backgroundColor: Colors.redAccent.shade700,
                       onPressed: _deleteTaskFolder,
                       loadingKeyword: '删除任务文件夹',
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // 分割线
+                    const Divider(color: Colors.grey),
+                    const SizedBox(height: 8),
+
+                    // 任务类测试区域标题
+                    const Text(
+                      "任务类测试 (分步执行)",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // 步骤1：上传文件
+                    _buildTestButton(
+                      label: '步骤1：上传文件并创建任务',
+                      loadingLabel: '上传中...',
+                      icon: Icons.upload,
+                      backgroundColor: Colors.blue.shade600,
+                      onPressed: _taskStep1Upload,
+                      loadingKeyword: '正在创建新任务',
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // 步骤2：获取转录结果
+                    _buildTestButton(
+                      label: '步骤2：获取转录结果',
+                      loadingLabel: '获取中...',
+                      icon: Icons.download,
+                      backgroundColor:
+                          _canGetResults ? Colors.green.shade600 : Colors.grey,
+                      onPressed: _canGetResults ? _taskStep2GetResults : null,
+                      loadingKeyword: '正在获取转录结果',
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // 步骤3：删除任务文件
+                    _buildTestButton(
+                      label: '步骤3：删除任务文件',
+                      loadingLabel: '删除中...',
+                      icon: Icons.delete_forever,
+                      backgroundColor:
+                          _canDelete ? Colors.red.shade600 : Colors.grey,
+                      onPressed: _canDelete ? _taskStep3Delete : null,
+                      loadingKeyword: '正在删除任务文件',
                     ),
 
                     const SizedBox(height: 8),
