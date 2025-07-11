@@ -80,17 +80,17 @@ class UserTokenAdapter extends TypeAdapter<UserToken> {
           typeId == other.typeId;
 }
 
-class HiveChatMessageAdapter extends TypeAdapter<HiveChatMessage> {
+class ChatMessageStorageAdapter extends TypeAdapter<ChatMessageStorage> {
   @override
   final int typeId = 3;
 
   @override
-  HiveChatMessage read(BinaryReader reader) {
+  ChatMessageStorage read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return HiveChatMessage(
+    return ChatMessageStorage(
       id: fields[0] as String,
       role: fields[1] as int,
       content: fields[2] as String,
@@ -100,7 +100,7 @@ class HiveChatMessageAdapter extends TypeAdapter<HiveChatMessage> {
   }
 
   @override
-  void write(BinaryWriter writer, HiveChatMessage obj) {
+  void write(BinaryWriter writer, ChatMessageStorage obj) {
     writer
       ..writeByte(5)
       ..writeByte(0)
@@ -121,7 +121,7 @@ class HiveChatMessageAdapter extends TypeAdapter<HiveChatMessage> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is HiveChatMessageAdapter &&
+      other is ChatMessageStorageAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -137,7 +137,7 @@ class ChatHistoryAdapter extends TypeAdapter<ChatHistory> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ChatHistory(
-      messages: (fields[0] as List).cast<HiveChatMessage>(),
+      messages: (fields[0] as List).cast<ChatMessageStorage>(),
     );
   }
 
@@ -265,23 +265,23 @@ class JournalFileStorageAdapter extends TypeAdapter<JournalFileStorage> {
           typeId == other.typeId;
 }
 
-class HiveTasksAdapter extends TypeAdapter<HiveTasks> {
+class TasksStorageAdapter extends TypeAdapter<TasksStorage> {
   @override
   final int typeId = 8;
 
   @override
-  HiveTasks read(BinaryReader reader) {
+  TasksStorage read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return HiveTasks(
+    return TasksStorage(
       taskJsonList: (fields[0] as List).cast<String>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, HiveTasks obj) {
+  void write(BinaryWriter writer, TasksStorage obj) {
     writer
       ..writeByte(1)
       ..writeByte(0)
@@ -294,28 +294,28 @@ class HiveTasksAdapter extends TypeAdapter<HiveTasks> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is HiveTasksAdapter &&
+      other is TasksStorageAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
 
-class HiveNotesAdapter extends TypeAdapter<HiveNotes> {
+class NotesStorageAdapter extends TypeAdapter<NotesStorage> {
   @override
   final int typeId = 9;
 
   @override
-  HiveNotes read(BinaryReader reader) {
+  NotesStorage read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return HiveNotes(
+    return NotesStorage(
       noteJsonList: (fields[0] as List).cast<String>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, HiveNotes obj) {
+  void write(BinaryWriter writer, NotesStorage obj) {
     writer
       ..writeByte(1)
       ..writeByte(0)
@@ -328,81 +328,7 @@ class HiveNotesAdapter extends TypeAdapter<HiveNotes> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is HiveNotesAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class UpdateDataTaskAdapter extends TypeAdapter<UpdateDataTask> {
-  @override
-  final int typeId = 10;
-
-  @override
-  UpdateDataTask read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return UpdateDataTask(
-      id: fields[0] as String,
-      status: fields[1] as int,
-      fileName: fields[2] as String,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, UpdateDataTask obj) {
-    writer
-      ..writeByte(3)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.status)
-      ..writeByte(2)
-      ..write(obj.fileName);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is UpdateDataTaskAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class UpdateDataTaskListAdapter extends TypeAdapter<UpdateDataTaskList> {
-  @override
-  final int typeId = 11;
-
-  @override
-  UpdateDataTaskList read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return UpdateDataTaskList(
-      tasks: (fields[0] as List).cast<UpdateDataTask>(),
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, UpdateDataTaskList obj) {
-    writer
-      ..writeByte(1)
-      ..writeByte(0)
-      ..write(obj.tasks);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is UpdateDataTaskListAdapter &&
+      other is NotesStorageAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
