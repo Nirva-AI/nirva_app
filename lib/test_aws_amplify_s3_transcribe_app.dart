@@ -95,16 +95,35 @@ class _TestAWSAmplifyS3TranscribeTestPageState
 
   // 新方法：步骤1 - 使用任务类上传文件
   Future<void> _taskStep1Upload() async {
-    _updateState(isLoading: true, result: '正在创建新任务并上传文件...');
+    _updateState(isLoading: true, result: '正在创建新任务并准备文件...');
 
     try {
       // 创建新任务
       _currentTask = UploadAndTranscribeTask(
         userId: AppRuntimeContext().runtimeData.user.id,
         assetFileNames: ['record_test_audio.mp3', 'poem_audio.mp3'],
+        pickedFileNames: [],
       );
 
-      // 执行上传
+      // 步骤1.1：准备文件
+      _updateState(isLoading: true, result: '正在准备文件...');
+      final readySuccess = await _currentTask!.prepareFiles();
+      if (!readySuccess) {
+        // 准备文件失败，清理任务
+        _currentTask = null;
+        setState(() {
+          _canGetResults = false;
+          _canDelete = false;
+        });
+        _updateState(
+          isLoading: false,
+          result: '❌ 文件准备失败!\n\n请检查文件是否存在或文件大小是否超过限制（50MB）。',
+        );
+        return;
+      }
+
+      // 步骤1.2：上传文件
+      _updateState(isLoading: true, result: '文件准备完成，正在上传到S3...');
       final uploadResult = await _currentTask!.uploadFiles();
 
       if (uploadResult.success) {
