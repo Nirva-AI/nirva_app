@@ -101,7 +101,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
       // 创建新任务
       _currentTask = UploadAndTranscribeTask(
         userId: AppRuntimeContext().runtimeData.user.id,
-        sourceFileNames: ['record_test_audio.mp3', 'poem_audio.mp3'],
+        assetFileNames: ['record_test_audio.mp3', 'poem_audio.mp3'],
       );
 
       // 执行上传

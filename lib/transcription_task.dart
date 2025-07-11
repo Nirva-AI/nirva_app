@@ -28,12 +28,12 @@ class S3PathHelper {
 /// 这个类封装了完整的音频文件上传和转录的业务流程：
 /// 1. 上传音频文件到S3
 /// 2. 获取转录结果
-/// 3. 清理任务文件
+/// 3. 清理任务文件，sourceFileNames
 class UploadAndTranscribeTask {
   // 核心属性
   final String taskId;
   final String userId;
-  final List<String> sourceFileNames;
+  final List<String> assetFileNames;
 
   // 内部状态
   List<String> _uploadedFileNames = [];
@@ -44,9 +44,45 @@ class UploadAndTranscribeTask {
   /// 构造函数
   ///
   /// [userId] 用户ID
-  /// [sourceFileNames] 源文件名列表
-  UploadAndTranscribeTask({required this.userId, required this.sourceFileNames})
+  /// [assetFileNames] 来自assets的源文件名列表，测试用。
+  UploadAndTranscribeTask({required this.userId, required this.assetFileNames})
     : taskId = 'task_${DateTime.now().millisecondsSinceEpoch}';
+
+  /// 获取源文件名列表
+  List<String> get sourceFileNames {
+    return List.unmodifiable(assetFileNames);
+  }
+
+  /// 从assets准备临时文件
+  ///
+  /// 将所有assetFileNames对应的文件从assets复制到应用文档目录
+  /// 返回创建的临时文件列表，用于后续上传
+  Future<List<File>> _prepareFilesFromAssets() async {
+    final List<File> preparedFiles = [];
+    final appDocDir = await getApplicationDocumentsDirectory();
+
+    for (int i = 0; i < assetFileNames.length; i++) {
+      final fileName = assetFileNames[i];
+
+      // 从assets加载音频文件
+      final ByteData audioData = await rootBundle.load('assets/$fileName');
+      final Uint8List audioBytes = audioData.buffer.asUint8List();
+
+      // 生成唯一的文件名
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final uniqueFileName = 'audio_${timestamp}_$i.mp3';
+
+      // 创建临时文件
+      final tempFile = File('${appDocDir.path}/$uniqueFileName');
+      await tempFile.writeAsBytes(audioBytes);
+
+      // 添加到管理列表和返回列表
+      _tempFiles.add(tempFile);
+      preparedFiles.add(tempFile);
+    }
+
+    return preparedFiles;
+  }
 
   /// 步骤1：上传文件到S3
   ///
@@ -56,7 +92,6 @@ class UploadAndTranscribeTask {
     final startTime = DateTime.now();
     final List<String> uploadedFileNames = [];
     final List<String> errors = [];
-    _tempFiles.clear();
 
     const int maxMbSize = 50;
     const int maxFileSize = maxMbSize * 1024 * 1024;
@@ -65,32 +100,25 @@ class UploadAndTranscribeTask {
       safePrint('UploadAndTranscribeTask: 开始上传文件...');
       safePrint('用户ID: $userId, 任务ID: $taskId');
 
+      // 从assets准备临时文件
+      final preparedFiles = await _prepareFilesFromAssets();
+
       // 并行上传所有文件
       final results = await _processFilesInParallel(
-        items: sourceFileNames,
-        processor: (fileName, index) async {
-          // 从 assets 加载音频文件
-          final ByteData audioData = await rootBundle.load('assets/$fileName');
-          final Uint8List audioBytes = audioData.buffer.asUint8List();
+        items: preparedFiles.map((file) => file.path).toList(),
+        processor: (filePath, index) async {
+          final file = preparedFiles[index];
 
           // 检查文件大小限制
+          final audioBytes = await file.readAsBytes();
           if (audioBytes.length > maxFileSize) {
             final fileSizeMB = (audioBytes.length / (1024 * 1024))
                 .toStringAsFixed(2);
             throw Exception('文件大小超过限制: $fileSizeMB MB');
           }
 
-          // 创建临时文件
-          final tempDir = await getTemporaryDirectory();
-          final timestamp = DateTime.now().millisecondsSinceEpoch;
-          final tempFile = File(
-            '${tempDir.path}/test_audio_${timestamp}_$index.mp3',
-          );
-          await tempFile.writeAsBytes(audioBytes);
-          _tempFiles.add(tempFile);
-
-          // 生成唯一的文件名
-          final uniqueFileName = 'test_audio_${timestamp}_$index.mp3';
+          // 获取已生成的唯一文件名
+          final uniqueFileName = file.path.split('/').last;
 
           // 构建S3路径
           final s3Path = S3PathHelper.getAudioPath(
@@ -101,12 +129,12 @@ class UploadAndTranscribeTask {
 
           // 上传文件到 S3
           final uploadOperation = Amplify.Storage.uploadFile(
-            localFile: AWSFile.fromPath(tempFile.path),
+            localFile: AWSFile.fromPath(file.path),
             path: StoragePath.fromString(s3Path),
             options: StorageUploadFileOptions(
               metadata: {
                 'fileType': 'audio',
-                'originalName': fileName,
+                'originalName': assetFileNames[index],
                 'uploadTime': DateTime.now().toIso8601String(),
                 'uploadMethod': 'uploadFile',
                 'batchIndex': index.toString(),
