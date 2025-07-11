@@ -32,10 +32,6 @@ class MyHiveManager {
   static const String _notesBox = 'notesBox';
   static const String _notesKey = 'notes';
 
-  // 更新数据任务相关常量
-  static const String _updateDataTasksBox = 'updateDataTasksBox';
-  static const String _updateDataTasksKey = 'updateDataTasks';
-
   Future<void> _initialize() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
@@ -55,7 +51,6 @@ class MyHiveManager {
       Hive.deleteBoxFromDisk(_journalFilesBox),
       Hive.deleteBoxFromDisk(_tasksBox),
       Hive.deleteBoxFromDisk(_notesBox),
-      Hive.deleteBoxFromDisk(_updateDataTasksBox), // 添加这一行
     ]);
 
     // 这两个操作需要顺序执行，不能并行化
@@ -71,9 +66,8 @@ class MyHiveManager {
       _initUserToken(),
       _initChatHistory(),
       _initJournalSystem(),
-      _initTasks(), // 添加任务存储初始化
-      _initNotes(), // 添加笔记存储初始化
-      _initUpdateDataTasks(), // 添加更新数据任务存储初始化
+      _initTasks(),
+      _initNotes(),
     ]);
   }
 
@@ -102,7 +96,7 @@ class MyHiveManager {
   // 初始化聊天历史 Box
   Future<void> _initChatHistory() async {
     if (!Hive.isAdapterRegistered(3)) {
-      Hive.registerAdapter(HiveChatMessageAdapter());
+      Hive.registerAdapter(ChatMessageStorageAdapter());
     }
     if (!Hive.isAdapterRegistered(4)) {
       Hive.registerAdapter(ChatHistoryAdapter());
@@ -137,33 +131,20 @@ class MyHiveManager {
   // 添加任务存储的初始化方法
   Future<void> _initTasks() async {
     if (!Hive.isAdapterRegistered(8)) {
-      Hive.registerAdapter(HiveTasksAdapter());
+      Hive.registerAdapter(TasksStorageAdapter());
     }
     if (!Hive.isBoxOpen(_tasksBox)) {
-      await Hive.openBox<HiveTasks>(_tasksBox);
+      await Hive.openBox<TasksStorage>(_tasksBox);
     }
   }
 
   // 添加笔记存储的初始化方法
   Future<void> _initNotes() async {
     if (!Hive.isAdapterRegistered(9)) {
-      Hive.registerAdapter(HiveNotesAdapter());
+      Hive.registerAdapter(NotesStorageAdapter());
     }
     if (!Hive.isBoxOpen(_notesBox)) {
-      await Hive.openBox<HiveNotes>(_notesBox);
-    }
-  }
-
-  // 初始化更新数据任务的 Box
-  Future<void> _initUpdateDataTasks() async {
-    if (!Hive.isAdapterRegistered(10)) {
-      Hive.registerAdapter(UpdateDataTaskAdapter());
-    }
-    if (!Hive.isAdapterRegistered(11)) {
-      Hive.registerAdapter(UpdateDataTaskListAdapter());
-    }
-    if (!Hive.isBoxOpen(_updateDataTasksBox)) {
-      await Hive.openBox<UpdateDataTaskList>(_updateDataTasksBox);
+      await Hive.openBox<NotesStorage>(_notesBox);
     }
   }
 
@@ -212,7 +193,7 @@ class MyHiveManager {
 
     // 获取任务数据
     if (Hive.isBoxOpen(_tasksBox)) {
-      final tasksBox = Hive.box<HiveTasks>(_tasksBox);
+      final tasksBox = Hive.box<TasksStorage>(_tasksBox);
       final tasks = tasksBox.get(_tasksKey);
       data['tasks'] = tasks;
       if (tasks != null) {
@@ -222,21 +203,9 @@ class MyHiveManager {
 
     // 获取笔记数据
     if (Hive.isBoxOpen(_notesBox)) {
-      final notesBox = Hive.box<HiveNotes>(_notesBox);
+      final notesBox = Hive.box<NotesStorage>(_notesBox);
       final notes = notesBox.get(_notesKey);
       data['notes'] = notes;
-    }
-
-    // 获取更新数据任务数据
-    if (Hive.isBoxOpen(_updateDataTasksBox)) {
-      final updateDataTasksBox = Hive.box<UpdateDataTaskList>(
-        _updateDataTasksBox,
-      );
-      final updateDataTasks = updateDataTasksBox.get(_updateDataTasksKey);
-      data['updateDataTasks'] = updateDataTasks;
-      if (updateDataTasks != null) {
-        data['updateDataTasksCount'] = updateDataTasks.tasks.length;
-      }
     }
 
     return data;
@@ -298,7 +267,7 @@ class MyHiveManager {
   Future<void> saveChatHistory(List<ChatMessage> messages) async {
     final box = Hive.box<ChatHistory>(_chatHistoryBox);
     final hiveMessages =
-        messages.map((msg) => HiveChatMessage.fromChatMessage(msg)).toList();
+        messages.map((msg) => ChatMessageStorage.fromChatMessage(msg)).toList();
     await box.put(_chatHistoryKey, ChatHistory(messages: hiveMessages));
   }
 
@@ -440,7 +409,7 @@ class MyHiveManager {
 
   // 获取所有任务
   List<Task> getAllTasks() {
-    final box = Hive.box<HiveTasks>(_tasksBox);
+    final box = Hive.box<TasksStorage>(_tasksBox);
     final hiveTasks = box.get(_tasksKey);
     if (hiveTasks == null) {
       return [];
@@ -450,15 +419,15 @@ class MyHiveManager {
 
   // 保存任务列表
   Future<void> saveTasks(List<Task> tasks) async {
-    final box = Hive.box<HiveTasks>(_tasksBox);
+    final box = Hive.box<TasksStorage>(_tasksBox);
     final taskJsonList =
         tasks.map((task) => jsonEncode(task.toJson())).toList();
-    await box.put(_tasksKey, HiveTasks(taskJsonList: taskJsonList));
+    await box.put(_tasksKey, TasksStorage(taskJsonList: taskJsonList));
   }
 
   // 获取所有笔记
   List<Note> getAllNotes() {
-    final box = Hive.box<HiveNotes>(_notesBox);
+    final box = Hive.box<NotesStorage>(_notesBox);
     final hiveNotes = box.get(_notesKey);
     if (hiveNotes == null) {
       return [];
@@ -468,60 +437,9 @@ class MyHiveManager {
 
   // 保存笔记列表
   Future<void> saveNotes(List<Note> notes) async {
-    final box = Hive.box<HiveNotes>(_notesBox);
+    final box = Hive.box<NotesStorage>(_notesBox);
     final noteJsonList =
         notes.map((note) => jsonEncode(note.toJson())).toList();
-    await box.put(_notesKey, HiveNotes(noteJsonList: noteJsonList));
-  }
-
-  // 获取所有更新数据任务
-  List<UpdateDataTask> getAllUpdateDataTasks() {
-    final box = Hive.box<UpdateDataTaskList>(_updateDataTasksBox);
-    final updateDataTaskList = box.get(_updateDataTasksKey);
-    if (updateDataTaskList == null) {
-      return [];
-    }
-    return updateDataTaskList.tasks;
-  }
-
-  // 保存更新数据任务
-  Future<void> saveUpdateDataTasks(List<UpdateDataTask> tasks) async {
-    final box = Hive.box<UpdateDataTaskList>(_updateDataTasksBox);
-    await box.put(_updateDataTasksKey, UpdateDataTaskList(tasks: tasks));
-  }
-
-  // 添加或更新更新数据任务
-  Future<bool> addUpdateDataTask(UpdateDataTask task) async {
-    final updateDataTaskList = getAllUpdateDataTasks();
-    for (var existingTask in updateDataTaskList) {
-      if (existingTask.id == task.id ||
-          existingTask.fileName == task.fileName) {
-        return false; // 重复的任务，返回 false
-      }
-    }
-    updateDataTaskList.add(task);
-    await saveUpdateDataTasks(updateDataTaskList);
-    return true;
-  }
-
-  // 删除更新数据任务
-  Future<void> deleteUpdateDataTask(String id, String fileName) async {
-    final updateDataTaskList = getAllUpdateDataTasks();
-    updateDataTaskList.removeWhere(
-      (task) => task.id == id || task.fileName == fileName,
-    );
-    await saveUpdateDataTasks(updateDataTaskList);
-  }
-
-  //
-  Future<void> updateUpdateDataTaskStatus(String id, int status) async {
-    final updateDataTaskList = getAllUpdateDataTasks();
-    for (var task in updateDataTaskList) {
-      if (task.id == id) {
-        task.status = status; // 更新任务状态
-        break;
-      }
-    }
-    await saveUpdateDataTasks(updateDataTaskList);
+    await box.put(_notesKey, NotesStorage(noteJsonList: noteJsonList));
   }
 }

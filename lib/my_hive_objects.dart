@@ -35,7 +35,7 @@ class UserToken extends HiveObject {
 
 // ChatMessage 在 Hive 中的存储模型
 @HiveType(typeId: 3)
-class HiveChatMessage {
+class ChatMessageStorage {
   @HiveField(0)
   String id;
 
@@ -51,7 +51,7 @@ class HiveChatMessage {
   @HiveField(4)
   List<String>? tags;
 
-  HiveChatMessage({
+  ChatMessageStorage({
     required this.id,
     required this.role,
     required this.content,
@@ -71,8 +71,8 @@ class HiveChatMessage {
   }
 
   // 从 API 模型的 ChatMessage 创建 Hive 模型
-  static HiveChatMessage fromChatMessage(ChatMessage message) {
-    return HiveChatMessage(
+  static ChatMessageStorage fromChatMessage(ChatMessage message) {
+    return ChatMessageStorage(
       id: message.id,
       role: message.role,
       content: message.content,
@@ -87,7 +87,7 @@ class HiveChatMessage {
 @HiveType(typeId: 4)
 class ChatHistory extends HiveObject {
   @HiveField(0)
-  List<HiveChatMessage> messages;
+  List<ChatMessageStorage> messages;
 
   ChatHistory({required this.messages});
 }
@@ -195,11 +195,11 @@ class JournalFileStorage extends HiveObject {
 
 // 任务列表的 Hive 存储结构
 @HiveType(typeId: 8)
-class HiveTasks extends HiveObject {
+class TasksStorage extends HiveObject {
   @HiveField(0)
   List<String> taskJsonList;
 
-  HiveTasks({required this.taskJsonList});
+  TasksStorage({required this.taskJsonList});
 
   // 获取所有任务
   List<Task> toTasks() {
@@ -211,11 +211,11 @@ class HiveTasks extends HiveObject {
 
 // 笔记列表的 Hive 存储结构
 @HiveType(typeId: 9)
-class HiveNotes extends HiveObject {
+class NotesStorage extends HiveObject {
   @HiveField(0)
   List<String> noteJsonList;
 
-  HiveNotes({required this.noteJsonList});
+  NotesStorage({required this.noteJsonList});
 
   // 获取所有笔记
   List<Note> toNotes() {
@@ -223,32 +223,4 @@ class HiveNotes extends HiveObject {
         .map((jsonString) => Note.fromJson(jsonDecode(jsonString)))
         .toList();
   }
-}
-
-// 更新数据任务
-@HiveType(typeId: 10)
-class UpdateDataTask extends HiveObject {
-  @HiveField(0)
-  String id;
-
-  @HiveField(1)
-  int status;
-
-  @HiveField(2)
-  String fileName; // 可选字段，用于存储文件名
-
-  UpdateDataTask({
-    required this.id,
-    required this.status,
-    required this.fileName,
-  });
-}
-
-// 更新数据任务列表
-@HiveType(typeId: 11)
-class UpdateDataTaskList extends HiveObject {
-  @HiveField(0)
-  List<UpdateDataTask> tasks;
-
-  UpdateDataTaskList({required this.tasks});
 }

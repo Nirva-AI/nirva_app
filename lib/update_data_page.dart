@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/transcribe_file_name.dart';
 import 'package:nirva_app/apis.dart';
-import 'package:nirva_app/my_hive_objects.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -17,32 +15,9 @@ class UpdateDataPage extends StatefulWidget {
 }
 
 class _UpdateDataPageState extends State<UpdateDataPage> {
-  List<UpdateDataTask> _tasks = [];
-
   @override
   void initState() {
     super.initState();
-    _loadAppFiles();
-    _loadTasks();
-  }
-
-  // 加载更新数据任务列表
-  void _loadTasks() {
-    setState(() {
-      _tasks = AppRuntimeContext().hiveManager.getAllUpdateDataTasks();
-    });
-  }
-
-  // 加载并过滤应用文档目录中的文件
-  Future<void> _loadAppFiles() async {
-    try {
-      if (!mounted) return;
-
-      setState(() {});
-    } catch (e) {
-      Logger().d('Error loading app files: $e');
-      _showDialog('Failed to load app files');
-    }
   }
 
   // 处理文件选择流程
@@ -60,10 +35,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
       // 3. 处理文件内容
       await _processFileContent(fileName, content);
-
-      // 4. 刷新UI
-      await _loadAppFiles();
-      _loadTasks();
     } catch (e) {
       Logger().d('Error in file selection process: $e');
       _showDialog('Error processing file: $e');
@@ -130,7 +101,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     // 3. 显示结果
     if (success) {
-      //_showSnackBar('File processed successfully');
     } else {
       _showDialog('Failed to process file');
     }
@@ -169,15 +139,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     if (backgroundTaskResponse != null) {
       Logger().d('Data analysis task created');
 
-      // 添加任务到本地存储
-      AppRuntimeContext().hiveManager.addUpdateDataTask(
-        UpdateDataTask(
-          id: backgroundTaskResponse.task_id,
-          fileName: fileName,
-          status: 0, // 处理中
-        ),
-      );
-
       return true;
     } else {
       Logger().d('Data analysis failed');
@@ -186,6 +147,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   }
 
   // 获取分析结果
+  // ignore: unused_element
   Future<void> _getTaskResults(String taskId, String fileName) async {
     try {
       // 解析文件名获取日期信息
@@ -199,13 +161,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       final journalFile = await APIs.getJournalFile(dateKey);
 
       if (journalFile != null) {
-        // 更新任务状态为已完成
-        await AppRuntimeContext().hiveManager.updateUpdateDataTaskStatus(
-          taskId,
-          1,
-        );
-        _loadTasks();
-        //_showSnackBar('Results retrieved successfully');
       } else {
         _showDialog('Failed to retrieve results');
       }
@@ -216,19 +171,14 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   }
 
   // 删除任务
+  // ignore: unused_element
   Future<void> _deleteTask(String id, String fileName) async {
-    try {
-      await AppRuntimeContext().hiveManager.deleteUpdateDataTask(id, fileName);
-      _loadTasks();
-      //_showSnackBar('Task deleted: $fileName');
-    } catch (e) {
+    try {} catch (e) {
       Logger().d('Error deleting task: $e');
       _showDialog('Failed to delete task');
     }
   }
 
-  // 更轻量级的模态提示 - 自动消失
-  // 显示提示信息 - 使用模态对话框替代SnackBar
   void _showDialog(String message) {
     if (!mounted) return;
 
@@ -251,112 +201,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     );
   }
 
-  // 构建任务状态指示器
-  Widget _buildStatusIndicator(int status) {
-    String statusText;
-    Color statusColor;
-
-    switch (status) {
-      case 0:
-        statusText = 'processing';
-        statusColor = Colors.blue;
-        break;
-      case 1:
-        statusText = 'completed';
-        statusColor = Colors.green;
-        break;
-      case -1:
-        statusText = 'failed';
-        statusColor = Colors.red;
-        break;
-      default:
-        statusText = 'unknown';
-        statusColor = Colors.grey;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: statusColor.withAlpha(
-          (0.2 * 255).round(),
-        ), // 修改此行，使用withAlpha替代withOpacity
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: statusColor),
-      ),
-      child: Text(
-        statusText,
-        style: TextStyle(color: statusColor, fontSize: 12),
-      ),
-    );
-  }
-
-  // 构建任务卡片
-  Widget _buildTaskCard(UpdateDataTask task) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      elevation: 2.0,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Filename: ${task.fileName}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Text('Task ID: ', style: TextStyle(fontSize: 12)),
-                Expanded(
-                  child: Text(
-                    task.id,
-                    style: const TextStyle(fontSize: 12),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildStatusIndicator(task.status),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      tooltip: 'View Results',
-                      onPressed: () => _getTaskResults(task.id, task.fileName),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      tooltip: 'Delete Task',
-                      onPressed: () => _deleteTask(task.id, task.fileName),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 构建空任务提示
-  Widget _buildEmptyTasksMessage() {
-    return const Center(
-      child: Text(
-        'No tasks yet.\nClick the "+" button in the top right to add data',
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -370,21 +214,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: _handleFileSelection,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 3,
-            child:
-                _tasks.isEmpty
-                    ? _buildEmptyTasksMessage()
-                    : ListView.builder(
-                      itemCount: _tasks.length,
-                      itemBuilder:
-                          (context, index) => _buildTaskCard(_tasks[index]),
-                    ),
           ),
         ],
       ),
