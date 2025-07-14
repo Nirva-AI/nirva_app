@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
+import 'package:nirva_app/providers/tasks_provider.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -27,6 +28,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => JournalFilesProvider()),
+        ChangeNotifierProvider(create: (_) => TasksProvider()),
       ],
       child: const MainApp(),
     ),

@@ -4,6 +4,7 @@ import 'package:nirva_app/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
+import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
@@ -43,6 +44,10 @@ class _SplashScreenState extends State<SplashScreen> {
         listen: false,
       );
       AppRuntimeContext().setJournalFilesProvider(journalFilesProvider);
+
+      // 初始化TasksProvider
+      final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
+      AppRuntimeContext().setTasksProvider(tasksProvider);
 
       // 执行数据初始化
       await _setupHiveStorage();
@@ -178,7 +183,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // 任务列表
     final retrievedTasks = AppRuntimeContext().hiveManager.getAllTasks();
-    AppRuntimeContext().runtimeData.tasks.value = retrievedTasks;
+    AppRuntimeContext().tasksProvider.setupTasks(retrievedTasks);
 
     //notes
     final retrievedNotes = AppRuntimeContext().hiveManager.getAllNotes();

@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.checklist),
               onPressed: () {
                 debugPrint('to-do list');
-                AppRuntimeContext().runtimeData.clearCompletedTasks();
+                AppRuntimeContext().tasksProvider.clearCompletedTasks();
                 _showToDoList(context);
               },
             ),
