@@ -2,6 +2,7 @@
 import 'package:nirva_app/runtime_data.dart';
 import 'package:nirva_app/my_hive_manager.dart';
 import 'package:nirva_app/url_configuration.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
@@ -45,6 +46,9 @@ class AppRuntimeContext {
   // URL 配置实例
   final URLConfiguration _urlConfig = URLConfiguration();
 
+  // JournalFiles Provider 引用
+  JournalFilesProvider? _journalFilesProvider;
+
   // 用于基础app服务的 Dio 实例
   final Dio _dio = Dio(
       BaseOptions(
@@ -79,6 +83,16 @@ class AppRuntimeContext {
     return _dio;
   }
 
+  // 设置JournalFilesProvider
+  void setJournalFilesProvider(JournalFilesProvider provider) {
+    _journalFilesProvider = provider;
+  }
+
+  // 根据日期获取日记文件
+  JournalFile? getJournalFileByDate(DateTime date) {
+    return _journalFilesProvider?.getJournalFileByDate(date);
+  }
+
   //
   DateTime get selectedDateTime {
     return _selectedDateTime;
@@ -106,13 +120,17 @@ class AppRuntimeContext {
 
   //
   void addJournalFile(JournalFile journalFile) {
-    _runtimeData.setupJournalFiles(journalFiles + [journalFile]);
+    if (_journalFilesProvider != null) {
+      _journalFilesProvider!.setupJournalFiles(journalFiles + [journalFile]);
+    }
     _onActiveJournalFile();
   }
 
   //
   void initializeJournalFiles(List<JournalFile> files) {
-    _runtimeData.setupJournalFiles(files);
+    if (_journalFilesProvider != null) {
+      _journalFilesProvider!.setupJournalFiles(files);
+    }
     _onActiveJournalFile();
   }
 
@@ -130,7 +148,13 @@ class AppRuntimeContext {
   //
   List<JournalFile> get journalFiles {
     // 获取所有的日记文件
-    return _runtimeData.journalFiles.value;
+    return _journalFilesProvider?.journalFiles ?? [];
+  }
+
+  //
+  List<Dashboard> get dashboards {
+    // 获取所有的仪表板
+    return _journalFilesProvider?.dashboards ?? [];
   }
 
   //

@@ -7,12 +7,10 @@ import 'package:nirva_app/utils.dart';
 import 'dart:convert';
 
 // 填充测试数据的类。
-class TestData {
+class MyTest {
   static final random = Random();
   //
   static Future<void> initializeTestData() async {
-    AppRuntimeContext.clear();
-
     // 添加用户信息, 目前必须和服务器对上，否则无法登录。
     AppRuntimeContext().runtimeData.user = User(
       id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
@@ -22,18 +20,14 @@ class TestData {
     );
 
     //这里读取日记。
-    // await loadTestJournalFile(
-    //   'assets/analyze_result_nirva-2025-04-19-00.txt.json',
-    //   DateTime(2025, 4, 19),
-    // );
-    // await loadTestJournalFile(
-    //   'assets/analyze_result_nirva-2025-05-09-00.txt.json',
-    //   DateTime(2025, 5, 9),
-    // );
-
-    //AppRuntimeContext().selectDateTime(DateTime(2025, 4, 19));
-    //AppRuntimeContext().selectDateTime(DateTime(2025, 5, 9));
-    AppRuntimeContext().selectDateTime(DateTime.now());
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-04-19-00.txt.json',
+      DateTime(2025, 4, 19),
+    );
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-05-09-00.txt.json',
+      DateTime(2025, 5, 9),
+    );
   }
 
   // 加载测试日记文件

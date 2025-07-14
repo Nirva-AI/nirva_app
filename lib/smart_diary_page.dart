@@ -1,7 +1,9 @@
 //import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/event_card.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/quote_carousel.dart';
 import 'package:nirva_app/week_calendar_widget.dart';
 import 'package:nirva_app/month_calendar_page.dart';
@@ -28,39 +30,46 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 示例：标记特定日期为红色
-    Set<DateTime> journalDates = {};
-    var allJournalFiles = AppRuntimeContext().journalFiles;
-    for (var file in allJournalFiles) {
-      DateTime date = DateTime.parse(file.time_stamp);
-      journalDates.add(date);
-    }
+    return Consumer<JournalFilesProvider>(
+      builder: (context, journalProvider, child) {
+        // 示例：标记特定日期为红色
+        Set<DateTime> journalDates = {};
+        var allJournalFiles = journalProvider.journalFiles;
+        for (var file in allJournalFiles) {
+          DateTime date = DateTime.parse(file.time_stamp);
+          journalDates.add(date);
+        }
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 顶部引言卡片轮播
-          Padding(padding: const EdgeInsets.all(16.0), child: QuoteCarousel()),
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 顶部引言卡片轮播
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: QuoteCarousel(),
+              ),
 
-          // 添加日期标题栏组件
-          _buildDateHeader(),
+              // 添加日期标题栏组件
+              _buildDateHeader(),
 
-          // 周日历组件替代原来的日期标题
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: WeekCalendarWidget(
-              focusedDay: _focusedDay,
-              selectedDay: _selectedDay,
-              onDaySelected: _updateSelectedDay,
-              redMarkedDays: journalDates, // 传入需要标红的日期
-            ),
+              // 周日历组件替代原来的日期标题
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: WeekCalendarWidget(
+                  focusedDay: _focusedDay,
+                  selectedDay: _selectedDay,
+                  onDaySelected: _updateSelectedDay,
+                  redMarkedDays: journalDates, // 传入需要标红的日期
+                ),
+              ),
+
+              // 动态展示日记条目
+              _buildEventList(AppRuntimeContext().currentJournalFile.events),
+            ],
           ),
-
-          // 动态展示日记条目
-          _buildEventList(AppRuntimeContext().currentJournalFile.events),
-        ],
-      ),
+        );
+      },
     );
   }
 

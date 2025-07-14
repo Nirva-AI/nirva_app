@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
-import 'package:nirva_app/test_data.dart';
 //import 'package:nirva_app/test_chat_app.dart';
 //import 'package:nirva_app/test_graph_view_app.dart';
 //import 'package:nirva_app/test_calendar_app.dart';
@@ -21,7 +22,15 @@ void main() async {
 
   // 这里必须一起调用。
   await _initializeApp(); // 执行异步操作，例如加载配置文件
-  runApp(const MainApp()); // 运行核心应用
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => JournalFilesProvider()),
+      ],
+      child: const MainApp(),
+    ),
+  );
 
   //如果需要测试应用，可以取消下面的注释，下面会进入测试应用，隔离主应用进行专项测试
   //runApp(TestChatApp());
@@ -38,44 +47,11 @@ void main() async {
 }
 
 Future<void> _initializeApp() async {
-  // 这句是测试的，清空之前的数据
-  //await AppRuntimeContext().hiveManager.deleteFromDisk();
+  // 初始化 Amplify
+  await _configureAmplify();
 
   // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
   await AppRuntimeContext().hiveManager.initializeAdapters();
-
-  // 填充测试数据。
-  await TestData.initializeTestData();
-
-  // 正式步骤：初始初始化 Hive 存储。
-  await _setupHiveStorage();
-
-  // 初始化 Amplify
-  await _configureAmplify();
-}
-
-Future<void> _setupHiveStorage() async {
-  // 喜爱的日记数据
-  AppRuntimeContext().runtimeData.favorites.value =
-      AppRuntimeContext().hiveManager.getFavoritesIds();
-
-  // 对话列表
-  final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();
-  AppRuntimeContext().runtimeData.chatHistory.value =
-      storageChatHistory; // 清空之前的聊天记录
-
-  // 任务列表
-  final retrievedTasks = AppRuntimeContext().hiveManager.getAllTasks();
-  AppRuntimeContext().runtimeData.tasks.value = retrievedTasks;
-
-  //notes
-  final retrievedNotes = AppRuntimeContext().hiveManager.getAllNotes();
-  AppRuntimeContext().runtimeData.notes.value = retrievedNotes;
-
-  //journal files
-  AppRuntimeContext().initializeJournalFiles(
-    AppRuntimeContext().hiveManager.retrieveJournalFiles(),
-  );
 }
 
 Future<void> _configureAmplify() async {

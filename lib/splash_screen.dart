@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-//import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
+import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
 
@@ -44,6 +47,24 @@ class _SplashScreenState extends State<SplashScreen> {
       Logger().e('登录流程出现错误: $e');
     }
 
+    // 清空AppRuntimeContext（在设置Provider之前）
+    AppRuntimeContext.clear();
+
+    // 初始化JournalFilesProvider - 添加mounted检查以避免跨async间隙使用BuildContext
+    if (mounted) {
+      final journalFilesProvider = Provider.of<JournalFilesProvider>(
+        context,
+        listen: false,
+      );
+      AppRuntimeContext().setJournalFilesProvider(journalFilesProvider);
+    }
+
+    // 执行数据初始化（从main.dart移动过来）
+    await _setupHiveStorage();
+
+    // 设置初始选中日期（从TestData移动过来，确保在journalFiles加载后执行）
+    AppRuntimeContext().selectDateTime(DateTime.now());
+
     // 计算剩余时间
     final int elapsed = stopwatch.elapsedMilliseconds;
     final int remainingTime = minDuration - elapsed;
@@ -84,6 +105,37 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  // 数据初始化方法（从main.dart移动过来）
+  Future<void> _setupHiveStorage() async {
+    // 在开始数据初始化之前清空上下文，但要在Provider设置之后
+    // 注意：不能在这里调用AppRuntimeContext.clear()，因为会清空已设置的Provider
+
+    // 填充测试数据。
+    await MyTest.initializeTestData();
+
+    // 喜爱的日记数据
+    AppRuntimeContext().runtimeData.favorites.value =
+        AppRuntimeContext().hiveManager.getFavoritesIds();
+
+    // 对话列表
+    final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();
+    AppRuntimeContext().runtimeData.chatHistory.value =
+        storageChatHistory; // 清空之前的聊天记录
+
+    // 任务列表
+    final retrievedTasks = AppRuntimeContext().hiveManager.getAllTasks();
+    AppRuntimeContext().runtimeData.tasks.value = retrievedTasks;
+
+    //notes
+    final retrievedNotes = AppRuntimeContext().hiveManager.getAllNotes();
+    AppRuntimeContext().runtimeData.notes.value = retrievedNotes;
+
+    //journal files
+    AppRuntimeContext().initializeJournalFiles(
+      AppRuntimeContext().hiveManager.retrieveJournalFiles(),
     );
   }
 
