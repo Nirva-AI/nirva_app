@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 //import 'package:nirva_app/message.dart';
 import 'package:nirva_app/apis.dart';
-import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/api_models.dart';
+import 'package:nirva_app/providers/chat_history_provider.dart';
 
 class AssistantChatPage extends StatefulWidget {
   final TextEditingController textController;
@@ -79,17 +80,16 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
       body: Column(
         children: [
           Expanded(
-            child: ValueListenableBuilder<List<ChatMessage>>(
-              valueListenable: AppRuntimeContext().runtimeData.chatHistory,
-              builder: (context, chatMessagesValue, _) {
+            child: Consumer<ChatHistoryProvider>(
+              builder: (context, chatHistoryProvider, child) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();
                 });
                 return ListView.builder(
                   controller: _scrollController,
-                  itemCount: chatMessagesValue.length,
+                  itemCount: chatHistoryProvider.chatHistory.length,
                   itemBuilder: (context, index) {
-                    final message = chatMessagesValue[index];
+                    final message = chatHistoryProvider.chatHistory[index];
                     final isUser = message.role == MessageRole.human;
                     return Padding(
                       padding: const EdgeInsets.symmetric(

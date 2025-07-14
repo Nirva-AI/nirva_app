@@ -290,7 +290,7 @@ class APIs {
         content: content,
         time_stamp: JournalFile.dateTimeToKey(DateTime.now()),
       ),
-      chat_history: appRuntimeContext.runtimeData.chatHistory.value,
+      chat_history: appRuntimeContext.chatHistoryProvider.chatHistory,
     );
 
     // 添加详细日志，查看完整请求体
@@ -310,14 +310,14 @@ class APIs {
 
     final chatResponse = ChatActionResponse.fromJson(response.data!);
     Logger().d('Chat action response: ${jsonEncode(chatResponse.toJson())}');
-    appRuntimeContext.runtimeData.addChatMessages([
+    appRuntimeContext.chatHistoryProvider.addChatMessages([
       chatActionRequest.human_message,
       chatResponse.ai_message,
     ]);
 
     // _saveMessages 会通过监听器自动调用
     appRuntimeContext.hiveManager.saveChatHistory(
-      appRuntimeContext.runtimeData.chatHistory.value,
+      appRuntimeContext.chatHistoryProvider.chatHistory,
     );
     return chatResponse; // 这里返回null是因为没有实现具体的聊天逻辑
   }
