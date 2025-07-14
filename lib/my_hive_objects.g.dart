@@ -332,3 +332,176 @@ class NotesStorageAdapter extends TypeAdapter<NotesStorage> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class UploadAndTranscribeTaskStorageAdapter
+    extends TypeAdapter<UploadAndTranscribeTaskStorage> {
+  @override
+  final int typeId = 10;
+
+  @override
+  UploadAndTranscribeTaskStorage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return UploadAndTranscribeTaskStorage(
+      taskId: fields[0] as String,
+      userId: fields[1] as String,
+      assetFileNames: (fields[2] as List).cast<String>(),
+      pickedFileNames: (fields[3] as List).cast<String>(),
+      creationTimeIso: fields[4] as String,
+      uploadedFileNames: (fields[5] as List).cast<String>(),
+      isUploaded: fields[6] as bool,
+      isTranscribed: fields[7] as bool,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, UploadAndTranscribeTaskStorage obj) {
+    writer
+      ..writeByte(8)
+      ..writeByte(0)
+      ..write(obj.taskId)
+      ..writeByte(1)
+      ..write(obj.userId)
+      ..writeByte(2)
+      ..write(obj.assetFileNames)
+      ..writeByte(3)
+      ..write(obj.pickedFileNames)
+      ..writeByte(4)
+      ..write(obj.creationTimeIso)
+      ..writeByte(5)
+      ..write(obj.uploadedFileNames)
+      ..writeByte(6)
+      ..write(obj.isUploaded)
+      ..writeByte(7)
+      ..write(obj.isTranscribed);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UploadAndTranscribeTaskStorageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class AnalyzeTaskStorageAdapter extends TypeAdapter<AnalyzeTaskStorage> {
+  @override
+  final int typeId = 11;
+
+  @override
+  AnalyzeTaskStorage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return AnalyzeTaskStorage(
+      content: fields[0] as String,
+      transcribeFileNameData: fields[1] as String,
+      fileName: fields[2] as String,
+      dateKey: fields[3] as String,
+      statusValue: fields[4] as int,
+      errorMessage: fields[5] as String?,
+      uploadResponseMessage: fields[6] as String?,
+      analyzeTaskId: fields[7] as String?,
+      journalFileResultJson: fields[8] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, AnalyzeTaskStorage obj) {
+    writer
+      ..writeByte(9)
+      ..writeByte(0)
+      ..write(obj.content)
+      ..writeByte(1)
+      ..write(obj.transcribeFileNameData)
+      ..writeByte(2)
+      ..write(obj.fileName)
+      ..writeByte(3)
+      ..write(obj.dateKey)
+      ..writeByte(4)
+      ..write(obj.statusValue)
+      ..writeByte(5)
+      ..write(obj.errorMessage)
+      ..writeByte(6)
+      ..write(obj.uploadResponseMessage)
+      ..writeByte(7)
+      ..write(obj.analyzeTaskId)
+      ..writeByte(8)
+      ..write(obj.journalFileResultJson);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AnalyzeTaskStorageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class UpdateDataTaskStorageAdapter extends TypeAdapter<UpdateDataTaskStorage> {
+  @override
+  final int typeId = 12;
+
+  @override
+  UpdateDataTaskStorage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return UpdateDataTaskStorage(
+      userId: fields[0] as String,
+      assetFileNames: (fields[1] as List).cast<String>(),
+      pickedFileNames: (fields[2] as List).cast<String>(),
+      creationTimeIso: fields[3] as String,
+      statusValue: fields[4] as int,
+      errorMessage: fields[5] as String?,
+      transcriptFilePath: fields[6] as String?,
+      uploadAndTranscribeTaskStorage:
+          fields[7] as UploadAndTranscribeTaskStorage?,
+      analyzeTaskStorage: fields[8] as AnalyzeTaskStorage?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, UpdateDataTaskStorage obj) {
+    writer
+      ..writeByte(9)
+      ..writeByte(0)
+      ..write(obj.userId)
+      ..writeByte(1)
+      ..write(obj.assetFileNames)
+      ..writeByte(2)
+      ..write(obj.pickedFileNames)
+      ..writeByte(3)
+      ..write(obj.creationTimeIso)
+      ..writeByte(4)
+      ..write(obj.statusValue)
+      ..writeByte(5)
+      ..write(obj.errorMessage)
+      ..writeByte(6)
+      ..write(obj.transcriptFilePath)
+      ..writeByte(7)
+      ..write(obj.uploadAndTranscribeTaskStorage)
+      ..writeByte(8)
+      ..write(obj.analyzeTaskStorage);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UpdateDataTaskStorageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

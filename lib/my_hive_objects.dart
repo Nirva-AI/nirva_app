@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/update_data_task.dart';
+import 'package:nirva_app/analyze_task.dart';
+import 'package:nirva_app/transcribe_file_name.dart';
 part 'my_hive_objects.g.dart';
 
 // 本机存储的日记收藏列表
@@ -222,5 +225,270 @@ class NotesStorage extends HiveObject {
     return noteJsonList
         .map((jsonString) => Note.fromJson(jsonDecode(jsonString)))
         .toList();
+  }
+}
+
+// UploadAndTranscribeTask 的 Hive 存储结构
+@HiveType(typeId: 10)
+class UploadAndTranscribeTaskStorage extends HiveObject {
+  @HiveField(0)
+  String taskId;
+
+  @HiveField(1)
+  String userId;
+
+  @HiveField(2)
+  List<String> assetFileNames;
+
+  @HiveField(3)
+  List<String> pickedFileNames;
+
+  @HiveField(4)
+  String creationTimeIso; // DateTime 转为 ISO 字符串
+
+  @HiveField(5)
+  List<String> uploadedFileNames;
+
+  @HiveField(6)
+  bool isUploaded;
+
+  @HiveField(7)
+  bool isTranscribed;
+
+  UploadAndTranscribeTaskStorage({
+    required this.taskId,
+    required this.userId,
+    required this.assetFileNames,
+    required this.pickedFileNames,
+    required this.creationTimeIso,
+    required this.uploadedFileNames,
+    required this.isUploaded,
+    required this.isTranscribed,
+  });
+
+  // 手动构造方法 - 需要在 UploadAndTranscribeTask 中添加相应的 getter 方法
+  static UploadAndTranscribeTaskStorage create({
+    required String taskId,
+    required String userId,
+    required List<String> assetFileNames,
+    required List<String> pickedFileNames,
+    required DateTime creationTime,
+    required List<String> uploadedFileNames,
+    required bool isUploaded,
+    required bool isTranscribed,
+  }) {
+    return UploadAndTranscribeTaskStorage(
+      taskId: taskId,
+      userId: userId,
+      assetFileNames: List.from(assetFileNames),
+      pickedFileNames: List.from(pickedFileNames),
+      creationTimeIso: creationTime.toIso8601String(),
+      uploadedFileNames: List.from(uploadedFileNames),
+      isUploaded: isUploaded,
+      isTranscribed: isTranscribed,
+    );
+  }
+
+  // 转换为构造数据 Map
+  Map<String, dynamic> toConstructorData() {
+    return {
+      'taskId': taskId,
+      'userId': userId,
+      'assetFileNames': assetFileNames,
+      'pickedFileNames': pickedFileNames,
+      'creationTime': DateTime.parse(creationTimeIso),
+      'uploadedFileNames': uploadedFileNames,
+      'isUploaded': isUploaded,
+      'isTranscribed': isTranscribed,
+    };
+  }
+}
+
+// AnalyzeTask 的 Hive 存储结构
+@HiveType(typeId: 11)
+class AnalyzeTaskStorage extends HiveObject {
+  @HiveField(0)
+  String content;
+
+  @HiveField(1)
+  String transcribeFileNameData; // 存储 TranscribeFileName 的原始数据
+
+  @HiveField(2)
+  String fileName;
+
+  @HiveField(3)
+  String dateKey;
+
+  @HiveField(4)
+  int statusValue; // AnalyzeTaskStatus.index
+
+  @HiveField(5)
+  String? errorMessage;
+
+  @HiveField(6)
+  String? uploadResponseMessage;
+
+  @HiveField(7)
+  String? analyzeTaskId;
+
+  @HiveField(8)
+  String? journalFileResultJson; // JournalFile 序列化为 JSON (可选)
+
+  AnalyzeTaskStorage({
+    required this.content,
+    required this.transcribeFileNameData,
+    required this.fileName,
+    required this.dateKey,
+    required this.statusValue,
+    this.errorMessage,
+    this.uploadResponseMessage,
+    this.analyzeTaskId,
+    this.journalFileResultJson,
+  });
+
+  // 手动构造方法
+  static AnalyzeTaskStorage create({
+    required String content,
+    required TranscribeFileName transcribeFileName,
+    required String fileName,
+    required String dateKey,
+    required AnalyzeTaskStatus status,
+    String? errorMessage,
+    String? uploadResponseMessage,
+    String? analyzeTaskId,
+    JournalFile? journalFileResult,
+  }) {
+    return AnalyzeTaskStorage(
+      content: content,
+      transcribeFileNameData: transcribeFileName.generateFilename(), // 存储文件名字符串
+      fileName: fileName,
+      dateKey: dateKey,
+      statusValue: status.index,
+      errorMessage: errorMessage,
+      uploadResponseMessage: uploadResponseMessage,
+      analyzeTaskId: analyzeTaskId,
+      journalFileResultJson:
+          journalFileResult != null
+              ? jsonEncode(journalFileResult.toJson())
+              : null,
+    );
+  }
+
+  // 转换为构造数据 Map
+  Map<String, dynamic> toConstructorData() {
+    TranscribeFileName? transcribeFileName;
+    try {
+      transcribeFileName = TranscribeFileName.tryFromFilename(
+        transcribeFileNameData,
+      );
+    } catch (e) {
+      // 如果解析失败，创建一个默认的
+      transcribeFileName = TranscribeFileName(
+        dateTime: DateTime.now(),
+        fileNumber: 0,
+        fileSuffix: 'txt',
+      );
+    }
+
+    return {
+      'content': content,
+      'transcribeFileName': transcribeFileName,
+      'fileName': fileName,
+      'dateKey': dateKey,
+      'status': AnalyzeTaskStatus.values[statusValue],
+      'errorMessage': errorMessage,
+      'uploadResponseMessage': uploadResponseMessage,
+      'analyzeTaskId': analyzeTaskId,
+      'journalFileResult':
+          journalFileResultJson != null
+              ? JournalFile.fromJson(
+                jsonDecode(journalFileResultJson!) as Map<String, dynamic>,
+              )
+              : null,
+    };
+  }
+}
+
+// UpdateDataTask 的 Hive 存储结构
+@HiveType(typeId: 12)
+class UpdateDataTaskStorage extends HiveObject {
+  @HiveField(0)
+  String userId;
+
+  @HiveField(1)
+  List<String> assetFileNames;
+
+  @HiveField(2)
+  List<String> pickedFileNames;
+
+  @HiveField(3)
+  String creationTimeIso; // DateTime 转为 ISO 字符串
+
+  @HiveField(4)
+  int statusValue; // UpdateDataTaskStatus.index
+
+  @HiveField(5)
+  String? errorMessage;
+
+  @HiveField(6)
+  String? transcriptFilePath;
+
+  @HiveField(7)
+  UploadAndTranscribeTaskStorage? uploadAndTranscribeTaskStorage;
+
+  @HiveField(8)
+  AnalyzeTaskStorage? analyzeTaskStorage;
+
+  UpdateDataTaskStorage({
+    required this.userId,
+    required this.assetFileNames,
+    required this.pickedFileNames,
+    required this.creationTimeIso,
+    required this.statusValue,
+    this.errorMessage,
+    this.transcriptFilePath,
+    this.uploadAndTranscribeTaskStorage,
+    this.analyzeTaskStorage,
+  });
+
+  // 手动构造方法
+  static UpdateDataTaskStorage create({
+    required String userId,
+    required List<String> assetFileNames,
+    required List<String> pickedFileNames,
+    required DateTime creationTime,
+    required UpdateDataTaskStatus status,
+    String? errorMessage,
+    String? transcriptFilePath,
+    UploadAndTranscribeTaskStorage? uploadAndTranscribeTaskStorage,
+    AnalyzeTaskStorage? analyzeTaskStorage,
+  }) {
+    return UpdateDataTaskStorage(
+      userId: userId,
+      assetFileNames: List.from(assetFileNames),
+      pickedFileNames: List.from(pickedFileNames),
+      creationTimeIso: creationTime.toIso8601String(),
+      statusValue: status.index,
+      errorMessage: errorMessage,
+      transcriptFilePath: transcriptFilePath,
+      uploadAndTranscribeTaskStorage: uploadAndTranscribeTaskStorage,
+      analyzeTaskStorage: analyzeTaskStorage,
+    );
+  }
+
+  // 转换为构造数据 Map
+  Map<String, dynamic> toConstructorData() {
+    return {
+      'userId': userId,
+      'assetFileNames': assetFileNames,
+      'pickedFileNames': pickedFileNames,
+      'creationTime': DateTime.parse(creationTimeIso),
+      'status': UpdateDataTaskStatus.values[statusValue],
+      'errorMessage': errorMessage,
+      'transcriptFilePath': transcriptFilePath,
+      'uploadAndTranscribeTaskData':
+          uploadAndTranscribeTaskStorage?.toConstructorData(),
+      'analyzeTaskData': analyzeTaskStorage?.toConstructorData(),
+    };
   }
 }

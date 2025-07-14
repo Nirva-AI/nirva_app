@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/update_data_task.dart';
 import 'dart:convert';
 
 class MyHiveManager {
@@ -32,6 +33,10 @@ class MyHiveManager {
   static const String _notesBox = 'notesBox';
   static const String _notesKey = 'notes';
 
+  // 添加 UpdateDataTask 相关常量
+  static const String _updateDataTaskBox = 'updateDataTaskBox';
+  static const String _updateDataTaskKey = 'updateDataTask';
+
   Future<void> _initialize() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
@@ -51,6 +56,7 @@ class MyHiveManager {
       Hive.deleteBoxFromDisk(_journalFilesBox),
       Hive.deleteBoxFromDisk(_tasksBox),
       Hive.deleteBoxFromDisk(_notesBox),
+      Hive.deleteBoxFromDisk(_updateDataTaskBox),
     ]);
 
     // 这两个操作需要顺序执行，不能并行化
@@ -68,6 +74,7 @@ class MyHiveManager {
       _initJournalSystem(),
       _initTasks(),
       _initNotes(),
+      _initUpdateDataTask(),
     ]);
   }
 
@@ -148,6 +155,22 @@ class MyHiveManager {
     }
   }
 
+  // 添加 UpdateDataTask 存储的初始化方法
+  Future<void> _initUpdateDataTask() async {
+    if (!Hive.isAdapterRegistered(10)) {
+      Hive.registerAdapter(UploadAndTranscribeTaskStorageAdapter());
+    }
+    if (!Hive.isAdapterRegistered(11)) {
+      Hive.registerAdapter(AnalyzeTaskStorageAdapter());
+    }
+    if (!Hive.isAdapterRegistered(12)) {
+      Hive.registerAdapter(UpdateDataTaskStorageAdapter());
+    }
+    if (!Hive.isBoxOpen(_updateDataTaskBox)) {
+      await Hive.openBox<UpdateDataTaskStorage>(_updateDataTaskBox);
+    }
+  }
+
   // 获取所有 Hive 数据的统计信息和内容
   Map<String, dynamic> getAllData() {
     final Map<String, dynamic> data = {};
@@ -206,6 +229,15 @@ class MyHiveManager {
       final notesBox = Hive.box<NotesStorage>(_notesBox);
       final notes = notesBox.get(_notesKey);
       data['notes'] = notes;
+    }
+
+    // 获取 UpdateDataTask 数据
+    if (Hive.isBoxOpen(_updateDataTaskBox)) {
+      final updateDataTaskBox = Hive.box<UpdateDataTaskStorage>(
+        _updateDataTaskBox,
+      );
+      final updateDataTask = updateDataTaskBox.get(_updateDataTaskKey);
+      data['updateDataTask'] = updateDataTask;
     }
 
     return data;
@@ -441,5 +473,65 @@ class MyHiveManager {
     final noteJsonList =
         notes.map((note) => jsonEncode(note.toJson())).toList();
     await box.put(_notesKey, NotesStorage(noteJsonList: noteJsonList));
+  }
+
+  // ===============================================================================
+  // UpdateDataTask 相关管理方法
+  // ===============================================================================
+
+  /// 获取当前的 UpdateDataTask
+  UpdateDataTaskStorage? getUpdateDataTask() {
+    final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
+    return box.get(_updateDataTaskKey);
+  }
+
+  /// 保存 UpdateDataTask
+  Future<void> saveUpdateDataTask(UpdateDataTaskStorage updateDataTask) async {
+    final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
+    await box.put(_updateDataTaskKey, updateDataTask);
+  }
+
+  /// 删除 UpdateDataTask
+  Future<void> deleteUpdateDataTask() async {
+    final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
+    await box.delete(_updateDataTaskKey);
+  }
+
+  /// 检查是否存在保存的 UpdateDataTask
+  bool hasUpdateDataTask() {
+    final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
+    return box.containsKey(_updateDataTaskKey);
+  }
+
+  /// 从 UpdateDataTask 创建并保存存储对象 (便利方法)
+  Future<void> saveUpdateDataTaskFromData({
+    required String userId,
+    required List<String> assetFileNames,
+    required List<String> pickedFileNames,
+    required DateTime creationTime,
+    required UpdateDataTaskStatus status,
+    String? errorMessage,
+    String? transcriptFilePath,
+    UploadAndTranscribeTaskStorage? uploadAndTranscribeTaskStorage,
+    AnalyzeTaskStorage? analyzeTaskStorage,
+  }) async {
+    final storage = UpdateDataTaskStorage.create(
+      userId: userId,
+      assetFileNames: assetFileNames,
+      pickedFileNames: pickedFileNames,
+      creationTime: creationTime,
+      status: status,
+      errorMessage: errorMessage,
+      transcriptFilePath: transcriptFilePath,
+      uploadAndTranscribeTaskStorage: uploadAndTranscribeTaskStorage,
+      analyzeTaskStorage: analyzeTaskStorage,
+    );
+    await saveUpdateDataTask(storage);
+  }
+
+  /// 获取 UpdateDataTask 的构造数据 (便利方法)
+  Map<String, dynamic>? getUpdateDataTaskConstructorData() {
+    final storage = getUpdateDataTask();
+    return storage?.toConstructorData();
   }
 }

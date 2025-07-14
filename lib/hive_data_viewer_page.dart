@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/update_data_task.dart';
 
 class HiveDataViewerPage extends StatefulWidget {
   const HiveDataViewerPage({super.key});
@@ -65,6 +66,12 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
           _hiveData['journalIndex'],
           isJournalIndex: true,
         ),
+        const SizedBox(height: 16),
+        _buildDataCard(
+          'Update Data Task',
+          _hiveData['updateDataTask'],
+          isUpdateDataTask: true,
+        ),
       ],
     );
   }
@@ -74,6 +81,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
     dynamic data, {
     bool isToken = false,
     bool isJournalIndex = false,
+    bool isUpdateDataTask = false,
   }) {
     if (data == null) {
       return Card(
@@ -153,6 +161,76 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
           ],
         ],
       );
+    } else if (isUpdateDataTask) {
+      // UpdateDataTask 数据展示
+      final updateDataTask = data as UpdateDataTaskStorage;
+      final status = UpdateDataTaskStatus.values[updateDataTask.statusValue];
+      final creationTime = DateTime.parse(updateDataTask.creationTimeIso);
+
+      dataWidget = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'User ID: ${updateDataTask.userId}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text('Status: ${status.toString().split('.').last}'),
+          const SizedBox(height: 8),
+          Text('Creation Time: ${creationTime.toString()}'),
+          const SizedBox(height: 8),
+          Text('Asset Files: ${updateDataTask.assetFileNames.length}'),
+          if (updateDataTask.assetFileNames.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            ...updateDataTask.assetFileNames.map(
+              (fileName) => Padding(
+                padding: const EdgeInsets.only(left: 16, top: 2),
+                child: Text('• $fileName'),
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
+          Text('Picked Files: ${updateDataTask.pickedFileNames.length}'),
+          if (updateDataTask.pickedFileNames.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            ...updateDataTask.pickedFileNames.map(
+              (fileName) => Padding(
+                padding: const EdgeInsets.only(left: 16, top: 2),
+                child: Text('• $fileName'),
+              ),
+            ),
+          ],
+          if (updateDataTask.transcriptFilePath != null) ...[
+            const SizedBox(height: 8),
+            Text('Transcript Path: ${updateDataTask.transcriptFilePath}'),
+          ],
+          if (updateDataTask.errorMessage != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Error: ${updateDataTask.errorMessage}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          ],
+          if (updateDataTask.uploadAndTranscribeTaskStorage != null) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Upload & Transcribe Task:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            _buildSubTaskWidget(updateDataTask.uploadAndTranscribeTaskStorage!),
+          ],
+          if (updateDataTask.analyzeTaskStorage != null) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Analyze Task:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            _buildAnalyzeTaskWidget(updateDataTask.analyzeTaskStorage!),
+          ],
+        ],
+      );
     } else {
       // 其他类型数据展示
       dataWidget = Text(data.toString());
@@ -193,6 +271,73 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
     );
   }
 
+  // 构建 UploadAndTranscribeTaskStorage 的显示组件
+  Widget _buildSubTaskWidget(UploadAndTranscribeTaskStorage task) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Task ID: ${task.taskId}'),
+          const SizedBox(height: 4),
+          Text('User ID: ${task.userId}'),
+          const SizedBox(height: 4),
+          Text('Created: ${DateTime.parse(task.creationTimeIso)}'),
+          const SizedBox(height: 4),
+          Text('Is Uploaded: ${task.isUploaded}'),
+          const SizedBox(height: 4),
+          Text('Is Transcribed: ${task.isTranscribed}'),
+          const SizedBox(height: 4),
+          Text('Asset Files: ${task.assetFileNames.length}'),
+          const SizedBox(height: 4),
+          Text('Uploaded Files: ${task.uploadedFileNames.length}'),
+        ],
+      ),
+    );
+  }
+
+  // 构建 AnalyzeTaskStorage 的显示组件
+  Widget _buildAnalyzeTaskWidget(AnalyzeTaskStorage task) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('File Name: ${task.fileName}'),
+          const SizedBox(height: 4),
+          Text('Date Key: ${task.dateKey}'),
+          const SizedBox(height: 4),
+          Text('Status: ${task.statusValue}'),
+          const SizedBox(height: 4),
+          Text('Content Length: ${task.content.length} chars'),
+          if (task.analyzeTaskId != null) ...[
+            const SizedBox(height: 4),
+            Text('Analyze Task ID: ${task.analyzeTaskId}'),
+          ],
+          if (task.errorMessage != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              'Error: ${task.errorMessage}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          ],
+          if (task.uploadResponseMessage != null) ...[
+            const SizedBox(height: 4),
+            Text('Upload Response: ${task.uploadResponseMessage}'),
+          ],
+        ],
+      ),
+    );
+  }
+
   // 截断文本以便更好地展示
   String _truncateText(String text, {int maxLength = 20}) {
     if (text.length <= maxLength) return text;
@@ -216,12 +361,12 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
               TextButton(
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  if (dataType == '收藏夹数据') {
+                  if (dataType == 'Favorites Data') {
                     await AppRuntimeContext().hiveManager.saveFavoriteIds([]);
                     AppRuntimeContext().runtimeData.favorites.value = [];
-                  } else if (dataType == '用户令牌') {
+                  } else if (dataType == 'User Token') {
                     await AppRuntimeContext().hiveManager.deleteUserToken();
-                  } else if (dataType == '日记索引') {
+                  } else if (dataType == 'Journal Index') {
                     // 清空日记索引
                     final emptyIndex = JournalFileIndex();
                     await AppRuntimeContext().hiveManager.saveJournalIndex(
@@ -239,6 +384,9 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                         );
                       }
                     }
+                  } else if (dataType == 'Update Data Task') {
+                    await AppRuntimeContext().hiveManager
+                        .deleteUpdateDataTask();
                   }
                   // 重新加载数据
                   _loadHiveData();
