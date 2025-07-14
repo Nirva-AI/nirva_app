@@ -367,7 +367,10 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           ),
         ],
       ),
-      body: _updateDataTask == null ? _buildEmptyState() : _buildTaskView(),
+      body:
+          _updateDataTask == null
+              ? _buildEmptyState()
+              : SingleChildScrollView(child: _buildTaskView()),
     );
   }
 
