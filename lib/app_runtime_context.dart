@@ -5,6 +5,7 @@ import 'package:nirva_app/url_configuration.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
+import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
@@ -60,6 +61,9 @@ class AppRuntimeContext {
   // Favorites Provider 引用
   FavoritesProvider? _favoritesProvider;
 
+  // Notes Provider 引用
+  NotesProvider? _notesProvider;
+
   // 获取用户
   User get user {
     return _user;
@@ -107,6 +111,10 @@ class AppRuntimeContext {
     return _favoritesProvider!;
   }
 
+  NotesProvider get notesProvider {
+    return _notesProvider!;
+  }
+
   void setUser(User user) {
     _user = user;
   }
@@ -124,6 +132,11 @@ class AppRuntimeContext {
   // 设置FavoritesProvider
   void setFavoritesProvider(FavoritesProvider provider) {
     _favoritesProvider = provider;
+  }
+
+  // 设置NotesProvider
+  void setNotesProvider(NotesProvider provider) {
+    _notesProvider = provider;
   }
 
   // 根据日期获取日记文件

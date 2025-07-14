@@ -73,14 +73,14 @@ class GuidedReflectionPage extends StatelessWidget {
                 onPressed: () async {
                   // 保存按钮点击事件
                   final content = _textController.text; // 获取输入框内容
-                  AppRuntimeContext().runtimeData.updateNote(
+                  AppRuntimeContext().notesProvider.updateNote(
                     eventData, // 使用 eventData
                     content,
-                  ); // 保存到 DataManager
+                  ); // 保存到 NotesProvider
                   debugPrint('Save button pressed: $content'); // 打印保存内容
                   Navigator.pop(context); // 返回到 DiaryDetailsPage
                   await AppRuntimeContext().hiveManager.saveNotes(
-                    AppRuntimeContext().runtimeData.notes.value,
+                    AppRuntimeContext().notesProvider.notes,
                   );
                 },
                 style: ElevatedButton.styleFrom(
