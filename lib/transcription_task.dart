@@ -36,6 +36,7 @@ class UploadAndTranscribeTask {
   final String userId;
   final List<String> assetFileNames;
   final List<String> pickedFileNames;
+  final DateTime creationTime; // 用于命名的时间
 
   // 内部状态
   List<File> _availableFiles = [];
@@ -47,11 +48,15 @@ class UploadAndTranscribeTask {
   ///
   /// [userId] 用户ID
   /// [assetFileNames] 来自assets的源文件名列表，测试用。
+  /// [creationTime] 用于生成任务ID和文件名的时间，如果不提供则使用当前时间
   UploadAndTranscribeTask({
     required this.userId,
     required this.assetFileNames,
     required this.pickedFileNames,
-  }) : taskId = 'task_${DateTime.now().millisecondsSinceEpoch}';
+    DateTime? creationTime,
+  }) : creationTime = creationTime ?? DateTime.now(),
+       taskId =
+           'task_${(creationTime ?? DateTime.now()).millisecondsSinceEpoch}';
 
   /// 获取源文件名列表
   List<String> get sourceFileNames {
@@ -73,9 +78,12 @@ class UploadAndTranscribeTask {
       final ByteData audioData = await rootBundle.load('assets/$fileName');
       final Uint8List audioBytes = audioData.buffer.asUint8List();
 
-      // 生成唯一的文件名
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final uniqueFileName = 'audio_${timestamp}_$i.mp3';
+      // 生成基于原文件名的唯一文件名
+      final baseName =
+          fileName.contains('.')
+              ? fileName.substring(0, fileName.lastIndexOf('.'))
+              : fileName;
+      final uniqueFileName = 'assets_$baseName.mp3';
 
       // 创建临时文件
       final tempFile = File('${appDocDir.path}/$uniqueFileName');
@@ -124,9 +132,17 @@ class UploadAndTranscribeTask {
       final preparedFilesFromPicker = await _prepareFilesFromFilePicker();
       final tempFiles = preparedFilesFromAssets + preparedFilesFromPicker;
 
-      // 空的，如果没有准备好的文件，抛出异常
+      // 检查文件准备的完整性
+      final expectedFileCount = sourceFileNames.length;
       if (tempFiles.isEmpty) {
         throw Exception('没有可上传的文件，请检查 assetFileNames 和 pickedFileNames 是否正确');
+      }
+
+      if (tempFiles.length != expectedFileCount) {
+        throw Exception(
+          '文件准备不完整: 期望 $expectedFileCount 个文件，实际准备了 ${tempFiles.length} 个文件。'
+          '请检查文件路径是否正确，assets文件是否存在。',
+        );
       }
 
       // 检查上传文件大小限制
@@ -496,7 +512,7 @@ class UploadAndTranscribeTask {
 
       // 使用TranscribeFileName生成标准格式的文件名
       final transcribeFileName = TranscribeFileName(
-        dateTime: DateTime.now(),
+        dateTime: creationTime,
         fileNumber: 1,
         fileSuffix: 'txt',
       );

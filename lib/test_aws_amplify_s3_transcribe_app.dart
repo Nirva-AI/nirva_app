@@ -103,6 +103,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
         userId: AppRuntimeContext().runtimeData.user.id,
         assetFileNames: ['record_test_audio.mp3'],
         pickedFileNames: [],
+        // 使用默认的当前时间进行命名
       );
 
       // 步骤1.1：准备文件
