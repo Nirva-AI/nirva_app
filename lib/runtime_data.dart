@@ -1,5 +1,6 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/api_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,6 +20,9 @@ class RuntimeData {
 
   // 缓存的日记文件列表
   ValueNotifier<List<JournalFile>> journalFiles = ValueNotifier([]);
+
+  // 聊天消息历史记录
+  ValueNotifier<List<ChatMessage>> chatHistory = ValueNotifier([]);
 
   //
   List<Dashboard> dashboards = [];
@@ -174,5 +178,10 @@ class RuntimeData {
     journalFiles.value = files;
     _sortJournalFilesByDate(); // 排序
     _refreshDashboardData();
+  }
+
+  // 添加聊天消息到历史记录
+  void addChatMessages(List<ChatMessage> conversation) {
+    chatHistory.value = [...chatHistory.value, ...conversation];
   }
 }

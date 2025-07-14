@@ -80,7 +80,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
         children: [
           Expanded(
             child: ValueListenableBuilder<List<ChatMessage>>(
-              valueListenable: AppRuntimeContext().chatManager.chatHistory,
+              valueListenable: AppRuntimeContext().runtimeData.chatHistory,
               builder: (context, chatMessagesValue, _) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();
