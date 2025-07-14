@@ -334,6 +334,9 @@ class AnalyzeTaskStorage extends HiveObject {
   @HiveField(8)
   String? journalFileResultJson; // JournalFile 序列化为 JSON (可选)
 
+  @HiveField(9)
+  String id; // 任务唯一标识符
+
   AnalyzeTaskStorage({
     required this.content,
     required this.transcribeFileNameData,
@@ -344,6 +347,7 @@ class AnalyzeTaskStorage extends HiveObject {
     this.uploadResponseMessage,
     this.analyzeTaskId,
     this.journalFileResultJson,
+    required this.id, // 添加 id 参数
   });
 
   // 手动构造方法
@@ -357,6 +361,7 @@ class AnalyzeTaskStorage extends HiveObject {
     String? uploadResponseMessage,
     String? analyzeTaskId,
     JournalFile? journalFileResult,
+    required String id, // 添加 id 参数
   }) {
     return AnalyzeTaskStorage(
       content: content,
@@ -371,6 +376,7 @@ class AnalyzeTaskStorage extends HiveObject {
           journalFileResult != null
               ? jsonEncode(journalFileResult.toJson())
               : null,
+      id: id, // 添加 id 字段
     );
   }
 
@@ -391,6 +397,7 @@ class AnalyzeTaskStorage extends HiveObject {
     }
 
     return {
+      'id': id, // 添加 id 字段
       'content': content,
       'transcribeFileName': transcribeFileName,
       'fileName': fileName,
@@ -439,6 +446,9 @@ class UpdateDataTaskStorage extends HiveObject {
   @HiveField(8)
   AnalyzeTaskStorage? analyzeTaskStorage;
 
+  @HiveField(9)
+  String id; // 任务唯一标识符
+
   UpdateDataTaskStorage({
     required this.userId,
     required this.assetFileNames,
@@ -449,6 +459,7 @@ class UpdateDataTaskStorage extends HiveObject {
     this.transcriptFilePath,
     this.uploadAndTranscribeTaskStorage,
     this.analyzeTaskStorage,
+    required this.id, // 添加 id 参数
   });
 
   // 手动构造方法
@@ -462,6 +473,7 @@ class UpdateDataTaskStorage extends HiveObject {
     String? transcriptFilePath,
     UploadAndTranscribeTaskStorage? uploadAndTranscribeTaskStorage,
     AnalyzeTaskStorage? analyzeTaskStorage,
+    required String id, // 添加 id 参数
   }) {
     return UpdateDataTaskStorage(
       userId: userId,
@@ -473,12 +485,14 @@ class UpdateDataTaskStorage extends HiveObject {
       transcriptFilePath: transcriptFilePath,
       uploadAndTranscribeTaskStorage: uploadAndTranscribeTaskStorage,
       analyzeTaskStorage: analyzeTaskStorage,
+      id: id, // 添加 id 字段
     );
   }
 
   // 转换为构造数据 Map
   Map<String, dynamic> toConstructorData() {
     return {
+      'id': id, // 添加 id 字段
       'userId': userId,
       'assetFileNames': assetFileNames,
       'pickedFileNames': pickedFileNames,

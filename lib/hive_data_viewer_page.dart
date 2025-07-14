@@ -175,6 +175,8 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
+          Text('Task ID: ${updateDataTask.id}'),
+          const SizedBox(height: 8),
           Text('Status: ${status.toString().split('.').last}'),
           const SizedBox(height: 8),
           Text('Creation Time: ${creationTime.toString()}'),
@@ -311,6 +313,8 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text('Task ID: ${task.id}'),
+          const SizedBox(height: 4),
           Text('File Name: ${task.fileName}'),
           const SizedBox(height: 4),
           Text('Date Key: ${task.dateKey}'),
