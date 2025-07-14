@@ -23,69 +23,66 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initialize() async {
-    final int minDuration = 400; // 最小等待时间
+    final int minDuration = 600; // 最小等待时间，确保有足够时间完成初始化
     final Stopwatch stopwatch = Stopwatch()..start();
 
-    //检查网络状态，临时先这么写。
-    await checkNetworkStatus();
-
     try {
-      final urlConfig = await APIs.getUrlConfig();
-      if (urlConfig == null) {
-        Logger().e('获取 URL 配置失败');
-        return;
+      // 检查网络状态 - 无网络时阻止启动
+      final hasNetwork = await _checkNetworkStatus();
+      if (!hasNetwork) {
+        return; // 阻止后续执行
       }
 
-      Logger().i('API 初始化成功');
+      // 清空AppRuntimeContext（在设置Provider之前）
+      AppRuntimeContext.clear();
 
-      final token = await APIs.login();
-      if (token == null) {
-        Logger().e('登录失败，未获取到 token');
-        return;
-      }
-    } catch (e) {
-      Logger().e('登录流程出现错误: $e');
-    }
-
-    // 清空AppRuntimeContext（在设置Provider之前）
-    AppRuntimeContext.clear();
-
-    // 初始化JournalFilesProvider - 添加mounted检查以避免跨async间隙使用BuildContext
-    if (mounted) {
+      // 初始化JournalFilesProvider
+      if (!mounted) return;
       final journalFilesProvider = Provider.of<JournalFilesProvider>(
         context,
         listen: false,
       );
       AppRuntimeContext().setJournalFilesProvider(journalFilesProvider);
-    }
 
-    // 执行数据初始化（从main.dart移动过来）
-    await _setupHiveStorage();
+      // 执行数据初始化
+      await _setupHiveStorage();
 
-    // 设置初始选中日期（从TestData移动过来，确保在journalFiles加载后执行）
-    AppRuntimeContext().selectDateTime(DateTime.now());
+      // 设置初始选中日期
+      AppRuntimeContext().selectDateTime(DateTime.now());
 
-    // 计算剩余时间
-    final int elapsed = stopwatch.elapsedMilliseconds;
-    final int remainingTime = minDuration - elapsed;
+      // API初始化和登录
+      await _initializeAPIs();
 
-    if (remainingTime > 0) {
-      // 如果等待时间不足 400ms，继续等待
-      await Future.delayed(Duration(milliseconds: remainingTime));
-    }
+      // 确保最小显示时间
+      final int elapsed = stopwatch.elapsedMilliseconds;
+      final int remainingTime = minDuration - elapsed;
+      if (remainingTime > 0) {
+        await Future.delayed(Duration(milliseconds: remainingTime));
+      }
 
-    // 跳转到下一个场景
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder:
-              (context, animation, secondaryAnimation) =>
-                  const HomePage(title: 'Nirva App Home Page'),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return child; // 无动画过渡
-          },
-        ),
-      );
+      // 跳转到主页面
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder:
+                (context, animation, secondaryAnimation) =>
+                    const HomePage(title: 'Nirva App Home Page'),
+            transitionsBuilder: (
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+            ) {
+              return child; // 无动画过渡
+            },
+          ),
+        );
+      }
+    } catch (e) {
+      Logger().e('应用初始化失败: $e');
+      if (mounted) {
+        _showFatalError('应用初始化失败', '请重启应用重试\n错误信息: $e');
+      }
     }
   }
 
@@ -108,7 +105,62 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  // 数据初始化方法（从main.dart移动过来）
+  // API初始化方法
+  Future<void> _initializeAPIs() async {
+    try {
+      final urlConfig = await APIs.getUrlConfig();
+      if (urlConfig == null) {
+        throw Exception('获取 URL 配置失败');
+      }
+
+      Logger().i('API 配置获取成功');
+
+      final token = await APIs.login();
+      if (token == null) {
+        throw Exception('登录失败，未获取到 token');
+      }
+
+      Logger().i('用户登录成功');
+    } catch (e) {
+      Logger().e('API初始化或登录失败: $e');
+      rethrow; // 重新抛出异常，让上层处理
+    }
+  }
+
+  // 网络状态检查方法 - 返回是否有网络连接
+  Future<bool> _checkNetworkStatus() async {
+    final connectivityResults = await Connectivity().checkConnectivity();
+    if (connectivityResults.contains(ConnectivityResult.none)) {
+      if (!mounted) return false;
+
+      await _showFatalError("无网络连接", "请检查网络连接后重启应用");
+      return false;
+    }
+    return true;
+  }
+
+  // 显示致命错误对话框
+  Future<void> _showFatalError(String title, String message) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false, // 不允许点击外部关闭
+      builder:
+          (context) => AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // 关闭对话框但不继续执行
+                  Navigator.pop(context);
+                },
+                child: const Text("确定"),
+              ),
+            ],
+          ),
+    );
+  }
+
   Future<void> _setupHiveStorage() async {
     // 在开始数据初始化之前清空上下文，但要在Provider设置之后
     // 注意：不能在这里调用AppRuntimeContext.clear()，因为会清空已设置的Provider
@@ -122,8 +174,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // 对话列表
     final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();
-    AppRuntimeContext().runtimeData.chatHistory.value =
-        storageChatHistory; // 清空之前的聊天记录
+    AppRuntimeContext().runtimeData.chatHistory.value = storageChatHistory;
 
     // 任务列表
     final retrievedTasks = AppRuntimeContext().hiveManager.getAllTasks();
@@ -137,35 +188,5 @@ class _SplashScreenState extends State<SplashScreen> {
     AppRuntimeContext().initializeJournalFiles(
       AppRuntimeContext().hiveManager.retrieveJournalFiles(),
     );
-  }
-
-  // 网络状态检查失败后的处理: 如果用户没有网络连接，是否需要阻止后续逻辑执行？目前代码中即使没有网络连接，仍会继续执行后续的 API 配置和登录逻辑。
-  // 用户体验优化: 在网络状态检查失败时，可以提供更多选项（如重试按钮）而不是仅仅显示一个确认对话框。
-  Future<void> checkNetworkStatus() async {
-    final connectivityResults = await Connectivity().checkConnectivity();
-    if (connectivityResults.contains(ConnectivityResult.none)) {
-      if (!mounted) return;
-
-      await showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text("No Network Connection"),
-              content: const Text(
-                "Please check your network connection and try again.",
-              ),
-              actions: [
-                TextButton(
-                  onPressed:
-                      () => {
-                        debugPrint("No Network Connection"),
-                        Navigator.pop(context),
-                      },
-                  child: const Text("OK"),
-                ),
-              ],
-            ),
-      );
-    }
   }
 }
