@@ -33,7 +33,7 @@ class _MePageState extends State<MePage> {
                     child: const Icon(Icons.person, color: Colors.white),
                   ),
                   title: Text(
-                    AppRuntimeContext().runtimeData.user.displayName,
+                    AppRuntimeContext().user.displayName,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),

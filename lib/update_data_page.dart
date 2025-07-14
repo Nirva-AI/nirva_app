@@ -243,7 +243,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 创建空任务
   Future<void> _createEmptyTask() async {
     // 获取用户ID
-    final userId = AppRuntimeContext().runtimeData.user.id;
+    final userId = AppRuntimeContext().user.id;
 
     if (userId.isEmpty) {
       _showErrorDialog('User ID is empty, please ensure you are logged in');

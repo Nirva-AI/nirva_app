@@ -166,7 +166,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // 注意：不能在这里调用AppRuntimeContext.clear()，因为会清空已设置的Provider
 
     // 填充测试数据。
-    await MyTest.initializeTestData();
+    await MyTest.setupTestData();
 
     // 喜爱的日记数据
     AppRuntimeContext().runtimeData.favorites.value =
