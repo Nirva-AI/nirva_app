@@ -85,7 +85,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('已恢复之前保存的任务'),
+                  content: Text('Previous task restored'),
                   backgroundColor: Colors.blue,
                 ),
               );
@@ -100,7 +100,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('恢复任务失败: $e'),
+              content: Text('Failed to restore task: $e'),
               backgroundColor: Colors.orange,
             ),
           );
@@ -209,7 +209,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       await _createEmptyTask();
     } catch (e) {
       Logger().e('创建任务时出错: $e');
-      _showErrorDialog('创建任务失败: $e');
+      _showErrorDialog('Failed to create task: $e');
     } finally {
       setState(() {
         _isCreatingTask = false;
@@ -236,13 +236,9 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       }
     } catch (e) {
       Logger().e('添加文件时出错: $e');
-      _showErrorDialog('添加文件失败: $e');
+      _showErrorDialog('Failed to add file: $e');
     }
   }
-
-  /*
-
-  */
 
   // 创建空任务
   Future<void> _createEmptyTask() async {
@@ -250,7 +246,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     final userId = AppRuntimeContext().runtimeData.user.id;
 
     if (userId.isEmpty) {
-      _showErrorDialog('用户ID为空，请确保已登录');
+      _showErrorDialog('User ID is empty, please ensure you are logged in');
       return;
     }
 
@@ -266,7 +262,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     try {
       await _saveCurrentTask();
     } catch (e) {
-      _showErrorDialog('保存任务失败: $e');
+      _showErrorDialog('Failed to save task: $e');
       _updateDataTask = null; // 创建失败时清空任务
       return;
     }
@@ -278,7 +274,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('任务创建成功！请添加文件。'),
+          content: Text('Task created successfully! Please add files.'),
           backgroundColor: Colors.green,
         ),
       );
@@ -291,7 +287,9 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     // 检查文件是否已存在
     if (_updateDataTask!.pickedFileNames.contains(filePath)) {
-      _showErrorDialog('该文件已在任务中，无需重复添加。');
+      _showErrorDialog(
+        'This file is already in the task, no need to add again.',
+      );
       return;
     }
 
@@ -310,7 +308,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     try {
       await _saveCurrentTask();
     } catch (e) {
-      _showErrorDialog('保存任务失败: $e');
+      _showErrorDialog('Failed to save task: $e');
       return;
     }
 
@@ -323,7 +321,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '文件添加成功！当前共 ${_updateDataTask!.pickedFileNames.length} 个文件',
+            'File added successfully! Total ${_updateDataTask!.pickedFileNames.length} files',
           ),
           backgroundColor: Colors.green,
         ),
@@ -337,12 +335,12 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('错误'),
+            title: const Text('Error'),
             content: Text(message),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('确定'),
+                child: const Text('OK'),
               ),
             ],
           ),
@@ -355,17 +353,19 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('创建新任务'),
-            content: const Text('当前已有任务，创建新任务将替换当前任务。确定要继续吗？'),
+            title: const Text('Create New Task'),
+            content: const Text(
+              'A task already exists. Creating a new task will replace the current task. Are you sure you want to continue?',
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('取消'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: TextButton.styleFrom(foregroundColor: Colors.blue),
-                child: const Text('创建新任务'),
+                child: const Text('Create New Task'),
               ),
             ],
           ),
@@ -384,7 +384,10 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('任务已删除'), backgroundColor: Colors.orange),
+        const SnackBar(
+          content: Text('Task deleted'),
+          backgroundColor: Colors.orange,
+        ),
       );
     }
   }
@@ -398,7 +401,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       try {
         await _saveCurrentTask();
       } catch (e) {
-        _showErrorDialog('保存任务状态失败: $e');
+        _showErrorDialog('Failed to save task state: $e');
         return;
       }
 
@@ -408,17 +411,19 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('转录上传成功，等待转录完成...'),
+              content: Text(
+                'Transcription upload successful, waiting for transcription completion...',
+              ),
               backgroundColor: Colors.blue,
             ),
           );
         }
       } else {
-        _showErrorDialog('转录上传失败: ${task.errorMessage}');
+        _showErrorDialog('Transcription upload failed: ${task.errorMessage}');
       }
     } catch (e) {
       Logger().e('转录上传异常: $e');
-      _showErrorDialog('转录上传异常: $e');
+      _showErrorDialog('Transcription upload exception: $e');
       setState(() {});
     }
   }
@@ -432,7 +437,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       try {
         await _saveCurrentTask();
       } catch (e) {
-        _showErrorDialog('保存任务状态失败: $e');
+        _showErrorDialog('Failed to save task state: $e');
         return;
       }
 
@@ -442,17 +447,19 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('转录结果获取成功'),
+              content: Text('Transcription results retrieved successfully'),
               backgroundColor: Colors.green,
             ),
           );
         }
       } else {
-        _showErrorDialog('获取转录结果失败: ${task.errorMessage}');
+        _showErrorDialog(
+          'Failed to get transcription results: ${task.errorMessage}',
+        );
       }
     } catch (e) {
       Logger().e('获取转录结果异常: $e');
-      _showErrorDialog('获取转录结果异常: $e');
+      _showErrorDialog('Get transcription results exception: $e');
       setState(() {});
     }
   }
@@ -466,7 +473,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       try {
         await _saveCurrentTask();
       } catch (e) {
-        _showErrorDialog('保存任务状态失败: $e');
+        _showErrorDialog('Failed to save task state: $e');
         return;
       }
 
@@ -476,17 +483,19 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('分析请求发送成功，等待分析完成...'),
+              content: Text(
+                'Analysis request sent successfully, waiting for analysis completion...',
+              ),
               backgroundColor: Colors.blue,
             ),
           );
         }
       } else {
-        _showErrorDialog('分析请求失败: ${task.errorMessage}');
+        _showErrorDialog('Analysis request failed: ${task.errorMessage}');
       }
     } catch (e) {
       Logger().e('分析请求异常: $e');
-      _showErrorDialog('分析请求异常: $e');
+      _showErrorDialog('Analysis request exception: $e');
       setState(() {});
     }
   }
@@ -500,7 +509,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       try {
         await _saveCurrentTask();
       } catch (e) {
-        _showErrorDialog('保存任务状态失败: $e');
+        _showErrorDialog('Failed to save task state: $e');
         return;
       }
 
@@ -510,7 +519,9 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('分析结果获取成功，流程完成！'),
+              content: Text(
+                'Analysis results retrieved successfully, process completed!',
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -522,11 +533,13 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           Logger().d('分析结果已添加到全局数据');
         }
       } else {
-        _showErrorDialog('获取分析结果失败: ${task.errorMessage}');
+        _showErrorDialog(
+          'Failed to get analysis results: ${task.errorMessage}',
+        );
       }
     } catch (e) {
       Logger().e('获取分析结果异常: $e');
-      _showErrorDialog('获取分析结果异常: $e');
+      _showErrorDialog('Get analysis results exception: $e');
       setState(() {});
     }
   }
@@ -541,7 +554,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('文件清理完成'),
+              content: Text('File cleanup completed'),
               backgroundColor: Colors.green,
             ),
           );
@@ -550,7 +563,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('文件清理部分失败'),
+              content: Text('File cleanup partially failed'),
               backgroundColor: Colors.orange,
             ),
           );
@@ -558,7 +571,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       }
     } catch (e) {
       Logger().e('清理文件异常: $e');
-      _showErrorDialog('清理文件异常: $e');
+      _showErrorDialog('File cleanup exception: $e');
       setState(() {});
     }
   }
@@ -577,7 +590,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: _showDeleteConfirmDialog,
-              tooltip: '删除任务',
+              tooltip: 'Delete Task',
             ),
           IconButton(
             icon:
@@ -589,7 +602,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                     )
                     : const Icon(Icons.add),
             onPressed: _isCreatingTask ? null : _createUpdateDataTask,
-            tooltip: '创建新任务',
+            tooltip: 'Create New Task',
           ),
         ],
       ),
@@ -609,7 +622,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           Icon(Icons.audio_file, size: 64, color: Colors.grey),
           SizedBox(height: 16),
           Text(
-            '暂无任务',
+            'No Tasks',
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey,
@@ -618,7 +631,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           ),
           SizedBox(height: 8),
           Text(
-            '点击右上角的 + 按钮创建新任务',
+            'Click the + button in the top right corner to create a new task',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
@@ -696,7 +709,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
               Icon(Icons.assignment, color: Colors.blue.shade600, size: 16),
               const SizedBox(width: 8),
               const Text(
-                '任务信息',
+                'Task Information',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
               ),
             ],
@@ -734,7 +747,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           ),
           const SizedBox(height: 4),
           Text(
-            '创建时间: ${task.creationTime.toString().substring(0, 19)}',
+            'Creation Time: ${task.creationTime.toString().substring(0, 19)}',
             style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
         ],
@@ -759,7 +772,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
               Icon(Icons.folder_open, color: Colors.blue.shade600, size: 16),
               const SizedBox(width: 8),
               Text(
-                '文件列表 (${task.pickedFileNames.length})',
+                'File List (${task.pickedFileNames.length})',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -771,7 +784,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                 TextButton.icon(
                   onPressed: _addFileToTask,
                   icon: const Icon(Icons.add, size: 16),
-                  label: const Text('添加文件'),
+                  label: const Text('Add File'),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -784,7 +797,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           const SizedBox(height: 8),
           if (task.pickedFileNames.isEmpty)
             const Text(
-              '暂无文件',
+              'No Files',
               style: TextStyle(color: Colors.grey, fontSize: 12),
             )
           else
@@ -877,7 +890,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '操作步骤',
+          'Action Steps',
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         ),
         const SizedBox(height: 8),
@@ -892,7 +905,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                         ? () => _executeTranscriptionUpload(task)
                         : null,
                 icon: const Icon(Icons.upload, size: 16),
-                label: const Text('转录上传'),
+                label: const Text('Upload Transcription'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
@@ -906,7 +919,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                         ? () => _getTranscriptionResults(task)
                         : null,
                 icon: const Icon(Icons.download, size: 16),
-                label: const Text('获取转录'),
+                label: const Text('Get Transcription'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
@@ -926,7 +939,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                         ? () => _executeAnalysisRequest(task)
                         : null,
                 icon: const Icon(Icons.analytics, size: 16),
-                label: const Text('分析请求'),
+                label: const Text('Analysis Request'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
@@ -940,7 +953,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                         ? () => _getAnalysisResults(task)
                         : null,
                 icon: const Icon(Icons.assessment, size: 16),
-                label: const Text('获取分析'),
+                label: const Text('Get Analysis'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
@@ -957,7 +970,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             child: OutlinedButton.icon(
               onPressed: () => _cleanupFiles(task),
               icon: const Icon(Icons.cleaning_services, size: 16),
-              label: const Text('清理文件'),
+              label: const Text('Cleanup Files'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 8),
               ),
@@ -983,7 +996,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '错误: ${task.errorMessage}',
+              'Error: ${task.errorMessage}',
               style: TextStyle(color: Colors.red.shade700, fontSize: 12),
             ),
           ),
@@ -1010,7 +1023,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                 Icon(Icons.description, color: Colors.green.shade600, size: 16),
                 const SizedBox(width: 8),
                 const Text(
-                  '转录文件已保存',
+                  'Transcription file saved',
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
@@ -1029,7 +1042,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                 Icon(Icons.analytics, color: Colors.green.shade600, size: 16),
                 const SizedBox(width: 8),
                 const Text(
-                  '分析结果已生成',
+                  'Analysis results generated',
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
@@ -1059,12 +1072,14 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('确认删除'),
-            content: const Text('确定要删除这个任务吗？此操作无法撤销。'),
+            title: const Text('Confirm Delete'),
+            content: const Text(
+              'Are you sure you want to delete this task? This action cannot be undone.',
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('取消'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () {
@@ -1072,7 +1087,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                   _removeTask();
                 },
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('删除'),
+                child: const Text('Delete'),
               ),
             ],
           ),
@@ -1127,9 +1142,3 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     }
   }
 }
-
-
-/*
-
-
-*/
