@@ -21,7 +21,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   @override
   void initState() {
     super.initState();
-  } // 创建或添加文件到任务
+  } // 创建新任务（空任务）
 
   Future<void> _createUpdateDataTask() async {
     if (_isCreatingTask) return;
@@ -29,6 +29,31 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     setState(() {
       _isCreatingTask = true;
     });
+
+    try {
+      if (_updateDataTask != null) {
+        // 已有任务，询问是否替换
+        final shouldReplace = await _showReplaceTaskDialog();
+        if (!shouldReplace) {
+          return;
+        }
+      }
+
+      // 创建空任务
+      await _createEmptyTask();
+    } catch (e) {
+      Logger().e('创建任务时出错: $e');
+      _showErrorDialog('创建任务失败: $e');
+    } finally {
+      setState(() {
+        _isCreatingTask = false;
+      });
+    }
+  }
+
+  // 添加文件到任务
+  Future<void> _addFileToTask() async {
+    if (_updateDataTask == null) return;
 
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -39,29 +64,22 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           result.files.isNotEmpty &&
           result.paths.first != null) {
         final selectedFilePath = result.paths.first!;
-
-        if (_updateDataTask == null) {
-          // 创建新任务
-          await _createNewTask(selectedFilePath);
-        } else {
-          // 添加文件到现有任务
-          await _addFileToExistingTask(selectedFilePath);
-        }
+        await _addFileToExistingTask(selectedFilePath);
       } else {
         Logger().d('用户取消了文件选择');
       }
     } catch (e) {
-      Logger().e('处理文件时出错: $e');
-      _showErrorDialog('处理文件失败: $e');
-    } finally {
-      setState(() {
-        _isCreatingTask = false;
-      });
+      Logger().e('添加文件时出错: $e');
+      _showErrorDialog('添加文件失败: $e');
     }
   }
 
-  // 创建新任务
-  Future<void> _createNewTask(String filePath) async {
+  /*
+
+  */
+
+  // 创建空任务
+  Future<void> _createEmptyTask() async {
     // 获取用户ID
     final userId = AppRuntimeContext().runtimeData.user.id;
 
@@ -70,21 +88,23 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       return;
     }
 
-    // 创建 UpdateDataTask 实例
+    // 创建空的 UpdateDataTask 实例
     _updateDataTask = UpdateDataTask(
       userId: userId,
       assetFileNames: [], // 不使用 assets 文件
-      pickedFileNames: [filePath], // 单个文件
+      pickedFileNames: [], // 空文件列表
     );
 
     setState(() {});
 
-    Logger().d('创建新任务: ${_updateDataTask.toString()}');
-    Logger().d('初始文件: $filePath');
+    Logger().d('创建空任务: ${_updateDataTask.toString()}');
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('任务创建成功！'), backgroundColor: Colors.green),
+        const SnackBar(
+          content: Text('任务创建成功！请添加文件。'),
+          backgroundColor: Colors.green,
+        ),
       );
     }
   }
@@ -92,12 +112,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 添加文件到现有任务
   Future<void> _addFileToExistingTask(String filePath) async {
     if (_updateDataTask == null) return;
-
-    // 检查任务状态，只有在idle状态才能添加文件
-    if (_updateDataTask!.status != UpdateDataTaskStatus.idle) {
-      _showErrorDialog('任务已开始，无法添加新文件。请先重置任务或创建新任务。');
-      return;
-    }
 
     // 检查文件是否已存在
     if (_updateDataTask!.pickedFileNames.contains(filePath)) {
@@ -149,6 +163,30 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     );
   }
 
+  // 显示替换任务确认对话框
+  Future<bool> _showReplaceTaskDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('创建新任务'),
+            content: const Text('当前已有任务，创建新任务将替换当前任务。确定要继续吗？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(foregroundColor: Colors.blue),
+                child: const Text('创建新任务'),
+              ),
+            ],
+          ),
+    );
+    return result ?? false;
+  }
+
   // 删除任务
   void _removeTask() {
     setState(() {
@@ -157,20 +195,6 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('任务已删除'), backgroundColor: Colors.orange),
-      );
-    }
-  }
-
-  // 重置任务
-  void _resetTask() {
-    if (_updateDataTask == null) return;
-
-    _updateDataTask!.reset();
-    setState(() {});
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('任务已重置'), backgroundColor: Colors.blue),
       );
     }
   }
@@ -323,6 +347,12 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
+          if (_updateDataTask != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: _showDeleteConfirmDialog,
+              tooltip: '删除任务',
+            ),
           IconButton(
             icon:
                 _isCreatingTask
@@ -333,6 +363,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                     )
                     : const Icon(Icons.add),
             onPressed: _isCreatingTask ? null : _createUpdateDataTask,
+            tooltip: '创建新任务',
           ),
         ],
       ),
@@ -358,7 +389,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           ),
           SizedBox(height: 8),
           Text(
-            '点击右上角的 + 按钮选择音频文件开始',
+            '点击右上角的 + 按钮创建新任务',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
@@ -386,8 +417,8 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 任务头部信息
-            _buildTaskHeader(task, index),
+            // 文件列表
+            _buildFileList(task),
             const SizedBox(height: 16),
 
             // 状态信息
@@ -415,99 +446,96 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     );
   }
 
-  // 构建任务头部
-  Widget _buildTaskHeader(UpdateDataTask task, int index) {
-    return Row(
-      children: [
-        // 状态图标
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: _getStatusColor(task).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Icon(
-            _getStatusIcon(task),
-            color: _getStatusColor(task),
-            size: 20,
-          ),
-        ),
-        const SizedBox(width: 12),
-
-        // 任务信息
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  // 构建文件列表
+  Widget _buildFileList(UpdateDataTask task) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
+              Icon(Icons.folder_open, color: Colors.blue.shade600, size: 16),
+              const SizedBox(width: 8),
               Text(
-                '任务 ${index + 1}',
+                '文件列表 (${task.pickedFileNames.length})',
                 style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
               ),
-              Text(
-                '用户: ${task.userId}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-              Text(
-                '文件数: ${task.pickedFileNames.length}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
+              const Spacer(),
+              // 添加文件按钮
+              if (task.status == UpdateDataTaskStatus.idle)
+                TextButton.icon(
+                  onPressed: _addFileToTask,
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('添加文件'),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                  ),
+                ),
             ],
           ),
-        ),
-
-        // 操作按钮
-        PopupMenuButton<String>(
-          onSelected: (value) {
-            if (value == 'delete') {
-              _showDeleteConfirmDialog();
-            } else if (value == 'reset') {
-              _resetTask();
-            } else if (value == 'add_file') {
-              _createUpdateDataTask(); // 复用添加文件的逻辑
-            }
-          },
-          itemBuilder:
-              (context) => [
-                if (task.status == UpdateDataTaskStatus.idle)
-                  const PopupMenuItem(
-                    value: 'add_file',
-                    child: Row(
-                      children: [
-                        Icon(Icons.add, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Text('添加文件'),
-                      ],
+          const SizedBox(height: 8),
+          if (task.pickedFileNames.isEmpty)
+            const Text(
+              '暂无文件',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            )
+          else
+            ...task.pickedFileNames.asMap().entries.map((entry) {
+              final index = entry.key;
+              final filePath = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        '${index + 1}.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                  ),
-                if (task.status != UpdateDataTaskStatus.idle)
-                  const PopupMenuItem(
-                    value: 'reset',
-                    child: Row(
-                      children: [
-                        Icon(Icons.refresh, color: Colors.orange),
-                        SizedBox(width: 8),
-                        Text('重置任务'),
-                      ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.blue.shade200),
+                        ),
+                        child: Text(
+                          filePath,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontFamily: 'monospace',
+                          ),
+                          maxLines: null, // 允许多行
+                        ),
+                      ),
                     ),
-                  ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('删除任务'),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
-          child: const Icon(Icons.more_vert),
-        ),
-      ],
+              );
+            }),
+        ],
+      ),
     );
   }
 
@@ -790,8 +818,3 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     }
   }
 }
-
-
-/*
-
-*/

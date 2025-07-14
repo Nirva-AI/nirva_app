@@ -7,7 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
 
-const String serverAddress = '192.168.2.78';
+const String serverAddress = '192.168.192.122';
 const int basePort = 8001;
 const String devHttpUrl = 'http://$serverAddress:$basePort';
 
