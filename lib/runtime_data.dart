@@ -18,14 +18,8 @@ class RuntimeData {
   // 日记条目笔记
   ValueNotifier<List<Note>> notes = ValueNotifier([]);
 
-  // 缓存的日记文件列表
-  ValueNotifier<List<JournalFile>> journalFiles = ValueNotifier([]);
-
   // 聊天消息历史记录
   ValueNotifier<List<ChatMessage>> chatHistory = ValueNotifier([]);
-
-  //
-  List<Dashboard> dashboards = [];
 
   bool hasTask(String tag, String description) {
     // 检查是否存在指定标签和描述的任务
@@ -108,76 +102,6 @@ class RuntimeData {
     }
     // 通知监听者
     notes.value = List.from(notes.value);
-  }
-
-  //
-  List<JournalFile> _sortJournalFilesByDate() {
-    // 按照时间戳排序日记文件
-    journalFiles.value =
-        journalFiles.value.where((file) => file.time_stamp.isNotEmpty).toList()
-          ..sort(
-            (a, b) => DateTime.parse(
-              a.time_stamp,
-            ).compareTo(DateTime.parse(b.time_stamp)),
-          );
-
-    return journalFiles.value;
-  }
-
-  void _refreshDashboardData() {
-    dashboards.clear();
-    if (journalFiles.value.isEmpty) {
-      return;
-    }
-
-    final firstDayTimeStamp = journalFiles.value.first.time_stamp;
-    final currentDay = DateTime.now();
-
-    var firstDay = DateTime.parse(firstDayTimeStamp);
-    var daysBetween = currentDay.difference(firstDay).inDays;
-    if (daysBetween < 14) {
-      // 如果当前日期早于第一个日记文件的日期，则不需要创建仪表板
-      firstDay = currentDay.subtract(Duration(days: 14));
-      daysBetween = 14; // 确保至少有14天的数据
-      debugPrint(
-        'Rebuilding Dashboard2 with first day: $firstDay, days between: $daysBetween',
-      );
-    }
-
-    for (int i = 0; i <= daysBetween; i++) {
-      final date = firstDay.add(Duration(days: i));
-      dashboards.add(Dashboard(dateTime: date));
-      // 如果是测试模式，则测试仪表板的随机打乱
-      dashboards.last.testShuffle();
-    }
-
-    for (var dashboard in dashboards) {
-      // 遍历每个仪表板，填充数据
-      final journalFile = getJournalFileByDate(dashboard.dateTime);
-      if (journalFile != null) {
-        dashboard.journalFile = journalFile;
-        dashboard.syncDataWithJournalFile();
-      }
-    }
-  }
-
-  JournalFile? getJournalFileByDate(DateTime date) {
-    // 根据日期获取日记文件
-    final dateString = JournalFile.dateTimeToKey(date);
-    for (var file in journalFiles.value) {
-      if (file.time_stamp.startsWith(dateString)) {
-        return file; // 返回匹配的日记文件
-      }
-    }
-    return null; // 如果没有找到匹配的日记文件，则返回null
-  }
-
-  //
-  void setupJournalFiles(List<JournalFile> files) {
-    // 初始化日记文件列表
-    journalFiles.value = files;
-    _sortJournalFilesByDate(); // 排序
-    _refreshDashboardData();
   }
 
   // 添加聊天消息到历史记录

@@ -52,6 +52,7 @@ dependencies:
   permission_handler: ^11.2.0
   uuid: ^4.3.3
   intl: ^0.18.1
+  provider: ^6.1.2
   # Amplify Flutter SDK
   amplify_flutter: ^2.4.0
   amplify_api: ^2.4.0
