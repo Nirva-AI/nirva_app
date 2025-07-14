@@ -1,5 +1,6 @@
 import 'package:nirva_app/data.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 import 'package:nirva_app/transcribe_file_name.dart';
 import 'package:nirva_app/apis.dart';
 
@@ -15,8 +16,8 @@ enum AnalyzeTaskStatus {
 
 /// 分析任务类，包含上传、分析、获取结果三个独立步骤
 class AnalyzeTask {
-  // analyze_task.dart
   // 基础属性
+  final String id; // 任务唯一标识符
   final String content;
   final TranscribeFileName transcribeFileName;
   final String fileName;
@@ -33,10 +34,12 @@ class AnalyzeTask {
 
   /// 构造函数
   AnalyzeTask({
+    String? id, // 可选参数，如果不提供则自动生成
     required this.content,
     required this.transcribeFileName,
     required this.fileName,
-  }) : dateKey = JournalFile.dateTimeToKey(transcribeFileName.dateTime);
+  }) : id = id ?? const Uuid().v4(), // 如果没有提供id则生成新的UUID
+       dateKey = JournalFile.dateTimeToKey(transcribeFileName.dateTime);
 
   /// 步骤1：上传转录数据
   Future<bool> uploadTranscript() async {
@@ -147,6 +150,14 @@ class AnalyzeTask {
       status == AnalyzeTaskStatus.uploading ||
       status == AnalyzeTaskStatus.analyzing ||
       status == AnalyzeTaskStatus.gettingResults;
+
+  /// 任务唯一标识符访问器
+  String get taskId => id;
+
+  @override
+  String toString() {
+    return 'AnalyzeTask{id: $id, dateKey: $dateKey, fileName: $fileName, status: $status}';
+  }
 
   // =============================================================================
   // 状态恢复方法（用于从持久化数据恢复任务状态）

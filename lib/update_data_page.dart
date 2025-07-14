@@ -52,6 +52,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         if (constructorData != null) {
           // 从存储数据重建 UpdateDataTask
           _updateDataTask = UpdateDataTask(
+            id: constructorData['id'], // 添加 id 参数
             userId: constructorData['userId'],
             assetFileNames: List<String>.from(
               constructorData['assetFileNames'],
@@ -140,6 +141,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       final analyzeState = _updateDataTask!.analyzeTaskState;
       if (analyzeState != null) {
         analyzeStorage = AnalyzeTaskStorage.create(
+          id: analyzeState['id'], // 添加 id 参数
           content: analyzeState['content'],
           transcribeFileName: analyzeState['transcribeFileName'],
           fileName: analyzeState['fileName'],
@@ -153,6 +155,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       }
 
       await hiveManager.saveUpdateDataTaskFromData(
+        id: _updateDataTask!.id, // 添加 id 参数
         userId: _updateDataTask!.userId,
         assetFileNames: _updateDataTask!.assetFileNames,
         pickedFileNames: _updateDataTask!.pickedFileNames,
@@ -296,8 +299,9 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     final newPickedFiles = [..._updateDataTask!.pickedFileNames, filePath];
 
     _updateDataTask = UpdateDataTask(
+      id: _updateDataTask!.id, // 保持相同的 ID
       userId: _updateDataTask!.userId,
-      creationTime: DateTime.now(), // 使用当前时间作为创建时间
+      creationTime: _updateDataTask!.creationTime, // 保持原始创建时间
       assetFileNames: _updateDataTask!.assetFileNames,
       pickedFileNames: newPickedFiles,
     );
@@ -642,6 +646,10 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 任务基本信息
+            _buildTaskInfo(task),
+            const SizedBox(height: 16),
+
             // 文件列表
             _buildFileList(task),
             const SizedBox(height: 16),
@@ -667,6 +675,69 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  // 构建任务基本信息
+  Widget _buildTaskInfo(UpdateDataTask task) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.assignment, color: Colors.blue.shade600, size: 16),
+              const SizedBox(width: 8),
+              const Text(
+                '任务信息',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Text(
+                'ID: ',
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Text(
+                    task.id,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '创建时间: ${task.creationTime.toString().substring(0, 19)}',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+        ],
       ),
     );
   }
@@ -963,6 +1034,19 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
                 ),
               ],
             ),
+            // 显示 AnalyzeTask ID
+            if (task.analysisResult != null &&
+                task.analyzeTaskState != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Analysis Task ID: ${task.analyzeTaskState!['id']}',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.green.shade700,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
           ],
         ],
       ),

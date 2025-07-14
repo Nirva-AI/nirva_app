@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 import 'package:nirva_app/transcribe_file_name.dart';
 import 'package:nirva_app/analyze_task.dart';
 import 'package:nirva_app/transcription_task.dart';
@@ -31,6 +32,7 @@ enum UpdateDataTaskStatus {
 class UpdateDataTask {
   // update_data_task.dart
   // 基础属性
+  final String id; // 任务唯一标识符
   final String userId;
   final List<String> assetFileNames;
   final List<String> pickedFileNames;
@@ -47,15 +49,19 @@ class UpdateDataTask {
 
   /// 构造函数
   UpdateDataTask({
+    String? id, // 可选参数，如果不提供则自动生成
     required this.userId,
     required this.creationTime,
     this.assetFileNames = const [],
     this.pickedFileNames = const [],
-  });
+  }) : id = id ?? const Uuid().v4(); // 如果没有提供id则生成新的UUID
 
   // =============================================================================
   // 公共属性访问器
   // =============================================================================
+
+  /// 任务唯一标识符
+  String get taskId => id;
 
   /// 当前状态
   UpdateDataTaskStatus get status => _status;
@@ -98,6 +104,7 @@ class UpdateDataTask {
     if (_analyzeTask == null) return null;
 
     return {
+      'id': _analyzeTask!.id, // 添加 id 字段
       'content': _analyzeTask!.content,
       'transcribeFileName': _analyzeTask!.transcribeFileName,
       'fileName': _analyzeTask!.fileName,
@@ -508,6 +515,7 @@ class UpdateDataTask {
     // 恢复 AnalyzeTask
     if (analyzeTaskData != null) {
       _analyzeTask = AnalyzeTask(
+        id: analyzeTaskData['id'], // 添加 id 参数
         content: analyzeTaskData['content'],
         transcribeFileName: analyzeTaskData['transcribeFileName'],
         fileName: analyzeTaskData['fileName'],
@@ -526,7 +534,7 @@ class UpdateDataTask {
 
   @override
   String toString() {
-    return 'UpdateDataTask{userId: $userId, status: $_status, '
+    return 'UpdateDataTask{id: $id, userId: $userId, status: $_status, '
         'assetFiles: ${assetFileNames.length}, pickedFiles: ${pickedFileNames.length}, '
         'creationTime: $creationTime}';
   }

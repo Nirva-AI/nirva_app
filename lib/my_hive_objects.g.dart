@@ -409,13 +409,14 @@ class AnalyzeTaskStorageAdapter extends TypeAdapter<AnalyzeTaskStorage> {
       uploadResponseMessage: fields[6] as String?,
       analyzeTaskId: fields[7] as String?,
       journalFileResultJson: fields[8] as String?,
+      id: fields[9] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, AnalyzeTaskStorage obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.content)
       ..writeByte(1)
@@ -433,7 +434,9 @@ class AnalyzeTaskStorageAdapter extends TypeAdapter<AnalyzeTaskStorage> {
       ..writeByte(7)
       ..write(obj.analyzeTaskId)
       ..writeByte(8)
-      ..write(obj.journalFileResultJson);
+      ..write(obj.journalFileResultJson)
+      ..writeByte(9)
+      ..write(obj.id);
   }
 
   @override
@@ -468,13 +471,14 @@ class UpdateDataTaskStorageAdapter extends TypeAdapter<UpdateDataTaskStorage> {
       uploadAndTranscribeTaskStorage:
           fields[7] as UploadAndTranscribeTaskStorage?,
       analyzeTaskStorage: fields[8] as AnalyzeTaskStorage?,
+      id: fields[9] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, UpdateDataTaskStorage obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -492,7 +496,9 @@ class UpdateDataTaskStorageAdapter extends TypeAdapter<UpdateDataTaskStorage> {
       ..writeByte(7)
       ..write(obj.uploadAndTranscribeTaskStorage)
       ..writeByte(8)
-      ..write(obj.analyzeTaskStorage);
+      ..write(obj.analyzeTaskStorage)
+      ..writeByte(9)
+      ..write(obj.id);
   }
 
   @override

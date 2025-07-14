@@ -505,6 +505,7 @@ class MyHiveManager {
 
   /// 从 UpdateDataTask 创建并保存存储对象 (便利方法)
   Future<void> saveUpdateDataTaskFromData({
+    required String id, // 添加 id 参数
     required String userId,
     required List<String> assetFileNames,
     required List<String> pickedFileNames,
@@ -516,6 +517,7 @@ class MyHiveManager {
     AnalyzeTaskStorage? analyzeTaskStorage,
   }) async {
     final storage = UpdateDataTaskStorage.create(
+      id: id, // 添加 id 参数
       userId: userId,
       assetFileNames: assetFileNames,
       pickedFileNames: pickedFileNames,
