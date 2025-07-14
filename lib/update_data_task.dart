@@ -34,6 +34,7 @@ class UpdateDataTask {
   final String userId;
   final List<String> assetFileNames;
   final List<String> pickedFileNames;
+  final DateTime creationTime; // 用于命名的时间
 
   // 子任务实例
   UploadAndTranscribeTask? _uploadAndTranscribeTask;
@@ -47,6 +48,7 @@ class UpdateDataTask {
   /// 构造函数
   UpdateDataTask({
     required this.userId,
+    required this.creationTime,
     this.assetFileNames = const [],
     this.pickedFileNames = const [],
   });
@@ -133,6 +135,7 @@ class UpdateDataTask {
         userId: userId,
         assetFileNames: assetFileNames,
         pickedFileNames: pickedFileNames,
+        creationTime: creationTime,
       );
 
       Logger().d('UpdateDataTask: 开始准备文件...');
@@ -416,6 +419,7 @@ class UpdateDataTask {
   @override
   String toString() {
     return 'UpdateDataTask{userId: $userId, status: $_status, '
-        'assetFiles: ${assetFileNames.length}, pickedFiles: ${pickedFileNames.length}}';
+        'assetFiles: ${assetFileNames.length}, pickedFiles: ${pickedFileNames.length}, '
+        'creationTime: $creationTime}';
   }
 }

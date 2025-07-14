@@ -91,6 +91,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     // 创建空的 UpdateDataTask 实例
     _updateDataTask = UpdateDataTask(
       userId: userId,
+      creationTime: DateTime.now(), // 使用当前时间作为创建时间
       assetFileNames: [], // 不使用 assets 文件
       pickedFileNames: [], // 空文件列表
     );
@@ -124,6 +125,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
     _updateDataTask = UpdateDataTask(
       userId: _updateDataTask!.userId,
+      creationTime: DateTime.now(), // 使用当前时间作为创建时间
       assetFileNames: _updateDataTask!.assetFileNames,
       pickedFileNames: newPickedFiles,
     );
