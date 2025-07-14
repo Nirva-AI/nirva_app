@@ -39,7 +39,7 @@ void main() async {
 
 Future<void> _initializeApp() async {
   // 这句是测试的，清空之前的数据
-  await AppRuntimeContext().hiveManager.deleteFromDisk();
+  //await AppRuntimeContext().hiveManager.deleteFromDisk();
 
   // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
   await AppRuntimeContext().hiveManager.initializeAdapters();

@@ -74,6 +74,43 @@ class UpdateDataTask {
       _uploadAndTranscribeTask?.uploadedFileNames ?? [];
 
   // =============================================================================
+  // 子任务状态访问器（用于持久化）
+  // =============================================================================
+
+  /// 获取 UploadAndTranscribeTask 的状态信息
+  Map<String, dynamic>? get uploadAndTranscribeTaskState {
+    if (_uploadAndTranscribeTask == null) return null;
+
+    return {
+      'taskId': _uploadAndTranscribeTask!.taskId,
+      'userId': _uploadAndTranscribeTask!.userId,
+      'assetFileNames': _uploadAndTranscribeTask!.assetFileNames,
+      'pickedFileNames': _uploadAndTranscribeTask!.pickedFileNames,
+      'creationTime': _uploadAndTranscribeTask!.creationTime,
+      'uploadedFileNames': _uploadAndTranscribeTask!.uploadedFileNames,
+      'isUploaded': _uploadAndTranscribeTask!.isUploaded,
+      'isTranscribed': _uploadAndTranscribeTask!.isTranscribed,
+    };
+  }
+
+  /// 获取 AnalyzeTask 的状态信息
+  Map<String, dynamic>? get analyzeTaskState {
+    if (_analyzeTask == null) return null;
+
+    return {
+      'content': _analyzeTask!.content,
+      'transcribeFileName': _analyzeTask!.transcribeFileName,
+      'fileName': _analyzeTask!.fileName,
+      'dateKey': _analyzeTask!.dateKey,
+      'status': _analyzeTask!.status,
+      'errorMessage': _analyzeTask!.errorMessage,
+      'uploadResponseMessage': _analyzeTask!.uploadResponseMessage,
+      'analyzeTaskId': _analyzeTask!.analyzeTaskId,
+      'journalFileResult': _analyzeTask!.journalFileResult,
+    };
+  }
+
+  // =============================================================================
   // 状态检查方法
   // =============================================================================
 
@@ -413,6 +450,77 @@ class UpdateDataTask {
         return '全部完成';
       case UpdateDataTaskStatus.failed:
         return '失败: ${_errorMessage ?? "未知错误"}';
+    }
+  }
+
+  // =============================================================================
+  // 状态恢复方法（用于从持久化数据恢复任务状态）
+  // =============================================================================
+
+  /// 恢复任务的状态信息
+  ///
+  /// 用于从持久化存储中恢复任务的完整状态，包括私有字段
+  /// [status] 任务状态
+  /// [errorMessage] 错误信息
+  /// [transcriptFilePath] 转录文件路径
+  void restoreTaskState({
+    required UpdateDataTaskStatus status,
+    String? errorMessage,
+    String? transcriptFilePath,
+  }) {
+    _status = status;
+    _errorMessage = errorMessage;
+    _transcriptFilePath = transcriptFilePath;
+  }
+
+  /// 恢复子任务状态
+  ///
+  /// 从持久化数据重建子任务实例
+  /// [uploadTaskData] UploadAndTranscribeTask的构造数据
+  /// [analyzeTaskData] AnalyzeTask的构造数据
+  void restoreSubTasks({
+    Map<String, dynamic>? uploadTaskData,
+    Map<String, dynamic>? analyzeTaskData,
+  }) {
+    // 恢复 UploadAndTranscribeTask
+    if (uploadTaskData != null) {
+      _uploadAndTranscribeTask = UploadAndTranscribeTask(
+        userId: uploadTaskData['userId'],
+        assetFileNames: List<String>.from(uploadTaskData['assetFileNames']),
+        pickedFileNames: List<String>.from(uploadTaskData['pickedFileNames']),
+        creationTime: uploadTaskData['creationTime'],
+      );
+
+      // 恢复私有状态（如果有相关方法）
+      if (uploadTaskData.containsKey('isUploaded') &&
+          uploadTaskData.containsKey('isTranscribed') &&
+          uploadTaskData.containsKey('uploadedFileNames')) {
+        _uploadAndTranscribeTask!.restoreState(
+          isUploaded: uploadTaskData['isUploaded'],
+          isTranscribed: uploadTaskData['isTranscribed'],
+          uploadedFileNames: List<String>.from(
+            uploadTaskData['uploadedFileNames'],
+          ),
+        );
+      }
+    }
+
+    // 恢复 AnalyzeTask
+    if (analyzeTaskData != null) {
+      _analyzeTask = AnalyzeTask(
+        content: analyzeTaskData['content'],
+        transcribeFileName: analyzeTaskData['transcribeFileName'],
+        fileName: analyzeTaskData['fileName'],
+      );
+
+      // 恢复私有状态
+      _analyzeTask!.restoreState(
+        status: analyzeTaskData['status'],
+        errorMessage: analyzeTaskData['errorMessage'],
+        uploadResponseMessage: analyzeTaskData['uploadResponseMessage'],
+        analyzeTaskId: analyzeTaskData['analyzeTaskId'],
+        journalFileResult: analyzeTaskData['journalFileResult'],
+      );
     }
   }
 

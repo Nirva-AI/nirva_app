@@ -147,6 +147,25 @@ class AnalyzeTask {
       status == AnalyzeTaskStatus.uploading ||
       status == AnalyzeTaskStatus.analyzing ||
       status == AnalyzeTaskStatus.gettingResults;
+
+  // =============================================================================
+  // 状态恢复方法（用于从持久化数据恢复任务状态）
+  // =============================================================================
+
+  /// 恢复私有状态（用于从持久化存储恢复）
+  void restoreState({
+    required AnalyzeTaskStatus status,
+    String? errorMessage,
+    String? uploadResponseMessage,
+    String? analyzeTaskId,
+    JournalFile? journalFileResult,
+  }) {
+    this.status = status;
+    this.errorMessage = errorMessage;
+    this.uploadResponseMessage = uploadResponseMessage;
+    this.analyzeTaskId = analyzeTaskId;
+    this.journalFileResult = journalFileResult;
+  }
 }
 
 /*

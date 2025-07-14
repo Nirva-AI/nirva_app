@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:logger/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/update_data_task.dart';
+import 'package:nirva_app/my_hive_objects.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -18,10 +20,171 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 是否正在创建任务
   bool _isCreatingTask = false;
 
+  // 是否已经加载过保存的任务
+  bool _hasLoadedSavedTask = false;
+
   @override
   void initState() {
     super.initState();
-  } // 创建新任务（空任务）
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 确保只加载一次保存的任务
+    if (!_hasLoadedSavedTask) {
+      _hasLoadedSavedTask = true;
+      _loadSavedTask();
+    }
+  }
+
+  // =============================================================================
+  // 任务存储相关方法
+  // =============================================================================
+
+  /// 加载保存的任务
+  Future<void> _loadSavedTask() async {
+    try {
+      final hiveManager = AppRuntimeContext().hiveManager;
+
+      if (hiveManager.hasUpdateDataTask()) {
+        final constructorData = hiveManager.getUpdateDataTaskConstructorData();
+        if (constructorData != null) {
+          // 从存储数据重建 UpdateDataTask
+          _updateDataTask = UpdateDataTask(
+            userId: constructorData['userId'],
+            assetFileNames: List<String>.from(
+              constructorData['assetFileNames'],
+            ),
+            pickedFileNames: List<String>.from(
+              constructorData['pickedFileNames'],
+            ),
+            creationTime: constructorData['creationTime'],
+          );
+
+          // 恢复任务状态
+          _updateDataTask!.restoreTaskState(
+            status: constructorData['status'],
+            errorMessage: constructorData['errorMessage'],
+            transcriptFilePath: constructorData['transcriptFilePath'],
+          );
+
+          // 恢复子任务状态
+          _updateDataTask!.restoreSubTasks(
+            uploadTaskData: constructorData['uploadAndTranscribeTaskData'],
+            analyzeTaskData: constructorData['analyzeTaskData'],
+          );
+
+          setState(() {});
+
+          Logger().d('已加载保存的任务: ${_updateDataTask.toString()}');
+
+          // 使用 post-frame callback 来在构建完成后显示 SnackBar
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('已恢复之前保存的任务'),
+                  backgroundColor: Colors.blue,
+                ),
+              );
+            }
+          });
+        }
+      }
+    } catch (e) {
+      Logger().e('加载保存的任务失败: $e');
+      // 加载失败时显示错误但不阻止操作
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('恢复任务失败: $e'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      });
+    }
+  }
+
+  /// 保存当前任务状态
+  Future<void> _saveCurrentTask() async {
+    if (_updateDataTask == null) return;
+
+    try {
+      final hiveManager = AppRuntimeContext().hiveManager;
+
+      // 获取子任务存储数据
+      UploadAndTranscribeTaskStorage? uploadStorage;
+      AnalyzeTaskStorage? analyzeStorage;
+
+      // 保存UploadAndTranscribeTask状态
+      final uploadState = _updateDataTask!.uploadAndTranscribeTaskState;
+      if (uploadState != null) {
+        uploadStorage = UploadAndTranscribeTaskStorage.create(
+          taskId: uploadState['taskId'],
+          userId: uploadState['userId'],
+          assetFileNames: List<String>.from(uploadState['assetFileNames']),
+          pickedFileNames: List<String>.from(uploadState['pickedFileNames']),
+          creationTime: uploadState['creationTime'],
+          uploadedFileNames: List<String>.from(
+            uploadState['uploadedFileNames'],
+          ),
+          isUploaded: uploadState['isUploaded'],
+          isTranscribed: uploadState['isTranscribed'],
+        );
+      }
+
+      // 保存AnalyzeTask状态
+      final analyzeState = _updateDataTask!.analyzeTaskState;
+      if (analyzeState != null) {
+        analyzeStorage = AnalyzeTaskStorage.create(
+          content: analyzeState['content'],
+          transcribeFileName: analyzeState['transcribeFileName'],
+          fileName: analyzeState['fileName'],
+          dateKey: analyzeState['dateKey'],
+          status: analyzeState['status'],
+          errorMessage: analyzeState['errorMessage'],
+          uploadResponseMessage: analyzeState['uploadResponseMessage'],
+          analyzeTaskId: analyzeState['analyzeTaskId'],
+          journalFileResult: analyzeState['journalFileResult'],
+        );
+      }
+
+      await hiveManager.saveUpdateDataTaskFromData(
+        userId: _updateDataTask!.userId,
+        assetFileNames: _updateDataTask!.assetFileNames,
+        pickedFileNames: _updateDataTask!.pickedFileNames,
+        creationTime: _updateDataTask!.creationTime,
+        status: _updateDataTask!.status,
+        errorMessage: _updateDataTask!.errorMessage,
+        transcriptFilePath: _updateDataTask!.transcriptFilePath,
+        uploadAndTranscribeTaskStorage: uploadStorage,
+        analyzeTaskStorage: analyzeStorage,
+      );
+
+      Logger().d('任务状态已保存');
+    } catch (e) {
+      Logger().e('保存任务状态失败: $e');
+      // 保存失败时阻止操作
+      throw Exception('保存任务状态失败: $e');
+    }
+  }
+
+  /// 删除保存的任务
+  Future<void> _deleteSavedTask() async {
+    try {
+      final hiveManager = AppRuntimeContext().hiveManager;
+      await hiveManager.deleteUpdateDataTask();
+      Logger().d('已删除保存的任务');
+    } catch (e) {
+      Logger().e('删除保存的任务失败: $e');
+      // 删除失败时不阻止操作，因为这不是关键操作
+    }
+  }
+
+  // 创建新任务（空任务）
 
   Future<void> _createUpdateDataTask() async {
     if (_isCreatingTask) return;
@@ -96,6 +259,15 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       pickedFileNames: [], // 空文件列表
     );
 
+    // 保存任务状态
+    try {
+      await _saveCurrentTask();
+    } catch (e) {
+      _showErrorDialog('保存任务失败: $e');
+      _updateDataTask = null; // 创建失败时清空任务
+      return;
+    }
+
     setState(() {});
 
     Logger().d('创建空任务: ${_updateDataTask.toString()}');
@@ -129,6 +301,14 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
       assetFileNames: _updateDataTask!.assetFileNames,
       pickedFileNames: newPickedFiles,
     );
+
+    // 保存任务状态
+    try {
+      await _saveCurrentTask();
+    } catch (e) {
+      _showErrorDialog('保存任务失败: $e');
+      return;
+    }
 
     setState(() {});
 
@@ -194,6 +374,10 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     setState(() {
       _updateDataTask = null;
     });
+
+    // 删除保存的任务
+    _deleteSavedTask();
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('任务已删除'), backgroundColor: Colors.orange),
@@ -205,6 +389,15 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   Future<void> _executeTranscriptionUpload(UpdateDataTask task) async {
     try {
       final success = await task.executeTranscriptionUpload();
+
+      // 保存任务状态
+      try {
+        await _saveCurrentTask();
+      } catch (e) {
+        _showErrorDialog('保存任务状态失败: $e');
+        return;
+      }
+
       setState(() {});
 
       if (success) {
@@ -230,6 +423,15 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   Future<void> _getTranscriptionResults(UpdateDataTask task) async {
     try {
       final success = await task.getTranscriptionResults();
+
+      // 保存任务状态
+      try {
+        await _saveCurrentTask();
+      } catch (e) {
+        _showErrorDialog('保存任务状态失败: $e');
+        return;
+      }
+
       setState(() {});
 
       if (success) {
@@ -255,6 +457,15 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   Future<void> _executeAnalysisRequest(UpdateDataTask task) async {
     try {
       final success = await task.executeAnalysisRequest();
+
+      // 保存任务状态
+      try {
+        await _saveCurrentTask();
+      } catch (e) {
+        _showErrorDialog('保存任务状态失败: $e');
+        return;
+      }
+
       setState(() {});
 
       if (success) {
@@ -280,6 +491,15 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   Future<void> _getAnalysisResults(UpdateDataTask task) async {
     try {
       final success = await task.getAnalysisResults();
+
+      // 保存任务状态
+      try {
+        await _saveCurrentTask();
+      } catch (e) {
+        _showErrorDialog('保存任务状态失败: $e');
+        return;
+      }
+
       setState(() {});
 
       if (success) {
@@ -823,3 +1043,9 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     }
   }
 }
+
+
+/*
+
+
+*/

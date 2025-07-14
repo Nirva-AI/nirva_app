@@ -502,6 +502,21 @@ class UploadAndTranscribeTask {
   bool get isTranscribed => _isTranscribed;
   List<String> get uploadedFileNames => List.unmodifiable(_uploadedFileNames);
 
+  // =============================================================================
+  // 状态恢复方法（用于从持久化数据恢复任务状态）
+  // =============================================================================
+
+  /// 恢复私有状态（用于从持久化存储恢复）
+  void restoreState({
+    required bool isUploaded,
+    required bool isTranscribed,
+    required List<String> uploadedFileNames,
+  }) {
+    _isUploaded = isUploaded;
+    _isTranscribed = isTranscribed;
+    _uploadedFileNames = List.from(uploadedFileNames);
+  }
+
   /// 保存合并文本到文件
   ///
   /// 将合并的转录文本保存到应用文档目录中，使用TranscribeFileName生成标准格式的文件名
