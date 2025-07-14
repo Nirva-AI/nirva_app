@@ -28,6 +28,9 @@ class AppRuntimeContext {
     _instance = AppRuntimeContext._internal();
   }
 
+  // 用户信息
+  User _user = User(id: "", username: "", password: "", displayName: "");
+
   // 当前选中的日期时间
   DateTime _selectedDateTime = DateTime.now();
 
@@ -48,6 +51,11 @@ class AppRuntimeContext {
 
   // JournalFiles Provider 引用
   JournalFilesProvider? _journalFilesProvider;
+
+  // 获取用户
+  User get user {
+    return _user;
+  }
 
   // 用于基础app服务的 Dio 实例
   final Dio _dio = Dio(
@@ -81,6 +89,10 @@ class AppRuntimeContext {
 
   Dio get dio {
     return _dio;
+  }
+
+  void setUser(User user) {
+    _user = user;
   }
 
   // 设置JournalFilesProvider
