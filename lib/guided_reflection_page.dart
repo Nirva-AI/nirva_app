@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/app_runtime_context.dart'; // 确保导入 DataManager
+import 'package:nirva_app/app_service.dart'; // 确保导入 DataManager
 
 class GuidedReflectionPage extends StatelessWidget {
   final EventAnalysis eventData; // 新增参数
@@ -73,14 +73,14 @@ class GuidedReflectionPage extends StatelessWidget {
                 onPressed: () async {
                   // 保存按钮点击事件
                   final content = _textController.text; // 获取输入框内容
-                  AppRuntimeContext().notesProvider.updateNote(
+                  AppService().notesProvider.updateNote(
                     eventData, // 使用 eventData
                     content,
                   ); // 保存到 NotesProvider
                   debugPrint('Save button pressed: $content'); // 打印保存内容
                   Navigator.pop(context); // 返回到 DiaryDetailsPage
-                  await AppRuntimeContext().hiveManager.saveNotes(
-                    AppRuntimeContext().notesProvider.notes,
+                  await AppService().hiveManager.saveNotes(
+                    AppService().notesProvider.notes,
                   );
                 },
                 style: ElevatedButton.styleFrom(

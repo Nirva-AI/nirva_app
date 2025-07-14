@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/data.dart';
 
@@ -15,7 +15,7 @@ class ReflectionSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fullDateTime = Utils.fullFormatEventDateTime(
-      AppRuntimeContext().selectedDateTime,
+      AppService().selectedDateTime,
     );
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -32,10 +32,7 @@ class ReflectionSummary extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            AppRuntimeContext()
-                .currentJournalFile
-                .daily_reflection
-                .reflection_summary,
+            AppService().currentJournalFile.daily_reflection.reflection_summary,
           ),
         ],
       ),
@@ -188,17 +185,17 @@ class _GoalCardState extends State<GoalCard> {
     debugPrint('Task added: ${widget.title}');
     bool hasChanged = false;
     for (var content in widget.contents) {
-      if (AppRuntimeContext().tasksProvider.hasTask(widget.title, content)) {
+      if (AppService().tasksProvider.hasTask(widget.title, content)) {
         // 如果任务已存在，则不添加
         continue;
       }
-      AppRuntimeContext().tasksProvider.addTask(widget.title, content);
+      AppService().tasksProvider.addTask(widget.title, content);
       hasChanged = true;
     }
 
     if (hasChanged) {
-      await AppRuntimeContext().hiveManager.saveTasks(
-        AppRuntimeContext().tasksProvider.tasks,
+      await AppService().hiveManager.saveTasks(
+        AppService().tasksProvider.tasks,
       );
     }
   }
@@ -231,7 +228,7 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   bool _checkValidity() {
-    return AppRuntimeContext().currentJournalFile.events.isNotEmpty;
+    return AppService().currentJournalFile.events.isNotEmpty;
   }
 
   Widget _createEmptyBody() {
@@ -260,8 +257,7 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildReflectionCards() {
-    final dailyReflection =
-        AppRuntimeContext().currentJournalFile.daily_reflection;
+    final dailyReflection = AppService().currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -455,8 +451,7 @@ class ReflectionsPage extends StatelessWidget {
   }
 
   Widget _buildGoalCards() {
-    final dailyReflection =
-        AppRuntimeContext().currentJournalFile.daily_reflection;
+    final dailyReflection = AppService().currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

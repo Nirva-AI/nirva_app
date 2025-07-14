@@ -15,20 +15,30 @@ const int basePort = 8001;
 const String devHttpUrl = 'http://$serverAddress:$basePort';
 
 // 管理全局数据的类
-class AppRuntimeContext {
+// 先这样，集中放一起，后续必要时候再拆。
+/*
+长期建议（重构）： 考虑拆分为多个服务类：
+class AppServiceLocator {  // 服务定位器
+  static AppDataService get dataService => AppDataService.instance;
+  static AppConfigService get configService => AppConfigService.instance;
+  static AppNetworkService get networkService => AppNetworkService.instance;
+}
+*/
+
+class AppService {
   // 可重置的单例模式
-  static AppRuntimeContext? _instance;
-  static AppRuntimeContext get instance {
-    _instance ??= AppRuntimeContext._internal();
+  static AppService? _instance;
+  static AppService get instance {
+    _instance ??= AppService._internal();
     return _instance!;
   }
 
-  factory AppRuntimeContext() => instance;
-  AppRuntimeContext._internal();
+  factory AppService() => instance;
+  AppService._internal();
 
   // 清空数据
   static void clear() {
-    _instance = AppRuntimeContext._internal();
+    _instance = AppService._internal();
   }
 
   // 用户信息
@@ -165,7 +175,7 @@ class AppRuntimeContext {
     chatHistoryProvider.clearChatHistory();
 
     // Hive 存储清除
-    await AppRuntimeContext().hiveManager.clearChatHistory();
+    await AppService().hiveManager.clearChatHistory();
   }
 
   //

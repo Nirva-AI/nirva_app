@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:logger/logger.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 
@@ -45,7 +45,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   /// 加载保存的任务
   Future<void> _loadSavedTask() async {
     try {
-      final hiveManager = AppRuntimeContext().hiveManager;
+      final hiveManager = AppService().hiveManager;
 
       if (hiveManager.hasUpdateDataTask()) {
         final constructorData = hiveManager.getUpdateDataTaskConstructorData();
@@ -114,7 +114,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     if (_updateDataTask == null) return;
 
     try {
-      final hiveManager = AppRuntimeContext().hiveManager;
+      final hiveManager = AppService().hiveManager;
 
       // 获取子任务存储数据
       UploadAndTranscribeTaskStorage? uploadStorage;
@@ -178,7 +178,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   /// 删除保存的任务
   Future<void> _deleteSavedTask() async {
     try {
-      final hiveManager = AppRuntimeContext().hiveManager;
+      final hiveManager = AppService().hiveManager;
       await hiveManager.deleteUpdateDataTask();
       Logger().d('已删除保存的任务');
     } catch (e) {
@@ -243,7 +243,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 创建空任务
   Future<void> _createEmptyTask() async {
     // 获取用户ID
-    final userId = AppRuntimeContext().user.id;
+    final userId = AppService().user.id;
 
     if (userId.isEmpty) {
       _showErrorDialog('User ID is empty, please ensure you are logged in');
@@ -529,7 +529,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
 
         // 如果有分析结果，可以添加到全局数据中
         if (task.analysisResult != null) {
-          AppRuntimeContext().addJournalFile(task.analysisResult!);
+          AppService().addJournalFile(task.analysisResult!);
           Logger().d('分析结果已添加到全局数据');
         }
       } else {

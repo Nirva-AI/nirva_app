@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 
 class UserProfilePage extends StatelessWidget {
   const UserProfilePage({super.key});
@@ -54,7 +54,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppRuntimeContext().user.username,
+                        AppService().user.username,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(
@@ -77,7 +77,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppRuntimeContext().user.displayName,
+                        AppService().user.displayName,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(
@@ -100,7 +100,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppRuntimeContext().dio.options.baseUrl,
+                        AppService().dio.options.baseUrl,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(

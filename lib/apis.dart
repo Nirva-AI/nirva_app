@@ -4,14 +4,14 @@ import 'package:nirva_app/api_models.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:nirva_app/my_hive_objects.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
 
 class APIs {
   // 获取 URL 配置，故意不抓留给外面抓。
   static Future<URLConfigurationResponse?> getUrlConfig() async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final response = await appRuntimeContext.dio.get<dynamic>("/config");
     final url_configuration_response = URLConfigurationResponse.fromJson(
       response.data!,
@@ -22,7 +22,7 @@ class APIs {
 
   // 登录方法
   static Future<UserToken?> login() async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
       appRuntimeContext.urlConfig.loginUrl,
       data: {
@@ -57,7 +57,7 @@ class APIs {
 
   // 登出方法，故意不抓留给外面抓。
   static Future<bool> logout() async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
       appRuntimeContext.urlConfig.logoutUrl,
       options: Options(
@@ -81,7 +81,7 @@ class APIs {
 
   // 刷新访问令牌，故意不抓留给外面抓。
   static Future<UserToken?> refreshToken() async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     if (appRuntimeContext.hiveManager.getUserToken().refresh_token.isEmpty) {
       Logger().e("没有可用的刷新令牌，无法刷新访问令牌。");
       return null;
@@ -193,7 +193,7 @@ class APIs {
     Map<String, dynamic>? query,
     int receiveTimeout = 30, // 添加接收超时参数
   }) async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final userToken = appRuntimeContext.hiveManager.getUserToken();
 
     try {
@@ -240,7 +240,7 @@ class APIs {
     Map<String, dynamic>? query,
     int receiveTimeout = 30, // 添加接收超时参数
   }) async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final userToken = appRuntimeContext.hiveManager.getUserToken();
 
     try {
@@ -280,7 +280,7 @@ class APIs {
 
   // 聊天请求, 故意不抓留给外面抓。
   static Future<ChatActionResponse?> chat(String content) async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final uuid = Uuid(); // 创建UUID生成器实例
 
     final chatActionRequest = ChatActionRequest(
@@ -329,7 +329,7 @@ class APIs {
     int fileNumber,
     String fileSuffix,
   ) async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final uploadTranscriptActionRequest = UploadTranscriptActionRequest(
       transcript_content: transcriptContent,
       time_stamp: timeStamp,
@@ -363,7 +363,7 @@ class APIs {
     String timeStamp,
     int fileNumber,
   ) async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final analyzeActionRequest = AnalyzeActionRequest(
       time_stamp: timeStamp,
       file_number: fileNumber,
@@ -392,7 +392,7 @@ class APIs {
   }
 
   static Future<JournalFile?> getJournalFile(String timeStamp) async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final response = await safeGet<Map<String, dynamic>>(
       appRuntimeContext.dio,
       appRuntimeContext.urlConfig.formatGetJournalFileUrl(timeStamp),
@@ -428,12 +428,12 @@ class APIs {
     Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
 
     //
-    AppRuntimeContext().addJournalFile(journalFile);
+    AppService().addJournalFile(journalFile);
     return journalFile;
   }
 
   static Future<Map<String, dynamic>?> getTaskStatus(String taskId) async {
-    final appRuntimeContext = AppRuntimeContext();
+    final appRuntimeContext = AppService();
     final response = await safeGet<Map<String, dynamic>>(
       appRuntimeContext.dio,
       appRuntimeContext.urlConfig.formatTaskStatusUrl(taskId),
