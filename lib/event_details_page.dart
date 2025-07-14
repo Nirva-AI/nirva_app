@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart';
+import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/utils.dart';
 
 class EventDetailsPage extends StatefulWidget {
@@ -142,13 +144,13 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ValueListenableBuilder(
-                      valueListenable: AppRuntimeContext().runtimeData.notes,
-                      builder: (context, List<Note> notes, _) {
-                        final note = notes.firstWhere(
-                          (element) => element.id == widget.eventData.event_id,
-                          orElse: () => Note(id: '', content: ''),
-                        );
+                    Consumer<NotesProvider>(
+                      builder: (context, notesProvider, child) {
+                        final note =
+                            notesProvider.getNoteById(
+                              widget.eventData.event_id,
+                            ) ??
+                            Note(id: '', content: '');
                         return Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(12.0),

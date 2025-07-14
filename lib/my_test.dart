@@ -74,13 +74,13 @@ class MyTest {
     if (events.isNotEmpty) {
       EventAnalysis randomEvent = events[random.nextInt(events.length)];
       debugPrint('随机选中的日记: ${randomEvent.event_title}');
-      AppRuntimeContext().runtimeData.notes.value = [
+      AppRuntimeContext().notesProvider.setupNotes([
         Note(
           id: randomEvent.event_id,
           content:
               'This is a test note for diary entry ${randomEvent.event_id}.',
         ),
-      ];
+      ]);
       debugPrint('已添加到笔记: ${randomEvent.event_id}');
     } else {
       debugPrint('diaryEntries 列表为空');
