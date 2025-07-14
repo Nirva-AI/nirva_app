@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:nirva_app/app_runtime_context.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
+import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
@@ -48,6 +49,13 @@ class _SplashScreenState extends State<SplashScreen> {
       // 初始化TasksProvider
       final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
       AppRuntimeContext().setTasksProvider(tasksProvider);
+
+      // 初始化FavoritesProvider
+      final favoritesProvider = Provider.of<FavoritesProvider>(
+        context,
+        listen: false,
+      );
+      AppRuntimeContext().setFavoritesProvider(favoritesProvider);
 
       // 执行数据初始化
       await _setupHiveStorage();
@@ -167,15 +175,13 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _setupHiveStorage() async {
-    // 在开始数据初始化之前清空上下文，但要在Provider设置之后
-    // 注意：不能在这里调用AppRuntimeContext.clear()，因为会清空已设置的Provider
-
     // 填充测试数据。
     await MyTest.setupTestData();
 
     // 喜爱的日记数据
-    AppRuntimeContext().runtimeData.favorites.value =
+    final retrievedFavorites =
         AppRuntimeContext().hiveManager.getFavoritesIds();
+    AppRuntimeContext().favoritesProvider.setupFavorites(retrievedFavorites);
 
     // 对话列表
     final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();

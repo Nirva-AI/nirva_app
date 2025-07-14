@@ -4,6 +4,7 @@ import 'package:nirva_app/my_hive_manager.dart';
 import 'package:nirva_app/url_configuration.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
+import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
@@ -56,6 +57,9 @@ class AppRuntimeContext {
   // Tasks Provider 引用
   TasksProvider? _tasksProvider;
 
+  // Favorites Provider 引用
+  FavoritesProvider? _favoritesProvider;
+
   // 获取用户
   User get user {
     return _user;
@@ -99,6 +103,10 @@ class AppRuntimeContext {
     return _tasksProvider!;
   }
 
+  FavoritesProvider get favoritesProvider {
+    return _favoritesProvider!;
+  }
+
   void setUser(User user) {
     _user = user;
   }
@@ -111,6 +119,11 @@ class AppRuntimeContext {
   // 设置TasksProvider
   void setTasksProvider(TasksProvider provider) {
     _tasksProvider = provider;
+  }
+
+  // 设置FavoritesProvider
+  void setFavoritesProvider(FavoritesProvider provider) {
+    _favoritesProvider = provider;
   }
 
   // 根据日期获取日记文件
