@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:nirva_app/custom_fruchterman_reingold_algorithm.dart';
 import 'package:nirva_app/social_map_page.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/data.dart';
 
 class SocialMapCard extends StatefulWidget {
@@ -48,12 +48,11 @@ class _SocialMapCardState extends State<SocialMapCard> {
   Graph createGraph() {
     final newGraph = Graph();
 
-    User user = AppRuntimeContext().user;
+    User user = AppService().user;
     Node userNode = Node.Id(user.displayName);
     newGraph.addNode(userNode);
 
-    for (var peoplesName
-        in AppRuntimeContext().currentJournalFile.peoples_involved) {
+    for (var peoplesName in AppService().currentJournalFile.peoples_involved) {
       Node node = Node.Id(peoplesName);
       newGraph.addNode(node);
       newGraph.addEdge(userNode, node);
@@ -172,12 +171,13 @@ class _SocialMapCardState extends State<SocialMapCard> {
 
   Color? _parseNodeColor(String nodeName) {
     // 根据节点名称返回不同的颜色
-    if (nodeName == AppRuntimeContext().user.displayName) {
+    if (nodeName == AppService().user.displayName) {
       return Colors.yellow[100];
     }
 
-    SocialEntity entity = AppRuntimeContext().currentJournalFile
-        .getSocialEntity(nodeName);
+    SocialEntity entity = AppService().currentJournalFile.getSocialEntity(
+      nodeName,
+    );
     return Color(entity.color);
   }
 }

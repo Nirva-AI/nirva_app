@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/stress_level_details_page.dart'; // 导入新页面
 
@@ -8,8 +8,7 @@ class StressLevelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stressLevel =
-        AppRuntimeContext().currentJournalFile.stressLevelAverage;
+    final stressLevel = AppService().currentJournalFile.stressLevelAverage;
 
     return Expanded(
       child: Card(

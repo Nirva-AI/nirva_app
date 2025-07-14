@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/my_hive_objects.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/update_data_task.dart';
 
 class HiveDataViewerPage extends StatefulWidget {
@@ -25,7 +25,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
       _isLoading = true;
     });
 
-    final data = AppRuntimeContext().hiveManager.getAllData();
+    final data = AppService().hiveManager.getAllData();
 
     setState(() {
       _hiveData = data;
@@ -366,16 +366,14 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   if (dataType == 'Favorites Data') {
-                    await AppRuntimeContext().hiveManager.saveFavoriteIds([]);
-                    AppRuntimeContext().favoritesProvider.clearFavorites();
+                    await AppService().hiveManager.saveFavoriteIds([]);
+                    AppService().favoritesProvider.clearFavorites();
                   } else if (dataType == 'User Token') {
-                    await AppRuntimeContext().hiveManager.deleteUserToken();
+                    await AppService().hiveManager.deleteUserToken();
                   } else if (dataType == 'Journal Index') {
                     // 清空日记索引
                     final emptyIndex = JournalFileIndex();
-                    await AppRuntimeContext().hiveManager.saveJournalIndex(
-                      emptyIndex,
-                    );
+                    await AppService().hiveManager.saveJournalIndex(emptyIndex);
 
                     // 获取所有文件名
                     final journalIndex =
@@ -383,14 +381,13 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                     if (journalIndex != null) {
                       // 删除所有日记文件
                       for (var file in journalIndex.files) {
-                        await AppRuntimeContext().hiveManager.deleteJournalFile(
+                        await AppService().hiveManager.deleteJournalFile(
                           file.fileName,
                         );
                       }
                     }
                   } else if (dataType == 'Update Data Task') {
-                    await AppRuntimeContext().hiveManager
-                        .deleteUpdateDataTask();
+                    await AppService().hiveManager.deleteUpdateDataTask();
                   }
                   // 重新加载数据
                   _loadHiveData();
@@ -420,7 +417,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
               TextButton(
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  await AppRuntimeContext().hiveManager.deleteJournal(fileName);
+                  await AppService().hiveManager.deleteJournal(fileName);
                   _loadHiveData();
                 },
                 child: const Text('Delete'),

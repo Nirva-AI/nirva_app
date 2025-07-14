@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
@@ -17,14 +17,12 @@ class EventDetailsPage extends StatefulWidget {
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
   bool get isFavorite {
-    return AppRuntimeContext().favoritesProvider.checkFavorite(
-      widget.eventData,
-    );
+    return AppService().favoritesProvider.checkFavorite(widget.eventData);
   }
 
   void _toggleFavorite() {
     setState(() {
-      AppRuntimeContext().favoritesProvider.switchEventFavoriteStatus(
+      AppService().favoritesProvider.switchEventFavoriteStatus(
         widget.eventData,
       );
       //AppRuntimeContext().data.switchDiaryFavoriteStatus(widget.diaryData);
@@ -34,8 +32,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     });
 
     // 异步保存，不阻塞当前线程
-    AppRuntimeContext().hiveManager
-        .saveFavoriteIds(AppRuntimeContext().favoritesProvider.favoriteIds)
+    AppService().hiveManager
+        .saveFavoriteIds(AppService().favoritesProvider.favoriteIds)
         .catchError((error) {
           debugPrint('保存收藏夹数据失败: $error');
         });
@@ -44,7 +42,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final fullDateTime = Utils.fullFormatEventDateTime(
-      AppRuntimeContext().selectedDateTime,
+      AppService().selectedDateTime,
     );
     return Scaffold(
       appBar: PreferredSize(

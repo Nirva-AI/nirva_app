@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/data.dart';
 
 class QuoteCarousel extends StatefulWidget {
@@ -26,7 +26,7 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    var quotes = AppRuntimeContext().currentJournalFile.genQuotes();
+    var quotes = AppService().currentJournalFile.genQuotes();
     if (quotes.isEmpty) {
       if (_checkValidity()) {
         quotes = ['No quotes available for this date.'];
@@ -92,6 +92,6 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
   }
 
   bool _checkValidity() {
-    return AppRuntimeContext().currentJournalFile.events.isNotEmpty;
+    return AppService().currentJournalFile.events.isNotEmpty;
   }
 }

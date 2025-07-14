@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'dart:convert';
 import 'package:logger/logger.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/transcription_task.dart';
 import 'package:nirva_app/transcription_error_messages.dart';
 
@@ -100,7 +100,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
     try {
       // 创建新任务poem_audio
       _currentTask = UploadAndTranscribeTask(
-        userId: AppRuntimeContext().user.id,
+        userId: AppService().user.id,
         assetFileNames: ['record_test_audio.mp3'],
         pickedFileNames: [],
         // 使用默认的当前时间进行命名
@@ -511,7 +511,7 @@ class _TestAWSAmplifyS3TranscribeTestPageState
 
   @override
   Widget build(BuildContext context) {
-    final userId = AppRuntimeContext().user.id;
+    final userId = AppService().user.id;
     return Scaffold(
       appBar: AppBar(
         title: const Text('语音转文字测试'),

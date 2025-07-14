@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/event_card.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/quote_carousel.dart';
 import 'package:nirva_app/week_calendar_widget.dart';
@@ -24,8 +24,8 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = AppRuntimeContext().selectedDateTime;
-    _selectedDay = AppRuntimeContext().selectedDateTime;
+    _focusedDay = AppService().selectedDateTime;
+    _selectedDay = AppService().selectedDateTime;
   }
 
   @override
@@ -65,7 +65,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
               ),
 
               // 动态展示日记条目
-              _buildEventList(AppRuntimeContext().currentJournalFile.events),
+              _buildEventList(AppService().currentJournalFile.events),
             ],
           ),
         );
@@ -79,7 +79,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
       _focusedDay = focusedDay;
 
       // 这里需要修改！！
-      AppRuntimeContext().selectDateTime(selectedDay);
+      AppService().selectDateTime(selectedDay);
     });
   }
 
@@ -163,7 +163,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
     List<EventAnalysis> finalEvents = [];
     if (_isFavorite) {
       for (var entry in events) {
-        if (AppRuntimeContext().favoritesProvider.checkFavorite(entry)) {
+        if (AppService().favoritesProvider.checkFavorite(entry)) {
           finalEvents.add(entry);
         }
       }

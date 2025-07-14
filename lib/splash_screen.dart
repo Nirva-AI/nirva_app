@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       // 清空AppRuntimeContext（在设置Provider之前）
-      AppRuntimeContext.clear();
+      AppService.clear();
 
       // 初始化JournalFilesProvider
       if (!mounted) return;
@@ -46,35 +46,35 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         listen: false,
       );
-      AppRuntimeContext().setJournalFilesProvider(journalFilesProvider);
+      AppService().setJournalFilesProvider(journalFilesProvider);
 
       // 初始化TasksProvider
       final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
-      AppRuntimeContext().setTasksProvider(tasksProvider);
+      AppService().setTasksProvider(tasksProvider);
 
       // 初始化FavoritesProvider
       final favoritesProvider = Provider.of<FavoritesProvider>(
         context,
         listen: false,
       );
-      AppRuntimeContext().setFavoritesProvider(favoritesProvider);
+      AppService().setFavoritesProvider(favoritesProvider);
 
       // 初始化NotesProvider
       final notesProvider = Provider.of<NotesProvider>(context, listen: false);
-      AppRuntimeContext().setNotesProvider(notesProvider);
+      AppService().setNotesProvider(notesProvider);
 
       // 初始化ChatHistoryProvider
       final chatHistoryProvider = Provider.of<ChatHistoryProvider>(
         context,
         listen: false,
       );
-      AppRuntimeContext().setChatHistoryProvider(chatHistoryProvider);
+      AppService().setChatHistoryProvider(chatHistoryProvider);
 
       // 执行数据初始化
       await _setupHiveStorage();
 
       // 设置初始选中日期
-      AppRuntimeContext().selectDateTime(DateTime.now());
+      AppService().selectDateTime(DateTime.now());
 
       // API初始化和登录
       await _initializeAPIs();
@@ -192,27 +192,24 @@ class _SplashScreenState extends State<SplashScreen> {
     await MyTest.setupTestData();
 
     // 喜爱的日记数据
-    final retrievedFavorites =
-        AppRuntimeContext().hiveManager.getFavoritesIds();
-    AppRuntimeContext().favoritesProvider.setupFavorites(retrievedFavorites);
+    final retrievedFavorites = AppService().hiveManager.getFavoritesIds();
+    AppService().favoritesProvider.setupFavorites(retrievedFavorites);
 
     // 对话列表
-    final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();
-    AppRuntimeContext().chatHistoryProvider.setupChatHistory(
-      storageChatHistory,
-    );
+    final storageChatHistory = AppService().hiveManager.getChatHistory();
+    AppService().chatHistoryProvider.setupChatHistory(storageChatHistory);
 
     // 任务列表
-    final retrievedTasks = AppRuntimeContext().hiveManager.getAllTasks();
-    AppRuntimeContext().tasksProvider.setupTasks(retrievedTasks);
+    final retrievedTasks = AppService().hiveManager.getAllTasks();
+    AppService().tasksProvider.setupTasks(retrievedTasks);
 
     // 笔记列表
-    final retrievedNotes = AppRuntimeContext().hiveManager.getAllNotes();
-    AppRuntimeContext().notesProvider.setupNotes(retrievedNotes);
+    final retrievedNotes = AppService().hiveManager.getAllNotes();
+    AppService().notesProvider.setupNotes(retrievedNotes);
 
     //journal files
-    AppRuntimeContext().initializeJournalFiles(
-      AppRuntimeContext().hiveManager.retrieveJournalFiles(),
+    AppService().initializeJournalFiles(
+      AppService().hiveManager.retrieveJournalFiles(),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
@@ -59,8 +59,8 @@ Future<void> _initializeApp() async {
   await _configureAmplify();
 
   // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
-  await AppRuntimeContext().hiveManager.deleteFromDisk();
-  await AppRuntimeContext().hiveManager.initializeAdapters();
+  await AppService().hiveManager.deleteFromDisk();
+  await AppService().hiveManager.initializeAdapters();
 }
 
 Future<void> _configureAmplify() async {

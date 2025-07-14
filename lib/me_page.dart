@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/user_profile_page.dart';
 import 'package:nirva_app/update_data_page.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/hive_data_viewer_page.dart';
 
 class MePage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _MePageState extends State<MePage> {
                     child: const Icon(Icons.person, color: Colors.white),
                   ),
                   title: Text(
-                    AppRuntimeContext().user.displayName,
+                    AppService().user.displayName,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),

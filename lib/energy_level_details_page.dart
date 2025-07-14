@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/data.dart';
 
 class EnergyLevelDetailsPage extends StatefulWidget {
@@ -72,13 +72,13 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   late List<Dashboard> _chartData;
 
   double get chartWidth {
-    return AppRuntimeContext().dashboards.length * widget.unitWidth;
+    return AppService().dashboards.length * widget.unitWidth;
   }
 
   @override
   void initState() {
     super.initState();
-    _chartData = AppRuntimeContext().dashboards;
+    _chartData = AppService().dashboards;
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {

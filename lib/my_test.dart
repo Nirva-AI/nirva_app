@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/app_service.dart';
 import 'dart:math';
 import 'package:nirva_app/utils.dart';
 import 'dart:convert';
@@ -12,7 +12,7 @@ class MyTest {
   //
   static Future<void> setupTestData() async {
     // 设置用户信息
-    AppRuntimeContext().setUser(
+    AppService().setUser(
       User(
         id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
         username: 'weilyupku@gmail.com',
@@ -42,12 +42,12 @@ class MyTest {
       final loadJournalFile = JournalFile.fromJson(jsonData);
       debugPrint('事件数量: ${loadJournalFile.events.length}');
 
-      await AppRuntimeContext().hiveManager.createJournalFile(
+      await AppService().hiveManager.createJournalFile(
         fileName: JournalFile.dateTimeToKey(dateTime),
         content: jsonEncode(jsonData),
       );
 
-      final journalFileStorage = AppRuntimeContext().hiveManager.getJournalFile(
+      final journalFileStorage = AppService().hiveManager.getJournalFile(
         JournalFile.dateTimeToKey(dateTime),
       );
       if (journalFileStorage != null) {
@@ -74,7 +74,7 @@ class MyTest {
     if (events.isNotEmpty) {
       EventAnalysis randomEvent = events[random.nextInt(events.length)];
       debugPrint('随机选中的日记: ${randomEvent.event_title}');
-      AppRuntimeContext().notesProvider.setupNotes([
+      AppService().notesProvider.setupNotes([
         Note(
           id: randomEvent.event_id,
           content:
