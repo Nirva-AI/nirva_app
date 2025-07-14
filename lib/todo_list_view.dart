@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/providers/tasks_provider.dart';
 
-class TodoListView extends StatefulWidget {
+class TodoListView extends StatelessWidget {
   const TodoListView({super.key});
 
-  @override
-  State<TodoListView> createState() => _TodoListViewState();
-}
-
-class _TodoListViewState extends State<TodoListView> {
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -41,9 +38,8 @@ class _TodoListViewState extends State<TodoListView> {
                       icon: const Icon(Icons.close),
                       onPressed: () async {
                         Navigator.of(context).pop();
-
                         await AppRuntimeContext().hiveManager.saveTasks(
-                          AppRuntimeContext().runtimeData.tasks.value,
+                          AppRuntimeContext().tasksProvider.tasks,
                         );
                       },
                     ),
@@ -52,84 +48,62 @@ class _TodoListViewState extends State<TodoListView> {
               ),
               const Divider(),
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(16.0),
-                  children:
-                      AppRuntimeContext().runtimeData.groupedTasks.entries.map((
-                        entry,
-                      ) {
-                        final category = entry.key;
-                        final tasks = entry.value;
+                child: Consumer<TasksProvider>(
+                  builder: (context, tasksProvider, child) {
+                    return ListView(
+                      padding: const EdgeInsets.all(16.0),
+                      children:
+                          tasksProvider.groupedTasks.entries.map((entry) {
+                            final category = entry.key;
+                            final tasks = entry.value;
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              category,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ...tasks.map((task) {
-                              return InkWell(
-                                onTap: () async {
-                                  setState(() {
-                                    AppRuntimeContext().runtimeData
-                                        .switchTaskStatus(task);
-                                  });
-                                  await AppRuntimeContext().hiveManager
-                                      .saveTasks(
-                                        AppRuntimeContext()
-                                            .runtimeData
-                                            .tasks
-                                            .value,
-                                      );
-                                  debugPrint(
-                                    'Task tapped: ${task.description}',
-                                  );
-                                },
-                                child: ListTile(
-                                  // leading: CircleAvatar(
-                                  //   backgroundColor:
-                                  //       task.isCompleted
-                                  //           ? Colors.green
-                                  //           : Colors.red,
-                                  //   radius: 4,
-                                  // ),
-                                  title: Text(
-                                    task.description,
-                                    style: TextStyle(
-                                      color:
-                                          task.isCompleted
-                                              ? Colors.green
-                                              : Colors.red,
-                                      fontSize: 14,
-                                      decoration:
-                                          task.isCompleted
-                                              ? TextDecoration.lineThrough
-                                              : TextDecoration.none,
-                                    ),
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  category,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              );
-                            }),
-                            const SizedBox(height: 16),
-                          ],
-                        );
-                      }).toList(),
+                                const SizedBox(height: 8),
+                                ...tasks.map((task) {
+                                  return InkWell(
+                                    onTap: () async {
+                                      tasksProvider.switchTaskStatus(task);
+                                      await AppRuntimeContext().hiveManager
+                                          .saveTasks(tasksProvider.tasks);
+                                      debugPrint(
+                                        'Task tapped: ${task.description}',
+                                      );
+                                    },
+                                    child: ListTile(
+                                      title: Text(
+                                        task.description,
+                                        style: TextStyle(
+                                          color:
+                                              task.isCompleted
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                          fontSize: 14,
+                                          decoration:
+                                              task.isCompleted
+                                                  ? TextDecoration.lineThrough
+                                                  : TextDecoration.none,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                                const SizedBox(height: 16),
+                              ],
+                            );
+                          }).toList(),
+                    );
+                  },
                 ),
               ),
-              // const Divider(),
-              // // 添加新任务按钮
-              // ListTile(
-              //   leading: const Icon(Icons.add),
-              //   title: const Text('Add New Task'),
-              //   onTap: () {
-              //     debugPrint('Add New Task tapped');
-              //   },
-              // ),
             ],
           ),
         ),

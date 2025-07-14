@@ -2,13 +2,9 @@
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
 
 // 管理全局数据的类
 class RuntimeData {
-  // 当前的待办事项数据
-  ValueNotifier<List<Task>> tasks = ValueNotifier([]);
-
   // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
   ValueNotifier<List<String>> favorites = ValueNotifier([]);
 
@@ -17,57 +13,6 @@ class RuntimeData {
 
   // 聊天消息历史记录
   ValueNotifier<List<ChatMessage>> chatHistory = ValueNotifier([]);
-
-  bool hasTask(String tag, String description) {
-    // 检查是否存在指定标签和描述的任务
-    return tasks.value.any(
-      (task) => task.tag == tag && task.description == description,
-    );
-  }
-
-  void addTask(String tag, String description) {
-    // 添加任务到任务列表
-    final uuid = Uuid(); // 创建UUID生成器实例
-    final newTask = Task(
-      id: uuid.v4(), // 生成唯一的任务ID
-      tag: tag,
-      description: description,
-      isCompleted: false,
-    );
-    tasks.value.add(newTask); // 使用ValueNotifier的add方法
-    tasks.value = List.from(tasks.value); // 通知监听者
-    debugPrint('Task added: $tag - $description');
-  }
-
-  // 切换任务的完成状态
-  void switchTaskStatus(Task task) {
-    // 切换任务的完成状态
-    final int index = tasks.value.indexOf(task);
-    if (index != -1) {
-      final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
-      tasks.value[index] = updatedTask;
-      tasks.value = List.from(tasks.value); // 通知监听者
-    }
-  }
-
-  //
-  Map<String, List<Task>> get groupedTasks {
-    final Map<String, List<Task>> groupedTasks = {};
-    for (var task in tasks.value) {
-      if (!groupedTasks.containsKey(task.tag)) {
-        groupedTasks[task.tag] = [];
-      }
-      groupedTasks[task.tag]!.add(task);
-    }
-    return groupedTasks;
-  }
-
-  //
-  void clearCompletedTasks() {
-    // 清除已完成的任务
-    tasks.value = tasks.value.where((task) => !task.isCompleted).toList();
-    tasks.value = List.from(tasks.value); // 通知监听者
-  }
 
   void switchEventFavoriteStatus(EventAnalysis event) {
     if (favorites.value.contains(event.event_id)) {

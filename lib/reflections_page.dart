@@ -185,21 +185,20 @@ class _GoalCardState extends State<GoalCard> {
   }
 
   Future<void> _addTaskToTodoList() async {
-    // 原有实现保持不变
     debugPrint('Task added: ${widget.title}');
     bool hasChanged = false;
     for (var content in widget.contents) {
-      if (AppRuntimeContext().runtimeData.hasTask(widget.title, content)) {
+      if (AppRuntimeContext().tasksProvider.hasTask(widget.title, content)) {
         // 如果任务已存在，则不添加
         continue;
       }
-      AppRuntimeContext().runtimeData.addTask(widget.title, content);
+      AppRuntimeContext().tasksProvider.addTask(widget.title, content);
       hasChanged = true;
     }
 
     if (hasChanged) {
       await AppRuntimeContext().hiveManager.saveTasks(
-        AppRuntimeContext().runtimeData.tasks.value,
+        AppRuntimeContext().tasksProvider.tasks,
       );
     }
   }
