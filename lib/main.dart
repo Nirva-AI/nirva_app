@@ -61,7 +61,7 @@ Future<void> _setupHiveStorage() async {
 
   // 对话列表
   final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();
-  AppRuntimeContext().chatManager.chatHistory.value =
+  AppRuntimeContext().runtimeData.chatHistory.value =
       storageChatHistory; // 清空之前的聊天记录
 
   // 任务列表

@@ -1,6 +1,5 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:nirva_app/runtime_data.dart';
-import 'package:nirva_app/chat_manager.dart';
 import 'package:nirva_app/my_hive_manager.dart';
 import 'package:nirva_app/url_configuration.dart';
 import 'package:dio/dio.dart';
@@ -40,9 +39,6 @@ class AppRuntimeContext {
   // 数据管理器实例
   final RuntimeData _runtimeData = RuntimeData();
 
-  // 聊天管理器实例
-  final ChatManager _chatManager = ChatManager();
-
   // Hive 存储实例
   final MyHiveManager _hiveManager = MyHiveManager();
 
@@ -71,10 +67,6 @@ class AppRuntimeContext {
     return _runtimeData;
   }
 
-  ChatManager get chatManager {
-    return _chatManager;
-  }
-
   MyHiveManager get hiveManager {
     return _hiveManager;
   }
@@ -100,7 +92,7 @@ class AppRuntimeContext {
   // 清除对话历史!
   Future<void> clearChatHistory() async {
     // 运行时数据清除
-    chatManager.chatHistory.value = [];
+    runtimeData.chatHistory.value = [];
 
     // Hive 存储清除
     await AppRuntimeContext().hiveManager.clearChatHistory();
