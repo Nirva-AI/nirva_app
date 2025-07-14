@@ -15,12 +15,14 @@ class EventDetailsPage extends StatefulWidget {
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
   bool get isFavorite {
-    return AppRuntimeContext().runtimeData.checkFavorite(widget.eventData);
+    return AppRuntimeContext().favoritesProvider.checkFavorite(
+      widget.eventData,
+    );
   }
 
   void _toggleFavorite() {
     setState(() {
-      AppRuntimeContext().runtimeData.switchEventFavoriteStatus(
+      AppRuntimeContext().favoritesProvider.switchEventFavoriteStatus(
         widget.eventData,
       );
       //AppRuntimeContext().data.switchDiaryFavoriteStatus(widget.diaryData);
@@ -28,6 +30,13 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         'Star button pressed: ${isFavorite ? "Added to favorites" : "Removed from favorites"}',
       );
     });
+
+    // 异步保存，不阻塞当前线程
+    AppRuntimeContext().hiveManager
+        .saveFavoriteIds(AppRuntimeContext().favoritesProvider.favoriteIds)
+        .catchError((error) {
+          debugPrint('保存收藏夹数据失败: $error');
+        });
   }
 
   @override

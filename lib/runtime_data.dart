@@ -5,28 +5,11 @@ import 'package:flutter/foundation.dart';
 
 // 管理全局数据的类
 class RuntimeData {
-  // 标记为最爱的日记条目，存本地手机即可，暂时不考虑存服务器。
-  ValueNotifier<List<String>> favorites = ValueNotifier([]);
-
   // 日记条目笔记
   ValueNotifier<List<Note>> notes = ValueNotifier([]);
 
   // 聊天消息历史记录
   ValueNotifier<List<ChatMessage>> chatHistory = ValueNotifier([]);
-
-  void switchEventFavoriteStatus(EventAnalysis event) {
-    if (favorites.value.contains(event.event_id)) {
-      favorites.value.remove(event.event_id);
-    } else {
-      favorites.value.add(event.event_id);
-    }
-    // 更新收藏列表
-    favorites.value = List.from(favorites.value); // 通知监听者
-  }
-
-  bool checkFavorite(EventAnalysis event) {
-    return favorites.value.contains(event.event_id);
-  }
 
   // 修改日记条目笔记
   void updateNote(EventAnalysis event, String content) {

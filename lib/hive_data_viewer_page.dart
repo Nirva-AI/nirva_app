@@ -367,7 +367,7 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
                   Navigator.of(context).pop();
                   if (dataType == 'Favorites Data') {
                     await AppRuntimeContext().hiveManager.saveFavoriteIds([]);
-                    AppRuntimeContext().runtimeData.favorites.value = [];
+                    AppRuntimeContext().favoritesProvider.clearFavorites();
                   } else if (dataType == 'User Token') {
                     await AppRuntimeContext().hiveManager.deleteUserToken();
                   } else if (dataType == 'Journal Index') {
