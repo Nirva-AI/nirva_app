@@ -7,6 +7,7 @@ import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
+import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
@@ -61,6 +62,13 @@ class _SplashScreenState extends State<SplashScreen> {
       // 初始化NotesProvider
       final notesProvider = Provider.of<NotesProvider>(context, listen: false);
       AppRuntimeContext().setNotesProvider(notesProvider);
+
+      // 初始化ChatHistoryProvider
+      final chatHistoryProvider = Provider.of<ChatHistoryProvider>(
+        context,
+        listen: false,
+      );
+      AppRuntimeContext().setChatHistoryProvider(chatHistoryProvider);
 
       // 执行数据初始化
       await _setupHiveStorage();
@@ -190,7 +198,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // 对话列表
     final storageChatHistory = AppRuntimeContext().hiveManager.getChatHistory();
-    AppRuntimeContext().runtimeData.chatHistory.value = storageChatHistory;
+    AppRuntimeContext().chatHistoryProvider.setupChatHistory(
+      storageChatHistory,
+    );
 
     // 任务列表
     final retrievedTasks = AppRuntimeContext().hiveManager.getAllTasks();

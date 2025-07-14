@@ -1,11 +1,11 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
-import 'package:nirva_app/runtime_data.dart';
 import 'package:nirva_app/my_hive_manager.dart';
 import 'package:nirva_app/url_configuration.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
+import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
@@ -43,9 +43,6 @@ class AppRuntimeContext {
   // 空的日记文件实例
   final emptyJournalFile = JournalFile.createEmpty();
 
-  // 数据管理器实例
-  final RuntimeData _runtimeData = RuntimeData();
-
   // Hive 存储实例
   final MyHiveManager _hiveManager = MyHiveManager();
 
@@ -63,6 +60,9 @@ class AppRuntimeContext {
 
   // Notes Provider 引用
   NotesProvider? _notesProvider;
+
+  // ChatHistory Provider 引用
+  ChatHistoryProvider? _chatHistoryProvider;
 
   // 获取用户
   User get user {
@@ -87,10 +87,6 @@ class AppRuntimeContext {
       ),
     ]);
 
-  RuntimeData get runtimeData {
-    return _runtimeData;
-  }
-
   MyHiveManager get hiveManager {
     return _hiveManager;
   }
@@ -113,6 +109,10 @@ class AppRuntimeContext {
 
   NotesProvider get notesProvider {
     return _notesProvider!;
+  }
+
+  ChatHistoryProvider get chatHistoryProvider {
+    return _chatHistoryProvider!;
   }
 
   void setUser(User user) {
@@ -139,6 +139,11 @@ class AppRuntimeContext {
     _notesProvider = provider;
   }
 
+  // 设置ChatHistoryProvider
+  void setChatHistoryProvider(ChatHistoryProvider provider) {
+    _chatHistoryProvider = provider;
+  }
+
   // 根据日期获取日记文件
   JournalFile? getJournalFileByDate(DateTime date) {
     return _journalFilesProvider?.getJournalFileByDate(date);
@@ -157,7 +162,7 @@ class AppRuntimeContext {
   // 清除对话历史!
   Future<void> clearChatHistory() async {
     // 运行时数据清除
-    runtimeData.chatHistory.value = [];
+    chatHistoryProvider.clearChatHistory();
 
     // Hive 存储清除
     await AppRuntimeContext().hiveManager.clearChatHistory();
