@@ -6,7 +6,6 @@ import 'package:nirva_app/api_models.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:nirva_app/my_hive_objects.dart';
-import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
@@ -464,8 +463,8 @@ class NirvaAPI {
     final journalFile = JournalFile.fromJson(jsonDecode);
     Logger().d('Journal file loaded: ${jsonEncode(journalFile.toJson())}');
 
-    //
-    AppService().addJournalFile(journalFile);
+    // 注意：此方法不再自动添加到AppService，调用方需要自行处理
+    // 如需添加到状态管理，请在调用方使用Provider
     return journalFile;
   }
 

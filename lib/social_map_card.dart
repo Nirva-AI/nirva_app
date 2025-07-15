@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:nirva_app/custom_fruchterman_reingold_algorithm.dart';
 import 'package:nirva_app/social_map_page.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/data.dart';
 
@@ -51,10 +51,12 @@ class _SocialMapCardState extends State<SocialMapCard> {
     final newGraph = Graph();
 
     User user = context.read<UserProvider>().user;
+    final journalFilesProvider = context.read<JournalFilesProvider>();
     Node userNode = Node.Id(user.displayName);
     newGraph.addNode(userNode);
 
-    for (var peoplesName in AppService().currentJournalFile.peoples_involved) {
+    for (var peoplesName
+        in journalFilesProvider.currentJournalFile.peoples_involved) {
       Node node = Node.Id(peoplesName);
       newGraph.addNode(node);
       newGraph.addEdge(userNode, node);
@@ -177,9 +179,9 @@ class _SocialMapCardState extends State<SocialMapCard> {
       return Colors.yellow[100];
     }
 
-    SocialEntity entity = AppService().currentJournalFile.getSocialEntity(
-      nodeName,
-    );
+    final journalFilesProvider = context.read<JournalFilesProvider>();
+    SocialEntity entity = journalFilesProvider.currentJournalFile
+        .getSocialEntity(nodeName);
     return Color(entity.color);
   }
 }

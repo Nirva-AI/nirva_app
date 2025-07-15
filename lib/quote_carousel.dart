@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
 
 class QuoteCarousel extends StatefulWidget {
@@ -26,9 +27,10 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    var quotes = AppService().currentJournalFile.genQuotes();
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
+    var quotes = journalFilesProvider.currentJournalFile.genQuotes();
     if (quotes.isEmpty) {
-      if (_checkValidity()) {
+      if (_checkValidity(journalFilesProvider)) {
         quotes = ['No quotes available for this date.'];
       } else {
         quotes = ['N/A'];
@@ -91,7 +93,7 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
     );
   }
 
-  bool _checkValidity() {
-    return AppService().currentJournalFile.events.isNotEmpty;
+  bool _checkValidity(JournalFilesProvider provider) {
+    return provider.currentJournalFile.events.isNotEmpty;
   }
 }

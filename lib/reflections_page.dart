@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/data.dart';
@@ -17,8 +17,9 @@ class ReflectionSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
     final fullDateTime = Utils.fullFormatEventDateTime(
-      AppService().selectedDateTime,
+      journalFilesProvider.selectedDateTime,
     );
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -35,7 +36,10 @@ class ReflectionSummary extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            AppService().currentJournalFile.daily_reflection.reflection_summary,
+            journalFilesProvider
+                .currentJournalFile
+                .daily_reflection
+                .reflection_summary,
           ),
         ],
       ),
@@ -223,14 +227,15 @@ class ReflectionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!_checkValidity()) {
+    if (!_checkValidity(context)) {
       return Scaffold(body: _createEmptyBody());
     }
-    return Scaffold(body: _createBody());
+    return Scaffold(body: _createBody(context));
   }
 
-  bool _checkValidity() {
-    return AppService().currentJournalFile.events.isNotEmpty;
+  bool _checkValidity(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
+    return journalFilesProvider.currentJournalFile.events.isNotEmpty;
   }
 
   Widget _createEmptyBody() {
@@ -242,7 +247,7 @@ class ReflectionsPage extends StatelessWidget {
     );
   }
 
-  Widget _createBody() {
+  Widget _createBody(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -250,16 +255,18 @@ class ReflectionsPage extends StatelessWidget {
         children: [
           const ReflectionSummary(),
           const SizedBox(height: 16),
-          _buildReflectionCards(),
+          _buildReflectionCards(context),
           const SizedBox(height: 16),
-          _buildGoalCards(),
+          _buildGoalCards(context),
         ],
       ),
     );
   }
 
-  Widget _buildReflectionCards() {
-    final dailyReflection = AppService().currentJournalFile.daily_reflection;
+  Widget _buildReflectionCards(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
+    final dailyReflection =
+        journalFilesProvider.currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,8 +459,10 @@ class ReflectionsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildGoalCards() {
-    final dailyReflection = AppService().currentJournalFile.daily_reflection;
+  Widget _buildGoalCards(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
+    final dailyReflection =
+        journalFilesProvider.currentJournalFile.daily_reflection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

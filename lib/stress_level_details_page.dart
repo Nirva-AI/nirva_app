@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
 
 class StressLevelDetailsPage extends StatefulWidget {
@@ -69,20 +70,43 @@ class SlidingLineChart extends StatefulWidget {
 
 class _SlidingLineChartState extends State<SlidingLineChart> {
   late ScrollController _scrollController;
-  late List<Dashboard> _chartData;
+  List<Dashboard> _chartData = []; // 给一个空列表作为默认值
 
   double get chartWidth {
-    return AppService().dashboards.length * widget.unitWidth;
+    if (_chartData.isEmpty) {
+      // 如果数据还没加载，使用Provider获取长度
+      final journalFilesProvider = Provider.of<JournalFilesProvider>(
+        context,
+        listen: false,
+      );
+      return journalFilesProvider.dashboards.length * widget.unitWidth;
+    }
+    return _chartData.length * widget.unitWidth;
   }
 
   @override
   void initState() {
     super.initState();
-    _chartData = AppService().dashboards;
     _scrollController = ScrollController();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      if (mounted) {
+        final journalFilesProvider = Provider.of<JournalFilesProvider>(
+          context,
+          listen: false,
+        );
+        setState(() {
+          _chartData = journalFilesProvider.dashboards;
+        });
+
+        // 在setState完成后再次使用addPostFrameCallback确保图表已经重新渲染
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _scrollController.hasClients) {
+            _scrollController.jumpTo(
+              _scrollController.position.maxScrollExtent,
+            );
+          }
+        });
       }
     });
   }
@@ -97,6 +121,12 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   Widget build(BuildContext context) {
     final minY = Dashboard.stressLevelMinY;
     final maxY = Dashboard.stressLevelMaxY;
+
+    // 如果数据还没加载完成，显示加载指示器
+    if (_chartData.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Stack(
       children: [
         Row(

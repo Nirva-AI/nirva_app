@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-//import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';

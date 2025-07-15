@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/event_card.dart';
-import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/quote_carousel.dart';
@@ -18,15 +17,26 @@ class SmartDiaryPage extends StatefulWidget {
 }
 
 class _SmartDiaryPageState extends State<SmartDiaryPage> {
-  late DateTime _focusedDay;
+  DateTime _focusedDay = DateTime.now(); // 给一个默认值
   DateTime? _selectedDay;
   bool _isFavorite = false;
 
   @override
   void initState() {
     super.initState();
-    _focusedDay = AppService().selectedDateTime;
-    _selectedDay = AppService().selectedDateTime;
+    // 在postFrameCallback中同步Provider的初始状态
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final journalFilesProvider = Provider.of<JournalFilesProvider>(
+          context,
+          listen: false,
+        );
+        setState(() {
+          _focusedDay = journalFilesProvider.selectedDateTime;
+          _selectedDay = journalFilesProvider.selectedDateTime;
+        });
+      }
+    });
   }
 
   @override
@@ -66,7 +76,7 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
               ),
 
               // 动态展示日记条目
-              _buildEventList(AppService().currentJournalFile.events),
+              _buildEventList(journalProvider.currentJournalFile.events),
             ],
           ),
         );
@@ -80,7 +90,11 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
       _focusedDay = focusedDay;
 
       // 这里需要修改！！
-      AppService().selectDateTime(selectedDay);
+      final journalFilesProvider = Provider.of<JournalFilesProvider>(
+        context,
+        listen: false,
+      );
+      journalFilesProvider.selectDateTime(selectedDay);
     });
   }
 
