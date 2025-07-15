@@ -1,5 +1,5 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
-import 'package:nirva_app/my_hive_manager.dart';
+import 'package:nirva_app/hive_helper.dart';
 import 'package:nirva_app/url_configuration.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
@@ -51,10 +51,7 @@ class AppService {
   JournalFile? _currentJournalFile;
 
   // 空的日记文件实例
-  final emptyJournalFile = JournalFile.createEmpty();
-
-  // Hive 存储实例
-  final MyHiveManager _hiveManager = MyHiveManager();
+  //final emptyJournalFile = JournalFile.createEmpty();
 
   // URL 配置实例
   final URLConfiguration _urlConfig = URLConfiguration();
@@ -96,10 +93,6 @@ class AppService {
         },
       ),
     ]);
-
-  MyHiveManager get hiveManager {
-    return _hiveManager;
-  }
 
   URLConfiguration get urlConfig {
     return _urlConfig;
@@ -166,7 +159,7 @@ class AppService {
 
   // 获取当前的日记文件。
   JournalFile get currentJournalFile {
-    return _currentJournalFile ?? emptyJournalFile;
+    return _currentJournalFile ?? JournalFile.createEmpty();
   }
 
   // 清除对话历史!
@@ -175,7 +168,7 @@ class AppService {
     chatHistoryProvider.clearChatHistory();
 
     // Hive 存储清除
-    await AppService().hiveManager.clearChatHistory();
+    await HiveHelper.clearChatHistory();
   }
 
   //

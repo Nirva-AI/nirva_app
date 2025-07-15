@@ -7,7 +7,9 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'dart:convert';
 
-class MyHiveManager {
+class HiveHelper {
+  static bool _isInitialized = false;
+
   // 现有的常量定义
   static const String _favoritesBox = 'favoritesBox';
   static const String _favoritesKey = 'favorites';
@@ -37,16 +39,20 @@ class MyHiveManager {
   static const String _updateDataTaskBox = 'updateDataTaskBox';
   static const String _updateDataTaskKey = 'updateDataTask';
 
-  Future<void> _initialize() async {
+  // 这句必须得调用！
+  static Future<void> initializeHive() async {
     // 获取应用的文档目录
     final directory = await getApplicationDocumentsDirectory();
     Hive.init(directory.path);
+    _isInitialized = true;
   }
 
   //清空所有 Box 的数据并关闭所有 Box
-  Future<void> deleteFromDisk() async {
-    await _initialize(); // 确保 Hive 已经初始化
-
+  static Future<void> deleteFromDisk() async {
+    assert(
+      _isInitialized,
+      'Hive must be initialized before deleting from disk.',
+    );
     // 并行删除所有 Box
     await Future.wait([
       Hive.deleteBoxFromDisk(_favoritesBox),
@@ -65,8 +71,11 @@ class MyHiveManager {
   }
 
   // 初始化 Hive
-  Future<void> initializeAdapters() async {
-    await _initialize();
+  static Future<void> initializeAdapters() async {
+    assert(
+      _isInitialized,
+      'Hive must be initialized before registering adapters.',
+    );
     await Future.wait([
       _initFavorites(),
       _initUserToken(),
@@ -79,7 +88,7 @@ class MyHiveManager {
   }
 
   // 初始化 DiaryFavorites 的 Box
-  Future<void> _initFavorites() async {
+  static Future<void> _initFavorites() async {
     // 确保 Hive 已经初始化
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(FavoritesAdapter());
@@ -90,7 +99,7 @@ class MyHiveManager {
   }
 
   // 新增: 初始化 Token 的 Box
-  Future<void> _initUserToken() async {
+  static Future<void> _initUserToken() async {
     // 确保 Hive 已经初始化
     if (!Hive.isAdapterRegistered(2)) {
       Hive.registerAdapter(UserTokenAdapter());
@@ -101,7 +110,7 @@ class MyHiveManager {
   }
 
   // 初始化聊天历史 Box
-  Future<void> _initChatHistory() async {
+  static Future<void> _initChatHistory() async {
     if (!Hive.isAdapterRegistered(3)) {
       Hive.registerAdapter(ChatMessageStorageAdapter());
     }
@@ -114,7 +123,7 @@ class MyHiveManager {
   }
 
   // 初始化日记系统相关的 Box
-  Future<void> _initJournalSystem() async {
+  static Future<void> _initJournalSystem() async {
     // 注册适配器
     if (!Hive.isAdapterRegistered(5)) {
       Hive.registerAdapter(JournalFileMetaAdapter());
@@ -136,7 +145,7 @@ class MyHiveManager {
   }
 
   // 添加任务存储的初始化方法
-  Future<void> _initTasks() async {
+  static Future<void> _initTasks() async {
     if (!Hive.isAdapterRegistered(8)) {
       Hive.registerAdapter(TasksStorageAdapter());
     }
@@ -146,7 +155,7 @@ class MyHiveManager {
   }
 
   // 添加笔记存储的初始化方法
-  Future<void> _initNotes() async {
+  static Future<void> _initNotes() async {
     if (!Hive.isAdapterRegistered(9)) {
       Hive.registerAdapter(NotesStorageAdapter());
     }
@@ -156,7 +165,7 @@ class MyHiveManager {
   }
 
   // 添加 UpdateDataTask 存储的初始化方法
-  Future<void> _initUpdateDataTask() async {
+  static Future<void> _initUpdateDataTask() async {
     if (!Hive.isAdapterRegistered(10)) {
       Hive.registerAdapter(UploadAndTranscribeTaskStorageAdapter());
     }
@@ -172,7 +181,7 @@ class MyHiveManager {
   }
 
   // 获取所有 Hive 数据的统计信息和内容
-  Map<String, dynamic> getAllData() {
+  static Map<String, dynamic> getAllData() {
     final Map<String, dynamic> data = {};
 
     // 获取收藏夹数据
@@ -244,24 +253,24 @@ class MyHiveManager {
   }
 
   //
-  Future<void> _saveFavorites(Favorites favorites) async {
+  static Future<void> _saveFavorites(Favorites favorites) async {
     final box = Hive.box<Favorites>(_favoritesBox);
     await box.put(_favoritesKey, favorites);
   }
 
-  Future<void> saveFavoriteIds(List<String> favoriteIds) async {
+  static Future<void> saveFavoriteIds(List<String> favoriteIds) async {
     final favorites = _getFavorites() ?? Favorites(favoriteIds: []);
     favorites.favoriteIds = favoriteIds;
     await _saveFavorites(favorites);
   }
 
   //
-  Favorites? _getFavorites() {
+  static Favorites? _getFavorites() {
     final box = Hive.box<Favorites>(_favoritesBox);
     return box.get(_favoritesKey); // 使用固定的 key 获取
   }
 
-  List<String> getFavoritesIds() {
+  static List<String> getFavoritesIds() {
     final favorites = _getFavorites();
     if (favorites == null || favorites.favoriteIds.isEmpty) {
       return [];
@@ -270,13 +279,13 @@ class MyHiveManager {
   }
 
   // 新增: 保存 Token 数据
-  Future<void> saveUserToken(UserToken token) async {
+  static Future<void> saveUserToken(UserToken token) async {
     final box = Hive.box<UserToken>(_userTokenBox);
     await box.put(_userTokenKey, token); // 使用固定的 key 保存
   }
 
   // 新增: 获取 Token 数据
-  UserToken getUserToken() {
+  static UserToken getUserToken() {
     final box = Hive.box<UserToken>(_userTokenBox);
     final res = box.get(_userTokenKey); // 使用固定的 key 获取
     if (res == null) {
@@ -290,13 +299,13 @@ class MyHiveManager {
   }
 
   // 新增: 删除 Token 数据 (登出时使用)
-  Future<void> deleteUserToken() async {
+  static Future<void> deleteUserToken() async {
     final box = Hive.box<UserToken>(_userTokenBox);
     await box.delete(_userTokenKey);
   }
 
   // 保存聊天历史
-  Future<void> saveChatHistory(List<ChatMessage> messages) async {
+  static Future<void> saveChatHistory(List<ChatMessage> messages) async {
     final box = Hive.box<ChatHistory>(_chatHistoryBox);
     final hiveMessages =
         messages.map((msg) => ChatMessageStorage.fromChatMessage(msg)).toList();
@@ -304,7 +313,7 @@ class MyHiveManager {
   }
 
   // 获取聊天历史
-  List<ChatMessage> getChatHistory() {
+  static List<ChatMessage> getChatHistory() {
     final box = Hive.box<ChatHistory>(_chatHistoryBox);
     final history = box.get(_chatHistoryKey);
     if (history == null) {
@@ -314,13 +323,13 @@ class MyHiveManager {
   }
 
   // 清除聊天历史
-  Future<void> clearChatHistory() async {
+  static Future<void> clearChatHistory() async {
     final box = Hive.box<ChatHistory>(_chatHistoryBox);
     await box.delete(_chatHistoryKey);
   }
 
   // 获取日记文件索引
-  JournalFileIndex getJournalIndex() {
+  static JournalFileIndex getJournalIndex() {
     final box = Hive.box<JournalFileIndex>(_journalIndexBox);
     final index = box.get(_journalIndexKey);
     if (index == null) {
@@ -330,31 +339,31 @@ class MyHiveManager {
   }
 
   // 保存日记文件索引
-  Future<void> saveJournalIndex(JournalFileIndex index) async {
+  static Future<void> saveJournalIndex(JournalFileIndex index) async {
     final box = Hive.box<JournalFileIndex>(_journalIndexBox);
     await box.put(_journalIndexKey, index);
   }
 
   // 获取单个日记文件
-  JournalFileStorage? getJournalFile(String fileName) {
+  static JournalFileStorage? getJournalFile(String fileName) {
     final box = Hive.box<JournalFileStorage>(_journalFilesBox);
     return box.get(fileName);
   }
 
   // 保存单个日记文件
-  Future<void> saveJournalFile(JournalFileStorage file) async {
+  static Future<void> saveJournalFile(JournalFileStorage file) async {
     final box = Hive.box<JournalFileStorage>(_journalFilesBox);
     await box.put(file.fileName, file);
   }
 
   // 删除单个日记文件
-  Future<void> deleteJournalFile(String fileName) async {
+  static Future<void> deleteJournalFile(String fileName) async {
     final box = Hive.box<JournalFileStorage>(_journalFilesBox);
     await box.delete(fileName);
   }
 
   // 创建新的日记文件并更新索引
-  Future<JournalFileMeta> createJournalFile({
+  static Future<JournalFileMeta> createJournalFile({
     required String fileName,
     required String content,
   }) async {
@@ -376,7 +385,7 @@ class MyHiveManager {
   }
 
   // 更新日记文件内容
-  Future<JournalFileMeta?> updateJournalFile(
+  static Future<JournalFileMeta?> updateJournalFile(
     String fileName,
     String newContent,
   ) async {
@@ -401,7 +410,7 @@ class MyHiveManager {
   }
 
   // 删除日记文件及其元数据
-  Future<bool> deleteJournal(String fileName) async {
+  static Future<bool> deleteJournal(String fileName) async {
     // 获取索引
     final index = getJournalIndex();
 
@@ -418,7 +427,7 @@ class MyHiveManager {
     return true;
   }
 
-  List<JournalFile> retrieveJournalFiles() {
+  static List<JournalFile> retrieveJournalFiles() {
     final index = getJournalIndex();
     if (index.files.isEmpty) {
       return [];
@@ -440,7 +449,7 @@ class MyHiveManager {
   }
 
   // 获取所有任务
-  List<Task> getAllTasks() {
+  static List<Task> getAllTasks() {
     final box = Hive.box<TasksStorage>(_tasksBox);
     final hiveTasks = box.get(_tasksKey);
     if (hiveTasks == null) {
@@ -450,7 +459,7 @@ class MyHiveManager {
   }
 
   // 保存任务列表
-  Future<void> saveTasks(List<Task> tasks) async {
+  static Future<void> saveTasks(List<Task> tasks) async {
     final box = Hive.box<TasksStorage>(_tasksBox);
     final taskJsonList =
         tasks.map((task) => jsonEncode(task.toJson())).toList();
@@ -458,7 +467,7 @@ class MyHiveManager {
   }
 
   // 获取所有笔记
-  List<Note> getAllNotes() {
+  static List<Note> getAllNotes() {
     final box = Hive.box<NotesStorage>(_notesBox);
     final hiveNotes = box.get(_notesKey);
     if (hiveNotes == null) {
@@ -468,7 +477,7 @@ class MyHiveManager {
   }
 
   // 保存笔记列表
-  Future<void> saveNotes(List<Note> notes) async {
+  static Future<void> saveNotes(List<Note> notes) async {
     final box = Hive.box<NotesStorage>(_notesBox);
     final noteJsonList =
         notes.map((note) => jsonEncode(note.toJson())).toList();
@@ -480,31 +489,33 @@ class MyHiveManager {
   // ===============================================================================
 
   /// 获取当前的 UpdateDataTask
-  UpdateDataTaskStorage? getUpdateDataTask() {
+  static UpdateDataTaskStorage? getUpdateDataTask() {
     final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
     return box.get(_updateDataTaskKey);
   }
 
   /// 保存 UpdateDataTask
-  Future<void> saveUpdateDataTask(UpdateDataTaskStorage updateDataTask) async {
+  static Future<void> saveUpdateDataTask(
+    UpdateDataTaskStorage updateDataTask,
+  ) async {
     final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
     await box.put(_updateDataTaskKey, updateDataTask);
   }
 
   /// 删除 UpdateDataTask
-  Future<void> deleteUpdateDataTask() async {
+  static Future<void> deleteUpdateDataTask() async {
     final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
     await box.delete(_updateDataTaskKey);
   }
 
   /// 检查是否存在保存的 UpdateDataTask
-  bool hasUpdateDataTask() {
+  static bool hasUpdateDataTask() {
     final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
     return box.containsKey(_updateDataTaskKey);
   }
 
   /// 从 UpdateDataTask 创建并保存存储对象 (便利方法)
-  Future<void> saveUpdateDataTaskFromData({
+  static Future<void> saveUpdateDataTaskFromData({
     required String id, // 添加 id 参数
     required String userId,
     required List<String> assetFileNames,
@@ -532,7 +543,7 @@ class MyHiveManager {
   }
 
   /// 获取 UpdateDataTask 的构造数据 (便利方法)
-  Map<String, dynamic>? getUpdateDataTaskConstructorData() {
+  static Map<String, dynamic>? getUpdateDataTaskConstructorData() {
     final storage = getUpdateDataTask();
     return storage?.toConstructorData();
   }

@@ -10,7 +10,8 @@ import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
-import 'package:nirva_app/apis.dart'; // 确保导入了 API 类
+import 'package:nirva_app/apis.dart';
+import 'package:nirva_app/hive_helper.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -192,24 +193,22 @@ class _SplashScreenState extends State<SplashScreen> {
     await MyTest.setupTestData();
 
     // 喜爱的日记数据
-    final retrievedFavorites = AppService().hiveManager.getFavoritesIds();
+    final retrievedFavorites = HiveHelper.getFavoritesIds();
     AppService().favoritesProvider.setupFavorites(retrievedFavorites);
 
     // 对话列表
-    final storageChatHistory = AppService().hiveManager.getChatHistory();
+    final storageChatHistory = HiveHelper.getChatHistory();
     AppService().chatHistoryProvider.setupChatHistory(storageChatHistory);
 
     // 任务列表
-    final retrievedTasks = AppService().hiveManager.getAllTasks();
+    final retrievedTasks = HiveHelper.getAllTasks();
     AppService().tasksProvider.setupTasks(retrievedTasks);
 
     // 笔记列表
-    final retrievedNotes = AppService().hiveManager.getAllNotes();
+    final retrievedNotes = HiveHelper.getAllNotes();
     AppService().notesProvider.setupNotes(retrievedNotes);
 
     //journal files
-    AppService().initializeJournalFiles(
-      AppService().hiveManager.retrieveJournalFiles(),
-    );
+    AppService().initializeJournalFiles(HiveHelper.retrieveJournalFiles());
   }
 }

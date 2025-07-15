@@ -7,6 +7,7 @@ import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/app_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/hive_helper.dart';
 
 class APIs {
   // 获取 URL 配置，故意不抓留给外面抓。
@@ -50,7 +51,7 @@ class APIs {
       token_type: response.data!['token_type'] ?? '',
       refresh_token: response.data!['refresh_token'] ?? '', // 新增字段
     );
-    appRuntimeContext.hiveManager.saveUserToken(userToken); // 保存到Hive中
+    HiveHelper.saveUserToken(userToken); // 保存到Hive中
     Logger().i('登录成功！令牌已获取');
     return userToken;
   }
@@ -63,8 +64,7 @@ class APIs {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization':
-              'Bearer ${appRuntimeContext.hiveManager.getUserToken().access_token}',
+          'Authorization': 'Bearer ${HiveHelper.getUserToken().access_token}',
         },
       ),
     );
@@ -74,7 +74,7 @@ class APIs {
       return false;
     }
 
-    await appRuntimeContext.hiveManager.deleteUserToken(); // 清除本地令牌
+    await HiveHelper.deleteUserToken(); // 清除本地令牌
     Logger().i('登出成功！令牌已清除');
     return true;
   }
@@ -82,7 +82,7 @@ class APIs {
   // 刷新访问令牌，故意不抓留给外面抓。
   static Future<UserToken?> refreshToken() async {
     final appRuntimeContext = AppService();
-    if (appRuntimeContext.hiveManager.getUserToken().refresh_token.isEmpty) {
+    if (HiveHelper.getUserToken().refresh_token.isEmpty) {
       Logger().e("没有可用的刷新令牌，无法刷新访问令牌。");
       return null;
     }
@@ -92,8 +92,7 @@ class APIs {
       appRuntimeContext.urlConfig.refreshUrl,
       // 使用表单数据格式发送
       data: FormData.fromMap({
-        'refresh_token':
-            appRuntimeContext.hiveManager.getUserToken().refresh_token,
+        'refresh_token': HiveHelper.getUserToken().refresh_token,
       }),
       options: Options(contentType: Headers.formUrlEncodedContentType),
     );
@@ -110,15 +109,12 @@ class APIs {
     // 创建新的 Token 实例并保存到 Hive
     final newToken = UserToken(
       access_token: response.data!["access_token"],
-      token_type:
-          appRuntimeContext.hiveManager
-              .getUserToken()
-              .token_type, // 保持原有的 token_type
+      token_type: HiveHelper.getUserToken().token_type, // 保持原有的 token_type
       refresh_token: response.data!["refresh_token"],
     );
 
     // 保存更新后的令牌
-    await appRuntimeContext.hiveManager.saveUserToken(newToken);
+    await HiveHelper.saveUserToken(newToken);
     Logger().i("令牌刷新成功！");
     return newToken;
   }
@@ -193,8 +189,8 @@ class APIs {
     Map<String, dynamic>? query,
     int receiveTimeout = 30, // 添加接收超时参数
   }) async {
-    final appRuntimeContext = AppService();
-    final userToken = appRuntimeContext.hiveManager.getUserToken();
+    //final appRuntimeContext = AppService();
+    final userToken = HiveHelper.getUserToken();
 
     try {
       // 首次尝试发送请求，传递超时参数
@@ -240,8 +236,8 @@ class APIs {
     Map<String, dynamic>? query,
     int receiveTimeout = 30, // 添加接收超时参数
   }) async {
-    final appRuntimeContext = AppService();
-    final userToken = appRuntimeContext.hiveManager.getUserToken();
+    //final appRuntimeContext = AppService();
+    final userToken = HiveHelper.getUserToken();
 
     try {
       // 首次尝试发送请求，传递超时参数
@@ -316,7 +312,7 @@ class APIs {
     ]);
 
     // _saveMessages 会通过监听器自动调用
-    appRuntimeContext.hiveManager.saveChatHistory(
+    HiveHelper.saveChatHistory(
       appRuntimeContext.chatHistoryProvider.chatHistory,
     );
     return chatResponse; // 这里返回null是因为没有实现具体的聊天逻辑
@@ -405,15 +401,13 @@ class APIs {
     }
 
     // 直接存。
-    await appRuntimeContext.hiveManager.createJournalFile(
+    await HiveHelper.createJournalFile(
       fileName: timeStamp,
       content: jsonEncode(response.data!),
     );
 
     // 读一下试试
-    final journalFileStorage = appRuntimeContext.hiveManager.getJournalFile(
-      timeStamp,
-    );
+    final journalFileStorage = HiveHelper.getJournalFile(timeStamp);
 
     // 没有存储成功，就是有问题。
     if (journalFileStorage == null) {

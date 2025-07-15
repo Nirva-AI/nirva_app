@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/my_hive_objects.dart';
+import 'package:nirva_app/hive_helper.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -45,10 +46,10 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   /// 加载保存的任务
   Future<void> _loadSavedTask() async {
     try {
-      final hiveManager = AppService().hiveManager;
+      //final hiveManager = AppService().hiveManager;
 
-      if (hiveManager.hasUpdateDataTask()) {
-        final constructorData = hiveManager.getUpdateDataTaskConstructorData();
+      if (HiveHelper.hasUpdateDataTask()) {
+        final constructorData = HiveHelper.getUpdateDataTaskConstructorData();
         if (constructorData != null) {
           // 从存储数据重建 UpdateDataTask
           _updateDataTask = UpdateDataTask(
@@ -114,7 +115,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
     if (_updateDataTask == null) return;
 
     try {
-      final hiveManager = AppService().hiveManager;
+      //final hiveManager = AppService().hiveManager;
 
       // 获取子任务存储数据
       UploadAndTranscribeTaskStorage? uploadStorage;
@@ -154,7 +155,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         );
       }
 
-      await hiveManager.saveUpdateDataTaskFromData(
+      await HiveHelper.saveUpdateDataTaskFromData(
         id: _updateDataTask!.id, // 添加 id 参数
         userId: _updateDataTask!.userId,
         assetFileNames: _updateDataTask!.assetFileNames,
@@ -178,8 +179,8 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   /// 删除保存的任务
   Future<void> _deleteSavedTask() async {
     try {
-      final hiveManager = AppService().hiveManager;
-      await hiveManager.deleteUpdateDataTask();
+      //final hiveManager = AppService().hiveManager;
+      await HiveHelper.deleteUpdateDataTask();
       Logger().d('已删除保存的任务');
     } catch (e) {
       Logger().e('删除保存的任务失败: $e');
