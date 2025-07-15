@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/hive_helper.dart';
 
 class GuidedReflectionPage extends StatelessWidget {
@@ -74,13 +75,17 @@ class GuidedReflectionPage extends StatelessWidget {
                 onPressed: () async {
                   // 保存按钮点击事件
                   final content = _textController.text; // 获取输入框内容
-                  AppService().notesProvider.updateNote(
+                  final notesProvider = Provider.of<NotesProvider>(
+                    context,
+                    listen: false,
+                  );
+                  notesProvider.updateNote(
                     eventData, // 使用 eventData
                     content,
                   ); // 保存到 NotesProvider
                   debugPrint('Save button pressed: $content'); // 打印保存内容
                   Navigator.pop(context); // 返回到 DiaryDetailsPage
-                  await HiveHelper.saveNotes(AppService().notesProvider.notes);
+                  await HiveHelper.saveNotes(notesProvider.notes);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple, // 按钮背景颜色

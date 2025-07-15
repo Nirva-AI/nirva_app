@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nirva_app/event_card.dart';
 import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
+import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/quote_carousel.dart';
 import 'package:nirva_app/week_calendar_widget.dart';
 import 'package:nirva_app/month_calendar_page.dart';
@@ -162,8 +163,12 @@ class _SmartDiaryPageState extends State<SmartDiaryPage> {
   Widget _buildEventList(List<EventAnalysis> events) {
     List<EventAnalysis> finalEvents = [];
     if (_isFavorite) {
+      final favoritesProvider = Provider.of<FavoritesProvider>(
+        context,
+        listen: false,
+      );
       for (var entry in events) {
-        if (AppService().favoritesProvider.checkFavorite(entry)) {
+        if (favoritesProvider.checkFavorite(entry)) {
           finalEvents.add(entry);
         }
       }
