@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/data.dart';
+import 'package:nirva_app/hive_helper.dart';
 
 class LookingForwardTag {
   static const String doDifferentlyTomorrow = 'Do Differently Tomorrow';
@@ -194,9 +195,7 @@ class _GoalCardState extends State<GoalCard> {
     }
 
     if (hasChanged) {
-      await AppService().hiveManager.saveTasks(
-        AppService().tasksProvider.tasks,
-      );
+      await HiveHelper.saveTasks(AppService().tasksProvider.tasks);
     }
   }
 

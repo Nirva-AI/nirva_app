@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
+import 'package:nirva_app/hive_helper.dart';
 
 class TodoListView extends StatelessWidget {
   const TodoListView({super.key});
@@ -38,7 +39,7 @@ class TodoListView extends StatelessWidget {
                       icon: const Icon(Icons.close),
                       onPressed: () async {
                         Navigator.of(context).pop();
-                        await AppService().hiveManager.saveTasks(
+                        await HiveHelper.saveTasks(
                           AppService().tasksProvider.tasks,
                         );
                       },
@@ -72,7 +73,7 @@ class TodoListView extends StatelessWidget {
                                   return InkWell(
                                     onTap: () async {
                                       tasksProvider.switchTaskStatus(task);
-                                      await AppService().hiveManager.saveTasks(
+                                      await HiveHelper.saveTasks(
                                         tasksProvider.tasks,
                                       );
                                       debugPrint(

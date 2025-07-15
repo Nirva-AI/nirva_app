@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nirva_app/hive_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/data.dart';
@@ -32,11 +33,11 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     });
 
     // 异步保存，不阻塞当前线程
-    AppService().hiveManager
-        .saveFavoriteIds(AppService().favoritesProvider.favoriteIds)
-        .catchError((error) {
-          debugPrint('保存收藏夹数据失败: $error');
-        });
+    HiveHelper.saveFavoriteIds(
+      AppService().favoritesProvider.favoriteIds,
+    ).catchError((error) {
+      debugPrint('保存收藏夹数据失败: $error');
+    });
   }
 
   @override

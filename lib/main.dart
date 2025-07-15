@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nirva_app/app_service.dart';
+//import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
@@ -20,6 +20,7 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'amplifyconfiguration.dart';
+import 'package:nirva_app/hive_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
@@ -59,8 +60,9 @@ Future<void> _initializeApp() async {
   await _configureAmplify();
 
   // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
-  await AppService().hiveManager.deleteFromDisk();
-  await AppService().hiveManager.initializeAdapters();
+  await HiveHelper.initializeHive();
+  await HiveHelper.deleteFromDisk(); // 这句是测试用的。
+  await HiveHelper.initializeAdapters();
 }
 
 Future<void> _configureAmplify() async {

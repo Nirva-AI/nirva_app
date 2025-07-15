@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/event_details_page.dart';
-import 'package:nirva_app/app_service.dart';
+//import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
+import 'package:nirva_app/hive_helper.dart';
 
 class EventCard extends StatelessWidget {
   final EventAnalysis eventData;
@@ -71,11 +72,11 @@ class EventCard extends StatelessWidget {
                             );
 
                             // 异步保存，不阻塞当前线程
-                            AppService().hiveManager
-                                .saveFavoriteIds(favoritesProvider.favoriteIds)
-                                .catchError((error) {
-                                  debugPrint('保存收藏夹数据失败: $error');
-                                });
+                            HiveHelper.saveFavoriteIds(
+                              favoritesProvider.favoriteIds,
+                            ).catchError((error) {
+                              debugPrint('保存收藏夹数据失败: $error');
+                            });
                           },
                         ),
                       ],

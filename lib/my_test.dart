@@ -5,6 +5,7 @@ import 'package:nirva_app/app_service.dart';
 import 'dart:math';
 import 'package:nirva_app/utils.dart';
 import 'dart:convert';
+import 'package:nirva_app/hive_helper.dart';
 
 // 填充测试数据的类。
 class MyTest {
@@ -42,12 +43,12 @@ class MyTest {
       final loadJournalFile = JournalFile.fromJson(jsonData);
       debugPrint('事件数量: ${loadJournalFile.events.length}');
 
-      await AppService().hiveManager.createJournalFile(
+      await HiveHelper.createJournalFile(
         fileName: JournalFile.dateTimeToKey(dateTime),
         content: jsonEncode(jsonData),
       );
 
-      final journalFileStorage = AppService().hiveManager.getJournalFile(
+      final journalFileStorage = HiveHelper.getJournalFile(
         JournalFile.dateTimeToKey(dateTime),
       );
       if (journalFileStorage != null) {
