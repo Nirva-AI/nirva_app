@@ -51,7 +51,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
       // 初始化TasksProvider
       final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
-      AppService().setTasksProvider(tasksProvider);
 
       // 初始化FavoritesProvider
       final favoritesProvider = Provider.of<FavoritesProvider>(
@@ -72,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
       AppService().setChatHistoryProvider(chatHistoryProvider);
 
       // 执行数据初始化
-      await _setupHiveStorage();
+      await _setupHiveStorage(tasksProvider);
 
       // 设置初始选中日期
       AppService().selectDateTime(DateTime.now());
@@ -188,7 +187,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Future<void> _setupHiveStorage() async {
+  Future<void> _setupHiveStorage(TasksProvider tasksProvider) async {
     // 填充测试数据。
     await MyTest.setupTestData();
 
@@ -202,7 +201,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // 任务列表
     final retrievedTasks = HiveHelper.getAllTasks();
-    AppService().tasksProvider.setupTasks(retrievedTasks);
+    tasksProvider.setupTasks(retrievedTasks);
 
     // 笔记列表
     final retrievedNotes = HiveHelper.getAllNotes();

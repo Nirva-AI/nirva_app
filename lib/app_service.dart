@@ -1,7 +1,6 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:nirva_app/hive_helper.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
-import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
@@ -47,9 +46,6 @@ class AppService {
   // JournalFiles Provider 引用
   JournalFilesProvider? _journalFilesProvider;
 
-  // Tasks Provider 引用
-  TasksProvider? _tasksProvider;
-
   // Favorites Provider 引用
   FavoritesProvider? _favoritesProvider;
 
@@ -62,14 +58,6 @@ class AppService {
   // 获取用户
   User get user {
     return _user;
-  }
-
-  /*
-
-  */
-
-  TasksProvider get tasksProvider {
-    return _tasksProvider!;
   }
 
   FavoritesProvider get favoritesProvider {
@@ -91,11 +79,6 @@ class AppService {
   // 设置JournalFilesProvider
   void setJournalFilesProvider(JournalFilesProvider provider) {
     _journalFilesProvider = provider;
-  }
-
-  // 设置TasksProvider
-  void setTasksProvider(TasksProvider provider) {
-    _tasksProvider = provider;
   }
 
   // 设置FavoritesProvider
@@ -212,3 +195,8 @@ class AppService {
     return totalHours;
   }
 }
+
+
+/*
+
+*/
