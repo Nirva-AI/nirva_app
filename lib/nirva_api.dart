@@ -59,13 +59,12 @@ class NirvaAPI {
   }
 
   // 登录方法
-  static Future<UserToken?> login() async {
-    final appRuntimeContext = AppService();
+  static Future<UserToken?> login(User user) async {
     final response = await _dio.post<Map<String, dynamic>>(
       _urlConfig.loginUrl,
       data: {
-        'username': appRuntimeContext.user.username,
-        'password': appRuntimeContext.user.password,
+        'username': user.username,
+        'password': user.password,
         'grant_type': 'password',
       },
       options: Options(

@@ -6,6 +6,7 @@ import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -31,6 +32,15 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create:
+              (_) => UserProvider(
+                id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
+                username: 'weilyupku@gmail.com',
+                password: 'secret',
+                displayName: 'wei',
+              ),
+        ),
         ChangeNotifierProvider(create: (_) => JournalFilesProvider()),
         ChangeNotifierProvider(create: (_) => TasksProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),

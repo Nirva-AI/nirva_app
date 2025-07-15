@@ -2,17 +2,6 @@
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
 
-// 管理全局数据的类
-// 先这样，集中放一起，后续必要时候再拆。
-/*
-长期建议（重构）： 考虑拆分为多个服务类：
-class AppServiceLocator {  // 服务定位器
-  static AppDataService get dataService => AppDataService.instance;
-  static AppConfigService get configService => AppConfigService.instance;
-  static AppNetworkService get networkService => AppNetworkService.instance;
-}
-*/
-
 class AppService {
   // 可重置的单例模式
   static AppService? _instance;
@@ -29,9 +18,6 @@ class AppService {
     _instance = AppService._internal();
   }
 
-  // 用户信息
-  User _user = User(id: "", username: "", password: "", displayName: "");
-
   // 当前选中的日期时间
   DateTime _selectedDateTime = DateTime.now();
 
@@ -40,15 +26,6 @@ class AppService {
 
   // JournalFiles Provider 引用
   JournalFilesProvider? _journalFilesProvider;
-
-  // 获取用户
-  User get user {
-    return _user;
-  }
-
-  void setUser(User user) {
-    _user = user;
-  }
 
   // 设置JournalFilesProvider
   void setJournalFilesProvider(JournalFilesProvider provider) {

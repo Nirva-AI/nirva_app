@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
 import 'package:nirva_app/nirva_api.dart';
-//import 'package:nirva_app/app_runtime_context.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 import 'package:logger/logger.dart';
 
 class TestChatApp extends StatelessWidget {
-  TestChatApp({super.key});
+  const TestChatApp({super.key});
 
-  // 缓存初始化结果
-  final Future<bool> _initFuture = Future(() async {
+  // 将初始化逻辑改为方法，接收 context 参数
+  Future<bool> _initializeAPI(BuildContext context) async {
     try {
-      // 使用 APIs.getUrlConfig() 替代 ServiceProvider().getUrlConfig()
+      // 在异步操作前获取所有需要 context 的数据
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final user = userProvider.user;
+
+      // 然后进行异步操作
       final urlConfig = await NirvaAPI.getUrlConfig();
       if (urlConfig == null) {
         Logger().e('获取 URL 配置失败');
@@ -19,7 +24,7 @@ class TestChatApp extends StatelessWidget {
 
       Logger().i('API 初始化成功');
 
-      final token = await NirvaAPI.login();
+      final token = await NirvaAPI.login(user);
       if (token == null) {
         Logger().e('登录失败，未获取到 token');
         return false;
@@ -33,19 +38,12 @@ class TestChatApp extends StatelessWidget {
 
       Logger().i('刷新 token 成功');
 
-      // final logout = await APIs.logout();
-      // if (!logout) {
-      //   Logger().e('登出失败');
-      //   return false;
-      // }
-      // Logger().i('登出成功');
-
       return true;
     } catch (e) {
       Logger().e('API 初始化失败: $e');
       return false;
     }
-  });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,22 +54,10 @@ class TestChatApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       home: Scaffold(
-        //appBar: AppBar(title: const Text('测试对话')),
         body: FutureBuilder<bool>(
-          future: _initFuture, // 使用缓存的 Future
+          future: _initializeAPI(context), // 调用方法并传入 context
           builder: (context, snapshot) {
-            // if (snapshot.connectionState == ConnectionState.waiting) {
-            //   // 显示加载指示器
-            //   return const Center(child: CircularProgressIndicator());
-            // } else if (snapshot.hasError || !(snapshot.data ?? false)) {
-            //   // 显示错误信息
-            //   return const Center(child: Text('API 初始化失败'));
-            // } else {
-            // API 初始化成功，显示 AssistantChatPage
-            return AssistantChatPage(
-              //chatMessages: chatMessages,
-              textController: textController,
-            );
+            return AssistantChatPage(textController: textController);
             //}
           },
         ),

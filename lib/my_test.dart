@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 import 'dart:math';
 import 'package:nirva_app/utils.dart';
 import 'dart:convert';
@@ -12,16 +12,21 @@ import 'package:nirva_app/hive_helper.dart';
 class MyTest {
   static final random = Random();
   //
-  static Future<void> setupTestData([NotesProvider? notesProvider]) async {
+  static Future<void> setupTestData([
+    NotesProvider? notesProvider,
+    UserProvider? userProvider,
+  ]) async {
     // 设置用户信息
-    AppService().setUser(
-      User(
-        id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
-        username: 'weilyupku@gmail.com',
-        password: 'secret',
-        displayName: 'wei',
-      ),
-    );
+    // if (userProvider != null) {
+    //   userProvider.setUser(
+    //     User(
+    //       id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
+    //       username: 'weilyupku@gmail.com',
+    //       password: 'secret',
+    //       displayName: 'wei',
+    //     ),
+    //   );
+    // }
 
     //这里读取日记。
     await loadTestJournalFile(

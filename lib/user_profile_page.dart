@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/nirva_api.dart';
 
 class UserProfilePage extends StatelessWidget {
@@ -55,7 +56,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppService().user.username,
+                        context.read<UserProvider>().user.username,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(
@@ -78,7 +79,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppService().user.displayName,
+                        context.read<UserProvider>().user.displayName,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(
