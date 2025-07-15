@@ -46,7 +46,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     });
 
     try {
-      final response = await NirvaAPI.chat(message);
+      final response = await NirvaAPI.chat(message, context);
       if (response != null) {
         //AppRuntimeContext().chat.addUserMessage(message);
         //AppRuntimeContext().chat.addAIMessage('AI 回复: ${response.message}');

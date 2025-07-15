@@ -52,26 +52,24 @@ class _SplashScreenState extends State<SplashScreen> {
       // 初始化TasksProvider
       final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
 
-      // 初始化FavoritesProvider
+      // 获取其他Providers用于数据初始化
       final favoritesProvider = Provider.of<FavoritesProvider>(
         context,
         listen: false,
       );
-      AppService().setFavoritesProvider(favoritesProvider);
-
-      // 初始化NotesProvider
       final notesProvider = Provider.of<NotesProvider>(context, listen: false);
-      AppService().setNotesProvider(notesProvider);
-
-      // 初始化ChatHistoryProvider
       final chatHistoryProvider = Provider.of<ChatHistoryProvider>(
         context,
         listen: false,
       );
-      AppService().setChatHistoryProvider(chatHistoryProvider);
 
       // 执行数据初始化
-      await _setupHiveStorage(tasksProvider);
+      await _setupHiveStorage(
+        tasksProvider,
+        favoritesProvider,
+        notesProvider,
+        chatHistoryProvider,
+      );
 
       // 设置初始选中日期
       AppService().selectDateTime(DateTime.now());
@@ -187,17 +185,22 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Future<void> _setupHiveStorage(TasksProvider tasksProvider) async {
+  Future<void> _setupHiveStorage(
+    TasksProvider tasksProvider,
+    FavoritesProvider favoritesProvider,
+    NotesProvider notesProvider,
+    ChatHistoryProvider chatHistoryProvider,
+  ) async {
     // 填充测试数据。
-    await MyTest.setupTestData();
+    await MyTest.setupTestData(notesProvider);
 
     // 喜爱的日记数据
     final retrievedFavorites = HiveHelper.getFavoritesIds();
-    AppService().favoritesProvider.setupFavorites(retrievedFavorites);
+    favoritesProvider.setupFavorites(retrievedFavorites);
 
     // 对话列表
     final storageChatHistory = HiveHelper.getChatHistory();
-    AppService().chatHistoryProvider.setupChatHistory(storageChatHistory);
+    chatHistoryProvider.setupChatHistory(storageChatHistory);
 
     // 任务列表
     final retrievedTasks = HiveHelper.getAllTasks();
@@ -205,7 +208,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // 笔记列表
     final retrievedNotes = HiveHelper.getAllNotes();
-    AppService().notesProvider.setupNotes(retrievedNotes);
+    notesProvider.setupNotes(retrievedNotes);
 
     //journal files
     AppService().initializeJournalFiles(HiveHelper.retrieveJournalFiles());

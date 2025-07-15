@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/my_hive_objects.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/hive_helper.dart';
 
@@ -365,10 +366,19 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
               ),
               TextButton(
                 onPressed: () async {
+                  // 在异步操作前获取 Provider
+                  final favoritesProvider =
+                      dataType == 'Favorites Data'
+                          ? Provider.of<FavoritesProvider>(
+                            context,
+                            listen: false,
+                          )
+                          : null;
+
                   Navigator.of(context).pop();
                   if (dataType == 'Favorites Data') {
                     await HiveHelper.saveFavoriteIds([]);
-                    AppService().favoritesProvider.clearFavorites();
+                    favoritesProvider?.clearFavorites();
                   } else if (dataType == 'User Token') {
                     await HiveHelper.deleteUserToken();
                   } else if (dataType == 'Journal Index') {

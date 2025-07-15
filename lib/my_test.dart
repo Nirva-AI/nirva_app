@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/notes_provider.dart';
 import 'dart:math';
 import 'package:nirva_app/utils.dart';
 import 'dart:convert';
@@ -11,7 +12,7 @@ import 'package:nirva_app/hive_helper.dart';
 class MyTest {
   static final random = Random();
   //
-  static Future<void> setupTestData() async {
+  static Future<void> setupTestData([NotesProvider? notesProvider]) async {
     // 设置用户信息
     AppService().setUser(
       User(
@@ -67,7 +68,10 @@ class MyTest {
   }
 
   // 添加日记的笔记数据
-  static void initializeTestMyNotes(JournalFile journalFile) {
+  static void initializeTestMyNotes(
+    JournalFile journalFile, [
+    NotesProvider? notesProvider,
+  ]) {
     // 设置测试数据
     List<EventAnalysis> events = journalFile.events;
 
@@ -75,13 +79,15 @@ class MyTest {
     if (events.isNotEmpty) {
       EventAnalysis randomEvent = events[random.nextInt(events.length)];
       debugPrint('随机选中的日记: ${randomEvent.event_title}');
-      AppService().notesProvider.setupNotes([
-        Note(
-          id: randomEvent.event_id,
-          content:
-              'This is a test note for diary entry ${randomEvent.event_id}.',
-        ),
-      ]);
+      if (notesProvider != null) {
+        notesProvider.setupNotes([
+          Note(
+            id: randomEvent.event_id,
+            content:
+                'This is a test note for diary entry ${randomEvent.event_id}.',
+          ),
+        ]);
+      }
       debugPrint('已添加到笔记: ${randomEvent.event_id}');
     } else {
       debugPrint('diaryEntries 列表为空');

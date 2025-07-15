@@ -1,10 +1,13 @@
 // ignore_for_file: non_constant_identifier_names
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/hive_helper.dart';
@@ -307,9 +310,20 @@ class NirvaAPI {
   }
 
   // 聊天请求, 故意不抓留给外面抓。
-  static Future<ChatActionResponse?> chat(String content) async {
-    final appRuntimeContext = AppService();
+  static Future<ChatActionResponse?> chat(
+    String content,
+    BuildContext? context,
+  ) async {
     final uuid = Uuid(); // 创建UUID生成器实例
+
+    // 获取 ChatHistoryProvider
+    ChatHistoryProvider? chatHistoryProvider;
+    if (context != null) {
+      chatHistoryProvider = Provider.of<ChatHistoryProvider>(
+        context,
+        listen: false,
+      );
+    }
 
     final chatActionRequest = ChatActionRequest(
       human_message: ChatMessage(
@@ -318,7 +332,7 @@ class NirvaAPI {
         content: content,
         time_stamp: JournalFile.dateTimeToKey(DateTime.now()),
       ),
-      chat_history: appRuntimeContext.chatHistoryProvider.chatHistory,
+      chat_history: chatHistoryProvider?.chatHistory ?? [],
     );
 
     // 添加详细日志，查看完整请求体
@@ -338,15 +352,16 @@ class NirvaAPI {
 
     final chatResponse = ChatActionResponse.fromJson(response.data!);
     Logger().d('Chat action response: ${jsonEncode(chatResponse.toJson())}');
-    appRuntimeContext.chatHistoryProvider.addChatMessages([
-      chatActionRequest.human_message,
-      chatResponse.ai_message,
-    ]);
 
-    // _saveMessages 会通过监听器自动调用
-    HiveHelper.saveChatHistory(
-      appRuntimeContext.chatHistoryProvider.chatHistory,
-    );
+    if (chatHistoryProvider != null) {
+      chatHistoryProvider.addChatMessages([
+        chatActionRequest.human_message,
+        chatResponse.ai_message,
+      ]);
+
+      // _saveMessages 会通过监听器自动调用
+      HiveHelper.saveChatHistory(chatHistoryProvider.chatHistory);
+    }
     return chatResponse; // 这里返回null是因为没有实现具体的聊天逻辑
   }
 

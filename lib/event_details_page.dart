@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart';
+import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/utils.dart';
 
@@ -18,14 +19,20 @@ class EventDetailsPage extends StatefulWidget {
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
   bool get isFavorite {
-    return AppService().favoritesProvider.checkFavorite(widget.eventData);
+    final favoritesProvider = Provider.of<FavoritesProvider>(
+      context,
+      listen: false,
+    );
+    return favoritesProvider.checkFavorite(widget.eventData);
   }
 
   void _toggleFavorite() {
+    final favoritesProvider = Provider.of<FavoritesProvider>(
+      context,
+      listen: false,
+    );
     setState(() {
-      AppService().favoritesProvider.switchEventFavoriteStatus(
-        widget.eventData,
-      );
+      favoritesProvider.switchEventFavoriteStatus(widget.eventData);
       //AppRuntimeContext().data.switchDiaryFavoriteStatus(widget.diaryData);
       debugPrint(
         'Star button pressed: ${isFavorite ? "Added to favorites" : "Removed from favorites"}',
@@ -33,9 +40,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     });
 
     // 异步保存，不阻塞当前线程
-    HiveHelper.saveFavoriteIds(
-      AppService().favoritesProvider.favoriteIds,
-    ).catchError((error) {
+    HiveHelper.saveFavoriteIds(favoritesProvider.favoriteIds).catchError((
+      error,
+    ) {
       debugPrint('保存收藏夹数据失败: $error');
     });
   }
