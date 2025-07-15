@@ -39,9 +39,6 @@ class _SplashScreenState extends State<SplashScreen> {
         return; // 阻止后续执行
       }
 
-      // 清空AppRuntimeContext（在设置Provider之前）
-      AppService.clear();
-
       // 初始化JournalFilesProvider
       if (!mounted) return;
       final journalFilesProvider = Provider.of<JournalFilesProvider>(
@@ -64,6 +61,9 @@ class _SplashScreenState extends State<SplashScreen> {
         listen: false,
       );
       final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+      // 填充测试数据。
+      await MyTest.setupTestData(notesProvider, userProvider);
 
       // 执行数据初始化
       await _setupHiveStorage(
@@ -199,9 +199,6 @@ class _SplashScreenState extends State<SplashScreen> {
     ChatHistoryProvider chatHistoryProvider,
     UserProvider userProvider,
   ) async {
-    // 填充测试数据。
-    await MyTest.setupTestData(notesProvider, userProvider);
-
     // 喜爱的日记数据
     final retrievedFavorites = HiveHelper.getFavoritesIds();
     favoritesProvider.setupFavorites(retrievedFavorites);

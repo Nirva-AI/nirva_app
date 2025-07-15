@@ -13,11 +13,6 @@ class AppService {
   factory AppService() => instance;
   AppService._internal();
 
-  // 清空数据
-  static void clear() {
-    _instance = AppService._internal();
-  }
-
   // 当前选中的日期时间
   DateTime _selectedDateTime = DateTime.now();
 
@@ -122,8 +117,3 @@ class AppService {
     return totalHours;
   }
 }
-
-
-/*
-
-*/
