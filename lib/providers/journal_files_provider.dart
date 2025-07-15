@@ -5,14 +5,77 @@ class JournalFilesProvider extends ChangeNotifier {
   List<JournalFile> _journalFiles = [];
   final List<Dashboard> _dashboards = [];
 
+  // 从AppService迁移过来的状态
+  DateTime _selectedDateTime = DateTime.now();
+  JournalFile? _currentJournalFile;
+
   List<JournalFile> get journalFiles => List.unmodifiable(_journalFiles);
   List<Dashboard> get dashboards => List.unmodifiable(_dashboards);
+
+  // 从AppService迁移过来的getter
+  DateTime get selectedDateTime => _selectedDateTime;
+  JournalFile get currentJournalFile =>
+      _currentJournalFile ?? JournalFile.createEmpty();
 
   void setupJournalFiles(List<JournalFile> files) {
     _journalFiles = files;
     _sortJournalFilesByDate();
     _refreshDashboardData();
+    _onActiveJournalFile(); // 添加这个调用以更新当前日记文件
     notifyListeners();
+  }
+
+  // 从AppService迁移过来的方法
+  void selectDateTime(DateTime dateTime) {
+    _selectedDateTime = dateTime;
+    _onActiveJournalFile();
+    notifyListeners();
+  }
+
+  void addJournalFile(JournalFile journalFile) {
+    setupJournalFiles(_journalFiles + [journalFile]);
+  }
+
+  void initializeJournalFiles(List<JournalFile> files) {
+    setupJournalFiles(files);
+  }
+
+  // 从AppService迁移过来的私有方法
+  void _onActiveJournalFile() {
+    _currentJournalFile = null;
+    for (var journalFile in _journalFiles) {
+      if (journalFile.time_stamp ==
+          JournalFile.dateTimeToKey(_selectedDateTime)) {
+        _currentJournalFile = journalFile;
+        break;
+      }
+    }
+  }
+
+  // 从AppService迁移过来的社交地图相关方法
+  Map<String, SocialEntity> buildSocialMap() {
+    final Map<String, SocialEntity> map = {};
+    for (var journalFile in _journalFiles) {
+      Map<String, SocialEntity> subMap = journalFile.socialEntities;
+      for (var key in subMap.keys) {
+        if (!map.containsKey(key)) {
+          map[key] = subMap[key]!;
+        } else {
+          // 如果已经存在，则合并
+          map[key]!.merge(subMap[key]!);
+        }
+      }
+    }
+    return map;
+  }
+
+  double getTotalSocialHours() {
+    double totalHours = 0;
+    final global = buildSocialMap();
+    for (var entity in global.values) {
+      totalHours += entity.hours;
+    }
+    return totalHours;
   }
 
   JournalFile? getJournalFileByDate(DateTime date) {

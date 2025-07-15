@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/energy_level_details_page.dart';
 import 'package:nirva_app/utils.dart';
 
@@ -38,10 +39,10 @@ class EnergyLevel {
 class EnergyLevelCard extends StatelessWidget {
   const EnergyLevelCard({super.key});
 
-  List<EnergyLevel> get energyLevels {
+  List<EnergyLevel> _getEnergyLevels(JournalFilesProvider provider) {
     List<EnergyLevel> ret = [];
-    final events = AppService().currentJournalFile.events;
-    final currentJournalDate = AppService().selectedDateTime;
+    final events = provider.currentJournalFile.events;
+    final currentJournalDate = provider.selectedDateTime;
     for (var event in events) {
       try {
         final parseTimeRange = Utils.extractEventTimeRange(
@@ -109,6 +110,8 @@ class EnergyLevelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
+    final energyLevels = _getEnergyLevels(journalFilesProvider);
     final spots = _generateSpots(energyLevels);
     return Card(
       elevation: 2,

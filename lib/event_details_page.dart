@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/hive_helper.dart';
 import 'package:provider/provider.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/guided_reflection_page.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
@@ -49,8 +49,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
     final fullDateTime = Utils.fullFormatEventDateTime(
-      AppService().selectedDateTime,
+      journalFilesProvider.selectedDateTime,
     );
     return Scaffold(
       appBar: PreferredSize(

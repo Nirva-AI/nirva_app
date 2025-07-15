@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
 
@@ -9,8 +10,9 @@ class MoodTrackingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
     final sections =
-        AppService().currentJournalFile.moodTracking.map((entry) {
+        journalFilesProvider.currentJournalFile.moodTracking.map((entry) {
           return PieChartSectionData(
             value: entry.ratio.toDouble(),
             color: Color(entry.color),

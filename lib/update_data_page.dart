@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/my_hive_objects.dart';
@@ -531,8 +531,12 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
         }
 
         // 如果有分析结果，可以添加到全局数据中
-        if (task.analysisResult != null) {
-          AppService().addJournalFile(task.analysisResult!);
+        if (task.analysisResult != null && mounted) {
+          final journalFilesProvider = Provider.of<JournalFilesProvider>(
+            context,
+            listen: false,
+          );
+          journalFilesProvider.addJournalFile(task.analysisResult!);
           Logger().d('分析结果已添加到全局数据');
         }
       } else {

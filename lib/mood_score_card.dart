@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/mood_score_details_page.dart';
 
@@ -8,7 +9,8 @@ class MoodScoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moodScore = AppService().currentJournalFile.moodScoreAverage;
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
+    final moodScore = journalFilesProvider.currentJournalFile.moodScoreAverage;
 
     return Expanded(
       child: Card(

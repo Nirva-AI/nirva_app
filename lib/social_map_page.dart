@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 
 class SocialMapPage extends StatelessWidget {
   const SocialMapPage({super.key});
@@ -41,11 +42,12 @@ class SocialInteractionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
     // 计算总时间
-    final totalHours = AppService().getTotalSocialHours();
+    final totalHours = journalFilesProvider.getTotalSocialHours();
     // 获取全局社交实体映射
     final Map<String, SocialEntity> globalSocialMap =
-        AppService().buildSocialMap();
+        journalFilesProvider.buildSocialMap();
 
     // 将globalSocialMap中的value全部取出来，存成一个List
     final List<SocialEntity> socialEntities = globalSocialMap.values.toList();
@@ -175,8 +177,9 @@ class RelationshipDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
     final Map<String, SocialEntity> globalSocialMap =
-        AppService().buildSocialMap();
+        journalFilesProvider.buildSocialMap();
     final List<SocialEntity> socialEntities = globalSocialMap.values.toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

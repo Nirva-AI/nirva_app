@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
 
 class AwakeTimeAllocationDetailsPage extends StatefulWidget {
@@ -179,13 +180,25 @@ class _SlidingLineChartState extends State<SlidingLineChart> {
   late List<Dashboard> _chartData;
 
   double get chartWidth {
-    return AppService().dashboards.length * widget.unitWidth;
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(
+      context,
+      listen: false,
+    );
+    return journalFilesProvider.dashboards.length * widget.unitWidth;
   }
 
   @override
   void initState() {
     super.initState();
-    _chartData = AppService().dashboards;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final journalFilesProvider = Provider.of<JournalFilesProvider>(
+        context,
+        listen: false,
+      );
+      setState(() {
+        _chartData = journalFilesProvider.dashboards;
+      });
+    });
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {

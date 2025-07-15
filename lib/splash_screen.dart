@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/home_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
@@ -45,9 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         listen: false,
       );
-      AppService().setJournalFilesProvider(journalFilesProvider);
 
-      // 初始化TasksProvider
+      // 获取其他Providers用于数据初始化
       final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
 
       // 获取其他Providers用于数据初始化
@@ -75,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
       );
 
       // 设置初始选中日期
-      AppService().selectDateTime(DateTime.now());
+      journalFilesProvider.selectDateTime(DateTime.now());
 
       // API初始化和登录
       await _initializeAPIs();
@@ -216,6 +214,12 @@ class _SplashScreenState extends State<SplashScreen> {
     notesProvider.setupNotes(retrievedNotes);
 
     //journal files
-    AppService().initializeJournalFiles(HiveHelper.retrieveJournalFiles());
+    final journalFilesProvider = Provider.of<JournalFilesProvider>(
+      context,
+      listen: false,
+    );
+    journalFilesProvider.initializeJournalFiles(
+      HiveHelper.retrieveJournalFiles(),
+    );
   }
 }

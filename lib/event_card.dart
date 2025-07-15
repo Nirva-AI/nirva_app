@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/event_details_page.dart';
-//import 'package:nirva_app/app_service.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/hive_helper.dart';
 
