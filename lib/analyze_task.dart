@@ -2,7 +2,7 @@ import 'package:nirva_app/data.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import 'package:nirva_app/transcribe_file_name.dart';
-import 'package:nirva_app/apis.dart';
+import 'package:nirva_app/nirva_api.dart';
 
 /// 任务状态枚举
 enum AnalyzeTaskStatus {
@@ -47,7 +47,7 @@ class AnalyzeTask {
       status = AnalyzeTaskStatus.uploading;
       errorMessage = null;
 
-      final uploadResponse = await APIs.uploadTranscript(
+      final uploadResponse = await NirvaAPI.uploadTranscript(
         content,
         dateKey,
         transcribeFileName.fileNumber,
@@ -80,7 +80,7 @@ class AnalyzeTask {
       status = AnalyzeTaskStatus.analyzing;
       errorMessage = null;
 
-      final backgroundTaskResponse = await APIs.analyze(
+      final backgroundTaskResponse = await NirvaAPI.analyze(
         dateKey,
         transcribeFileName.fileNumber,
       );
@@ -109,7 +109,7 @@ class AnalyzeTask {
       status = AnalyzeTaskStatus.gettingResults;
       errorMessage = null;
 
-      final journalFile = await APIs.getJournalFile(dateKey);
+      final journalFile = await NirvaAPI.getJournalFile(dateKey);
 
       if (journalFile != null) {
         journalFileResult = journalFile;

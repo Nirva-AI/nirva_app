@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
-import 'package:nirva_app/apis.dart';
+import 'package:nirva_app/nirva_api.dart';
 //import 'package:nirva_app/app_runtime_context.dart';
 import 'package:logger/logger.dart';
 
@@ -11,7 +11,7 @@ class TestChatApp extends StatelessWidget {
   final Future<bool> _initFuture = Future(() async {
     try {
       // 使用 APIs.getUrlConfig() 替代 ServiceProvider().getUrlConfig()
-      final urlConfig = await APIs.getUrlConfig();
+      final urlConfig = await NirvaAPI.getUrlConfig();
       if (urlConfig == null) {
         Logger().e('获取 URL 配置失败');
         return false;
@@ -19,13 +19,13 @@ class TestChatApp extends StatelessWidget {
 
       Logger().i('API 初始化成功');
 
-      final token = await APIs.login();
+      final token = await NirvaAPI.login();
       if (token == null) {
         Logger().e('登录失败，未获取到 token');
         return false;
       }
 
-      final refreshToken = await APIs.refreshToken();
+      final refreshToken = await NirvaAPI.refreshToken();
       if (refreshToken == null) {
         Logger().e('刷新 token 失败');
         return false;

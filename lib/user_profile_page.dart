@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/nirva_api.dart';
 
 class UserProfilePage extends StatelessWidget {
   const UserProfilePage({super.key});
@@ -100,7 +101,7 @@ class UserProfilePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AppService().dio.options.baseUrl,
+                        NirvaAPI.dio.options.baseUrl,
                         style: TextStyle(color: Colors.grey),
                       ),
                       Icon(

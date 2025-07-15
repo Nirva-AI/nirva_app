@@ -8,24 +8,58 @@ import 'package:nirva_app/app_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/hive_helper.dart';
+import 'package:nirva_app/url_configuration.dart';
 
-class APIs {
+class NirvaAPI {
+  // 服务器地址
+  static const String serverAddress = '192.168.192.122';
+
+  // 基础端口号
+  static const int basePort = 8001;
+
+  // 开发环境的 HTTP URL
+  static const String devHttpUrl = 'http://$serverAddress:$basePort';
+
+  // url 配置
+  static final URLConfiguration _urlConfig = URLConfiguration();
+
+  // 静态 Dio 实例
+  static final Dio _dio = Dio(
+      BaseOptions(
+        baseUrl: devHttpUrl,
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    )
+    ..interceptors.addAll([
+      LogInterceptor(request: true, requestHeader: true, responseHeader: true),
+      InterceptorsWrapper(
+        onError: (error, handler) {
+          Logger().e('Dio Error: ${error.message}');
+          return handler.next(error);
+        },
+      ),
+    ]);
+
+  // 静态getter方法
+  static URLConfiguration get urlConfig => _urlConfig;
+  static Dio get dio => _dio;
+
   // 获取 URL 配置，故意不抓留给外面抓。
   static Future<URLConfigurationResponse?> getUrlConfig() async {
-    final appRuntimeContext = AppService();
-    final response = await appRuntimeContext.dio.get<dynamic>("/config");
+    final response = await _dio.get<dynamic>("/config");
     final url_configuration_response = URLConfigurationResponse.fromJson(
       response.data!,
     );
-    appRuntimeContext.urlConfig.setup(url_configuration_response);
+    _urlConfig.setup(url_configuration_response);
     return url_configuration_response;
   }
 
   // 登录方法
   static Future<UserToken?> login() async {
     final appRuntimeContext = AppService();
-    final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
-      appRuntimeContext.urlConfig.loginUrl,
+    final response = await _dio.post<Map<String, dynamic>>(
+      _urlConfig.loginUrl,
       data: {
         'username': appRuntimeContext.user.username,
         'password': appRuntimeContext.user.password,
@@ -58,9 +92,8 @@ class APIs {
 
   // 登出方法，故意不抓留给外面抓。
   static Future<bool> logout() async {
-    final appRuntimeContext = AppService();
-    final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
-      appRuntimeContext.urlConfig.logoutUrl,
+    final response = await _dio.post<Map<String, dynamic>>(
+      _urlConfig.logoutUrl,
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -81,15 +114,14 @@ class APIs {
 
   // 刷新访问令牌，故意不抓留给外面抓。
   static Future<UserToken?> refreshToken() async {
-    final appRuntimeContext = AppService();
     if (HiveHelper.getUserToken().refresh_token.isEmpty) {
       Logger().e("没有可用的刷新令牌，无法刷新访问令牌。");
       return null;
     }
 
     // 发送刷新令牌请求
-    final response = await appRuntimeContext.dio.post<Map<String, dynamic>>(
-      appRuntimeContext.urlConfig.refreshUrl,
+    final response = await _dio.post<Map<String, dynamic>>(
+      _urlConfig.refreshUrl,
       // 使用表单数据格式发送
       data: FormData.fromMap({
         'refresh_token': HiveHelper.getUserToken().refresh_token,
@@ -294,8 +326,8 @@ class APIs {
     Logger().d('Chat request payload: ${jsonEncode(requestJson)}');
 
     final response = await safePost<Map<String, dynamic>>(
-      appRuntimeContext.dio,
-      appRuntimeContext.urlConfig.chatActionUrl,
+      _dio,
+      _urlConfig.chatActionUrl,
       data: chatActionRequest.toJson(),
     );
 
@@ -325,7 +357,6 @@ class APIs {
     int fileNumber,
     String fileSuffix,
   ) async {
-    final appRuntimeContext = AppService();
     final uploadTranscriptActionRequest = UploadTranscriptActionRequest(
       transcript_content: transcriptContent,
       time_stamp: timeStamp,
@@ -334,8 +365,8 @@ class APIs {
     );
 
     final response = await safePost<Map<String, dynamic>>(
-      appRuntimeContext.dio,
-      appRuntimeContext.urlConfig.uploadTranscriptUrl,
+      _dio,
+      _urlConfig.uploadTranscriptUrl,
       data: uploadTranscriptActionRequest.toJson(),
     );
 
@@ -359,15 +390,14 @@ class APIs {
     String timeStamp,
     int fileNumber,
   ) async {
-    final appRuntimeContext = AppService();
     final analyzeActionRequest = AnalyzeActionRequest(
       time_stamp: timeStamp,
       file_number: fileNumber,
     );
 
     final response = await safePost<Map<String, dynamic>>(
-      appRuntimeContext.dio,
-      appRuntimeContext.urlConfig.analyzeActionUrl,
+      _dio,
+      _urlConfig.analyzeActionUrl,
       data: analyzeActionRequest.toJson(),
       receiveTimeout: 60, // 设置接收超时时间为60秒, 时间较长。
     );
@@ -388,10 +418,9 @@ class APIs {
   }
 
   static Future<JournalFile?> getJournalFile(String timeStamp) async {
-    final appRuntimeContext = AppService();
     final response = await safeGet<Map<String, dynamic>>(
-      appRuntimeContext.dio,
-      appRuntimeContext.urlConfig.formatGetJournalFileUrl(timeStamp),
+      _dio,
+      _urlConfig.formatGetJournalFileUrl(timeStamp),
       query: {'time_stamp': timeStamp},
     );
 
@@ -427,10 +456,9 @@ class APIs {
   }
 
   static Future<Map<String, dynamic>?> getTaskStatus(String taskId) async {
-    final appRuntimeContext = AppService();
     final response = await safeGet<Map<String, dynamic>>(
-      appRuntimeContext.dio,
-      appRuntimeContext.urlConfig.formatTaskStatusUrl(taskId),
+      _dio,
+      _urlConfig.formatTaskStatusUrl(taskId),
     );
 
     if (response == null || response.data == null) {
