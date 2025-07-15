@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //import 'package:nirva_app/message.dart';
-import 'package:nirva_app/apis.dart';
+import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 
@@ -46,7 +46,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     });
 
     try {
-      final response = await APIs.chat(message);
+      final response = await NirvaAPI.chat(message);
       if (response != null) {
         //AppRuntimeContext().chat.addUserMessage(message);
         //AppRuntimeContext().chat.addAIMessage('AI 回复: ${response.message}');

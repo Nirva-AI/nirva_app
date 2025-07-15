@@ -10,7 +10,7 @@ import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
-import 'package:nirva_app/apis.dart';
+import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/hive_helper.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -135,14 +135,14 @@ class _SplashScreenState extends State<SplashScreen> {
   // API初始化方法
   Future<void> _initializeAPIs() async {
     try {
-      final urlConfig = await APIs.getUrlConfig();
+      final urlConfig = await NirvaAPI.getUrlConfig();
       if (urlConfig == null) {
         throw Exception('获取 URL 配置失败');
       }
 
       Logger().i('API 配置获取成功');
 
-      final token = await APIs.login();
+      final token = await NirvaAPI.login();
       if (token == null) {
         throw Exception('登录失败，未获取到 token');
       }

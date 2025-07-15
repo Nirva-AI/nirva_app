@@ -1,18 +1,12 @@
 // 这是一个数据管理器类，负责管理应用程序中的数据结构和数据
 import 'package:nirva_app/hive_helper.dart';
-import 'package:nirva_app/url_configuration.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
-import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
+//import 'package:logger/logger.dart';
 import 'package:nirva_app/data.dart';
-
-const String serverAddress = '192.168.192.122';
-const int basePort = 8001;
-const String devHttpUrl = 'http://$serverAddress:$basePort';
 
 // 管理全局数据的类
 // 先这样，集中放一起，后续必要时候再拆。
@@ -50,12 +44,6 @@ class AppService {
   // 当前的日记文件
   JournalFile? _currentJournalFile;
 
-  // 空的日记文件实例
-  //final emptyJournalFile = JournalFile.createEmpty();
-
-  // URL 配置实例
-  final URLConfiguration _urlConfig = URLConfiguration();
-
   // JournalFiles Provider 引用
   JournalFilesProvider? _journalFilesProvider;
 
@@ -76,31 +64,9 @@ class AppService {
     return _user;
   }
 
-  // 用于基础app服务的 Dio 实例
-  final Dio _dio = Dio(
-      BaseOptions(
-        baseUrl: devHttpUrl,
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 30),
-      ),
-    )
-    ..interceptors.addAll([
-      LogInterceptor(request: true, requestHeader: true, responseHeader: true),
-      InterceptorsWrapper(
-        onError: (error, handler) {
-          Logger().e('Dio Error: ${error.message}');
-          return handler.next(error);
-        },
-      ),
-    ]);
+  /*
 
-  URLConfiguration get urlConfig {
-    return _urlConfig;
-  }
-
-  Dio get dio {
-    return _dio;
-  }
+  */
 
   TasksProvider get tasksProvider {
     return _tasksProvider!;
