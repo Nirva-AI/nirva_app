@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/hive_helper.dart';
@@ -244,7 +246,7 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
   // 创建空任务
   Future<void> _createEmptyTask() async {
     // 获取用户ID
-    final userId = AppService().user.id;
+    final userId = context.read<UserProvider>().user.id;
 
     if (userId.isEmpty) {
       _showErrorDialog('User ID is empty, please ensure you are logged in');

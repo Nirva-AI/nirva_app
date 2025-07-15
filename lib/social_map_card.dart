@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:nirva_app/custom_fruchterman_reingold_algorithm.dart';
 import 'package:nirva_app/social_map_page.dart';
 import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/data.dart';
 
 class SocialMapCard extends StatefulWidget {
@@ -48,7 +50,7 @@ class _SocialMapCardState extends State<SocialMapCard> {
   Graph createGraph() {
     final newGraph = Graph();
 
-    User user = AppService().user;
+    User user = context.read<UserProvider>().user;
     Node userNode = Node.Id(user.displayName);
     newGraph.addNode(userNode);
 
@@ -171,7 +173,7 @@ class _SocialMapCardState extends State<SocialMapCard> {
 
   Color? _parseNodeColor(String nodeName) {
     // 根据节点名称返回不同的颜色
-    if (nodeName == AppService().user.displayName) {
+    if (nodeName == context.read<UserProvider>().user.displayName) {
       return Colors.yellow[100];
     }
 

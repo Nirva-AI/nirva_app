@@ -8,6 +8,7 @@ import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/nirva_api.dart';
@@ -62,6 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         listen: false,
       );
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
 
       // 执行数据初始化
       await _setupHiveStorage(
@@ -69,6 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
         favoritesProvider,
         notesProvider,
         chatHistoryProvider,
+        userProvider,
       );
 
       // 设置初始选中日期
@@ -132,6 +135,10 @@ class _SplashScreenState extends State<SplashScreen> {
   // API初始化方法
   Future<void> _initializeAPIs() async {
     try {
+      // 在异步操作前获取 UserProvider，避免跨异步使用 context
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final user = userProvider.user;
+
       final urlConfig = await NirvaAPI.getUrlConfig();
       if (urlConfig == null) {
         throw Exception('获取 URL 配置失败');
@@ -139,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
       Logger().i('API 配置获取成功');
 
-      final token = await NirvaAPI.login();
+      final token = await NirvaAPI.login(user);
       if (token == null) {
         throw Exception('登录失败，未获取到 token');
       }
@@ -190,9 +197,10 @@ class _SplashScreenState extends State<SplashScreen> {
     FavoritesProvider favoritesProvider,
     NotesProvider notesProvider,
     ChatHistoryProvider chatHistoryProvider,
+    UserProvider userProvider,
   ) async {
     // 填充测试数据。
-    await MyTest.setupTestData(notesProvider);
+    await MyTest.setupTestData(notesProvider, userProvider);
 
     // 喜爱的日记数据
     final retrievedFavorites = HiveHelper.getFavoritesIds();
