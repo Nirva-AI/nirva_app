@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/app_service.dart';
+import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/hive_helper.dart';
@@ -184,18 +186,19 @@ class _GoalCardState extends State<GoalCard> {
 
   Future<void> _addTaskToTodoList() async {
     debugPrint('Task added: ${widget.title}');
+    final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
     bool hasChanged = false;
     for (var content in widget.contents) {
-      if (AppService().tasksProvider.hasTask(widget.title, content)) {
+      if (tasksProvider.hasTask(widget.title, content)) {
         // 如果任务已存在，则不添加
         continue;
       }
-      AppService().tasksProvider.addTask(widget.title, content);
+      tasksProvider.addTask(widget.title, content);
       hasChanged = true;
     }
 
     if (hasChanged) {
-      await HiveHelper.saveTasks(AppService().tasksProvider.tasks);
+      await HiveHelper.saveTasks(tasksProvider.tasks);
     }
   }
 

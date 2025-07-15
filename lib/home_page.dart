@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/app_service.dart';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
@@ -104,7 +105,11 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.checklist),
               onPressed: () {
                 debugPrint('to-do list');
-                AppService().tasksProvider.clearCompletedTasks();
+                final tasksProvider = Provider.of<TasksProvider>(
+                  context,
+                  listen: false,
+                );
+                tasksProvider.clearCompletedTasks();
                 _showToDoList(context);
               },
             ),
