@@ -163,9 +163,9 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(36), // Half of width/height
             child: const Center(
               child: Icon(
-                Icons.chat,
+                Icons.water_drop_outlined,
                 color: Colors.white,
-                size: 32, // Larger icon
+                size: 36, // Larger icon
               ),
             ),
           ),
@@ -198,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Expanded(
                         child: _buildBottomAppBarItem(
-                          icon: Icons.home,
+                          icon: Icons.chair_outlined,
                           label: 'Lounge',
                           isSelected: _selectedPage == HomePageNavigationType.lounge,
                           onTap: () {
@@ -210,12 +210,12 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Expanded(
                         child: _buildBottomAppBarItem(
-                          icon: Icons.book,
-                          label: 'Diary',
-                          isSelected: _selectedPage == HomePageNavigationType.smartDiary,
+                          icon: Icons.insights_outlined,
+                          label: 'Insights',
+                          isSelected: _selectedPage == HomePageNavigationType.dashboard,
                           onTap: () {
                             setState(() {
-                              _selectedPage = HomePageNavigationType.smartDiary;
+                              _selectedPage = HomePageNavigationType.dashboard;
                             });
                           },
                         ),
@@ -231,20 +231,20 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Expanded(
                         child: _buildBottomAppBarItem(
-                          icon: Icons.dashboard,
-                          label: 'Dashboard',
-                          isSelected: _selectedPage == HomePageNavigationType.dashboard,
+                          icon: Icons.auto_stories_outlined,
+                          label: 'Experience',
+                          isSelected: _selectedPage == HomePageNavigationType.smartDiary,
                           onTap: () {
                             setState(() {
-                              _selectedPage = HomePageNavigationType.dashboard;
+                              _selectedPage = HomePageNavigationType.smartDiary;
                             });
                           },
                         ),
                       ),
                       Expanded(
                         child: _buildBottomAppBarItem(
-                          icon: Icons.person,
-                          label: 'Profile',
+                          icon: Icons.person_outline,
+                          label: 'Me',
                           isSelected: _selectedPage == HomePageNavigationType.me,
                           onTap: () {
                             debugPrint('Me button tapped');
@@ -281,7 +281,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Icon(
               icon,
-              size: 24,
+              size: 26,
               color: isSelected ? const Color(0xFFe7bf57) : Colors.grey.shade600,
             ),
             const SizedBox(height: 4),
