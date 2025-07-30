@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
-import 'package:nirva_app/home/home_screen.dart';
+import 'package:nirva_app/lounge/lounge_screen.dart';
 import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
@@ -9,7 +9,7 @@ import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
 import 'package:nirva_app/me_page.dart';
 
-enum HomePageNavigationType { home, smartDiary, dashboard, me }
+enum HomePageNavigationType { lounge, smartDiary, dashboard, me }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // 使用枚举类型替代整数
-  HomePageNavigationType _selectedPage = HomePageNavigationType.home;
+  HomePageNavigationType _selectedPage = HomePageNavigationType.lounge;
 
   final TextEditingController _textController = TextEditingController();
 
@@ -38,8 +38,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _getBodyContent() {
     switch (_selectedPage) {
-      case HomePageNavigationType.home:
-        return const HomeScreen();
+      case HomePageNavigationType.lounge:
+        return const LoungeScreen();
       case HomePageNavigationType.smartDiary:
         return SmartDiaryPage();
       case HomePageNavigationType.dashboard:
@@ -51,8 +51,8 @@ class _HomePageState extends State<HomePage> {
 
   String _getTitle() {
     switch (_selectedPage) {
-      case HomePageNavigationType.home:
-        return 'Home';
+      case HomePageNavigationType.lounge:
+        return 'Lounge';
       case HomePageNavigationType.smartDiary:
         return 'Smart Diary';
       case HomePageNavigationType.dashboard:
@@ -94,36 +94,39 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: AppBar(
-          backgroundColor: const Color.fromARGB(255, 250, 249, 244),
-          title: Text(_getTitle()),
-          centerTitle: false,
-          elevation: 0, // 移除默认阴影
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.checklist),
-              onPressed: () {
-                debugPrint('to-do list');
-                final tasksProvider = Provider.of<TasksProvider>(
-                  context,
-                  listen: false,
-                );
-                tasksProvider.clearCompletedTasks();
-                _showToDoList(context);
-              },
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1.0),
-            child: Container(
-              color: Colors.grey.shade300, // 自定义下边框颜色
-              height: 1.0, // 下边框高度
+      backgroundColor: const Color(0xFFfaf9f5),
+      appBar: _selectedPage == HomePageNavigationType.lounge 
+        ? null 
+        : PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+                          child: AppBar(
+                backgroundColor: const Color(0xFFfaf9f5),
+              title: Text(_getTitle()),
+              centerTitle: false,
+              elevation: 0, // 移除默认阴影
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.checklist),
+                  onPressed: () {
+                    debugPrint('to-do list');
+                    final tasksProvider = Provider.of<TasksProvider>(
+                      context,
+                      listen: false,
+                    );
+                    tasksProvider.clearCompletedTasks();
+                    _showToDoList(context);
+                  },
+                ),
+              ],
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1.0),
+                child: Container(
+                  color: Colors.grey.shade300, // 自定义下边框颜色
+                  height: 1.0, // 下边框高度
+                ),
+              ),
             ),
           ),
-        ),
-      ),
       body: _getBodyContent(),
       floatingActionButton: Container(
         width: 72, // Larger size
@@ -133,19 +136,19 @@ class _HomePageState extends State<HomePage> {
           boxShadow: [
             // Multiple shadows for glowing effect
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              color: const Color(0xFFe7bf57).withOpacity(0.2),
               blurRadius: 12,
               spreadRadius: 3,
               offset: const Offset(0, 3),
             ),
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+              color: const Color(0xFFe7bf57).withOpacity(0.15),
               blurRadius: 18,
               spreadRadius: 6,
               offset: const Offset(0, 6),
             ),
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+              color: const Color(0xFFe7bf57).withOpacity(0.08),
               blurRadius: 24,
               spreadRadius: 9,
               offset: const Offset(0, 9),
@@ -153,7 +156,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         child: Material(
-          color: Theme.of(context).colorScheme.primary,
+          color: const Color(0xFFe7bf57),
           shape: const CircleBorder(),
           child: InkWell(
             onTap: _floatingActionButtonPressed,
@@ -171,7 +174,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFfaf9f5),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -196,11 +199,11 @@ class _HomePageState extends State<HomePage> {
                       Expanded(
                         child: _buildBottomAppBarItem(
                           icon: Icons.home,
-                          label: 'Home',
-                          isSelected: _selectedPage == HomePageNavigationType.home,
+                          label: 'Lounge',
+                          isSelected: _selectedPage == HomePageNavigationType.lounge,
                           onTap: () {
                             setState(() {
-                              _selectedPage = HomePageNavigationType.home;
+                              _selectedPage = HomePageNavigationType.lounge;
                             });
                           },
                         ),
@@ -279,7 +282,7 @@ class _HomePageState extends State<HomePage> {
             Icon(
               icon,
               size: 24,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade600,
+              color: isSelected ? const Color(0xFFe7bf57) : Colors.grey.shade600,
             ),
             const SizedBox(height: 4),
             Text(
@@ -287,7 +290,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade600,
+                color: isSelected ? const Color(0xFFe7bf57) : Colors.grey.shade600,
               ),
             ),
           ],

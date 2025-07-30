@@ -53,6 +53,7 @@ dependencies:
   uuid: ^4.3.3
   intl: ^0.18.1
   provider: ^6.1.2
+  google_fonts: ^6.1.0
   # Amplify Flutter SDK
   amplify_flutter: ^2.4.0
   amplify_api: ^2.4.0
