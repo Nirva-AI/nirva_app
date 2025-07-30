@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: SafeArea(
           child: SizedBox(
-            height: 80,
+            height: 60,
             child: Row(
               children: [
                 // Left side tabs (2 tabs)

@@ -12,6 +12,28 @@ class LoungeScreen extends StatefulWidget {
 class _LoungeScreenState extends State<LoungeScreen> {
   String _selectedCategory = 'All';
   final List<String> _categories = ['All', 'Reflection', 'Mood', 'Nature', 'Sleep'];
+  final ScrollController _slideshowController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Scroll to the 2nd card after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_slideshowController.hasClients) {
+        _slideshowController.animateTo(
+          256, // 240 (card width) + 16 (margin) to reach 2nd card
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _slideshowController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,11 +108,6 @@ class _LoungeScreenState extends State<LoungeScreen> {
                             color: Colors.black.withOpacity(0.4),
                           ),
                           Shadow(
-                            offset: Offset(0, 3),
-                            blurRadius: 8,
-                            color: Colors.black.withOpacity(0.15),
-                          ),
-                          Shadow(
                             offset: Offset(0, 2),
                             blurRadius: 6,
                             color: Colors.black.withOpacity(0.3),
@@ -138,8 +155,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
               child: _buildFrostedGlassButton(
                 width: 44,
                 height: 44,
-                child: Icon(
-                  Icons.notifications_outlined,
+                child: Icon(Icons.notifications_outlined,
                   color: Colors.white.withOpacity(0.6),
                   size: 24,
                 ),
@@ -150,10 +166,25 @@ class _LoungeScreenState extends State<LoungeScreen> {
             ),
             // Category buttons with horizontal scroll
             Positioned(
-              top: 360,
+              top: 380,
               left: 0,
               right: 0,
               child: _buildCategoryButtons(),
+            ),
+            // Slideshow component
+            Positioned(
+              top: 470,
+              left: 0,
+              right: 0,
+              child: _buildSlideshow(),
+            ),
+            // For You section
+            Positioned(
+              top: 750,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _buildForYouSection(context),
             ),
           ],
         ),
@@ -244,6 +275,218 @@ class _LoungeScreenState extends State<LoungeScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildSlideshow() {
+    final List<Map<String, String>> slideshowData = [
+      {
+        'title': 'Morning Meditation',
+        'subtitle': '15 Minute Guided Session',
+        'background': 'assets/lounge_slideshow_bg_1.png',
+      },
+      {
+        'title': 'Relaxing Meditation',
+        'subtitle': '30 Audio and Video Series',
+        'background': 'assets/lounge_slideshow_bg_2.png',
+      },
+      {
+        'title': 'Deep Breathing',
+        'subtitle': 'Stress Relief Techniques',
+        'background': 'assets/lounge_slideshow_bg_3.png',
+      },
+      {
+        'title': 'Mindful Walking',
+        'subtitle': 'Outdoor Mindfulness Practice',
+        'background': 'assets/lounge_slideshow_bg_4.png',
+      },
+    ];
+
+        return SizedBox(
+      height: 280,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        controller: _slideshowController,
+        itemCount: slideshowData.length,
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        itemBuilder: (context, index) {
+          final data = slideshowData[index];
+          return Container(
+            width: 240,
+            margin: EdgeInsets.only(right: 16),
+            child: _buildSlideshowCard(
+              title: data['title']!,
+              subtitle: data['subtitle']!,
+              backgroundImage: data['background']!,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSlideshowCard({
+    required String title,
+    required String subtitle,
+    required String backgroundImage,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 240,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            // Background image with reduced saturation and blur
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.matrix([
+                      0.6, 0.0, 0.0, 0.0, 0.0,
+                      0.0, 0.6, 0.0, 0.0, 0.0,
+                      0.0, 0.0, 0.6, 0.0, 0.0,
+                      0.0, 0.0, 0.0, 1.0, 0.0,
+                    ]),
+                    child: Image.asset(
+                      backgroundImage,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Gradient overlay for better text readability
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.3),
+                      Colors.black.withOpacity(0.5),
+                    ],
+                    stops: [0.0, 0.4, 0.7, 1.0],
+                  ),
+                ),
+              ),
+            ),
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
+                  // Title and subtitle at the top
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0, 1),
+                              blurRadius: 3,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        subtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white.withOpacity(0.9),
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0, 1),
+                              blurRadius: 2,
+                              color: Colors.black.withOpacity(0.3),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Spacer to push icons to bottom
+                  Spacer(),
+                  // Bottom row with icons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Bottom left - empty star icon
+                      Icon(Icons.star_border,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      // Bottom right - another icon (using headphones as per design)
+                      Icon(Icons.headphones,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForYouSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+      child: Text(
+        'For You',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+}
+
+// Simple placeholder ArticlePage
+class ArticlePage extends StatelessWidget {
+  final String title;
+  const ArticlePage({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Text(
+          'This is the article: $title',
+          style: TextStyle(fontSize: 20),
+        ),
       ),
     );
   }
