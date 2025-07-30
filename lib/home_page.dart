@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
+import 'package:nirva_app/home/home_screen.dart';
 import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/dashboard_page.dart';
@@ -8,7 +9,7 @@ import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
 import 'package:nirva_app/me_page.dart';
 
-enum HomePageNavigationType { smartDiary, reflection, dashboard, me }
+enum HomePageNavigationType { home, smartDiary, dashboard, me }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -21,7 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // 使用枚举类型替代整数
-  HomePageNavigationType _selectedPage = HomePageNavigationType.smartDiary;
+  HomePageNavigationType _selectedPage = HomePageNavigationType.home;
 
   final TextEditingController _textController = TextEditingController();
 
@@ -37,10 +38,10 @@ class _HomePageState extends State<HomePage> {
 
   Widget _getBodyContent() {
     switch (_selectedPage) {
+      case HomePageNavigationType.home:
+        return const HomeScreen();
       case HomePageNavigationType.smartDiary:
         return SmartDiaryPage();
-      case HomePageNavigationType.reflection:
-        return const ReflectionsPage();
       case HomePageNavigationType.dashboard:
         return const DashboardPage();
       case HomePageNavigationType.me:
@@ -50,10 +51,10 @@ class _HomePageState extends State<HomePage> {
 
   String _getTitle() {
     switch (_selectedPage) {
+      case HomePageNavigationType.home:
+        return 'Home';
       case HomePageNavigationType.smartDiary:
         return 'Smart Diary';
-      case HomePageNavigationType.reflection:
-        return 'Reflections';
       case HomePageNavigationType.dashboard:
         return 'Dashboard';
       case HomePageNavigationType.me:
@@ -124,79 +125,137 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: _getBodyContent(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _floatingActionButtonPressed,
-        tooltip: 'FloatingActionButton',
-        backgroundColor: Colors.yellow,
-        shape: const CircleBorder(),
-        child: const Text(
-          'N',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+      floatingActionButton: Container(
+        width: 72, // Larger size
+        height: 72, // Larger size
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            // Multiple shadows for glowing effect
+            BoxShadow(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              blurRadius: 12,
+              spreadRadius: 3,
+              offset: const Offset(0, 3),
+            ),
+            BoxShadow(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+              blurRadius: 18,
+              spreadRadius: 6,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+              blurRadius: 24,
+              spreadRadius: 9,
+              offset: const Offset(0, 9),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Theme.of(context).colorScheme.primary,
+          shape: const CircleBorder(),
+          child: InkWell(
+            onTap: _floatingActionButtonPressed,
+            borderRadius: BorderRadius.circular(36), // Half of width/height
+            child: const Center(
+              child: Icon(
+                Icons.chat,
+                color: Colors.white,
+                size: 32, // Larger icon
+              ),
+            ),
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        child: SizedBox(
-          height: 70,
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildBottomAppBarItem(
-                  icon: Icons.book,
-                  label: 'Smart Diary',
-                  isSelected:
-                      _selectedPage == HomePageNavigationType.smartDiary,
-                  onTap: () {
-                    setState(() {
-                      _selectedPage = HomePageNavigationType.smartDiary;
-                    });
-                  },
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            height: 80,
+            child: Row(
+              children: [
+                // Left side tabs (2 tabs)
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _buildBottomAppBarItem(
+                          icon: Icons.home,
+                          label: 'Home',
+                          isSelected: _selectedPage == HomePageNavigationType.home,
+                          onTap: () {
+                            setState(() {
+                              _selectedPage = HomePageNavigationType.home;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: _buildBottomAppBarItem(
+                          icon: Icons.book,
+                          label: 'Diary',
+                          isSelected: _selectedPage == HomePageNavigationType.smartDiary,
+                          onTap: () {
+                            setState(() {
+                              _selectedPage = HomePageNavigationType.smartDiary;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _buildBottomAppBarItem(
-                  icon: Icons.lightbulb,
-                  label: 'Reflections',
-                  isSelected:
-                      _selectedPage == HomePageNavigationType.reflection,
-                  onTap: () {
-                    setState(() {
-                      _selectedPage = HomePageNavigationType.reflection;
-                    });
-                  },
+                // Center space for floating action button
+                const SizedBox(width: 100), // Increased space for larger button
+                // Right side tabs (2 tabs)
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _buildBottomAppBarItem(
+                          icon: Icons.dashboard,
+                          label: 'Dashboard',
+                          isSelected: _selectedPage == HomePageNavigationType.dashboard,
+                          onTap: () {
+                            setState(() {
+                              _selectedPage = HomePageNavigationType.dashboard;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: _buildBottomAppBarItem(
+                          icon: Icons.person,
+                          label: 'Profile',
+                          isSelected: _selectedPage == HomePageNavigationType.me,
+                          onTap: () {
+                            debugPrint('Me button tapped');
+                            setState(() {
+                              _selectedPage = HomePageNavigationType.me;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _buildBottomAppBarItem(
-                  icon: Icons.dashboard,
-                  label: 'Dashboard',
-                  isSelected: _selectedPage == HomePageNavigationType.dashboard,
-                  onTap: () {
-                    setState(() {
-                      _selectedPage = HomePageNavigationType.dashboard;
-                    });
-                  },
-                ),
-              ),
-              Expanded(
-                child: _buildBottomAppBarItem(
-                  icon: Icons.person,
-                  label: 'Me',
-                  isSelected: _selectedPage == HomePageNavigationType.me,
-                  onTap: () {
-                    debugPrint('Me button tapped');
-                    setState(() {
-                      _selectedPage = HomePageNavigationType.me;
-                    });
-                  },
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -212,21 +271,23 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: double.infinity, // 占满父容器的高度
-        color: Colors.transparent, // 设置透明背景，确保整个区域可点击
+        height: double.infinity,
+        color: Colors.transparent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              size: 30, // 调整图标大小
-              color: isSelected ? Colors.blue : Colors.grey,
+              size: 24,
+              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade600,
             ),
+            const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10, // 调整字体大小
-                color: isSelected ? Colors.blue : Colors.grey,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade600,
               ),
             ),
           ],
