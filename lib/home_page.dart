@@ -8,6 +8,7 @@ import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/assistant_chat_page.dart';
 import 'package:nirva_app/me_page.dart';
+import 'package:nirva_app/experience_page.dart';
 
 enum HomePageNavigationType { lounge, smartDiary, dashboard, me }
 
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
       case HomePageNavigationType.lounge:
         return const LoungeScreen();
       case HomePageNavigationType.smartDiary:
-        return SmartDiaryPage();
+        return const ExperiencePage();
       case HomePageNavigationType.dashboard:
         return const DashboardPage();
       case HomePageNavigationType.me:
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
       case HomePageNavigationType.lounge:
         return 'Lounge';
       case HomePageNavigationType.smartDiary:
-        return 'Smart Diary';
+        return 'Experience';
       case HomePageNavigationType.dashboard:
         return 'Dashboard';
       case HomePageNavigationType.me:
@@ -95,7 +96,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFfaf9f5),
-      appBar: _selectedPage == HomePageNavigationType.lounge 
+      appBar: (_selectedPage == HomePageNavigationType.lounge || _selectedPage == HomePageNavigationType.smartDiary)
         ? null 
         : PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -231,7 +232,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Expanded(
                         child: _buildBottomAppBarItem(
-                          icon: Icons.auto_stories_outlined,
+                          icon: Icons.airline_stops_outlined,
                           label: 'Experience',
                           isSelected: _selectedPage == HomePageNavigationType.smartDiary,
                           onTap: () {

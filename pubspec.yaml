@@ -87,6 +87,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/analyze_result_nirva-2025-04-19-00.txt.json
+    - assets/analyze_result_nirva-2025-05-09-00.txt.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
