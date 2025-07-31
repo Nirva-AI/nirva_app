@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nirva_app/smart_diary_page.dart';
 import 'package:nirva_app/reflections_page.dart';
+import 'package:nirva_app/journals_page.dart';
 
 class ExperiencePage extends StatelessWidget {
   const ExperiencePage({super.key});
@@ -29,7 +30,7 @@ class ExperiencePage extends StatelessWidget {
               // Smart Diary Component
               _buildExperienceCard(
                 context: context,
-                title: 'Smart Diary',
+                title: 'Journals',
                 subtitle: 'Record and reflect on your daily experiences',
                 icon: Icons.auto_stories_outlined,
                 color: const Color(0xFFe7bf57),
@@ -37,7 +38,7 @@ class ExperiencePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SmartDiaryPage(),
+                      builder: (context) => const JournalsPage(),
                     ),
                   );
                 },

@@ -218,8 +218,7 @@ class _SplashScreenState extends State<SplashScreen> {
       context,
       listen: false,
     );
-    journalFilesProvider.initializeJournalFiles(
-      HiveHelper.retrieveJournalFiles(),
-    );
+    final retrievedJournalFiles = HiveHelper.retrieveJournalFiles();
+    journalFilesProvider.initializeJournalFiles(retrievedJournalFiles);
   }
 }
