@@ -396,10 +396,10 @@ class _LoungeScreenState extends State<LoungeScreen> {
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Color(0xFF0E3C26),
                     ),
                   ),
                   SizedBox(height: 8),
@@ -409,7 +409,7 @@ class _LoungeScreenState extends State<LoungeScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Colors.black54,
+                      color: Colors.grey.shade600,
                     ),
                   ),
                 ],
@@ -447,10 +447,10 @@ class _LoungeScreenState extends State<LoungeScreen> {
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
       child: Text(
         'For You',
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.black87,
+          color: Color(0xFF0E3C26),
         ),
       ),
     );

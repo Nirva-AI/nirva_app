@@ -249,10 +249,10 @@ class _JournalsPageState extends State<JournalsPage> {
               // End time
               Text(
                 '${endTime.hour.toString().padLeft(2, '0')}.${endTime.minute.toString().padLeft(2, '0')}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF0E3C26),
+                  color: Colors.grey.shade600,
                 ),
               ),
               const SizedBox(height: 4),
@@ -268,10 +268,10 @@ class _JournalsPageState extends State<JournalsPage> {
               // Start time
               Text(
                 '${time.hour.toString().padLeft(2, '0')}.${time.minute.toString().padLeft(2, '0')}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF0E3C26),
+                  color: Colors.grey.shade600,
                 ),
               ),
             ],
@@ -553,6 +553,7 @@ class DashedLinePainter extends CustomPainter {
     const dashSpace = 4;
     double startY = 0;
 
+    // Draw the dashed line
     while (startY < size.height) {
       canvas.drawLine(
         Offset(size.width / 2, startY),
@@ -561,6 +562,25 @@ class DashedLinePainter extends CustomPainter {
       );
       startY += dashHeight + dashSpace;
     }
+
+    // Draw dots at both ends
+    final dotPaint = Paint()
+      ..color = Colors.grey.shade400
+      ..style = PaintingStyle.fill;
+
+    // Top dot
+    canvas.drawCircle(
+      Offset(size.width / 2, 0),
+      2,
+      dotPaint,
+    );
+
+    // Bottom dot
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height),
+      2,
+      dotPaint,
+    );
   }
 
   @override

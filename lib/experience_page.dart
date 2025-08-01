@@ -272,7 +272,7 @@ class ExperiencePage extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Color(0xFF0E3C26),
                       ),
                       textAlign: TextAlign.center,
                       maxLines: 2,
@@ -284,9 +284,9 @@ class ExperiencePage extends StatelessWidget {
                     width: double.infinity,
                     child: Text(
                       item.subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white70,
+                        color: Colors.grey.shade600,
                       ),
                       textAlign: TextAlign.center,
                     ),

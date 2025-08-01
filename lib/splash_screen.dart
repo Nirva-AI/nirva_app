@@ -72,8 +72,8 @@ class _SplashScreenState extends State<SplashScreen> {
         userProvider,
       );
 
-      // 设置初始选中日期
-      journalFilesProvider.selectDateTime(DateTime.now());
+      // 设置初始选中日期 - 使用有测试数据的日期
+      journalFilesProvider.selectDateTime(DateTime(2025, 7, 28));
 
       // API初始化和登录
       await _initializeAPIs();

@@ -1,52 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/stress_level_card.dart';
-import 'package:nirva_app/energy_level_card.dart';
-import 'package:nirva_app/mood_tracking_card.dart';
 import 'package:nirva_app/awake_time_allocation_card.dart';
-import 'package:nirva_app/mood_score_card.dart';
+import 'package:nirva_app/mood_tracking_card.dart';
 import 'package:nirva_app/social_map_card.dart';
+import 'package:nirva_app/dashboard_score_component.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _createBody());
-  }
-
-  Widget _createBody() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildMoodScoreCardAndStressLevelCard(),
-            const SizedBox(height: 16),
-            _buildEnergyLevelCard(),
-            const SizedBox(height: 16),
-            _buildMoodTrackingCard(),
-            const SizedBox(height: 16),
-            _buildAwakeTimeAllocationCard(),
-            const SizedBox(height: 16),
-            _buildSocialMapCard(),
-            // const SizedBox(height: 16),
-            // _buildTodaysHighlightsCard(),
-          ],
+    return Scaffold(
+      backgroundColor: const Color(0xFFfaf9f5),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title
+              const Text(
+                'Insights',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0E3C26),
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+              // New score components at the top
+              const DashboardScoresRow(),
+              const SizedBox(height: 550),
+              
+              // Dashboard content
+              _buildMoodTrackingCard(),
+              const SizedBox(height: 24),
+              _buildAwakeTimeAllocationCard(),
+              const SizedBox(height: 24),
+              _buildSocialMapCard(),
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  Widget _buildMoodScoreCardAndStressLevelCard() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [MoodScoreCard(), StressLevelCard()],
-    );
-  }
-
-  Widget _buildEnergyLevelCard() {
-    return const EnergyLevelCard();
   }
 
   Widget _buildMoodTrackingCard() {
@@ -59,10 +55,5 @@ class DashboardPage extends StatelessWidget {
 
   Widget _buildSocialMapCard() {
     return const SocialMapCard();
-    //return const SocialMapCard();
   }
-
-  // Widget _buildTodaysHighlightsCard() {
-  //   return TodayHighlightsCard();
-  // }
 }
