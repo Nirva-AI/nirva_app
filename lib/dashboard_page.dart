@@ -3,6 +3,9 @@ import 'package:nirva_app/awake_time_allocation_card.dart';
 import 'package:nirva_app/mood_tracking_card.dart';
 import 'package:nirva_app/social_map_card.dart';
 import 'package:nirva_app/dashboard_score_component.dart';
+import 'package:nirva_app/trends_card.dart';
+import 'package:nirva_app/mood_trend_card.dart';
+import 'package:nirva_app/energy_trend_card.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -30,7 +33,24 @@ class DashboardPage extends StatelessWidget {
               
               // New score components at the top
               const DashboardScoresRow(),
-              const SizedBox(height: 550),
+              const SizedBox(height: 24),
+              
+              // Trends section
+              const Text(
+                'Trends',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0E3C26),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const TrendsCard(),
+              const SizedBox(height: 24),
+              const MoodTrendCard(),
+              const SizedBox(height: 24),
+              const EnergyTrendCard(),
+              const SizedBox(height: 24),
               
               // Dashboard content
               _buildMoodTrackingCard(),
