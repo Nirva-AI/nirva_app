@@ -228,9 +228,47 @@ class ReflectionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!_checkValidity(context)) {
-      return Scaffold(body: _createEmptyBody());
+      return Scaffold(
+        backgroundColor: const Color(0xFFfaf9f5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFfaf9f5),
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFF0E3C26)),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const Text(
+            'Reflections',
+            style: TextStyle(
+              color: Color(0xFF0E3C26),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: false,
+        ),
+        body: _createEmptyBody(),
+      );
     }
-    return Scaffold(body: _createBody(context));
+    return Scaffold(
+      backgroundColor: const Color(0xFFfaf9f5),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFfaf9f5),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0E3C26)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Reflections',
+          style: TextStyle(
+            color: Color(0xFF0E3C26),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: false,
+      ),
+      body: _createBody(context),
+    );
   }
 
   bool _checkValidity(BuildContext context) {

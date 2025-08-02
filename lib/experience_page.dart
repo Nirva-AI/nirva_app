@@ -27,61 +27,10 @@ class ExperiencePage extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               
-              // Smart Diary Component
-              _buildExperienceCard(
-                context: context,
-                title: 'Journals',
-                subtitle: 'Record and reflect on your daily experiences',
-                icon: Icons.auto_stories_outlined,
-                color: const Color(0xFFe7bf57),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const JournalsPage(),
-                    ),
-                  );
-                },
-              ),
+              // New AI Assistant Component
+              _buildAIAssistantSection(context),
               
-              const SizedBox(height: 16),
-              
-              // Memories Component
-              _buildExperienceCard(
-                context: context,
-                title: 'Memories',
-                subtitle: 'Revisit your past moments and insights',
-                icon: Icons.photo_library_outlined,
-                color: const Color(0xFF8B5CF6),
-                onTap: () {
-                  // TODO: Navigate to Memories page when created
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Memories feature coming soon!'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Reflections Component
-              _buildExperienceCard(
-                context: context,
-                title: 'Reflections',
-                subtitle: 'Deep dive into guided self-reflection',
-                icon: Icons.psychology_outlined,
-                color: const Color(0xFF10B981),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ReflectionsPage(),
-                    ),
-                  );
-                },
-              ),
+              const SizedBox(height: 32),
               
               const SizedBox(height: 40),
               
@@ -101,6 +50,245 @@ class ExperiencePage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAIAssistantSection(BuildContext context) {
+    return Row(
+      children: [
+        // Large purple card on the left (40% width) - Journals
+        Expanded(
+          flex: 4,
+          child: _buildAIAssistantCard(
+            context: context,
+            title: 'Journals',
+            subtitle: 'Record and reflect on your daily experiences',
+            description: '',
+            icon: Icons.auto_stories_outlined,
+            backgroundColor: const Color(0xFFdad5fd), // New purple color
+            textColor: const Color(0xFF0E3C26), // Dark green
+            titleFontSize: 22,
+            titleFontWeight: FontWeight.w700,
+            addTitleSpacing: true,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const JournalsPage(),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Two smaller cards on the right (60% width)
+        Expanded(
+          flex: 6,
+          child: SizedBox(
+            height: 320, // Increased height for all buttons
+            child: Column(
+              children: [
+                // Yellow card for "Memories"
+                Expanded(
+                  child: Container(
+                    width: double.infinity, // Force full width
+                    child: _buildAIAssistantCard(
+                      context: context,
+                      title: 'Memories',
+                      subtitle: 'Past moments and insights',
+                      description: '',
+                      icon: Icons.photo_library_outlined,
+                      backgroundColor: const Color(0xFFfdd78c).withOpacity(0.4), // Even lighter Joyful color
+                      textColor: const Color(0xFF0E3C26), // Dark green
+                      titleFontSize: 18,
+                      titleFontWeight: FontWeight.w600,
+                      addTitleSpacing: false,
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Memories feature coming soon!'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Dark card for "Reflections"
+                Expanded(
+                  child: Container(
+                    width: double.infinity, // Force full width
+                    child: _buildAIAssistantCard(
+                      context: context,
+                      title: 'Reflections',
+                      subtitle: 'Guided self-reflection',
+                      description: '',
+                      icon: Icons.psychology_outlined,
+                      backgroundColor: const Color(0xFF616a7f).withOpacity(0.2), // Even lighter Stressed color
+                      textColor: const Color(0xFF0E3C26), // Dark green
+                      titleFontSize: 18,
+                      titleFontWeight: FontWeight.w500,
+                      addTitleSpacing: false,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ReflectionsPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAIAssistantCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required String description,
+    required IconData icon,
+    required Color backgroundColor,
+    required Color textColor,
+    required VoidCallback onTap,
+    double? titleFontSize,
+    FontWeight? titleFontWeight,
+    bool addTitleSpacing = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: subtitle.isNotEmpty ? 320 : null, // Increased height for main card
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: subtitle.isNotEmpty 
+          ? Stack(
+              children: [
+                // Icon positioned at top
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.black.withOpacity(0.1),
+                        width: 1,
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: Icon(icon, color: const Color(0xFF0E3C26).withOpacity(0.7), size: 20),
+                      onPressed: onTap,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ),
+                ),
+                // Text content aligned to bottom
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: titleFontSize ?? 22,
+                          fontWeight: titleFontWeight ?? FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
+                      if (addTitleSpacing) ...[
+                        const SizedBox(height: 16),
+                      ],
+                                    // Subtitle - different styling for main card vs right cards
+              Text(
+                subtitle,
+                style: description.isEmpty 
+                  ? TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600, // Grey color for right card subtitles
+                    )
+                  : TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: textColor, // Dark green for main card subtitle (Cooper)
+                    ),
+              ),
+                      if (description.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        // Description
+                        Text(
+                          description,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600, // Grey color for description
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Icon
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.black.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: IconButton(
+                    icon: Icon(icon, color: const Color(0xFF0E3C26).withOpacity(0.7), size: 20),
+                    onPressed: onTap,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Just title for smaller cards
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: titleFontSize ?? 16,
+                    fontWeight: titleFontWeight ?? FontWeight.w500,
+                    color: textColor,
+                  ),
+                ),
+              ],
+            ),
       ),
     );
   }
@@ -195,19 +383,19 @@ class ExperiencePage extends StatelessWidget {
       ExploreItem(
         title: 'Quotes',
         subtitle: '128 affirmations',
-        color: const Color(0xFFC8B8D4),
+        color: const Color(0xFFdad5fd), // Same as Journals button
         pattern: ExplorePattern.none,
       ),
       ExploreItem(
         title: 'Emotions 101',
         subtitle: '10 videos',
-        color: const Color(0xFFD4C8B8),
+        color: const Color(0xFFfdd78c).withOpacity(0.4), // Same as Memories button
         pattern: ExplorePattern.waves,
       ),
       ExploreItem(
         title: 'Best Self',
         subtitle: '12 exercises',
-        color: const Color(0xFFD0B8D4),
+        color: const Color(0xFF616a7f).withOpacity(0.2), // Same as Reflections button
         pattern: ExplorePattern.none,
       ),
       ExploreItem(
