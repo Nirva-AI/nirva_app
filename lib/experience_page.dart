@@ -577,10 +577,6 @@ class ExperiencePage extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFe7bf57).withOpacity(0.3),
-              width: 1,
-            ),
           ),
           child: Column(
             children: [

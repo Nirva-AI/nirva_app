@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
-import 'package:nirva_app/event_details_page.dart';
+import 'package:nirva_app/journal_details_page.dart';
 import 'package:intl/intl.dart';
 
 class JournalsPage extends StatefulWidget {
@@ -287,7 +287,7 @@ class _JournalsPageState extends State<JournalsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EventDetailsPage(eventData: event),
+                  builder: (context) => JournalDetailsPage(eventData: event),
                 ),
               );
             },
@@ -295,11 +295,8 @@ class _JournalsPageState extends State<JournalsPage> {
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.grey.shade300,
-                ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,11 +335,16 @@ class _JournalsPageState extends State<JournalsPage> {
                   const SizedBox(height: 4),
                   
                   // Subtitle
-                  Text(
-                    event.one_sentence_summary,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
+                  Container(
+                    height: 40, // Fixed height for 2 lines
+                    child: Text(
+                      event.one_sentence_summary,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   
