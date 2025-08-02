@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/lounge/lounge_screen.dart';
-import 'package:nirva_app/smart_diary_page.dart';
-import 'package:nirva_app/reflections_page.dart';
+
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
-import 'package:nirva_app/assistant_chat_page.dart';
+import 'package:nirva_app/nirva_chat_page.dart';
 import 'package:nirva_app/me_page.dart';
 import 'package:nirva_app/experience_page.dart';
 
@@ -25,14 +24,13 @@ class _HomePageState extends State<HomePage> {
   // 使用枚举类型替代整数
   HomePageNavigationType _selectedPage = HomePageNavigationType.lounge;
 
-  final TextEditingController _textController = TextEditingController();
+
 
   void _floatingActionButtonPressed() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => AssistantChatPage(textController: _textController),
+        builder: (context) => const NirvaChatPage(),
       ),
     );
   }
