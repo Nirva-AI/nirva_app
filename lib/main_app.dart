@@ -47,6 +47,24 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF0E3C26),
         ),
+        fontFamily: 'Georgia',
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontFamily: 'Georgia'),
+          displayMedium: TextStyle(fontFamily: 'Georgia'),
+          displaySmall: TextStyle(fontFamily: 'Georgia'),
+          headlineLarge: TextStyle(fontFamily: 'Georgia'),
+          headlineMedium: TextStyle(fontFamily: 'Georgia'),
+          headlineSmall: TextStyle(fontFamily: 'Georgia'),
+          titleLarge: TextStyle(fontFamily: 'Georgia'),
+          titleMedium: TextStyle(fontFamily: 'Georgia'),
+          titleSmall: TextStyle(fontFamily: 'Georgia'),
+          bodyLarge: TextStyle(fontFamily: 'Georgia'),
+          bodyMedium: TextStyle(fontFamily: 'Georgia'),
+          bodySmall: TextStyle(fontFamily: 'Georgia'),
+          labelLarge: TextStyle(fontFamily: 'Georgia'),
+          labelMedium: TextStyle(fontFamily: 'Georgia'),
+          labelSmall: TextStyle(fontFamily: 'Georgia'),
+        ),
       ),
       home: const SplashScreen(), // 设置 SplashScreen 为初始页面
     );

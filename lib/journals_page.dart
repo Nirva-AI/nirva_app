@@ -67,6 +67,7 @@ class _JournalsPageState extends State<JournalsPage> {
           style: TextStyle(
             color: Color(0xFF0E3C26),
             fontWeight: FontWeight.bold,
+            fontFamily: 'Georgia',
           ),
         ),
         centerTitle: false,
@@ -125,6 +126,7 @@ class _JournalsPageState extends State<JournalsPage> {
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF0E3C26),
+                  fontFamily: 'Georgia',
                 ),
               ),
               const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0E3C26)),
@@ -167,6 +169,7 @@ class _JournalsPageState extends State<JournalsPage> {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: isSelected ? Colors.white : const Color(0xFF0E3C26),
+                            fontFamily: 'Georgia',
                           ),
                         ),
                         Text(
@@ -174,6 +177,7 @@ class _JournalsPageState extends State<JournalsPage> {
                           style: TextStyle(
                             fontSize: 12,
                             color: isSelected ? Colors.white70 : Colors.grey.shade600,
+                            fontFamily: 'Georgia',
                           ),
                         ),
                         // Show indicator for dates with journal entries
@@ -209,6 +213,7 @@ class _JournalsPageState extends State<JournalsPage> {
           style: TextStyle(
             color: Colors.grey,
             fontSize: 16,
+            fontFamily: 'Georgia',
           ),
         ),
       );
@@ -253,6 +258,7 @@ class _JournalsPageState extends State<JournalsPage> {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey.shade600,
+                  fontFamily: 'Georgia',
                 ),
               ),
               const SizedBox(height: 4),
@@ -272,6 +278,7 @@ class _JournalsPageState extends State<JournalsPage> {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey.shade600,
+                  fontFamily: 'Georgia',
                 ),
               ),
             ],
@@ -311,6 +318,7 @@ class _JournalsPageState extends State<JournalsPage> {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF0E3C26),
+                            fontFamily: 'Georgia',
                           ),
                         ),
                       ),
@@ -342,6 +350,7 @@ class _JournalsPageState extends State<JournalsPage> {
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade600,
+                        fontFamily: 'Georgia',
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -386,6 +395,7 @@ class _JournalsPageState extends State<JournalsPage> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.grey.shade600,
+                                fontFamily: 'Georgia',
                               ),
                             ),
                           ],
@@ -414,6 +424,7 @@ class _JournalsPageState extends State<JournalsPage> {
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
+                                fontFamily: 'Georgia',
                               ),
                             ),
                           ],
@@ -450,6 +461,7 @@ class _JournalsPageState extends State<JournalsPage> {
                                         color: Colors.white,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
+                                        fontFamily: 'Georgia',
                                       ),
                                     ),
                                   ),

@@ -135,7 +135,7 @@ class ExperiencePage extends StatelessWidget {
                       backgroundColor: const Color(0xFF616a7f).withOpacity(0.2), // Even lighter Stressed color
                       textColor: const Color(0xFF0E3C26), // Dark green
                       titleFontSize: 18,
-                      titleFontWeight: FontWeight.w500,
+                      titleFontWeight: FontWeight.w600,
                       addTitleSpacing: false,
                       pattern: ExplorePattern.diamonds,
                       onTap: () {
