@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
 import 'package:nirva_app/providers/call_provider.dart';
-import 'package:nirva_app/lounge/lounge_screen.dart';
+import 'package:nirva_app/journals_page.dart';
 
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
@@ -12,7 +12,7 @@ import 'package:nirva_app/me_page.dart';
 import 'package:nirva_app/experience_page.dart';
 import 'package:nirva_app/mini_call_bar.dart';
 
-enum HomePageNavigationType { lounge, smartDiary, dashboard, me }
+enum HomePageNavigationType { journals, smartDiary, dashboard, me }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -25,7 +25,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // 使用枚举类型替代整数
-  HomePageNavigationType _selectedPage = HomePageNavigationType.lounge;
+  HomePageNavigationType _selectedPage = HomePageNavigationType.journals;
 
 
 
@@ -40,8 +40,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _getBodyContent() {
     switch (_selectedPage) {
-      case HomePageNavigationType.lounge:
-        return const LoungeScreen();
+      case HomePageNavigationType.journals:
+        return const JournalsPage();
       case HomePageNavigationType.smartDiary:
         return const ExperiencePage();
       case HomePageNavigationType.dashboard:
@@ -53,8 +53,8 @@ class _HomePageState extends State<HomePage> {
 
   String _getTitle() {
     switch (_selectedPage) {
-      case HomePageNavigationType.lounge:
-        return 'Lounge';
+      case HomePageNavigationType.journals:
+        return 'Journals';
       case HomePageNavigationType.smartDiary:
         return 'Experience';
       case HomePageNavigationType.dashboard:
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFfaf9f5),
-      appBar: (_selectedPage == HomePageNavigationType.lounge || _selectedPage == HomePageNavigationType.smartDiary || _selectedPage == HomePageNavigationType.dashboard)
+      appBar: (_selectedPage == HomePageNavigationType.journals || _selectedPage == HomePageNavigationType.smartDiary || _selectedPage == HomePageNavigationType.dashboard)
         ? null 
         : PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -205,12 +205,12 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Expanded(
                         child: _buildBottomAppBarItem(
-                          icon: Icons.chair_outlined,
-                          label: 'Lounge',
-                          isSelected: _selectedPage == HomePageNavigationType.lounge,
+                          icon: Icons.book_outlined,
+                          label: 'Journals',
+                          isSelected: _selectedPage == HomePageNavigationType.journals,
                           onTap: () {
                             setState(() {
-                              _selectedPage = HomePageNavigationType.lounge;
+                              _selectedPage = HomePageNavigationType.journals;
                             });
                           },
                         ),

@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/journal_details_page.dart';
+import 'package:nirva_app/reflections_page.dart';
 import 'package:intl/intl.dart';
-import 'package:nirva_app/mini_call_bar.dart';
+// import 'package:nirva_app/mini_call_bar.dart'; // No longer needed
 
 class JournalsPage extends StatefulWidget {
   const JournalsPage({super.key});
@@ -15,6 +16,28 @@ class JournalsPage extends StatefulWidget {
 
 class _JournalsPageState extends State<JournalsPage> {
   DateTime _selectedDate = DateTime.now();
+  final TextEditingController _reflectionController = TextEditingController();
+  int _currentQuestionIndex = 1;
+
+  // Sample questions for the picker wheel - matching Lounge slideshow content
+  final List<Map<String, String>> _reflectionQuestions = [
+    {
+      'title': 'Evening Meditation',
+      'subtitle': '15 Minute Guided Session',
+    },
+    {
+      'title': 'Heart-to-heart',
+      'subtitle': 'Want to share more about your frustration after date night?',
+    },
+    {
+      'title': 'Today, in Moments',
+      'subtitle': 'A gentle reflection on where your energy went.',
+    },
+    {
+      'title': 'Mindful Walking',
+      'subtitle': 'Outdoor Mindfulness Practice',
+    },
+  ];
 
   @override
   void initState() {
@@ -23,6 +46,12 @@ class _JournalsPageState extends State<JournalsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeSelectedDate();
     });
+  }
+
+  @override
+  void dispose() {
+    _reflectionController.dispose();
+    super.dispose();
   }
 
   void _initializeSelectedDate() {
@@ -56,39 +85,6 @@ class _JournalsPageState extends State<JournalsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFfaf9f5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFfaf9f5),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0E3C26)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Journals',
-          style: TextStyle(
-            color: Color(0xFF0E3C26),
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Georgia',
-          ),
-        ),
-        centerTitle: false,
-        actions: [
-          Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFe7bf57),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-        ],
-      ),
       body: Consumer<JournalFilesProvider>(
         builder: (context, journalProvider, child) {
           final journalFile = journalProvider.getJournalFileByDate(_selectedDate);
@@ -96,116 +92,348 @@ class _JournalsPageState extends State<JournalsPage> {
 
           return Stack(
             children: [
-              Column(
-                children: [
-                  // Date selector
-                  _buildDateSelector(journalProvider),
-              
-              const SizedBox(height: 24),
-              
-              // Timeline with events
-              Expanded(
-                child: _buildTimeline(events),
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Daily Reflection Section - extends to top of screen
+                    _buildDailyReflectionSection(),
+                    
+
+                    
+                    const SizedBox(height: 20),
+                    
+                    // Journals section title with action buttons
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Journals',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF0E3C26),
+                              fontFamily: 'Georgia',
+                            ),
+                          ),
+                          const Spacer(),
+                                                     // Create new event button
+                           Container(
+                             width: 42,
+                             height: 42,
+                             decoration: BoxDecoration(
+                               color: Colors.grey.shade200,
+                               shape: BoxShape.circle,
+                             ),
+                             child: Icon(
+                               Icons.add,
+                               color: Colors.grey.shade600,
+                               size: 20,
+                             ),
+                           ),
+                          const SizedBox(width: 12),
+                                                     // Search button
+                           Container(
+                             width: 42,
+                             height: 42,
+                             decoration: BoxDecoration(
+                               color: Colors.grey.shade200,
+                               shape: BoxShape.circle,
+                             ),
+                             child: Icon(
+                               Icons.search,
+                               color: Colors.grey.shade600,
+                               size: 20,
+                             ),
+                           ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Date selector with padding
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: _buildDateSelector(journalProvider),
+                    ),
+                
+                    const SizedBox(height: 24),
+                    
+                    // Timeline with events
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: _buildTimeline(events),
+                    ),
+                    
+                    // Add bottom padding for safe area
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
+              // MiniCallBar removed since this is now a root page with HomePage handling navigation
             ],
-          ),
-          const MiniCallBar(hasBottomNavigation: false),
-        ],
-      );
+          );
         },
       ),
     );
   }
 
-  Widget _buildDateSelector(JournalFilesProvider journalProvider) {
+  Widget _buildDailyReflectionSection() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Month and year selector
-          Row(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFFF3E6DE), // Updated background color
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                DateFormat('MMMM yyyy').format(_selectedDate),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF0E3C26),
-                  fontFamily: 'Georgia',
-                ),
-              ),
-              const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0E3C26)),
-            ],
-          ),
-          const SizedBox(height: 16),
-          
-          // Day selector
-          SizedBox(
-            height: 60,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 7,
-              itemBuilder: (context, index) {
-                final date = _selectedDate.subtract(Duration(days: 3 - index));
-                final isSelected = _isSameDay(date, _selectedDate);
-                
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedDate = date;
-                    });
-                  },
-                  child: Container(
-                    width: 50,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
+              // Top row with icons
+              Row(
+                children: [
+                  const Spacer(),
+                  // Notification icon in top right
+                  Container(
+                    width: 42,
+                    height: 50,
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFFe7bf57) : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected ? const Color(0xFFe7bf57) : Colors.grey.shade300,
-                      ),
+                      color: const Color(0xFFEDDBD2), // Reverted to original background color
+                      shape: BoxShape.circle,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          date.day.toString(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: isSelected ? Colors.white : const Color(0xFF0E3C26),
-                            fontFamily: 'Georgia',
-                          ),
-                        ),
-                        Text(
-                          DateFormat('E').format(date).substring(0, 3),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isSelected ? Colors.white70 : Colors.grey.shade600,
-                            fontFamily: 'Georgia',
-                          ),
-                        ),
-                        // Show indicator for dates with journal entries
-                        if (_hasJournalEntries(date, journalProvider))
-                          Container(
-                            width: 4,
-                            height: 4,
-                            margin: const EdgeInsets.only(top: 2),
-                            decoration: BoxDecoration(
-                              color: isSelected ? Colors.white : const Color(0xFFe7bf57),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
+                    child: Icon(
+                      Icons.notifications_outlined,
+                      color: Colors.grey.shade600, // Keep grey color for icon
+                      size: 24,
                     ),
                   ),
-                );
-              },
-            ),
+                ],
+              ),
+              const SizedBox(height: 8), // Spacing after top row
+              
+              // Greeting row with profile picture
+              Row(
+                children: [
+                  const Text(
+                    'Hi, Claire',
+                    style: TextStyle(
+                      fontSize: 36, // Much bigger text size
+                      fontWeight: FontWeight.normal, // Removed bold
+                      color: Color(0xFF0E3C26), // Keep dark green color for main text
+                      fontFamily: 'Georgia',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              // Question picker wheel card
+              _buildQuestionPickerCard(),
+              const SizedBox(height: 16),
+            ],
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildQuestionPickerCard() {
+    return Container(
+      height: 200,
+      child: PageView.builder(
+        controller: PageController(
+          viewportFraction: 0.85,
+          initialPage: 1,
+        ),
+        onPageChanged: (index) {
+          setState(() {
+            _currentQuestionIndex = index;
+          });
+        },
+        itemCount: _reflectionQuestions.length,
+        itemBuilder: (context, index) {
+          final question = _reflectionQuestions[index];
+          final isActive = index == _currentQuestionIndex;
+          
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEDDBD2),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: isActive ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ] : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Title row
+                      Text(
+                        question['title']!,
+                        style: TextStyle(
+                          fontSize: isActive ? 22 : 20,
+                          color: const Color(0xFF0E3C26),
+                          fontFamily: 'Georgia',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        question['subtitle']!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                          fontFamily: 'Georgia',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Arrow outward button at bottom right
+                Positioned(
+                  bottom: 16,
+                  right: 21,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Open reflections page for "Today, in Moments" card
+                      if (index == 2) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ReflectionsPage(),
+                          ),
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFe7bf57),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.arrow_outward,
+                        color: Colors.grey.shade600,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+
+
+  Widget _buildDateSelector(JournalFilesProvider journalProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Month and year selector
+        Row(
+          children: [
+            Text(
+              DateFormat('MMMM yyyy').format(_selectedDate),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0E3C26),
+                fontFamily: 'Georgia',
+              ),
+            ),
+            const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0E3C26)),
+          ],
+        ),
+        const SizedBox(height: 16),
+        
+        // Day selector
+        SizedBox(
+          height: 60,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 7,
+            itemBuilder: (context, index) {
+              final date = _selectedDate.subtract(Duration(days: 3 - index));
+              final isSelected = _isSameDay(date, _selectedDate);
+              
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                },
+                child: Container(
+                  width: 50,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFF0E3C26) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected ? const Color(0xFF0E3C26) : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        date.day.toString(),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected ? Colors.white : const Color(0xFF0E3C26),
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                      Text(
+                        DateFormat('E').format(date).substring(0, 3),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isSelected ? Colors.white70 : Colors.grey.shade600,
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                      // Show indicator for dates with journal entries
+                      if (_hasJournalEntries(date, journalProvider))
+                        Container(
+                          width: 4,
+                          height: 4,
+                          margin: const EdgeInsets.only(top: 2),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.white : const Color(0xFF0E3C26),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -233,15 +461,14 @@ class _JournalsPageState extends State<JournalsPage> {
       return timeB.compareTo(timeA); // Reverse order: latest first
     });
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemCount: sortedEvents.length,
-      itemBuilder: (context, index) {
-        final event = sortedEvents[index];
+    return Column(
+      children: sortedEvents.asMap().entries.map((entry) {
+        final index = entry.key;
+        final event = entry.value;
         final timeRange = _parseTimeRange(event.time_range);
         
         return _buildTimelineEvent(event, timeRange, index == sortedEvents.length - 1);
-      },
+      }).toList(),
     );
   }
 
@@ -374,40 +601,81 @@ class _JournalsPageState extends State<JournalsPage> {
                   const SizedBox(height: 12),
                   
                   // Tags row
-                  Row(
-                    children: [
-                      // Category tag
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getCategoryColor(event.activity_type).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: BoxDecoration(
-                                color: _getCategoryColor(event.activity_type),
-                                shape: BoxShape.circle,
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: event.topic_labels.map((tag) {
+                      // Special handling for upward/downward arrows
+                      if (tag.toLowerCase() == 'upward') {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.arrow_upward_outlined,
+                                size: 16,
+                                color: const Color(0xFF4CAF50),
                               ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              event.activity_type.toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey.shade600,
-                                fontFamily: 'Georgia',
+                            ],
+                          ),
+                        );
+                      } else if (tag.toLowerCase() == 'downward') {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF44336).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.arrow_downward_outlined,
+                                size: 16,
+                                color: const Color(0xFFF44336),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                            ],
+                          ),
+                        );
+                      } else {
+                        // Regular tags with circle and text
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _getTagColor(tag).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  color: _getTagColor(tag),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                tag,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade600,
+                                  fontFamily: 'Georgia',
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    }).toList(),
                   ),
                   
                   const SizedBox(height: 12),
@@ -558,6 +826,29 @@ class _JournalsPageState extends State<JournalsPage> {
       const Color(0xFFD4C8B8), // Light beige/yellow
     ];
     return colors[hash.abs() % colors.length];
+  }
+
+  Color _getTagColor(String tag) {
+    // Map tags to specific colors based on the images
+    switch (tag.toLowerCase()) {
+      case 'peaceful':
+      case 'calm':
+      case 'reflective':
+        return const Color(0xFF5B7BD6); // More vibrant blue for mood tags
+      case 'engaged':
+        return const Color(0xFF4CAF50); // Green for engaged
+      case 'disengaged':
+        return const Color(0xFFF44336); // Red for disengaged
+      case 'outdoor':
+        return const Color(0xFF4CAF50); // More vibrant green for outdoor
+      case 'conversation':
+      case 'transportation':
+      case 'meal':
+      case 'entertainment':
+        return const Color(0xFF2196F3); // More vibrant blue for activity tags
+      default:
+        return const Color(0xFF5B7BD6); // Default vibrant blue
+    }
   }
 }
 
