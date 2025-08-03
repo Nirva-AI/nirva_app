@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
+import 'package:nirva_app/providers/call_provider.dart';
 import 'package:nirva_app/lounge/lounge_screen.dart';
 
 import 'package:nirva_app/dashboard_page.dart';
 import 'package:nirva_app/todo_list_view.dart';
 import 'package:nirva_app/nirva_chat_page.dart';
+import 'package:nirva_app/nirva_call_screen.dart';
 import 'package:nirva_app/me_page.dart';
 import 'package:nirva_app/experience_page.dart';
+import 'package:nirva_app/mini_call_bar.dart';
 
 enum HomePageNavigationType { lounge, smartDiary, dashboard, me }
 
@@ -126,7 +129,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-      body: _getBodyContent(),
+      body: Stack(
+        children: [
+          _getBodyContent(),
+          const MiniCallBar(hasBottomNavigation: true),
+        ],
+      ),
       floatingActionButton: Container(
         width: 72, // Larger size
         height: 72, // Larger size
@@ -263,6 +271,8 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+
 
   Widget _buildBottomAppBarItem({
     required IconData icon,

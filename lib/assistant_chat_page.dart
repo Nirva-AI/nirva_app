@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
+import 'package:nirva_app/mini_call_bar.dart';
 
 class AssistantChatPage extends StatefulWidget {
   final TextEditingController textController;
@@ -77,80 +78,85 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
           },
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: Consumer<ChatHistoryProvider>(
-              builder: (context, chatHistoryProvider, child) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToBottom();
-                });
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: chatHistoryProvider.chatHistory.length,
-                  itemBuilder: (context, index) {
-                    final message = chatHistoryProvider.chatHistory[index];
-                    final isUser = message.role == MessageRole.human;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8.0,
-                      ),
-                      child: Align(
-                        alignment:
-                            isUser
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            color: isUser ? Colors.blue[100] : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(8.0),
+          Column(
+            children: [
+              Expanded(
+                child: Consumer<ChatHistoryProvider>(
+                  builder: (context, chatHistoryProvider, child) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToBottom();
+                    });
+                    return ListView.builder(
+                      controller: _scrollController,
+                      itemCount: chatHistoryProvider.chatHistory.length,
+                      itemBuilder: (context, index) {
+                        final message = chatHistoryProvider.chatHistory[index];
+                        final isUser = message.role == MessageRole.human;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
                           ),
-                          child: Text(
-                            _getContent(message),
-                            style: const TextStyle(fontSize: 16),
+                          child: Align(
+                            alignment:
+                                isUser
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                            child: Container(
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: BoxDecoration(
+                                color: isUser ? Colors.blue[100] : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                _getContent(message),
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                bottom: 16.0,
+                ),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: widget.textController,
-                      decoration: InputDecoration(
-                        hintText: '输入内容...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    right: 16.0,
+                    bottom: 16.0,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: widget.textController,
+                          decoration: InputDecoration(
+                            hintText: '输入内容...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(
+                          Icons.send,
+                          color: _isSending ? Colors.grey : Colors.blue,
+                        ),
+                        onPressed: _isSending ? null : _handleSendMessage,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: Icon(
-                      Icons.send,
-                      color: _isSending ? Colors.grey : Colors.blue,
-                    ),
-                    onPressed: _isSending ? null : _handleSendMessage,
-                  ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
+          const MiniCallBar(hasBottomNavigation: false),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:nirva_app/providers/user_provider.dart';
+import 'package:nirva_app/providers/call_provider.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -45,6 +46,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => NotesProvider()),
         ChangeNotifierProvider(create: (_) => ChatHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => CallProvider()),
       ],
       child: const MainApp(),
     ),

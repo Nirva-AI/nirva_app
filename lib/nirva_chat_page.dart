@@ -2,8 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
+import 'package:nirva_app/providers/call_provider.dart';
 import 'package:nirva_app/api_models.dart';
+import 'package:nirva_app/nirva_call_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:nirva_app/mini_call_bar.dart';
+
+class DottedLinePainter extends CustomPainter {
+  final Color color;
+  
+  DottedLinePainter({required this.color});
+  
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.0
+      ..strokeCap = StrokeCap.round;
+    
+    const dashWidth = 3.0;
+    const dashSpace = 3.0;
+    double startX = 0;
+    
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, size.height / 2),
+        Offset(startX + dashWidth, size.height / 2),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+  
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 class NirvaChatPage extends StatefulWidget {
   const NirvaChatPage({super.key});
@@ -22,125 +55,127 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
 
   // Mock chat messages
   final List<ChatMessage> _mockMessages = [
+    // Yesterday's conversation
     ChatMessage(
       id: '1',
       role: MessageRole.ai,
       content: 'Good morning! 🌅 How are you feeling today? I noticed you had a late night yesterday.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 3, hours: 9)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 9)).toIso8601String(),
     ),
     ChatMessage(
       id: '2',
       role: MessageRole.human,
       content: 'Morning! Actually feeling pretty good despite the late night. That meditation session you suggested really helped me unwind.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 3, hours: 8, minutes: 45)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 8, minutes: 45)).toIso8601String(),
     ),
     ChatMessage(
       id: '3',
       role: MessageRole.ai,
       content: 'I\'m so glad it helped! Sometimes we just need to slow down and breathe. What\'s on your agenda today?',
-      time_stamp: DateTime.now().subtract(const Duration(days: 3, hours: 8, minutes: 30)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 8, minutes: 30)).toIso8601String(),
     ),
     ChatMessage(
       id: '4',
       role: MessageRole.human,
       content: '📸 Photo message',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 14)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 14)).toIso8601String(),
     ),
     ChatMessage(
       id: '5',
       role: MessageRole.human,
       content: 'Just had the most amazing lunch! 🍜 This ramen place downtown is incredible. You have to try it sometime.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 13, minutes: 55)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 55)).toIso8601String(),
     ),
     ChatMessage(
       id: '6',
       role: MessageRole.ai,
       content: 'That looks absolutely delicious! I\'m so jealous. What kind of ramen did you get? The broth looks rich and flavorful.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 13, minutes: 40)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 40)).toIso8601String(),
     ),
     ChatMessage(
       id: '7',
       role: MessageRole.human,
       content: 'Tonkotsu with extra chashu! It was perfect comfort food. I was thinking about what you said yesterday about treating myself better.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 13, minutes: 25)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 25)).toIso8601String(),
     ),
     ChatMessage(
       id: '8',
       role: MessageRole.ai,
       content: 'That\'s exactly what I mean! You deserve to enjoy the little moments. How did it make you feel?',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 13, minutes: 10)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 10)).toIso8601String(),
     ),
     ChatMessage(
       id: '9',
       role: MessageRole.human,
       content: 'Really grateful and present. I actually put my phone away and just savored every bite. It\'s been a while since I did that.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 12, minutes: 55)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 12, minutes: 55)).toIso8601String(),
     ),
     ChatMessage(
       id: '10',
       role: MessageRole.ai,
       content: 'That\'s beautiful! Mindful eating is such a powerful practice. I\'m proud of you for being so intentional about it.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 12, minutes: 40)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 12, minutes: 40)).toIso8601String(),
     ),
+    // Today's conversation
     ChatMessage(
       id: '11',
       role: MessageRole.human,
       content: 'Thanks! It felt really good. I\'ve been thinking about our conversation about boundaries too. I said no to that extra project at work.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 12, minutes: 25)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 8)).toIso8601String(),
     ),
     ChatMessage(
       id: '12',
       role: MessageRole.ai,
       content: 'That\'s a huge step! How did it feel to prioritize yourself? I know that wasn\'t easy for you.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 12, minutes: 10)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 7, minutes: 55)).toIso8601String(),
     ),
     ChatMessage(
       id: '13',
       role: MessageRole.human,
       content: 'Scary at first, but really empowering. My boss was actually understanding about it. I think I\'ve been overthinking these situations.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 11, minutes: 55)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 7, minutes: 40)).toIso8601String(),
     ),
     ChatMessage(
       id: '14',
       role: MessageRole.ai,
       content: 'You absolutely have been! It\'s amazing how our fears often don\'t match reality. This is such great progress. 🌟',
-      time_stamp: DateTime.now().subtract(const Duration(days: 2, hours: 11, minutes: 40)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 7, minutes: 25)).toIso8601String(),
     ),
     ChatMessage(
       id: '15',
       role: MessageRole.human,
       content: 'I finished that book you recommended last night. The ending was unexpected but perfect.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 8)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 6)).toIso8601String(),
     ),
     ChatMessage(
       id: '16',
       role: MessageRole.ai,
       content: 'Right?! I was shocked too. What did you think of the main character\'s decision?',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 7, minutes: 45)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 5, minutes: 45)).toIso8601String(),
     ),
     ChatMessage(
       id: '17',
       role: MessageRole.human,
       content: 'I think she made the right choice, even though it was hard. Sometimes you have to put yourself first, just like we talked about.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 7, minutes: 30)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 5, minutes: 30)).toIso8601String(),
     ),
     ChatMessage(
       id: '18',
       role: MessageRole.ai,
       content: 'Exactly! That\'s what I loved about it. It felt so real and relatable. The author really captured that internal struggle.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 7, minutes: 15)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 5, minutes: 15)).toIso8601String(),
     ),
     ChatMessage(
       id: '19',
       role: MessageRole.human,
       content: 'I\'ve been journaling about it too. It\'s helping me process some of my own decisions lately.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 7)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 5)).toIso8601String(),
     ),
     ChatMessage(
       id: '20',
       role: MessageRole.ai,
       content: 'That\'s wonderful! Journaling is such a powerful tool for self-reflection. I\'d love to hear your thoughts if you want to share.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 6, minutes: 45)).toIso8601String(),
+      time_stamp: DateTime.now().subtract(const Duration(hours: 4, minutes: 45)).toIso8601String(),
     ),
     ChatMessage(
       id: '21',
@@ -259,7 +294,7 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
         const SizedBox(width: 16),
         // Duration text
         Text(
-          '0:03',
+          '0:23',
           style: TextStyle(
             color: Colors.grey.shade600,
             fontSize: 14,
@@ -329,6 +364,53 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildDateDivider(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final messageDate = DateTime(date.year, date.month, date.day);
+    
+    String dateText;
+    if (messageDate == today) {
+      dateText = 'Today';
+    } else if (messageDate == yesterday) {
+      dateText = 'Yesterday';
+    } else {
+      dateText = DateFormat('MMM d').format(date);
+    }
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomPaint(
+              painter: DottedLinePainter(color: Colors.grey.shade300),
+              child: Container(height: 1),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              dateText,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: CustomPaint(
+              painter: DottedLinePainter(color: Colors.grey.shade300),
+              child: Container(height: 1),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -607,13 +689,10 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
             CircleAvatar(
               radius: 18,
               backgroundColor: const Color(0xFFe7bf57),
-              child: const Text(
-                'N',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+              child: const Icon(
+                Icons.water_drop_outlined,
+                color: Colors.white,
+                size: 24,
               ),
             ),
             const SizedBox(width: 12),
@@ -643,7 +722,13 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
           IconButton(
             icon: const Icon(Icons.call_outlined, color: Color(0xFF0E3C26)),
             onPressed: () {
-              // Call Nirva functionality
+              final callProvider = Provider.of<CallProvider>(context, listen: false);
+              callProvider.startCall();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const NirvaCallScreen(),
+                ),
+              );
             },
             padding: const EdgeInsets.all(4),
           ),
@@ -651,37 +736,64 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
       ),
       body: SafeArea(
         bottom: false,
-        child: Column(
+        child: Stack(
           children: [
-            Expanded(
-              child: Consumer<ChatHistoryProvider>(
-                builder: (context, chatProvider, child) {
-                  // Auto-scroll to bottom when new messages are added
-                  if (chatProvider.chatHistory.length > _previousMessageCount && _previousMessageCount > 0) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scrollToBottomImmediate();
-                    });
-                  }
-                  _previousMessageCount = chatProvider.chatHistory.length;
-                  
-                  return ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.only(top: 16, bottom: 8),
-                    itemCount: chatProvider.chatHistory.length + (_showLoadMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == 0 && _showLoadMore) {
-                        return _buildLoadMoreButton();
+            Column(
+              children: [
+                Expanded(
+                  child: Consumer<ChatHistoryProvider>(
+                    builder: (context, chatProvider, child) {
+                      // Auto-scroll to bottom when new messages are added
+                      if (chatProvider.chatHistory.length > _previousMessageCount && _previousMessageCount > 0) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _scrollToBottomImmediate();
+                        });
+                      }
+                      _previousMessageCount = chatProvider.chatHistory.length;
+                      
+                      // Build list with date dividers
+                      final List<Widget> items = [];
+                      
+                      if (_showLoadMore) {
+                        items.add(_buildLoadMoreButton());
                       }
                       
-                      final messageIndex = _showLoadMore ? index - 1 : index;
-                      final message = chatProvider.chatHistory[messageIndex];
-                      return _buildMessageBubble(message);
+                      DateTime? lastMessageDate;
+                      
+                      for (int i = 0; i < chatProvider.chatHistory.length; i++) {
+                        final message = chatProvider.chatHistory[i];
+                        final messageDate = DateTime.parse(message.time_stamp);
+                        final currentMessageDate = DateTime(messageDate.year, messageDate.month, messageDate.day);
+                        
+                        // Add date divider if this is a new day, but not if it's the first message
+                        if (lastMessageDate == null || currentMessageDate.isAfter(lastMessageDate)) {
+                          // Don't show divider if this is the first message in the loaded list
+                          // or if there's a "Load more" button above it
+                          if (i > 0 && !(_showLoadMore && items.length == 1)) {
+                            items.add(_buildDateDivider(messageDate));
+                          }
+                          lastMessageDate = currentMessageDate;
+                        }
+                        
+                        items.add(_buildMessageBubble(message));
+                      }
+                      
+                      return ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.only(top: 16, bottom: 8),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          return items[index];
+                        },
+                      );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+                _buildInputArea(),
+              ],
             ),
-            _buildInputArea(),
+            // Mini call bar
+            const MiniCallBar(hasBottomNavigation: false),
           ],
         ),
       ),
@@ -787,4 +899,5 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
       ),
     );
   }
+
 } 

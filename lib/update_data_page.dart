@@ -8,6 +8,7 @@ import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/hive_helper.dart';
+import 'package:nirva_app/mini_call_bar.dart';
 
 class UpdateDataPage extends StatefulWidget {
   const UpdateDataPage({super.key});
@@ -613,10 +614,14 @@ class _UpdateDataPageState extends State<UpdateDataPage> {
           ),
         ],
       ),
-      body:
+      body: Stack(
+        children: [
           _updateDataTask == null
               ? _buildEmptyState()
               : SingleChildScrollView(child: _buildTaskView()),
+          const MiniCallBar(hasBottomNavigation: false),
+        ],
+      ),
     );
   }
 

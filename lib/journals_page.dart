@@ -4,6 +4,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/journal_details_page.dart';
 import 'package:intl/intl.dart';
+import 'package:nirva_app/mini_call_bar.dart';
 
 class JournalsPage extends StatefulWidget {
   const JournalsPage({super.key});
@@ -93,10 +94,12 @@ class _JournalsPageState extends State<JournalsPage> {
           final journalFile = journalProvider.getJournalFileByDate(_selectedDate);
           final events = journalFile?.events ?? [];
 
-          return Column(
+          return Stack(
             children: [
-              // Date selector
-              _buildDateSelector(journalProvider),
+              Column(
+                children: [
+                  // Date selector
+                  _buildDateSelector(journalProvider),
               
               const SizedBox(height: 24),
               
@@ -105,7 +108,10 @@ class _JournalsPageState extends State<JournalsPage> {
                 child: _buildTimeline(events),
               ),
             ],
-          );
+          ),
+          const MiniCallBar(hasBottomNavigation: false),
+        ],
+      );
         },
       ),
     );

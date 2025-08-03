@@ -4,6 +4,7 @@ import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/hive_helper.dart';
+import 'package:nirva_app/mini_call_bar.dart';
 
 class HiveDataViewerPage extends StatefulWidget {
   const HiveDataViewerPage({super.key});
@@ -44,10 +45,14 @@ class _HiveDataViewerPageState extends State<HiveDataViewerPage> {
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadHiveData),
         ],
       ),
-      body:
+      body: Stack(
+        children: [
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _buildDataView(),
+          const MiniCallBar(hasBottomNavigation: false),
+        ],
+      ),
     );
   }
 

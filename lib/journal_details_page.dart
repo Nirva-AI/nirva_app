@@ -7,6 +7,7 @@ import 'package:nirva_app/assistant_chat_page.dart';
 import 'package:nirva_app/hive_helper.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:intl/intl.dart';
+import 'package:nirva_app/mini_call_bar.dart';
 
 class JournalDetailsPage extends StatefulWidget {
   final EventAnalysis eventData;
@@ -106,42 +107,47 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Event Header Card
-            _buildEventHeaderCard(),
-            
-            const SizedBox(height: 24),
-            
-            // Event Analysis Section
-            _buildEventAnalysisSection(),
-            
-            const SizedBox(height: 24),
-            
-            // Action Items Section
-            _buildActionItemsSection(),
-            
-            const SizedBox(height: 24),
-            
-            // Summary Section
-            _buildSummarySection(),
-            
-            const SizedBox(height: 24),
-            
-            // Personal Notes Section
-            _buildPersonalNotesSection(),
-            
-            const SizedBox(height: 24),
-            
-            // Nirva's Narrative Section
-            _buildNirvaNarrativeSection(),
-            
-            const SizedBox(height: 40),
-          ],
-        ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Event Header Card
+                _buildEventHeaderCard(),
+                
+                const SizedBox(height: 24),
+                
+                // Event Analysis Section
+                _buildEventAnalysisSection(),
+                
+                const SizedBox(height: 24),
+                
+                // Action Items Section
+                _buildActionItemsSection(),
+                
+                const SizedBox(height: 24),
+                
+                // Summary Section
+                _buildSummarySection(),
+                
+                const SizedBox(height: 24),
+                
+                // Personal Notes Section
+                _buildPersonalNotesSection(),
+                
+                const SizedBox(height: 24),
+                
+                // Nirva's Narrative Section
+                _buildNirvaNarrativeSection(),
+                
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+          const MiniCallBar(hasBottomNavigation: false),
+        ],
       ),
 
     );
