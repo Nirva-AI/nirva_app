@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:nirva_app/social_map_card.dart';
 import 'package:nirva_app/dashboard_score_component.dart';
 import 'package:nirva_app/trends_card.dart';
 import 'package:nirva_app/mood_trend_card.dart';
 import 'package:nirva_app/energy_trend_card.dart';
 import 'package:nirva_app/awake_time_allocation_trend_card.dart';
+import 'package:nirva_app/social_map_trend_card.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -52,9 +52,7 @@ class DashboardPage extends StatelessWidget {
               const SizedBox(height: 24),
               const AwakeTimeAllocationTrendCard(),
               const SizedBox(height: 24),
-              
-              // Dashboard content
-              _buildSocialMapCard(),
+              const SocialMapTrendCard(),
             ],
           ),
         ),
@@ -62,7 +60,4 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialMapCard() {
-    return const SocialMapCard();
-  }
 }
