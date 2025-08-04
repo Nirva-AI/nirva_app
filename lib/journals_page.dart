@@ -4,6 +4,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/journal_details_page.dart';
 import 'package:nirva_app/reflections_page.dart';
+import 'package:nirva_app/daily_reflection_page.dart';
 import 'package:intl/intl.dart';
 // import 'package:nirva_app/mini_call_bar.dart'; // No longer needed
 
@@ -313,12 +314,12 @@ class _JournalsPageState extends State<JournalsPage> {
                   right: 21,
                   child: GestureDetector(
                     onTap: () {
-                      // Open reflections page for "Today, in Moments" card
+                      // Open daily reflection page for "Today, in Moments" card
                       if (index == 2) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ReflectionsPage(),
+                            builder: (context) => const DailyReflectionPage(),
                           ),
                         );
                       }
