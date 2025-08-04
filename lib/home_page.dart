@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFfaf9f5),
-      appBar: (_selectedPage == HomePageNavigationType.journals || _selectedPage == HomePageNavigationType.smartDiary || _selectedPage == HomePageNavigationType.dashboard)
+      appBar: (_selectedPage == HomePageNavigationType.journals || _selectedPage == HomePageNavigationType.smartDiary || _selectedPage == HomePageNavigationType.dashboard || _selectedPage == HomePageNavigationType.me)
         ? null 
         : PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),

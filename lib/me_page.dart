@@ -17,184 +17,414 @@ class _MePageState extends State<MePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+      backgroundColor: const Color(0xFFfaf9f5),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Custom header matching other pages
+              const Text(
+                'Me',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0E3C26),
+                  fontFamily: 'Georgia',
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+
+              
+              // Nirva Necklace section
+              _buildNirvaNecklaceSection(),
+              const SizedBox(height: 32),
+              
+              // Settings section
+              _buildSettingsSection(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget _buildNirvaNecklaceSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFf0ebd8),
+            Color(0xFFece6d2),
+            Color(0xFFe8e2cc),
+          ],
+          stops: [0.0, 0.5, 1.0],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            debugPrint('Nirva Necklace tapped');
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with icon and status
+              Row(
                 children: [
-                  // 用户信息卡片
-                  Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.grey[300],
-                        child: const Icon(Icons.person, color: Colors.white),
-                      ),
-                      title: Text(
-                        context.read<UserProvider>().user.displayName,
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {
-                        debugPrint('User profile tapped');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const UserProfilePage(),
-                          ),
-                        );
-                      },
-                    ),
+                  const Icon(
+                    Icons.water_drop,
+                    size: 48,
+                    color: Color(0xFFe7bf57),
                   ),
-
-                  const SizedBox(height: 16),
-                  _buildHardwareCard(), // Nirva Necklace 卡片
-                  const SizedBox(height: 16),
-
-                  // 设置选项卡片
-                  Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
+                  const SizedBox(width: 16),
+                  Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSettingsOption(
-                          icon: Icons.restart_alt,
-                          title: 'Onboarding',
-                          subtitle: 'Restart the setup process',
-                          onTap: () {
-                            debugPrint('Onboarding tapped');
-                          },
+                        const Text(
+                          'Nirva Necklace',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0E3C26),
+                            fontFamily: 'Georgia',
+                          ),
                         ),
-                        const Divider(height: 1),
-                        _buildSettingsOption(
-                          icon: Icons.access_time,
-                          title: 'Reflection Time',
-                          subtitle: 'Set when you want daily reflections',
-                          onTap: () {
-                            debugPrint('Reflection Time tapped');
-                          },
-                        ),
-                        const Divider(height: 1),
-                        _buildSettingsOption(
-                          icon: Icons.privacy_tip,
-                          title: 'Privacy Controls',
-                          subtitle: 'Manage your data and sharing preferences',
-                          onTap: () {
-                            debugPrint('Privacy Controls tapped');
-                          },
-                        ),
-                        const Divider(height: 1),
-                        _buildSettingsOption(
-                          icon: Icons.upload,
-                          title: 'Update Data',
-                          subtitle: 'Upload your recorded audio',
-                          onTap: () {
-                            debugPrint('Update Data tapped');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const UpdateDataPage(),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
                               ),
-                            );
-                          },
-                        ),
-                        const Divider(height: 1),
-                        _buildSettingsOption(
-                          icon: Icons.storage,
-                          title: 'Local Data',
-                          subtitle: 'View local data stored in Hive',
-                          onTap: () {
-                            debugPrint('Local Data tapped');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HiveDataViewerPage(),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Connected',
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Georgia',
                               ),
-                            );
-                          },
-                        ),
-                        const Divider(height: 1),
-                        _buildSettingsOption(
-                          icon: Icons.settings,
-                          title: 'Nirva Settings',
-                          subtitle: 'Customize Nirva\'s voice',
-                          onTap: () {
-                            debugPrint('Nirva Settings tapped');
-                          },
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 20),
+              
+              // Battery level indicator
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.battery_full,
+                      color: Color(0xFF0E3C26),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Battery Level',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF0E3C26),
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Georgia',
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: LinearProgressIndicator(
+                                  value: 0.88,
+                                  backgroundColor: Colors.grey.shade300,
+                                  valueColor: const AlwaysStoppedAnimation<Color>(
+                                    Color(0xFF0E3C26),
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                '88%',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF0E3C26),
+                                  fontFamily: 'Georgia',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // Last sync info
+              Row(
+                children: [
+                  Icon(
+                    Icons.sync,
+                    size: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Last synced 2 hours ago',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                      fontFamily: 'Georgia',
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0E3C26).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Tap to manage',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF0E3C26),
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Georgia',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          const MiniCallBar(hasBottomNavigation: false),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildSettingsOption({
+  Widget _buildSettingsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Settings',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0E3C26),
+            fontFamily: 'Georgia',
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              _buildSettingsItem(
+                icon: Icons.restart_alt,
+                title: 'Onboarding',
+                subtitle: 'Restart the setup process',
+                onTap: () {
+                  debugPrint('Onboarding tapped');
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.access_time,
+                title: 'Reflection Time',
+                subtitle: 'Set when you want daily reflections',
+                onTap: () {
+                  debugPrint('Reflection Time tapped');
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.privacy_tip,
+                title: 'Privacy Controls',
+                subtitle: 'Manage your data and sharing preferences',
+                onTap: () {
+                  debugPrint('Privacy Controls tapped');
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.upload,
+                title: 'Update Data',
+                subtitle: 'Upload your recorded audio',
+                onTap: () {
+                  debugPrint('Update Data tapped');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UpdateDataPage(),
+                    ),
+                  );
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.storage,
+                title: 'Local Data',
+                subtitle: 'View local data stored in Hive',
+                onTap: () {
+                  debugPrint('Local Data tapped');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HiveDataViewerPage(),
+                    ),
+                  );
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.settings,
+                title: 'Nirva Settings',
+                subtitle: 'Customize Nirva\'s voice',
+                onTap: () {
+                  debugPrint('Nirva Settings tapped');
+                },
+                showDivider: false,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingsItem({
     required IconData icon,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    bool showDivider = true,
   }) {
-    return ListTile(
-      leading: Icon(icon, size: 24, color: Colors.black),
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: const TextStyle(fontSize: 12, color: Colors.grey),
-      ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: onTap,
+    return Column(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFe7bf57).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 20,
+                      color: const Color(0xFF0E3C26),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF0E3C26),
+                            fontFamily: 'Georgia',
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                            fontFamily: 'Georgia',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: Color(0xFF0E3C26),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (showDivider) _buildDivider(),
+      ],
     );
   }
 
-  // Nirva Necklace 卡片
-  // ignore: unused_element
-  Widget _buildHardwareCard() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 2,
-      child: ListTile(
-        leading: const Icon(Icons.water_drop, size: 40, color: Colors.amber),
-        title: const Text(
-          'Nirva Necklace',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Row(
-          children: const [
-            Icon(Icons.circle, size: 8, color: Colors.green),
-            SizedBox(width: 4),
-            Text('Connected', style: TextStyle(color: Colors.green)),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text('88%', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            Icon(Icons.arrow_forward_ios, size: 16),
-          ],
-        ),
-        onTap: () {
-          debugPrint('Nirva Necklace tapped');
-        },
-      ),
+  Widget _buildDivider() {
+    return Container(
+      height: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      color: Colors.grey.shade200,
     );
   }
 }
