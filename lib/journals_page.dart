@@ -218,7 +218,7 @@ class _JournalsPageState extends State<JournalsPage> {
               Row(
                 children: [
                   const Text(
-                    'Hi, Claire',
+                    'Hi, Wei',
                     style: TextStyle(
                       fontSize: 36, // Much bigger text size
                       fontWeight: FontWeight.normal, // Removed bold

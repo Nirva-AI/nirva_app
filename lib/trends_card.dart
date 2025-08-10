@@ -100,7 +100,7 @@ class _TrendsCardState extends State<TrendsCard> {
                   showTitles: true,
                   reservedSize: 30,
                   getTitlesWidget: (value, meta) {
-                    const labels = ['45', '55', '65', '55', '75'];
+                    const labels = ['3', '5', '2', '7', '4'];
                     if (value.toInt() >= 0 && value.toInt() < labels.length) {
                       return Text(
                         labels[value.toInt()],
@@ -120,7 +120,7 @@ class _TrendsCardState extends State<TrendsCard> {
                   showTitles: true,
                   reservedSize: 30,
                   getTitlesWidget: (value, meta) {
-                    const labels = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'];
+                    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
                     if (value.toInt() >= 0 && value.toInt() < labels.length) {
                       return Text(
                         labels[value.toInt()],
@@ -140,11 +140,11 @@ class _TrendsCardState extends State<TrendsCard> {
             lineBarsData: [
               LineChartBarData(
                 spots: const [
-                  FlSpot(0, 0.45),
-                  FlSpot(1, 0.35),
-                  FlSpot(2, 0.70),
-                  FlSpot(3, 0.55),
-                  FlSpot(4, 0.75),
+                  FlSpot(0, 0.30),
+                  FlSpot(1, 0.50),
+                  FlSpot(2, 0.20),
+                  FlSpot(3, 0.70),
+                  FlSpot(4, 0.40),
                 ],
                 isCurved: true,
                 color: const Color(0xFFe7bf57),
@@ -163,39 +163,7 @@ class _TrendsCardState extends State<TrendsCard> {
           ),
         ),
         
-        // Highlighted data point
-        Positioned(
-          top: 20,
-          left: 120,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0E3C26),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              '70.0',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-        
-        // Vertical dotted line for highlighted point
-        Positioned(
-          top: 50,
-          left: 130,
-          child: Container(
-            width: 1,
-            height: 120,
-            child: CustomPaint(
-              painter: DottedLinePainter(),
-            ),
-          ),
-        ),
+
       ],
     );
   }
@@ -209,7 +177,7 @@ class _TrendsCardState extends State<TrendsCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Weekly Progress',
+                'Stress Level',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -218,7 +186,7 @@ class _TrendsCardState extends State<TrendsCard> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Your energy levels show a positive trend this week.',
+                'Your stress levels fluctuated throughout the week.',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade600,

@@ -287,7 +287,8 @@ class _AwakeTimeAllocationTrendCardState extends State<AwakeTimeAllocationTrendC
             baseValue = 6.0 + random.nextDouble() * 2; // 6-8 hours
             break;
           case 'exercise':
-            baseValue = 0.5 + random.nextDouble() * 1.5; // 0.5-2 hours
+            // Create a clear increasing trend for exercise time over the week
+            baseValue = 0.5 + (index * 0.3) + random.nextDouble() * 0.2; // Starts at ~0.5h, increases by ~0.3h each day
             break;
           case 'social':
             baseValue = 1.0 + random.nextDouble() * 2; // 1-3 hours

@@ -76,7 +76,7 @@ class _DailyReflectionPageState extends State<DailyReflectionPage> {
         ),
         const SizedBox(height: 8),
         const Text(
-          'Today was a day of deep conversations with friends, self-reflection, and cultural experiences. My emotions fluctuated between relaxation, joy, reflection, slight anxiety, and nostalgia.',
+          'Today was a day filled with deep conversations with Ashley and Trent. Picnicking in the park and watching the movie *Summer Palace* made my emotions fluctuate between relaxation, joy, contemplation, slight anxiety, and nostalgia.',
           style: TextStyle(
             fontSize: 16,
             color: Color(0xFF0E3C26),
@@ -106,9 +106,9 @@ class _DailyReflectionPageState extends State<DailyReflectionPage> {
         _buildReflectionCard(
           'I am feeling grateful for:',
           [
-            'Deep conversations with friends who listen and share wisdom',
-            'Access to art and film that opens my eyes to different perspectives',
-            'The privilege to contemplate my future on my own terms',
+            'Deep conversations with Ashley who truly listen and share her dating advice with me',
+            'Access to art and film that broaden my perspective',
+            'The privilege of contemplating my future on my own terms',
           ],
           'grateful',
         ),
@@ -117,9 +117,9 @@ class _DailyReflectionPageState extends State<DailyReflectionPage> {
         _buildReflectionCard(
           'I can celebrate:',
           [
-            'Making time for meaningful connections despite a busy schedule',
-            'Being open to different cultural experiences and perspectives',
-            'Taking steps to consider my future options thoughtfully',
+            'Making time for meaningful connections with Ashley and Trent despite a busy schedule',
+            'Remaining open to different cultures and ways of seeing the world',
+            'Taking thoughtful steps toward planning my egg freezing plan',
           ],
           'celebrate',
         ),
@@ -128,9 +128,9 @@ class _DailyReflectionPageState extends State<DailyReflectionPage> {
         _buildReflectionCard(
           'I can do better at:',
           [
-            'Finding better balance between solitude and social connection',
-            'Being more productive with my free time instead of oversleeping',
-            'Managing feelings of envy about others\' lives more constructively',
+            'Finding a healthier balance between solitude and social connection',
+            'Using my free time more productively, instead of oversleeping',
+            'Managing feelings of envy toward others’ seemingly stable lives more constructively',
           ],
           'better',
         ),

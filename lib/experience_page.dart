@@ -19,7 +19,7 @@ class ExperiencePage extends StatelessWidget {
             children: [
               // Title
               const Text(
-                'Experience',
+                'Explore',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class ExperiencePage extends StatelessWidget {
               
               // Explore Section Title
               const Text(
-                'Explore',
+                'Library',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -66,8 +66,8 @@ class ExperiencePage extends StatelessWidget {
           flex: 4,
                   child: _buildAIAssistantCard(
           context: context,
-          title: 'Journals',
-          subtitle: 'Record and reflect on your daily experiences',
+          title: 'Life Story',
+          subtitle: 'Your personal narrative journey',
           description: '',
           icon: Icons.auto_stories_outlined,
           backgroundColor: const Color(0xFFdad5fd), // New purple color
@@ -689,7 +689,7 @@ class ExperiencePage extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
                 icon,

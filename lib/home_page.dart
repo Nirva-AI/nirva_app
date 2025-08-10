@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       case HomePageNavigationType.journals:
         return 'Journals';
       case HomePageNavigationType.smartDiary:
-        return 'Experience';
+        return 'Explore';
       case HomePageNavigationType.dashboard:
         return 'Dashboard';
       case HomePageNavigationType.me:
@@ -239,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                       Expanded(
                         child: _buildBottomAppBarItem(
                           icon: Icons.airline_stops_outlined,
-                          label: 'Experience',
+                          label: 'Explore',
                           isSelected: _selectedPage == HomePageNavigationType.smartDiary,
                           onTap: () {
                             setState(() {

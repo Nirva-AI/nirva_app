@@ -107,7 +107,7 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
           ],
         ),
       ),
-      body: Stack(
+                body: Stack(
         children: [
           SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -119,8 +119,13 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
                 
                 const SizedBox(height: 24),
                 
-                // Event Analysis Section
-                _buildEventAnalysisSection(),
+                // Summary Section
+                _buildSummarySection(),
+                
+                const SizedBox(height: 24),
+                
+                // Nirva's Story Section
+                _buildNirvaNarrativeSection(),
                 
                 const SizedBox(height: 24),
                 
@@ -129,18 +134,13 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
                 
                 const SizedBox(height: 24),
                 
-                // Summary Section
-                _buildSummarySection(),
-                
-                const SizedBox(height: 24),
-                
                 // Personal Notes Section
                 _buildPersonalNotesSection(),
                 
                 const SizedBox(height: 24),
                 
-                // Nirva's Narrative Section
-                _buildNirvaNarrativeSection(),
+                // Event Analysis Section
+                _buildEventAnalysisSection(),
                 
                 const SizedBox(height: 40),
               ],
@@ -446,7 +446,7 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
               ),
               const SizedBox(width: 12),
               const Text(
-                "Nirva's Story",
+                "Story",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
