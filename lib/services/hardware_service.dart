@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -9,6 +8,8 @@ import 'package:collection/collection.dart';
 
 import '../models/hardware_device.dart';
 import 'hardware_constants.dart';
+import 'omi_packet_reassembler.dart';
+import 'opus_decoder_service.dart';
 
 class HardwareService extends ChangeNotifier {
   // Device management
@@ -25,6 +26,10 @@ class HardwareService extends ChangeNotifier {
   StreamSubscription<List<int>>? _audioSubscription;
   int _audioSequenceNumber = 0;
   
+  // OMI audio processing services
+  late OmiPacketReassembler _packetReassembler;
+  late OpusDecoderService _opusDecoder;
+  
   // Services and characteristics
   BluetoothService? _audioService;
   BluetoothService? _batteryService;
@@ -37,7 +42,10 @@ class HardwareService extends ChangeNotifier {
   BluetoothAdapterState get bluetoothState => _bluetoothState;
   bool get isScanning => _isScanning;
   
-
+  // OMI service getters
+  OmiPacketReassembler get packetReassembler => _packetReassembler;
+  OpusDecoderService get opusDecoder => _opusDecoder;
+  
   bool get isConnected {
     final hasDevice = _connectedDevice != null;
     final hasConnectionState = _connectionState?.status == HardwareConnectionStatus.connected;
@@ -63,6 +71,17 @@ class HardwareService extends ChangeNotifier {
   HardwareService() {
     _initializeBluetooth();
     _startConnectionMonitoring();
+    // Note: OMI services are initialized in the async initialize() method
+  }
+  
+  /// Initialize the service asynchronously
+  /// This must be called before using the service
+  Future<void> initialize() async {
+    debugPrint('HardwareService: Starting async initialization...');
+    debugPrint('HardwareService: About to call _initializeOmiServices()...');
+    await _initializeOmiServices();
+    debugPrint('HardwareService: Async initialization complete');
+    debugPrint('HardwareService: Opus decoder status: ${_opusDecoder.getDebugInfo()}');
   }
   
   void _initializeBluetooth() {
@@ -72,6 +91,36 @@ class HardwareService extends ChangeNotifier {
       notifyListeners();
     });
   }
+  
+  /// Initialize OMI audio processing services
+  Future<void> _initializeOmiServices() async {
+    debugPrint('HardwareService: Initializing OMI audio processing services...');
+    
+    // Initialize packet reassembler
+    _packetReassembler = OmiPacketReassembler();
+    
+    // Initialize Opus decoder
+    _opusDecoder = OpusDecoderService();
+    
+    // Initialize the Opus decoder and WAIT for it to complete
+    debugPrint('HardwareService: Waiting for Opus decoder initialization...');
+    final result = await _opusDecoder.initialize();
+    if (result) {
+      debugPrint('HardwareService: Opus decoder initialized successfully');
+    } else {
+      debugPrint('HardwareService: ERROR - Opus decoder initialization failed');
+    }
+    
+    // Listen to complete packets from reassembler
+    _packetReassembler.completePackets.listen((completeOpusData) {
+      debugPrint('HardwareService: Received complete packet: ${completeOpusData.length} bytes');
+      _onCompleteOpusPacket(completeOpusData);
+    });
+    
+    debugPrint('HardwareService: OMI services initialization complete');
+  }
+  
+
   
   /// Request necessary permissions for Bluetooth and location
   Future<bool> requestPermissions() async {
@@ -284,14 +333,29 @@ class HardwareService extends ChangeNotifier {
         }
       }
       
-      // Update device state
+      // Get device info including firmware version
+      Map<String, String> deviceInfo = {};
+      if (_deviceInfoService != null) {
+        try {
+          deviceInfo = await getDeviceInfo();
+          debugPrint('HardwareService.connectToDevice: Device info retrieved: $deviceInfo');
+        } catch (e) {
+          debugPrint('HardwareService.connectToDevice: Failed to get device info: $e');
+        }
+      }
+      
+      // Update device state with firmware and hardware info
       _setConnectedDevice(device.copyWith(
         isConnected: true,
         connectedAt: DateTime.now(),
+        firmwareVersion: deviceInfo['firmware'],
+        hardwareVersion: deviceInfo['hardware'],
+        manufacturer: deviceInfo['manufacturer'],
       ));
       
       // Ensure connection state is properly set
       _updateConnectionState(device.id, HardwareConnectionStatus.connected);
+      
       debugPrint('HardwareService.connectToDevice: Device connected successfully');
       
       // Note: Audio stream will be initialized manually when recording starts
@@ -311,6 +375,10 @@ class HardwareService extends ChangeNotifier {
     try {
       // Stop audio streaming
       await stopAudioStream();
+      
+      // Reset packet reassembler
+      _packetReassembler.reset();
+      debugPrint('HardwareService.disconnect: Packet reassembler reset');
       
       // Disconnect from device
       final bluetoothDevice = BluetoothDevice.fromId(_connectedDevice!.id);
@@ -500,13 +568,35 @@ class HardwareService extends ChangeNotifier {
   
   /// Process incoming audio data and convert to audio packet
   void _processAudioData(List<int> data) {
-    if (_connectedDevice == null || _audioStreamController == null || _audioStreamController!.isClosed) return;
+    if (_connectedDevice == null) return;
     
     try {
+      debugPrint('HardwareService._processAudioData: Processing ${data.length} bytes from OMI device');
+      
+      // Send raw packet data to OMI packet reassembler
+      // This will handle the fragmented packet reassembly
+      _packetReassembler.processPacket(data);
+      
+    } catch (e) {
+      debugPrint('Error processing audio data: $e');
+    }
+  }
+  
+  /// Handle complete Opus packets from the packet reassembler
+  void _onCompleteOpusPacket(List<int> completeOpusData) {
+    if (_connectedDevice == null || _audioStreamController == null || _audioStreamController!.isClosed) {
+      debugPrint('HardwareService._onCompleteOpusPacket: Cannot process - no device or stream closed');
+      return;
+    }
+    
+    try {
+      debugPrint('HardwareService._onCompleteOpusPacket: Processing complete Opus packet: ${completeOpusData.length} bytes');
+      
+      // Create audio packet with complete Opus data
       final audioPacket = HardwareAudioPacket(
         deviceId: _connectedDevice!.id,
-        audioData: data,
-        format: HardwareAudioFormat.opus, // Default to Opus as per firmware
+        audioData: completeOpusData,
+        format: HardwareAudioFormat.opus,
         timestamp: DateTime.now(),
         sequenceNumber: _audioSequenceNumber++,
         sampleRate: hardwareSampleRate,
@@ -514,10 +604,13 @@ class HardwareService extends ChangeNotifier {
         channels: hardwareChannels,
       );
       
+      // Add to audio stream
       _audioStreamController!.add(audioPacket);
       
+      debugPrint('HardwareService._onCompleteOpusPacket: Audio packet added to stream successfully');
+      
     } catch (e) {
-      debugPrint('Error processing audio data: $e');
+      debugPrint('Error processing complete Opus packet: $e');
     }
   }
   
@@ -807,7 +900,40 @@ class HardwareService extends ChangeNotifier {
       'hasAudioSubscription': _audioSubscription != null,
       'audioStreamControllerIsClosed': _audioStreamController?.isClosed ?? true,
       'audioSubscriptionIsPaused': _audioSubscription?.isPaused ?? true,
+      
+      // OMI service debug information
+      'packetReassemblerActivePackets': _packetReassembler.activePacketCount,
+      'opusDecoderInitialized': _opusDecoder.isInitialized,
+      'opusDecoderDecoding': _opusDecoder.isDecoding,
+      'opusDecoderTotalPackets': _opusDecoder.totalPacketsDecoded,
+      'opusDecoderSuccessRate': _opusDecoder.successRate,
     };
+  }
+
+  /// Refresh device info for connected device (firmware version, hardware version, etc.)
+  Future<void> refreshDeviceInfo() async {
+    if (_connectedDevice == null || _deviceInfoService == null) {
+      debugPrint('HardwareService.refreshDeviceInfo: No connected device or device info service');
+      return;
+    }
+    
+    try {
+      debugPrint('HardwareService.refreshDeviceInfo: Refreshing device info...');
+      final deviceInfo = await getDeviceInfo();
+      debugPrint('HardwareService.refreshDeviceInfo: Retrieved device info: $deviceInfo');
+      
+      // Update the connected device with new info
+      _connectedDevice = _connectedDevice!.copyWith(
+        firmwareVersion: deviceInfo['firmware'],
+        hardwareVersion: deviceInfo['hardware'],
+        manufacturer: deviceInfo['manufacturer'],
+      );
+      
+      notifyListeners();
+      debugPrint('HardwareService.refreshDeviceInfo: Device info refreshed successfully');
+    } catch (e) {
+      debugPrint('HardwareService.refreshDeviceInfo: Error refreshing device info: $e');
+    }
   }
 
   /// Test audio stream by sending a test packet

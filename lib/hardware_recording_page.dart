@@ -606,17 +606,37 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
 
   Future<void> _stopCapture(HardwareAudioCapture audioCapture) async {
     try {
+      debugPrint('HardwareRecordingPage: Stopping capture...');
       await audioCapture.stopCapture();
-      await _loadCapturedFiles(); // Refresh the file list
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Audio recording stopped'),
-            backgroundColor: Colors.orange,
-          ),
-        );
+      
+      // Wait a moment for the state to update
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      // Check if it's truly stopped
+      if (audioCapture.isTrulyStopped) {
+        debugPrint('HardwareRecordingPage: Capture successfully stopped');
+        await _loadCapturedFiles(); // Refresh the file list
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Audio recording stopped - WAV file saved'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        debugPrint('HardwareRecordingPage: Warning - Capture may not be fully stopped');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Audio recording stopped (checking status...)'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
       }
     } catch (e) {
+      debugPrint('HardwareRecordingPage: Error stopping recording: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

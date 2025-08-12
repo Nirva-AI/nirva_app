@@ -226,16 +226,37 @@ class _HardwareDevicePageState extends State<HardwareDevicePage> {
                     'Connected: ${_formatDateTime(device.connectedAt!)}',
                     style: const TextStyle(fontSize: 12),
                   ),
+                if (device.firmwareVersion != null)
+                  Text(
+                    'Firmware: ${device.firmwareVersion}',
+                    style: const TextStyle(fontSize: 12, color: Colors.blue),
+                  ),
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () => _disconnectDevice(hardwareService),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Disconnect'),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () => _refreshDeviceInfo(hardwareService),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () => _disconnectDevice(hardwareService),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Disconnect'),
+              ),
+            ],
           ),
         ],
       ),
@@ -307,6 +328,8 @@ class _HardwareDevicePageState extends State<HardwareDevicePage> {
           children: [
             Text('ID: ${device.id.substring(0, 8)}...'),
             Text('RSSI: ${device.rssi} dBm'),
+            if (device.firmwareVersion != null)
+              Text('Firmware: ${device.firmwareVersion}'),
             Text('Discovered: ${_formatDateTime(device.discoveredAt)}'),
           ],
         ),
@@ -402,6 +425,47 @@ class _HardwareDevicePageState extends State<HardwareDevicePage> {
     }
   }
 
+  void _refreshDeviceInfo(HardwareService hardwareService) async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+      
+      // Refresh device info
+      await hardwareService.refreshDeviceInfo();
+      
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Device info refreshed successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+    } catch (e) {
+      // Close loading dialog if it's still open
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to refresh device info: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   void _enableBluetooth() async {
     try {
       // This would typically open Bluetooth settings
@@ -452,6 +516,53 @@ class _DeviceDetailsSheet extends StatelessWidget {
 
   const _DeviceDetailsSheet({required this.device});
 
+  void _refreshDeviceInfo(BuildContext context) async {
+    try {
+      // Get the HardwareService from the context
+      final hardwareService = Provider.of<HardwareService>(context, listen: false);
+      
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+      
+      // Refresh device info
+      await hardwareService.refreshDeviceInfo();
+      
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Device info refreshed successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      // Close the details sheet to show updated info
+      Navigator.of(context).pop();
+      
+    } catch (e) {
+      // Close loading dialog if it's still open
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to refresh device info: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -497,13 +608,34 @@ class _DeviceDetailsSheet extends StatelessWidget {
             _buildDetailRow('Connected', _formatDateTime(device.connectedAt!)),
           if (device.batteryLevel != null)
             _buildDetailRow('Battery', '${device.batteryLevel}%'),
+          if (device.firmwareVersion != null)
+            _buildDetailRow('Firmware', device.firmwareVersion!),
+          if (device.hardwareVersion != null)
+            _buildDetailRow('Hardware', device.hardwareVersion!),
+          if (device.manufacturer != null)
+            _buildDetailRow('Manufacturer', device.manufacturer!),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _refreshDeviceInfo(context),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Refresh Device Info'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
           ),
         ],
       ),

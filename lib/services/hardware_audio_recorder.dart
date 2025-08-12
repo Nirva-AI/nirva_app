@@ -17,13 +17,13 @@ class HardwareAudioCapture extends ChangeNotifier {
   String? _currentCapturePath;
   StreamSubscription<HardwareAudioPacket>? _audioSubscription;
   
-  // Audio buffer for continuous capture
-  final List<int> _audioBuffer = [];
-  final int _maxBufferSize = 1024 * 1024; // 1MB buffer
+  // Audio buffer for continuous capture (now stores decoded PCM data)
+  final List<int> _decodedPcmBuffer = [];
+  final int _maxBufferSize = 1024 * 1024; // 1MB buffer for decoded PCM
   
   // Capture settings
   final String _audioDirectory = 'hardware_audio';
-  final String _audioFileExtension = '.opus';
+  final String _audioFileExtension = '.wav'; // Changed from .opus to .wav
   final int _maxFileSize = 10 * 1024 * 1024; // 10MB max file size
   
   // File management
@@ -34,14 +34,30 @@ class HardwareAudioCapture extends ChangeNotifier {
   Timer? _fileRotationTimer;
   static const Duration _fileRotationInterval = Duration(minutes: 1);
   
+  // Statistics
+  int _totalOpusPacketsReceived = 0;
+  int _totalOpusBytesReceived = 0;
+  int _totalPcmBytesDecoded = 0;
+  int _failedDecodes = 0;
+  
   // Getters
   bool get isCapturing => _isCapturing;
+  bool get isTrulyStopped => !_isCapturing && _audioSubscription == null;
   DateTime? get captureStartTime => _captureStartTime;
   String? get currentCapturePath => _currentCapturePath;
   Duration get captureDuration {
     if (_captureStartTime == null) return Duration.zero;
     return DateTime.now().difference(_captureStartTime!);
   }
+  
+  // Statistics getters
+  int get totalOpusPacketsReceived => _totalOpusPacketsReceived;
+  int get totalOpusBytesReceived => _totalOpusBytesReceived;
+  int get totalPcmBytesDecoded => _totalPcmBytesDecoded;
+  int get failedDecodes => _failedDecodes;
+  double get decodeSuccessRate => _totalOpusPacketsReceived > 0 
+      ? (_totalOpusPacketsReceived - _failedDecodes) / _totalOpusPacketsReceived 
+      : 0.0;
   
   HardwareAudioCapture(this._hardwareService) {
     // Listen to hardware service changes to ensure we're always up to date
@@ -87,9 +103,15 @@ class HardwareAudioCapture extends ChangeNotifier {
       // Initialize capture
       _isCapturing = true;
       _captureStartTime = DateTime.now();
-      _audioBuffer.clear();
+      _decodedPcmBuffer.clear();
       _currentFileSize = 0;
       _fileCounter++;
+      
+      // Reset statistics
+      _totalOpusPacketsReceived = 0;
+      _totalOpusBytesReceived = 0;
+      _totalPcmBytesDecoded = 0;
+      _failedDecodes = 0;
       
       // Generate initial capture filename with timestamp
       final timestamp = DateTime.now();
@@ -114,6 +136,8 @@ class HardwareAudioCapture extends ChangeNotifier {
       notifyListeners();
       
       debugPrint('HardwareAudioCapture.startCapture: Started automatic audio capture to: $capturePath');
+      debugPrint('  - Will save decoded WAV files instead of raw Opus data');
+      debugPrint('  - Using Opus decoder: ${_hardwareService.opusDecoder.isInitialized}');
       
     } catch (e) {
       debugPrint('HardwareAudioCapture.startCapture: Error during capture setup: $e');
@@ -127,62 +151,144 @@ class HardwareAudioCapture extends ChangeNotifier {
     if (!_isCapturing) return;
     
     try {
+      debugPrint('HardwareAudioCapture.stopCapture: Stopping capture...');
+      
       // Set capturing to false immediately to stop processing audio packets
       _isCapturing = false;
       
       // Stop the file rotation timer
       _stopFileRotationTimer();
       
-      // Stop the audio stream from hardware first
+      // Unsubscribe from audio stream FIRST (before stopping hardware stream)
+      if (_audioSubscription != null) {
+        debugPrint('HardwareAudioCapture.stopCapture: Cancelling audio subscription...');
+        await _audioSubscription!.cancel();
+        _audioSubscription = null;
+        debugPrint('HardwareAudioCapture.stopCapture: Audio subscription cancelled');
+      }
+      
+      // Stop the audio stream from hardware
+      debugPrint('HardwareAudioCapture.stopCapture: Stopping hardware audio stream...');
       await _hardwareService.stopAudioStream();
+      debugPrint('HardwareAudioCapture.stopCapture: Hardware audio stream stopped');
       
-      // Unsubscribe from audio stream
-      await _audioSubscription?.cancel();
-      _audioSubscription = null;
+      // Reset packet reassembler to clear any pending packets
+      debugPrint('HardwareAudioCapture.stopCapture: Resetting packet reassembler...');
+      _hardwareService.packetReassembler.reset();
+      debugPrint('HardwareAudioCapture.stopCapture: Packet reassembler reset');
       
-      // Save final audio buffer
+      // Save final audio buffer as WAV file
       String? savedPath;
-      if (_audioBuffer.isNotEmpty && _currentCapturePath != null) {
-        savedPath = await _saveAudioFile(_currentCapturePath!, _audioBuffer);
-        debugPrint('Final audio capture saved to: $savedPath');
+      if (_decodedPcmBuffer.isNotEmpty && _currentCapturePath != null) {
+        debugPrint('HardwareAudioCapture.stopCapture: Saving final WAV file...');
+        savedPath = await _saveWavFile(_currentCapturePath!, _decodedPcmBuffer);
+        debugPrint('HardwareAudioCapture.stopCapture: Final audio capture saved as WAV: $savedPath');
       }
       
       _resetCaptureState();
       notifyListeners();
       
+      debugPrint('HardwareAudioCapture.stopCapture: Capture stopped successfully');
+      
     } catch (e) {
-      debugPrint('Error stopping capture: $e');
+      debugPrint('HardwareAudioCapture.stopCapture: Error stopping capture: $e');
       _resetCaptureState();
       notifyListeners();
       rethrow;
     }
   }
   
-  /// Handle incoming audio packets from hardware (automatic streaming)
-  void _onAudioPacketReceived(HardwareAudioPacket packet) {
-    // Double-check that we're still capturing
-    if (!_isCapturing || _audioSubscription == null) return;
+  /// Force stop all audio processing (emergency stop)
+  Future<void> forceStop() async {
+    debugPrint('HardwareAudioCapture.forceStop: Force stopping all audio processing...');
     
     try {
-      // Add audio data to buffer
-      _audioBuffer.addAll(packet.audioData);
-      _currentFileSize += packet.audioData.length;
+      // Set capturing to false immediately
+      _isCapturing = false;
       
-      // Check if we need to create a new file (file size limit reached)
-      if (_currentFileSize >= _maxFileSize) {
-        _rotateCaptureFile();
+      // Cancel all timers
+      _stopFileRotationTimer();
+      
+      // Cancel audio subscription
+      if (_audioSubscription != null) {
+        await _audioSubscription!.cancel();
+        _audioSubscription = null;
+        debugPrint('HardwareAudioCapture.forceStop: Audio subscription cancelled');
       }
       
-      // Check buffer size limit
-      if (_audioBuffer.length > _maxBufferSize) {
-        debugPrint('Audio buffer size limit reached, trimming...');
-        _audioBuffer.removeRange(0, _audioBuffer.length - _maxBufferSize);
-      }
+      // Stop hardware audio stream
+      await _hardwareService.stopAudioStream();
+      debugPrint('HardwareAudioCapture.forceStop: Hardware audio stream stopped');
       
-      // Notify listeners of buffer update
+      // Reset packet reassembler
+      _hardwareService.packetReassembler.reset();
+      debugPrint('HardwareAudioCapture.forceStop: Packet reassembler reset');
+      
+      // Reset state completely
+      _resetCaptureState();
       notifyListeners();
       
+      debugPrint('HardwareAudioCapture.forceStop: Force stop complete');
+      
     } catch (e) {
+      debugPrint('HardwareAudioCapture.forceStop: Error during force stop: $e');
+      // Even if there's an error, reset the state
+      _resetCaptureState();
+      notifyListeners();
+    }
+  }
+  
+  /// Handle incoming audio packets from hardware (automatic streaming)
+  void _onAudioPacketReceived(HardwareAudioPacket packet) {
+    // Double-check that we're still capturing and have an active subscription
+    if (!_isCapturing || _audioSubscription == null) {
+      debugPrint('HardwareAudioCapture: Ignoring packet - not capturing or subscription inactive');
+      return;
+    }
+    
+    try {
+      // Update Opus statistics
+      _totalOpusPacketsReceived++;
+      _totalOpusBytesReceived += packet.audioData.length;
+      
+      debugPrint('HardwareAudioCapture: Received Opus packet $_totalOpusPacketsReceived: ${packet.audioData.length} bytes');
+      
+      // Check Opus decoder status
+      final decoderStatus = _hardwareService.opusDecoder.getDebugInfo();
+      debugPrint('HardwareAudioCapture: Opus decoder status: $decoderStatus');
+      
+      // Decode Opus data to PCM using our Opus decoder
+      final decodedPcm = _hardwareService.opusDecoder.decodeOpus(packet.audioData);
+      
+      if (decodedPcm != null && decodedPcm.isNotEmpty) {
+        // Add decoded PCM data to buffer
+        _decodedPcmBuffer.addAll(decodedPcm);
+        _currentFileSize += decodedPcm.length;
+        _totalPcmBytesDecoded += decodedPcm.length;
+        
+        debugPrint('HardwareAudioCapture: Decoded ${packet.audioData.length} bytes Opus to ${decodedPcm.length} bytes PCM');
+        
+        // Check if we need to create a new file (file size limit reached)
+        if (_currentFileSize >= _maxFileSize) {
+          _rotateCaptureFile();
+        }
+        
+        // Check buffer size limit
+        if (_decodedPcmBuffer.length > _maxBufferSize) {
+          debugPrint('PCM buffer size limit reached, trimming...');
+          _decodedPcmBuffer.removeRange(0, _decodedPcmBuffer.length - _maxBufferSize);
+        }
+        
+        // Notify listeners of buffer update
+        notifyListeners();
+        
+      } else {
+        _failedDecodes++;
+        debugPrint('HardwareAudioCapture: Failed to decode Opus packet $_totalOpusPacketsReceived');
+      }
+      
+    } catch (e) {
+      _failedDecodes++;
       debugPrint('Error processing audio packet: $e');
     }
   }
@@ -191,7 +297,7 @@ class HardwareAudioCapture extends ChangeNotifier {
   void _startFileRotationTimer() {
     _fileRotationTimer?.cancel();
     _fileRotationTimer = Timer.periodic(_fileRotationInterval, (timer) {
-      if (_isCapturing && _audioBuffer.isNotEmpty) {
+      if (_isCapturing && _decodedPcmBuffer.isNotEmpty) {
         debugPrint('File rotation timer triggered - rotating capture file');
         _rotateCaptureFile();
       }
@@ -209,14 +315,14 @@ class HardwareAudioCapture extends ChangeNotifier {
   /// Rotate to a new capture file when size limit is reached or timer triggers
   Future<void> _rotateCaptureFile() async {
     try {
-      // Save current buffer to current file
-      if (_audioBuffer.isNotEmpty && _currentCapturePath != null) {
-        await _saveAudioFile(_currentCapturePath!, _audioBuffer);
-        debugPrint('Audio capture file rotated: $_currentCapturePath');
+      // Save current PCM buffer as WAV file
+      if (_decodedPcmBuffer.isNotEmpty && _currentCapturePath != null) {
+        await _saveWavFile(_currentCapturePath!, _decodedPcmBuffer);
+        debugPrint('Audio capture WAV file rotated: $_currentCapturePath');
       }
       
       // Clear buffer and reset file size
-      _audioBuffer.clear();
+      _decodedPcmBuffer.clear();
       _currentFileSize = 0;
       _fileCounter++;
       
@@ -241,22 +347,41 @@ class HardwareAudioCapture extends ChangeNotifier {
     return 'hardware_audio_${dateStr}_${timeStr}_${_fileCounter.toString().padLeft(3, '0')}$_audioFileExtension';
   }
   
-  /// Save audio buffer to file
-  Future<String?> _saveAudioFile(String filePath, List<int> audioData) async {
+
+
+  /// Save PCM data as a WAV file
+  Future<String?> _saveWavFile(String filePath, List<int> pcmData) async {
     try {
-      final file = File(filePath);
-      await file.writeAsBytes(audioData);
+      debugPrint('HardwareAudioCapture: Converting ${pcmData.length} bytes PCM to WAV format...');
       
-      // Verify file was created
-      if (await file.exists()) {
-        final fileSize = await file.length();
-        debugPrint('Audio file saved: $filePath ($fileSize bytes)');
-        return filePath;
+      // Convert PCM data to WAV format using our Opus decoder service
+      final wavData = _hardwareService.opusDecoder.convertPcmToWav(
+        Uint8List.fromList(pcmData),
+        sampleRate: 16000,  // OMI firmware sample rate
+        channels: 1,        // OMI firmware mono audio
+        bitDepth: 16,       // OMI firmware 16-bit
+      );
+      
+      if (wavData.isNotEmpty) {
+        final file = File(filePath);
+        await file.writeAsBytes(wavData);
+        
+        // Verify file was created
+        if (await file.exists()) {
+          final fileSize = await file.length();
+          debugPrint('WAV file saved: $filePath ($fileSize bytes)');
+          debugPrint('  - Original PCM: ${pcmData.length} bytes');
+          debugPrint('  - WAV file: ${wavData.length} bytes');
+          debugPrint('  - Compression ratio: ${(pcmData.length / wavData.length).toStringAsFixed(2)}x');
+          return filePath;
+        }
       }
       
+      debugPrint('Failed to create WAV file: $filePath');
       return null;
+      
     } catch (e) {
-      debugPrint('Error saving audio file: $e');
+      debugPrint('Error saving WAV file: $e');
       return null;
     }
   }
@@ -286,17 +411,26 @@ class HardwareAudioCapture extends ChangeNotifier {
   
   /// Reset capture state
   void _resetCaptureState() {
+    debugPrint('HardwareAudioCapture._resetCaptureState: Resetting capture state...');
+    
     _isCapturing = false;
     _captureStartTime = null;
     _currentCapturePath = null;
-    _audioBuffer.clear();
+    _decodedPcmBuffer.clear();
     _currentFileSize = 0;
     _stopFileRotationTimer();
     
-    // Note: Audio stream is stopped in stopCapture() method
+    // Ensure audio subscription is also cleared
+    if (_audioSubscription != null) {
+      debugPrint('HardwareAudioCapture._resetCaptureState: Clearing audio subscription...');
+      _audioSubscription!.cancel();
+      _audioSubscription = null;
+    }
+    
+    debugPrint('HardwareAudioCapture._resetCaptureState: Capture state reset complete');
   }
   
-  /// Get list of captured audio files
+  /// Get list of captured audio files (now WAV files)
   Future<List<FileSystemEntity>> getCapturedFiles() async {
     try {
       final audioDir = await _getAudioDirectory();
@@ -322,7 +456,7 @@ class HardwareAudioCapture extends ChangeNotifier {
       final file = File(filePath);
       if (await file.exists()) {
         await file.delete();
-        debugPrint('Deleted captured file: $filePath');
+        debugPrint('Deleted captured WAV file: $filePath');
         return true;
       }
       return false;
@@ -338,11 +472,16 @@ class HardwareAudioCapture extends ChangeNotifier {
       'isCapturing': _isCapturing,
       'captureStartTime': _captureStartTime?.toIso8601String(),
       'captureDuration': captureDuration.inMilliseconds,
-      'bufferSize': _audioBuffer.length,
+      'pcmBufferSize': _decodedPcmBuffer.length,
       'currentFileSize': _currentFileSize,
       'fileCounter': _fileCounter,
       'currentCapturePath': _currentCapturePath,
       'fileRotationInterval': _fileRotationInterval.inSeconds,
+      'totalOpusPacketsReceived': _totalOpusPacketsReceived,
+      'totalOpusBytesReceived': _totalOpusBytesReceived,
+      'totalPcmBytesDecoded': _totalPcmBytesDecoded,
+      'failedDecodes': _failedDecodes,
+      'decodeSuccessRate': decodeSuccessRate,
     };
   }
   

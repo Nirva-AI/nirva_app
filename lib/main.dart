@@ -25,12 +25,18 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'amplifyconfiguration.dart';
 import 'package:nirva_app/hive_helper.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
 
   // 这里必须一起调用。
   await _initializeApp(); // 执行异步操作，例如加载配置文件
+
+  // Initialize HardwareService first
+  final hardwareService = HardwareService();
+  await hardwareService.initialize();
+  debugPrint('Main: HardwareService initialized successfully');
 
   runApp(
     MultiProvider(
@@ -50,7 +56,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => NotesProvider()),
         ChangeNotifierProvider(create: (_) => ChatHistoryProvider()),
         ChangeNotifierProvider(create: (_) => CallProvider()),
-        ChangeNotifierProvider(create: (_) => HardwareService()),
+        ChangeNotifierProvider.value(value: hardwareService),
         ChangeNotifierProxyProvider<HardwareService, HardwareAudioCapture>(
           create: (context) => HardwareAudioCapture(context.read<HardwareService>()),
           update: (_, hardwareService, previous) => 
