@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'services/hardware_service.dart';
 import 'services/hardware_audio_recorder.dart';
+import 'services/audio_streaming_service.dart';
 
 class HardwareAudioPage extends StatefulWidget {
   const HardwareAudioPage({super.key});
@@ -92,7 +93,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
         final audioCapture = context.read<HardwareAudioCapture>();
         if (audioCapture.isCapturing) {
           final captureDuration = audioCapture.captureDuration;
-          final nextRotation = Duration(minutes: 1) - Duration(seconds: captureDuration.inSeconds % 60);
+          final nextRotation = Duration(seconds: 10) - Duration(seconds: captureDuration.inSeconds % 10);
           setState(() {
             _nextRotationCountdown = nextRotation;
           });
@@ -157,6 +158,9 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
           
           // Capture statistics summary
           _buildCaptureStatistics(),
+          
+          // Audio streaming status
+          _buildStreamingStatus(),
           
           // Captured files list
           Expanded(
@@ -718,5 +722,145 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')} '
            '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  /// Build audio streaming status widget
+  Widget _buildStreamingStatus() {
+    return Consumer<AudioStreamingService>(
+      builder: (context, streamingService, child) {
+        final stats = streamingService.getStats();
+        final isUploading = stats['isUploading'] as bool;
+        final uploadedCount = stats['uploadedFilesCount'] as int;
+        final errorCount = stats['uploadErrorsCount'] as int;
+        final processedCount = stats['processedFilesCount'] as int;
+        final isFileWatcherActive = stats['isFileWatcherActive'] as bool;
+        
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.purple[50],
+            border: Border(
+              bottom: BorderSide(color: Colors.purple[200]!, width: 1),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    isFileWatcherActive ? Icons.cloud_upload : Icons.cloud_off,
+                    color: isFileWatcherActive ? Colors.purple[700] : Colors.grey,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Audio Streaming Status',
+                    style: TextStyle(
+                      color: Colors.purple[700],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (isUploading)
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStreamingStatItem(
+                      'Uploaded',
+                      uploadedCount.toString(),
+                      Icons.cloud_done,
+                      Colors.green,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildStreamingStatItem(
+                      'Processed',
+                      processedCount.toString(),
+                      Icons.check_circle,
+                      Colors.blue,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildStreamingStatItem(
+                      'Errors',
+                      errorCount.toString(),
+                      Icons.error,
+                      errorCount > 0 ? Colors.red : Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: isUploading ? null : () {
+                        streamingService.processAllExistingFiles();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Process All Files'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple[100],
+                        foregroundColor: Colors.purple[700],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        streamingService.clearHistory();
+                      },
+                      icon: const Icon(Icons.clear),
+                      label: const Text('Clear History'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.purple[700],
+                        side: BorderSide(color: Colors.purple[300]!),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStreamingStatItem(String label, String value, IconData icon, Color color) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 24),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
   }
 }

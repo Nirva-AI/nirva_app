@@ -9,6 +9,7 @@ import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/providers/call_provider.dart';
 import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/services/hardware_audio_recorder.dart';
+import 'package:nirva_app/services/audio_streaming_service.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -25,7 +26,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'amplifyconfiguration.dart';
 import 'package:nirva_app/hive_helper.dart';
-import 'package:flutter/foundation.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
@@ -61,6 +62,12 @@ void main() async {
           create: (context) => HardwareAudioCapture(context.read<HardwareService>()),
           update: (_, hardwareService, previous) => 
               previous ?? HardwareAudioCapture(hardwareService),
+        ),
+        ChangeNotifierProvider<AudioStreamingService>(
+          create: (context) => AudioStreamingService(
+            context.read<HardwareAudioCapture>(),
+            context.read<UserProvider>().id,
+          ),
         ),
       ],
       child: const MainApp(),

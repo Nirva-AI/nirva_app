@@ -20,6 +20,9 @@ class UserProvider extends ChangeNotifier {
 
   // 获取用户
   User get user => _user;
+  
+  // 获取用户ID
+  String get id => _user.id;
 
   // 清空用户信息（如果需要的话）
   void clearUser() {

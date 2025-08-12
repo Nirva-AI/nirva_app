@@ -113,7 +113,6 @@ class HardwareService extends ChangeNotifier {
     
     // Listen to complete packets from reassembler
     _packetReassembler.completePackets.listen((completeOpusData) {
-      debugPrint('HardwareService: Received complete packet: ${completeOpusData.length} bytes');
       _onCompleteOpusPacket(completeOpusData);
     });
     
@@ -485,7 +484,6 @@ class HardwareService extends ChangeNotifier {
       _audioSubscription = audioDataChar.lastValueStream.listen(
         (data) {
           if (data.isNotEmpty) {
-            debugPrint('HardwareService._initializeAudioStream: Received audio data: ${data.length} bytes');
             _processAudioData(data);
           }
         },
@@ -571,8 +569,6 @@ class HardwareService extends ChangeNotifier {
     if (_connectedDevice == null) return;
     
     try {
-      debugPrint('HardwareService._processAudioData: Processing ${data.length} bytes from OMI device');
-      
       // Send raw packet data to OMI packet reassembler
       // This will handle the fragmented packet reassembly
       _packetReassembler.processPacket(data);
@@ -590,8 +586,6 @@ class HardwareService extends ChangeNotifier {
     }
     
     try {
-      debugPrint('HardwareService._onCompleteOpusPacket: Processing complete Opus packet: ${completeOpusData.length} bytes');
-      
       // Create audio packet with complete Opus data
       final audioPacket = HardwareAudioPacket(
         deviceId: _connectedDevice!.id,
@@ -606,8 +600,6 @@ class HardwareService extends ChangeNotifier {
       
       // Add to audio stream
       _audioStreamController!.add(audioPacket);
-      
-      debugPrint('HardwareService._onCompleteOpusPacket: Audio packet added to stream successfully');
       
     } catch (e) {
       debugPrint('Error processing complete Opus packet: $e');
