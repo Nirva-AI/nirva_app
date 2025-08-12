@@ -7,6 +7,8 @@ import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/providers/call_provider.dart';
+import 'package:nirva_app/services/hardware_service.dart';
+import 'package:nirva_app/services/hardware_audio_recorder.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -16,6 +18,7 @@ import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_file_access_app.dart'; // 添加这一行
 //import 'package:nirva_app/test_sliding_chart_app.dart';
 //import 'package:nirva_app/test_aws_amplify_s3_transcribe_app.dart';
+//import 'package:nirva_app/test_hardware_integration.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -47,6 +50,12 @@ void main() async {
         ChangeNotifierProvider(create: (_) => NotesProvider()),
         ChangeNotifierProvider(create: (_) => ChatHistoryProvider()),
         ChangeNotifierProvider(create: (_) => CallProvider()),
+        ChangeNotifierProvider(create: (_) => HardwareService()),
+        ChangeNotifierProxyProvider<HardwareService, HardwareAudioCapture>(
+          create: (context) => HardwareAudioCapture(context.read<HardwareService>()),
+          update: (_, hardwareService, previous) => 
+              previous ?? HardwareAudioCapture(hardwareService),
+        ),
       ],
       child: const MainApp(),
     ),
@@ -64,6 +73,8 @@ void main() async {
   //runApp(const TestSlidingChartApp());
   //如果需要测试语音转文本，可以取消下面的注释
   //runApp(const TestAWSAmplifyS3TranscribeApp());
+  //如果需要测试硬件集成，可以取消下面的注释
+  //runApp(const TestHardwareIntegration());
 }
 
 Future<void> _initializeApp() async {

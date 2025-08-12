@@ -37,6 +37,12 @@
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Requires access to a local network to connect to your private server</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app needs Bluetooth access to connect to hardware devices for audio recording and wellness tracking</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app needs Bluetooth access to connect to hardware devices for audio recording and wellness tracking</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library so you can select photos to upload or share</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>
@@ -58,8 +64,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<!-- 在</dict>前添加以下内容 -->
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs access to your photo library so you can select photos to upload or share</string>
 </dict>
 </plist>

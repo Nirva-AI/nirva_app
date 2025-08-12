@@ -59,6 +59,9 @@ dependencies:
   amplify_api: ^2.4.0
   amplify_auth_cognito: ^2.4.0
   amplify_storage_s3: ^2.4.0
+  http: ^1.1.0
+  audioplayers: ^5.2.1
+  flutter_blue_plus: ^1.33.6
 
 dev_dependencies:
   flutter_test:
