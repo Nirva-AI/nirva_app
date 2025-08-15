@@ -10,6 +10,7 @@ import 'package:nirva_app/providers/call_provider.dart';
 import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/services/hardware_audio_recorder.dart';
 import 'package:nirva_app/services/audio_streaming_service.dart';
+import 'package:nirva_app/providers/local_audio_provider.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -26,10 +27,15 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'amplifyconfiguration.dart';
 import 'package:nirva_app/hive_helper.dart';
+import 'package:sherpa_onnx/sherpa_onnx.dart'; // Import sherpa_onnx for initBindings
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
+  
+  // Initialize sherpa_onnx native bindings before any VAD/ASR objects are created
+  initBindings();
+  debugPrint('Main: sherpa_onnx bindings initialized');
 
   // 这里必须一起调用。
   await _initializeApp(); // 执行异步操作，例如加载配置文件
@@ -58,10 +64,27 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ChatHistoryProvider()),
         ChangeNotifierProvider(create: (_) => CallProvider()),
         ChangeNotifierProvider.value(value: hardwareService),
+        ChangeNotifierProvider(create: (_) => LocalAudioProvider()),
         ChangeNotifierProxyProvider<HardwareService, HardwareAudioCapture>(
-          create: (context) => HardwareAudioCapture(context.read<HardwareService>()),
+          create: (context) {
+            final localAudioProvider = context.read<LocalAudioProvider>();
+            final audioCapture = HardwareAudioCapture(
+              context.read<HardwareService>(),
+              localAudioProvider.localAudioProcessor,
+            );
+            
+            // Set the local audio processor in the hardware service
+            context.read<HardwareService>().setLocalAudioProcessor(
+              localAudioProvider.localAudioProcessor,
+            );
+            
+            return audioCapture;
+          },
           update: (_, hardwareService, previous) => 
-              previous ?? HardwareAudioCapture(hardwareService),
+              previous ?? HardwareAudioCapture(
+                hardwareService,
+                null, // We'll set this later when needed
+              ),
         ),
         ChangeNotifierProvider<AudioStreamingService>(
           create: (context) => AudioStreamingService(

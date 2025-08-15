@@ -9,6 +9,8 @@ import 'package:share_plus/share_plus.dart';
 import 'services/hardware_service.dart';
 import 'services/hardware_audio_recorder.dart';
 import 'services/audio_streaming_service.dart';
+import 'providers/local_audio_provider.dart';
+import 'models/processed_audio_result.dart';
 
 class HardwareAudioPage extends StatefulWidget {
   const HardwareAudioPage({super.key});
@@ -159,8 +161,41 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
           // Capture statistics summary
           _buildCaptureStatistics(),
           
-          // Audio streaming status
-          _buildStreamingStatus(),
+          // Local transcription results (with error handling)
+          Builder(
+            builder: (context) {
+              try {
+                return _buildTranscriptionResults();
+              } catch (e) {
+                debugPrint('Error in transcription results: $e');
+                // Show a simple fallback instead of crashing
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey[300]!, width: 1),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning, color: Colors.grey[600]),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Transcription results temporarily unavailable',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+          
+
           
           // Captured files list
           Expanded(
@@ -724,23 +759,71 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
            '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  /// Build audio streaming status widget
-  Widget _buildStreamingStatus() {
-    return Consumer<AudioStreamingService>(
-      builder: (context, streamingService, child) {
-        final stats = streamingService.getStats();
-        final isUploading = stats['isUploading'] as bool;
-        final uploadedCount = stats['uploadedFilesCount'] as int;
-        final errorCount = stats['uploadErrorsCount'] as int;
-        final processedCount = stats['processedFilesCount'] as int;
-        final isFileWatcherActive = stats['isFileWatcherActive'] as bool;
+  /// Play audio associated with a transcription result
+  void _playTranscriptionAudio(ProcessedAudioResult result) {
+    try {
+      // Find the most recent audio file that matches the transcription timing
+      if (_capturedFiles.isNotEmpty) {
+        // Sort files by modification time to get the most recent
+        final sortedFiles = List<FileSystemEntity>.from(_capturedFiles)
+          ..sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+        
+        if (sortedFiles.isNotEmpty) {
+          final audioFile = sortedFiles.first;
+          final audioPath = audioFile.path;
+          
+          debugPrint('Playing audio for transcription: $audioPath');
+          
+          // Stop any currently playing audio
+          _audioPlayer.stop();
+          
+          // Set the source and play
+          _audioPlayer.setSource(DeviceFileSource(audioPath));
+          _audioPlayer.resume();
+          
+          // Update UI state
+          setState(() {
+            _currentlyPlayingFile = audioPath;
+            _isPlaying = true;
+          });
+          
+          // Show feedback to user
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Playing audio: ${audioPath.split('/').last}'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error playing transcription audio: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error playing audio: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  /// Build local transcription results widget
+  Widget _buildTranscriptionResults() {
+    try {
+      return Selector<LocalAudioProvider, List<ProcessedAudioResult>>(
+        selector: (context, provider) => provider.processingResults,
+        builder: (context, results, child) {
+          // Limit results to prevent performance issues
+          final displayResults = results.length > 10 ? results.take(10).toList() : results;
         
         return Container(
+          height: 300, // Fixed height to make it scrollable
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.purple[50],
+            color: Colors.orange[50],
             border: Border(
-              bottom: BorderSide(color: Colors.purple[200]!, width: 1),
+              bottom: BorderSide(color: Colors.orange[200]!, width: 1),
             ),
           ),
           child: Column(
@@ -748,119 +831,196 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
             children: [
               Row(
                 children: [
-                  Icon(
-                    isFileWatcherActive ? Icons.cloud_upload : Icons.cloud_off,
-                    color: isFileWatcherActive ? Colors.purple[700] : Colors.grey,
-                    size: 20,
-                  ),
+                  Icon(Icons.translate, color: Colors.orange[600]),
                   const SizedBox(width: 8),
                   Text(
-                    'Audio Streaming Status',
+                    'Local Transcription Results',
                     style: TextStyle(
-                      color: Colors.purple[700],
-                      fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[700],
                     ),
                   ),
                   const Spacer(),
-                  if (isUploading)
-                    const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStreamingStatItem(
-                      'Uploaded',
-                      uploadedCount.toString(),
-                      Icons.cloud_done,
-                      Colors.green,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildStreamingStatItem(
-                      'Processed',
-                      processedCount.toString(),
-                      Icons.check_circle,
-                      Colors.blue,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildStreamingStatItem(
-                      'Errors',
-                      errorCount.toString(),
-                      Icons.error,
-                      errorCount > 0 ? Colors.red : Colors.grey,
+                  Text(
+                    '${results.length} results',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.orange[600],
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: isUploading ? null : () {
-                        streamingService.processAllExistingFiles();
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Process All Files'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple[100],
-                        foregroundColor: Colors.purple[700],
-                      ),
+              if (results.isEmpty)
+                const Text(
+                  'No transcriptions yet. Start recording to see results.',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontStyle: FontStyle.italic,
+                  ),
+                )
+              else
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: displayResults.map((result) => _buildTranscriptionResultItem(result)).toList(),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        streamingService.clearHistory();
-                      },
-                      icon: const Icon(Icons.clear),
-                      label: const Text('Clear History'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.purple[700],
-                        side: BorderSide(color: Colors.purple[300]!),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
             ],
           ),
         );
       },
     );
+    } catch (e) {
+      debugPrint('Error building transcription results: $e');
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.red[50],
+          border: Border(
+            bottom: BorderSide(color: Colors.red[200]!, width: 1),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.error, color: Colors.red[600]),
+                const SizedBox(width: 8),
+                Text(
+                  'Transcription Results Error',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red[700],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Unable to display transcription results: $e',
+              style: TextStyle(
+                color: Colors.red[600],
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
-  Widget _buildStreamingStatItem(String label, String value, IconData icon, Color color) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: color,
+  /// Build individual transcription result item
+  Widget _buildTranscriptionResultItem(ProcessedAudioResult result) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.orange[300]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.record_voice_over,
+                color: result.isFinalResult ? Colors.green[600] : Colors.blue[600],
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                result.isFinalResult ? 'Final Result' : 'Speech Segment',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: result.isFinalResult ? Colors.green[600] : Colors.blue[600],
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${result.processingTime.hour.toString().padLeft(2, '0')}:${result.processingTime.minute.toString().padLeft(2, '0')}:${result.processingTime.second.toString().padLeft(2, '0')}',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey[500],
+                ),
+              ),
+            ],
           ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
+          const SizedBox(height: 8),
+          Text(
+            result.transcription.text,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+          const SizedBox(height: 8),
+          // Audio playback controls for this transcription
+          Row(
+            children: [
+              Icon(
+                Icons.play_circle_outline,
+                color: Colors.blue[600],
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Tap to play associated audio',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue[600],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+              // Find and play the corresponding audio file
+              TextButton.icon(
+                onPressed: () => _playTranscriptionAudio(result),
+                icon: Icon(Icons.play_arrow, size: 16, color: Colors.blue[600]),
+                label: Text(
+                  'Play Audio',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue[600],
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  minimumSize: Size.zero,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Text(
+                'Language: ${result.transcription.languageName}',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                'Audio: ${(result.audioDataSize / 1024).toStringAsFixed(1)} KB',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

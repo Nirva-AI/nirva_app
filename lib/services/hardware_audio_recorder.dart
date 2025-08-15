@@ -7,9 +7,11 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../models/hardware_device.dart';
 import 'hardware_service.dart';
+import 'local_audio_processor.dart';
 
 class HardwareAudioCapture extends ChangeNotifier {
   final HardwareService _hardwareService;
+  final LocalAudioProcessor? _localAudioProcessor;
   
   // Audio capture state
   bool _isCapturing = false;
@@ -59,7 +61,7 @@ class HardwareAudioCapture extends ChangeNotifier {
       ? (_totalOpusPacketsReceived - _failedDecodes) / _totalOpusPacketsReceived 
       : 0.0;
   
-  HardwareAudioCapture(this._hardwareService) {
+  HardwareAudioCapture(this._hardwareService, [this._localAudioProcessor]) {
     // Listen to hardware service changes to ensure we're always up to date
     _hardwareService.addListener(_onHardwareServiceChanged);
   }
@@ -125,6 +127,13 @@ class HardwareAudioCapture extends ChangeNotifier {
       // Start the audio stream from hardware
       await _hardwareService.startAudioStream();
       
+      // Enable local audio processing if available
+      if (_localAudioProcessor != null) {
+        await _localAudioProcessor!.initialize();
+        _localAudioProcessor!.enable();
+        debugPrint('HardwareAudioCapture: Local audio processing enabled');
+      }
+      
       // Subscribe to audio stream from hardware
       _audioSubscription = _hardwareService.audioStream.listen(
         _onAudioPacketReceived,
@@ -154,6 +163,12 @@ class HardwareAudioCapture extends ChangeNotifier {
       
       // Stop the file rotation timer
       _stopFileRotationTimer();
+      
+      // Disable local audio processing if available
+      if (_localAudioProcessor != null) {
+        _localAudioProcessor!.disable();
+        debugPrint('HardwareAudioCapture: Local audio processing disabled');
+      }
       
       // Unsubscribe from audio stream FIRST (before stopping hardware stream)
       if (_audioSubscription != null) {
@@ -239,6 +254,11 @@ class HardwareAudioCapture extends ChangeNotifier {
         _currentFileSize += decodedPcm.length;
         _totalPcmBytesDecoded += decodedPcm.length;
         
+        // Process audio with local VAD and ASR if available
+        if (_localAudioProcessor != null && _localAudioProcessor!.isEnabled) {
+          _localAudioProcessor!.processAudioData(decodedPcm);
+        }
+        
         // Check if we need to create a new file (file size limit reached)
         if (_currentFileSize >= _maxFileSize) {
           _rotateCaptureFile();
@@ -285,6 +305,15 @@ class HardwareAudioCapture extends ChangeNotifier {
   /// Rotate to a new capture file when size limit is reached or timer triggers
   Future<void> _rotateCaptureFile() async {
     try {
+      // Process final audio chunk with local VAD and ASR if available
+      if (_localAudioProcessor != null && _localAudioProcessor!.isEnabled) {
+        _localAudioProcessor!.processAudioData(
+          Uint8List.fromList(_decodedPcmBuffer),
+          isFinal: true,
+        );
+        debugPrint('HardwareAudioCapture: Final audio chunk processed with local VAD/ASR');
+      }
+      
       // Save current PCM buffer as WAV file
       if (_decodedPcmBuffer.isNotEmpty && _currentCapturePath != null) {
         await _saveWavFile(_currentCapturePath!, _decodedPcmBuffer);
@@ -440,6 +469,8 @@ class HardwareAudioCapture extends ChangeNotifier {
       'totalPcmBytesDecoded': _totalPcmBytesDecoded,
       'failedDecodes': _failedDecodes,
       'decodeSuccessRate': decodeSuccessRate,
+      'localAudioProcessingEnabled': _localAudioProcessor?.isEnabled ?? false,
+      'localAudioProcessingStats': _localAudioProcessor?.getStats(),
     };
   }
   

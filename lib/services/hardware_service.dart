@@ -10,6 +10,7 @@ import '../models/hardware_device.dart';
 import 'hardware_constants.dart';
 import 'omi_packet_reassembler.dart';
 import 'opus_decoder_service.dart';
+import 'local_audio_processor.dart';
 
 class HardwareService extends ChangeNotifier {
   // Device management
@@ -30,6 +31,9 @@ class HardwareService extends ChangeNotifier {
   late OmiPacketReassembler _packetReassembler;
   late OpusDecoderService _opusDecoder;
   
+  // Local audio processing services
+  LocalAudioProcessor? _localAudioProcessor;
+  
   // Services and characteristics
   BluetoothService? _audioService;
   BluetoothService? _batteryService;
@@ -45,6 +49,9 @@ class HardwareService extends ChangeNotifier {
   // OMI service getters
   OmiPacketReassembler get packetReassembler => _packetReassembler;
   OpusDecoderService get opusDecoder => _opusDecoder;
+  
+  // Local audio processing getters
+  LocalAudioProcessor? get localAudioProcessor => _localAudioProcessor;
   
   bool get isConnected {
     final hasDevice = _connectedDevice != null;
@@ -117,6 +124,12 @@ class HardwareService extends ChangeNotifier {
     });
     
     debugPrint('HardwareService: OMI services initialization complete');
+  }
+  
+  /// Set local audio processor for VAD and ASR
+  void setLocalAudioProcessor(LocalAudioProcessor processor) {
+    _localAudioProcessor = processor;
+    debugPrint('HardwareService: Local audio processor set');
   }
   
 
@@ -357,6 +370,12 @@ class HardwareService extends ChangeNotifier {
       
       debugPrint('HardwareService.connectToDevice: Device connected successfully');
       
+      // Automatically enable local audio processing when hardware connects
+      if (_localAudioProcessor != null) {
+        _localAudioProcessor!.enable();
+        debugPrint('HardwareService: Local audio processing enabled automatically');
+      }
+      
       // Note: Audio stream will be initialized manually when recording starts
       notifyListeners();
       
@@ -374,6 +393,12 @@ class HardwareService extends ChangeNotifier {
     try {
       // Stop audio streaming
       await stopAudioStream();
+      
+      // Disable local audio processing when hardware disconnects
+      if (_localAudioProcessor != null) {
+        _localAudioProcessor!.disable();
+        debugPrint('HardwareService: Local audio processing disabled automatically');
+      }
       
       // Reset packet reassembler
       _packetReassembler.reset();

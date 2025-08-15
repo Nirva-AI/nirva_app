@@ -1205,6 +1205,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  sherpa_onnx:
+    dependency: "direct main"
+    description:
+      name: sherpa_onnx
+      sha256: b3b6a23f963e748d110e598b38c6731925fca8b9e19fa034035ee531d50745be
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.8"
+  sherpa_onnx_android:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_android
+      sha256: b070f27629244f88bcb0921ab05c4a939b34207d8fd0181b557f7120aea495ab
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.8"
+  sherpa_onnx_ios:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_ios
+      sha256: "33132e081107d03557dabcc7dce89b12146f9f704300f4b21525e0d273150671"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.8"
+  sherpa_onnx_linux:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_linux
+      sha256: "611f4701042e1da5c4501a7b1bf4825837a0c3cb704ffdc937e68db8c0acc697"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.8"
+  sherpa_onnx_macos:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_macos
+      sha256: "270e84e5a97d65d4765887d5946d3b115b79887d7eac5f2b6ee70c31e4abd495"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.8"
+  sherpa_onnx_windows:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_windows
+      sha256: "48f6377218885c50e23147feb2700a456ddca657b3cfd94d5407060143cf3d90"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.8"
   simple_gesture_detector:
     dependency: transitive
     description:
