@@ -114,11 +114,6 @@ class OpusDecoderService extends ChangeNotifier {
       _isDecoding = true;
       notifyListeners();
       
-      debugPrint('OpusDecoderService: Decoding ${opusData.length} bytes of Opus data');
-      debugPrint('  - Sample rate: $_sampleRate Hz');
-      debugPrint('  - Channels: $_channels');
-      debugPrint('  - Frame size: $_frameSize');
-      
       // Decode Opus data to PCM using the correct API
       final pcmData = _decoder!.decode(input: Uint8List.fromList(opusData));
       
@@ -134,10 +129,6 @@ class OpusDecoderService extends ChangeNotifier {
         // Update statistics
         _totalPacketsDecoded++;
         _totalBytesDecoded += pcmBytes.length;
-        
-        debugPrint('OpusDecoderService: Successfully decoded ${opusData.length} bytes to ${pcmBytes.length} bytes PCM');
-        debugPrint('  - PCM samples: ${pcmData.length}');
-        debugPrint('  - PCM bytes: ${pcmBytes.length}');
         
         // Broadcast decoded audio
         _decodedAudioController.add(pcmBytes);

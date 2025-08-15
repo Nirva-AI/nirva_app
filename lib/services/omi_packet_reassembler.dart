@@ -57,8 +57,6 @@ class OmiPacketReassembler extends ChangeNotifier {
       
       _totalPacketsReceived++;
       
-      debugPrint('OmiPacketReassembler: Processing packet ID: $packetId, Index: $fragmentIndex, Data: ${audioData.length} bytes');
-      
       // Initialize packet buffer if needed
       _packetBuffers.putIfAbsent(packetId, () => {});
       
@@ -98,14 +96,11 @@ class OmiPacketReassembler extends ChangeNotifier {
     
     // Check if we have all fragments
     if (buffer.length == metadata.totalFragments) {
-      debugPrint('OmiPacketReassembler: Packet $packetId complete with ${metadata.totalFragments} fragments');
-      
       // Reassemble complete packet
       final completePacket = _reassemblePacket(packetId);
       if (completePacket != null) {
         _totalCompletePackets++;
         _completePacketController.add(completePacket);
-        debugPrint('OmiPacketReassembler: Emitted complete packet: ${completePacket.length} bytes');
         
         // Clean up completed packet
         _cleanupPacket(packetId);
@@ -137,7 +132,6 @@ class OmiPacketReassembler extends ChangeNotifier {
         completePacket.addAll(fragment);
       }
       
-      debugPrint('OmiPacketReassembler: Reassembled packet $packetId: ${completePacket.length} bytes from ${metadata.totalFragments} fragments');
       return completePacket;
       
     } catch (e) {
