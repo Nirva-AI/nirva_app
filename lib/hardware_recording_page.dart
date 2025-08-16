@@ -139,6 +139,41 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                       fontSize: 16,
                     ),
                   ),
+                  const SizedBox(width: 12),
+                  // ASR Mode tag
+                  Consumer<AppSettingsService>(
+                    builder: (context, settings, child) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: settings.localAsrEnabled ? Colors.blue[50] : Colors.green[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: settings.localAsrEnabled ? Colors.blue[200]! : Colors.green[200]!,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              settings.localAsrEnabled ? Icons.mic : Icons.cloud,
+                              color: settings.localAsrEnabled ? Colors.blue[600] : Colors.green[600],
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              settings.localAsrEnabled ? 'Local' : 'Cloud',
+                              style: TextStyle(
+                                color: settings.localAsrEnabled ? Colors.blue[700] : Colors.green[700],
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
               
@@ -171,44 +206,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                 const SizedBox(height: 20),
               ],
               
-              // ASR Mode Status (Read-only)
-              Consumer<AppSettingsService>(
-                builder: (context, settings, child) {
-                  return Container(
-                    margin: const EdgeInsets.only(top: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: settings.localAsrEnabled ? Colors.blue[50] : Colors.green[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: settings.localAsrEnabled ? Colors.blue[200]! : Colors.green[200]!,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          settings.localAsrEnabled ? Icons.mic : Icons.cloud,
-                          color: settings.localAsrEnabled ? Colors.blue[600] : Colors.green[600],
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          settings.localAsrEnabled 
-                              ? 'Local ASR Mode (System Setting)'
-                              : 'Cloud ASR Mode (System Setting)',
-                          style: TextStyle(
-                            color: settings.localAsrEnabled ? Colors.blue[700] : Colors.green[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              
-              const SizedBox(height: 20),
+
               
               // Capture controls
               Row(
@@ -661,18 +659,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                     ),
                   ),
                   
-                  // End time (if different from start)
-                  if (speechEndTime != null && speechEndTime != speechStartTime) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      'End: $endTimeStr',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[600],
-                        fontFamily: 'monospace',
-                      ),
-                    ),
-                  ],
+
                 ],
               ),
             ),
@@ -707,100 +694,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
-                Row(
-                  children: [
-                    Icon(Icons.cloud, color: Colors.blue[600], size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Cloud Transcription Results',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue[700],
-                      ),
-                    ),
-                    const Spacer(),
-                    // Results count
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: Text(
-                        '${results.length}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.blue[600],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Debug status section
-                Consumer<CloudAudioProvider>(
-                  builder: (context, provider, child) {
-                    final stats = provider.getStats();
-                    return Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[200]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Cloud Processing Status',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              _buildStatusItem('Initialized', stats['isInitialized'] ?? false),
-                              const SizedBox(width: 16),
-                              _buildStatusItem('Enabled', stats['isProcessingEnabled'] ?? false),
-                              const SizedBox(width: 16),
-                              _buildStatusItem('API Key', stats['cloudProcessorStats']?['deepgramStats']?['apiKeyConfigured'] ?? false),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          // Action buttons row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  provider.enableProcessing();
-                                  setState(() {});
-                                },
-                                icon: Icon(Icons.refresh, size: 16),
-                                label: Text('Refresh', style: TextStyle(fontSize: 12)),
-                                style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  minimumSize: Size(0, 32),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                
-                const SizedBox(height: 16),
+
                 
                 // Results list
                 if (results.isEmpty)
@@ -988,16 +882,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                     ),
                   ],
                   
-                  // End time
-                  const SizedBox(height: 8),
-                  Text(
-                    'End: $endTimeStr',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey[600],
-                      fontFamily: 'monospace',
-                    ),
-                  ),
+
                 ],
               ),
             ),
