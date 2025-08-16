@@ -109,19 +109,21 @@ class CloudAsrStorageService extends ChangeNotifier {
       _currentUserId = userId ?? 'default_user';
       _currentDeviceInfo = deviceInfo ?? 'unknown_device';
       
-      debugPrint('CloudAsrStorageService: Set current user ID: $_currentUserId, Device: $_currentDeviceInfo');
+      // Update file paths for existing results (in case app container ID changed)
+      await _updateFilePathsForAppRestart();
       
-      // Create or resume current session
+      // Initialize current session
       await _initializeCurrentSession();
       
       _isInitialized = true;
       debugPrint('CloudAsrStorageService: Storage service initialized successfully');
-      debugPrint('CloudAsrStorageService: Current session ID: $_currentSessionId');
+      notifyListeners();
+      
       return true;
       
     } catch (e) {
       debugPrint('CloudAsrStorageService: Failed to initialize: $e');
-      debugPrint('CloudAsrStorageService: Stack trace: ${StackTrace.current}');
+      _isInitialized = false;
       return false;
     }
   }
@@ -246,6 +248,90 @@ class CloudAsrStorageService extends ChangeNotifier {
     } catch (e) {
       debugPrint('CloudAsrStorageService: Failed to move audio file: $e');
       return null;
+    }
+  }
+  
+  /// Update file paths for existing results when app container ID changes
+  Future<void> _updateFilePathsForAppRestart() async {
+    try {
+      debugPrint('CloudAsrStorageService: Checking for file path updates due to app restart...');
+      
+      // Get current app documents directory
+      final currentAppDir = await getApplicationDocumentsDirectory();
+      final currentCloudAsrDir = Directory('${currentAppDir.path}/cloud_asr_audio');
+      
+      // Ensure the directory exists
+      if (!await currentCloudAsrDir.exists()) {
+        await currentCloudAsrDir.create(recursive: true);
+        debugPrint('CloudAsrStorageService: Created cloud_asr_audio directory: ${currentCloudAsrDir.path}');
+      }
+      
+      int updatedCount = 0;
+      int copiedCount = 0;
+      int missingCount = 0;
+      
+      // Check all existing results
+      for (final result in _resultsBox.values) {
+        if (result.audioFilePath != null) {
+          final oldFile = File(result.audioFilePath!);
+          
+          // Check if the old file path is still valid
+          if (await oldFile.exists()) {
+            debugPrint('CloudAsrStorageService: File still exists at old path: ${result.audioFilePath}');
+            continue; // File is still accessible
+          }
+          
+          // File doesn't exist at old path, try to find it in current app directory
+          final fileName = result.audioFilePath!.split('/').last;
+          final newPath = '${currentCloudAsrDir.path}/$fileName';
+          final newFile = File(newPath);
+          
+          if (await newFile.exists()) {
+            // File exists at new path, just update the stored path
+            result.audioFilePath = newPath;
+            await result.save();
+            updatedCount++;
+            debugPrint('CloudAsrStorageService: Updated file path from ${result.audioFilePath} to $newPath');
+          } else {
+            // Try to find the file in the old app container directory
+            final oldAppContainerPath = result.audioFilePath!;
+            final oldAppContainerDir = oldAppContainerPath.substring(0, oldAppContainerPath.indexOf('/Documents/'));
+            final oldCloudAsrDir = Directory('$oldAppContainerDir/Documents/cloud_asr_audio');
+            
+            if (await oldCloudAsrDir.exists()) {
+              final oldFileInOldContainer = File('${oldCloudAsrDir.path}/$fileName');
+              if (await oldFileInOldContainer.exists()) {
+                try {
+                  // Copy the file to the new location
+                  await oldFileInOldContainer.copy(newPath);
+                  result.audioFilePath = newPath;
+                  await result.save();
+                  copiedCount++;
+                  debugPrint('CloudAsrStorageService: Copied file from ${oldFileInOldContainer.path} to $newPath');
+                } catch (e) {
+                  debugPrint('CloudAsrStorageService: Failed to copy file: $e');
+                  missingCount++;
+                }
+              } else {
+                missingCount++;
+                debugPrint('CloudAsrStorageService: File not found in old container: ${oldFileInOldContainer.path}');
+              }
+            } else {
+              missingCount++;
+              debugPrint('CloudAsrStorageService: Old container directory not found: ${oldCloudAsrDir.path}');
+            }
+          }
+        }
+      }
+      
+      debugPrint('CloudAsrStorageService: File path update complete - Updated: $updatedCount, Copied: $copiedCount, Missing: $missingCount');
+      
+      if (missingCount > 0) {
+        debugPrint('CloudAsrStorageService: Warning: $missingCount audio files could not be located or copied');
+      }
+      
+    } catch (e) {
+      debugPrint('CloudAsrStorageService: Error updating file paths: $e');
     }
   }
   

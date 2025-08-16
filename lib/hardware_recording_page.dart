@@ -1082,14 +1082,21 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                           stream: context.read<CloudAudioProvider?>()?.audioPlayerStateStream,
                           builder: (context, snapshot) {
                             final isPlaying = snapshot.data == PlayerState.playing;
+                            final provider = context.read<CloudAudioProvider?>();
+                            final canPlayAudio = provider?.isAudioPlaybackAvailable ?? false;
+                            
+                            debugPrint('HardwareRecordingPage: Audio playback status (current session) - canPlayAudio: $canPlayAudio, isPlaying: $isPlaying');
+                            
                             return ElevatedButton.icon(
-                              onPressed: () {
+                              onPressed: canPlayAudio ? () {
                                 if (isPlaying) {
-                                  context.read<CloudAudioProvider?>()?.stopAudioPlayback();
+                                  debugPrint('HardwareRecordingPage: Stopping audio playback (current session)');
+                                  provider?.stopAudioPlayback();
                                 } else {
-                                  context.read<CloudAudioProvider?>()?.playAudioFile(result.audioFilePath!);
+                                  debugPrint('HardwareRecordingPage: Starting audio playback for (current session): ${result.audioFilePath}');
+                                  provider?.playAudioFile(result.audioFilePath!);
                                 }
-                              },
+                              } : null, // Disable button if audio playback not available
                               icon: Icon(
                                 isPlaying ? Icons.stop : Icons.play_arrow,
                                 size: 16,

@@ -56,6 +56,14 @@ class CloudAudioProvider extends ChangeNotifier {
       await _cloudProcessor.initializeStorageService();
       debugPrint('CloudAudioProvider: Storage service initialized successfully');
       
+      // Initialize audio player for playback functionality
+      try {
+        await _cloudProcessor.initializeAudioPlayer();
+        debugPrint('CloudAudioProvider: Audio player initialized successfully');
+      } catch (e) {
+        debugPrint('CloudAudioProvider: Error initializing audio player: $e');
+      }
+      
       // Check what data is available
       try {
         final persistentResults = _cloudProcessor.getPersistentResults();
@@ -84,6 +92,7 @@ class CloudAudioProvider extends ChangeNotifier {
   // Getters
   bool get isInitialized => _isInitialized;
   bool get isProcessingEnabled => _isProcessingEnabled;
+  bool get isAudioPlaybackAvailable => _cloudProcessor.isAudioPlayerInitialized;
   CloudAudioProcessor get cloudProcessor => _cloudProcessor;
   SherpaVadService get vadService => _vadService;
   DeepgramService get deepgramService => _deepgramService;
@@ -218,21 +227,32 @@ class CloudAudioProvider extends ChangeNotifier {
   
   /// Play audio file for transcription result
   Future<void> playAudioFile(String filePath) async {
-    if (!_isInitialized) {
-      debugPrint('CloudAudioProvider: Cannot play audio - not initialized');
+    if (!_cloudProcessor.isAudioPlayerInitialized) {
+      debugPrint('CloudAudioProvider: Cannot play audio - audio player not initialized');
       return;
     }
     
-    await _cloudProcessor.playAudioFile(filePath);
+    try {
+      await _cloudProcessor.playAudioFile(filePath);
+      debugPrint('CloudAudioProvider: Started playing audio file: $filePath');
+    } catch (e) {
+      debugPrint('CloudAudioProvider: Error playing audio file: $e');
+    }
   }
   
   /// Stop audio playback
   Future<void> stopAudioPlayback() async {
-    if (!_isInitialized) {
+    if (!_cloudProcessor.isAudioPlayerInitialized) {
+      debugPrint('CloudAudioProvider: Cannot stop audio - audio player not initialized');
       return;
     }
     
-    await _cloudProcessor.stopAudioPlayback();
+    try {
+      await _cloudProcessor.stopAudioPlayback();
+      debugPrint('CloudAudioProvider: Stopped audio playback');
+    } catch (e) {
+      debugPrint('CloudAudioProvider: Error stopping audio playback: $e');
+    }
   }
   
   /// Clear all processing results

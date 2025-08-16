@@ -65,6 +65,7 @@ class CloudAudioProcessor extends ChangeNotifier {
   bool get isEnabled => _isEnabled;
   bool get isSpeechActive => _isSpeechActive;
   bool get isStorageServiceInitialized => _storageService.isInitialized;
+  bool get isAudioPlayerInitialized => _audioPlayer != null;
   List<CloudAudioResult> get transcriptionResults => List.unmodifiable(_transcriptionResults);
   Stream<CloudAudioResult> get resultStream => _resultController.stream;
   Stream<bool> get speechStateStream => _speechStateStream.stream;
@@ -182,6 +183,24 @@ class CloudAudioProcessor extends ChangeNotifier {
       
     } catch (e) {
       debugPrint('CloudAudioProcessor: Error initializing storage service: $e');
+      return false;
+    }
+  }
+
+  /// Initialize just the audio player for playback functionality
+  Future<bool> initializeAudioPlayer() async {
+    try {
+      debugPrint('CloudAudioProcessor: Initializing audio player only...');
+      
+      // Initialize the audio player
+      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+      await _audioPlayer.setVolume(1.0);
+      
+      debugPrint('CloudAudioProcessor: Audio player initialized successfully');
+      return true;
+      
+    } catch (e) {
+      debugPrint('CloudAudioProcessor: Error initializing audio player: $e');
       return false;
     }
   }
@@ -701,15 +720,42 @@ class CloudAudioProcessor extends ChangeNotifier {
     try {
       debugPrint('CloudAudioProcessor: Playing audio file: $filePath');
       
+      // Check if file exists
+      final file = File(filePath);
+      if (!await file.exists()) {
+        debugPrint('CloudAudioProcessor: ERROR - Audio file does not exist: $filePath');
+        return;
+      }
+      
+      // Check file size
+      final fileSize = await file.length();
+      debugPrint('CloudAudioProcessor: Audio file size: $fileSize bytes');
+      
+      if (fileSize == 0) {
+        debugPrint('CloudAudioProcessor: ERROR - Audio file is empty: $filePath');
+        return;
+      }
+      
       // Stop any currently playing audio
       await _audioPlayer.stop();
       
       // Play the new audio file
       await _audioPlayer.play(DeviceFileSource(filePath));
       
-      debugPrint('CloudAudioProcessor: Audio playback started');
+      debugPrint('CloudAudioProcessor: Audio playback started successfully');
     } catch (e) {
       debugPrint('CloudAudioProcessor: Error playing audio file: $e');
+      debugPrint('CloudAudioProcessor: File path: $filePath');
+      
+      // Try to get more details about the error
+      try {
+        final file = File(filePath);
+        final exists = await file.exists();
+        final size = exists ? await file.length() : 0;
+        debugPrint('CloudAudioProcessor: File exists: $exists, size: $size bytes');
+      } catch (fileCheckError) {
+        debugPrint('CloudAudioProcessor: Error checking file: $fileCheckError');
+      }
     }
   }
   
