@@ -62,7 +62,32 @@ A personal management application built with Flutter, supporting task management
    flutter pub run build_runner build --delete-conflicting-outputs
    ```
 
-4. Run the app:
+4. **Download Required ONNX Models** (Required for local speech recognition):
+
+   The app requires ONNX models for local speech recognition and voice activity detection. These models are not included in the repository due to their large size.
+
+   Create the following directory structure and download the required models:
+
+   ```bash
+   mkdir -p assets/onnx/whisper_small
+   mkdir -p assets/onnx/vad
+   ```
+
+   **Whisper Small Model Files** (place in `assets/onnx/whisper_small/`):
+   - `small-encoder.onnx` (~107MB) - Whisper encoder model
+   - `small-decoder.onnx` (~250MB) - Whisper decoder model  
+   - `small-tokens.txt` (~798KB) - Whisper token vocabulary
+
+   **VAD Model File** (place in `assets/onnx/vad/`):
+   - `silero_vad_v5.onnx` - Voice Activity Detection model
+
+   **Download Sources:**
+   - Whisper models: Convert from Hugging Face using `optimum-cli` or download pre-converted ONNX models
+   - VAD model: Download from [Silero VAD releases](https://github.com/snakers4/silero-vad/releases)
+
+   **Note:** These model files are excluded from git tracking via `.gitignore` to prevent repository bloat.
+
+5. Run the app:
 
    ```bash
    flutter run
@@ -141,6 +166,32 @@ Nirva App uses Hive as the local database, mainly storing the following types of
 - Task list (`HiveTasks`)
 - Note list (`HiveNotes`)
 - Update data tasks (`UpdateDataTask`)
+
+### ONNX Models for Local Speech Recognition
+
+The app includes local speech recognition capabilities using ONNX models:
+
+**Model Architecture:**
+- **Whisper Small**: OpenAI's Whisper model converted to ONNX format for local inference
+- **Silero VAD**: Voice Activity Detection for real-time audio processing
+
+**Model Files Location:**
+```
+assets/onnx/
+├── whisper_small/
+│   ├── small-encoder.onnx    # Whisper encoder (107MB)
+│   ├── small-decoder.onnx    # Whisper decoder (250MB)
+│   └── small-tokens.txt      # Token vocabulary (798KB)
+└── vad/
+    └── silero_vad_v5.onnx    # Voice activity detection
+```
+
+**Integration:**
+- Models are loaded by `SherpaASRService` for speech recognition
+- `SherpaVADService` handles voice activity detection
+- Models support multiple languages and real-time audio processing
+
+**Note:** These models are excluded from version control. Developers must download them separately as described in the Installation Guide.
 
 ## Debugging & Testing
 

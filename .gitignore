@@ -50,6 +50,9 @@ app.*.map.json
 # 添加assets下的 *json 一律忽略
 assets/**/*.json
 
+# ML model files - exclude large ONNX models
+assets/onnx/**/*.onnx
+
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*
