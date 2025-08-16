@@ -84,13 +84,13 @@ class SherpaVadService extends ChangeNotifier {
       
       debugPrint('SherpaVadService: Using model file at: $modelPath');
       
-      // Create VAD configuration with optimized parameters
+      // Create VAD configuration with optimized parameters for better segment management
       final config = VadModelConfig(
         sileroVad: SileroVadModelConfig(
           model: modelPath,
-          threshold: 0.5, // Less sensitive threshold to avoid false positives (was 0.1)
-          minSilenceDuration: 3.0, // 3 second wait time before closing segment (was 0.5)
-          minSpeechDuration: 0.3, // Longer speech duration for better detection (was 0.2)
+          threshold: 0.6, // Higher threshold to reduce false positives and short segments
+          minSilenceDuration: 4.0, // 4 second wait time before closing segment (increased from 3.0)
+          minSpeechDuration: 0.5, // Longer speech duration to prevent very short segments (increased from 0.3)
           windowSize: 512, // Use standard window size
           maxSpeechDuration: 30.0, // Allow longer speech segments
         ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ import 'providers/cloud_audio_provider.dart';
 import 'models/processed_audio_result.dart';
 import 'services/cloud_audio_processor.dart';
 import 'services/app_settings_service.dart';
+import 'my_hive_objects.dart';
 
 class HardwareAudioPage extends StatefulWidget {
   const HardwareAudioPage({super.key});
@@ -46,13 +48,9 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
   
   @override
   void dispose() {
-    // Clean up temporary files when leaving the page
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cloudProvider = context.read<CloudAudioProvider?>();
-      if (cloudProvider != null) {
-        cloudProvider.cloudProcessor.cleanupTemporaryFiles();
-      }
-    });
+    // Note: Temporary file cleanup is now disabled to preserve audio files
+    // Files are stored persistently for playback across app sessions
+    debugPrint('HardwareRecordingPage: Audio files preserved for persistent storage');
     
     super.dispose();
   }
@@ -686,68 +684,247 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
           );
         }
         
-        return Selector<CloudAudioProvider, List<CloudAudioResult>>(
-          selector: (context, provider) => provider.cloudProcessor.transcriptionResults,
-          builder: (context, results, child) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                
-                // Results list
-                if (results.isEmpty)
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.cloud_off,
-                            size: 64,
-                            color: Colors.grey[400],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No cloud transcriptions yet',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Start recording to see cloud-based transcriptions',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[500],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+        return DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              // Tab bar
+              Container(
+                color: Colors.grey[100],
+                child: TabBar(
+                  labelColor: Colors.blue[700],
+                  unselectedLabelColor: Colors.grey[600],
+                  indicatorColor: Colors.blue[700],
+                  tabs: const [
+                    Tab(
+                      icon: Icon(Icons.cloud_queue),
+                      text: 'Current Session',
                     ),
-                  )
-                else
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: results.length,
-                      itemBuilder: (context, index) {
-                        final result = results[results.length - 1 - index]; // Show newest first
-                        return _buildCloudTranscriptionResultItem(result);
-                      },
+                    Tab(
+                      icon: Icon(Icons.history),
+                      text: 'All Results',
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Tab content
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    // Current session results
+                    _buildCurrentSessionResults(cloudProvider),
+                    // Persistent results
+                    _buildPersistentResults(cloudProvider),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  
+  /// Build current session results tab
+  Widget _buildCurrentSessionResults(CloudAudioProvider cloudProvider) {
+    return Selector<CloudAudioProvider, List<CloudAudioResult>>(
+      selector: (context, provider) => provider.cloudProcessor.transcriptionResults,
+      builder: (context, results, child) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Icon(Icons.cloud_queue, color: Colors.blue[600], size: 24),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Current Session',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[700],
                     ),
                   ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+                  const Spacer(),
+                  Text(
+                    '${results.length} results',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Results list
+              if (results.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.cloud_off,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No current transcriptions',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Start recording to see real-time transcriptions',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: results.length,
+                    itemBuilder: (context, index) {
+                      final result = results[results.length - 1 - index]; // Show newest first
+                      
+                      return _buildCloudTranscriptionResultItem(result);
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  
+  /// Build persistent results tab
+  Widget _buildPersistentResults(CloudAudioProvider cloudProvider) {
+    return Selector<CloudAudioProvider, List<CloudAsrResultStorage>>(
+      selector: (context, provider) {
+        final results = provider.persistentResults;
+        debugPrint('HardwareRecordingPage: Selector called - provider.isInitialized: ${provider.isInitialized}');
+        debugPrint('HardwareRecordingPage: Selector called - results length: ${results.length}');
+        if (results.isNotEmpty) {
+          debugPrint('HardwareRecordingPage: Selector called - first result transcription: "${results.first.transcription}"');
+        }
+        return results;
+      },
+      builder: (context, results, child) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with storage stats
+              Row(
+                children: [
+                  Icon(Icons.history, color: Colors.green[600], size: 24),
+                  const SizedBox(width: 12),
+                  Text(
+                    'All Results',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
+                    ),
+                  ),
+                  const Spacer(),
+                  Consumer<CloudAudioProvider>(
+                    builder: (context, provider, child) {
+                      final stats = provider.storageStats;
+                      final totalMB = stats['totalAudioSizeMB'] ?? '0';
+                      return Text(
+                        '${results.length} results • ${totalMB} MB',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Results list
+              if (results.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.history,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No stored transcriptions',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Transcriptions will appear here after processing',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: results.length,
+                    itemBuilder: (context, index) {
+                      final result = results[index];
+                      
+                      // Debug: Log what's being displayed
+                      debugPrint('HardwareRecordingPage: Displaying result ${result.id} - transcription length: ${result.transcription?.length ?? 0}');
+                      debugPrint('HardwareRecordingPage: Displaying transcription: "${result.transcription}"');
+                      
+                      // Debug: Check if transcription is truncated
+                      if (result.transcription != null && result.transcription!.length > 100) {
+                        debugPrint('HardwareRecordingPage: Long transcription detected - first 100 chars: "${result.transcription!.substring(0, 100)}..."');
+                        debugPrint('HardwareRecordingPage: Long transcription detected - last 100 chars: "...${result.transcription!.substring(result.transcription!.length - 100)}"');
+                      }
+                      
+                      return _buildPersistentTranscriptionResultItem(result);
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
   
   /// Build individual cloud transcription result item
   Widget _buildCloudTranscriptionResultItem(CloudAudioResult result) {
@@ -834,14 +1011,66 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Transcription text
-                  Text(
-                    result.transcription ?? 'Processing...',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      height: 1.4,
+                  Container(
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          result.transcription ?? 'Processing...',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
+                        ),
+                        // Debug: Show full transcription in expandable section
+                        if (result.transcription != null && result.transcription!.length > 100) ...[
+                          const SizedBox(height: 8),
+                          ExpansionTile(
+                            title: Text(
+                              'Show Full Transcription (${result.transcription!.length} chars)',
+                              style: TextStyle(fontSize: 12, color: Colors.blue[600]),
+                            ),
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: Colors.grey[300]!),
+                                ),
+                                child: SelectableText(
+                                  result.transcription!,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'monospace',
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
                     ),
                   ),
+                  
+                  // Debug: Show transcription length
+                  if (result.transcription != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Length: ${result.transcription!.length} characters',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[500],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
                   
                   // Audio playback button (only show if we have a file path)
                   if (result.audioFilePath != null) ...[
@@ -883,6 +1112,280 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                   ],
                   
 
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  /// Build individual persistent transcription result item
+  Widget _buildPersistentTranscriptionResultItem(CloudAsrResultStorage result) {
+    // Format timestamps for display
+    final startTime = DateTime.parse(result.startTimeIso);
+    final endTime = DateTime.parse(result.endTimeIso);
+    final processingTime = DateTime.parse(result.processingTimeIso);
+    
+    final startTimeStr = '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}:${startTime.second.toString().padLeft(2, '0')}';
+    final dateStr = '${startTime.month}/${startTime.day}/${startTime.year}';
+    final durationStr = '${result.durationMs ~/ 1000}s';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Date and time info
+          Container(
+            width: 90,
+            padding: const EdgeInsets.only(top: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dateStr,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                Text(
+                  startTimeStr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[700],
+                    fontFamily: 'monospace',
+                  ),
+                ),
+                Text(
+                  durationStr,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey[500],
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Status indicator
+          Container(
+            width: 20,
+            child: Column(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: result.isFinal ? Colors.green : Colors.orange,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Container(
+                  width: 2,
+                  height: 20,
+                  color: Colors.grey[300],
+                ),
+              ],
+            ),
+          ),
+          
+          // Transcription content
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+                border: Border.all(
+                  color: result.isFinal ? Colors.green[200]! : Colors.orange[200]!,
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Transcription text
+                  Container(
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          result.transcription ?? 'No transcription available',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
+                        ),
+                        // Debug: Show full transcription in expandable section
+                        if (result.transcription != null && result.transcription!.length > 100) ...[
+                          const SizedBox(height: 8),
+                          ExpansionTile(
+                            title: Text(
+                              'Show Full Transcription (${result.transcription!.length} chars)',
+                              style: TextStyle(fontSize: 12, color: Colors.blue[600]),
+                            ),
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: Colors.grey[300]!),
+                                ),
+                                child: SelectableText(
+                                  result.transcription!,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'monospace',
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  
+                  // Debug: Show transcription length
+                  if (result.transcription != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Length: ${result.transcription!.length} characters',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[500],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                  
+                  // Metadata row
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      // Language indicator
+                      if (result.language != null) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: result.language == 'zh' ? Colors.orange[50] : Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: result.language == 'zh' ? Colors.orange[200]! : Colors.blue[200]!,
+                            ),
+                          ),
+                          child: Text(
+                            result.language == 'zh' ? '中文' : 'English',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: result.language == 'zh' ? Colors.orange[600] : Colors.blue[600],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      
+                      // Confidence indicator
+                      if (result.confidence != null) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey[200]!),
+                          ),
+                          child: Text(
+                            '${(result.confidence! * 100).toStringAsFixed(0)}%',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      
+                      // Audio file size
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[200]!),
+                        ),
+                        child: Text(
+                          '${(result.audioDataSize / 1024).toStringAsFixed(1)} KB',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  // Audio playback button (only show if we have a file path)
+                  if (result.audioFilePath != null) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        StreamBuilder<PlayerState>(
+                          stream: context.read<CloudAudioProvider?>()?.audioPlayerStateStream,
+                          builder: (context, snapshot) {
+                            final isPlaying = snapshot.data == PlayerState.playing;
+                            return ElevatedButton.icon(
+                              onPressed: () {
+                                if (isPlaying) {
+                                  context.read<CloudAudioProvider?>()?.stopAudioPlayback();
+                                } else {
+                                  context.read<CloudAudioProvider?>()?.playAudioFile(result.audioFilePath!);
+                                }
+                              },
+                              icon: Icon(
+                                isPlaying ? Icons.stop : Icons.play_arrow,
+                                size: 16,
+                              ),
+                              label: Text(
+                                isPlaying ? 'Stop' : 'Play Audio',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                minimumSize: Size(0, 28),
+                                backgroundColor: isPlaying ? Colors.red[100] : Colors.blue[100],
+                                foregroundColor: isPlaying ? Colors.red[700] : Colors.blue[700],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

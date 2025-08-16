@@ -6,6 +6,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/analyze_task.dart';
 import 'package:nirva_app/transcribe_file_name.dart';
+import 'package:nirva_app/services/cloud_audio_processor.dart';
 part 'my_hive_objects.g.dart';
 
 // 本机存储的日记收藏列表
@@ -504,5 +505,176 @@ class UpdateDataTaskStorage extends HiveObject {
           uploadAndTranscribeTaskStorage?.toConstructorData(),
       'analyzeTaskData': analyzeTaskStorage?.toConstructorData(),
     };
+  }
+}
+
+// Cloud ASR Transcription Result Storage
+@HiveType(typeId: 13)
+class CloudAsrResultStorage extends HiveObject {
+  @HiveField(0)
+  String id; // Unique identifier for the result
+
+  @HiveField(1)
+  String segmentPath; // Original segment path identifier
+
+  @HiveField(2)
+  String startTimeIso; // Start time as ISO string
+
+  @HiveField(3)
+  String endTimeIso; // End time as ISO string
+
+  @HiveField(4)
+  int durationMs; // Duration in milliseconds
+
+  @HiveField(5)
+  String? transcription; // Transcription text
+
+  @HiveField(6)
+  double? confidence; // Confidence score
+
+  @HiveField(7)
+  String? language; // Detected language
+
+  @HiveField(8)
+  bool isFinal; // Whether transcription is final
+
+  @HiveField(9)
+  String processingTimeIso; // When processing was completed
+
+  @HiveField(10)
+  String? audioFilePath; // Path to the persistent audio file
+
+  @HiveField(11)
+  int audioDataSize; // Size of audio data in bytes
+
+  @HiveField(12)
+  String userId; // User ID for isolation
+
+  @HiveField(13)
+  String sessionId; // Session identifier for grouping results
+
+  CloudAsrResultStorage({
+    required this.id,
+    required this.segmentPath,
+    required this.startTimeIso,
+    required this.endTimeIso,
+    required this.durationMs,
+    this.transcription,
+    this.confidence,
+    this.language,
+    required this.isFinal,
+    required this.processingTimeIso,
+    this.audioFilePath,
+    required this.audioDataSize,
+    required this.userId,
+    required this.sessionId,
+  });
+
+  // Create from CloudAudioResult
+  static CloudAsrResultStorage fromCloudAudioResult(
+    CloudAudioResult result,
+    String userId,
+    String sessionId,
+  ) {
+    return CloudAsrResultStorage(
+      id: '${DateTime.now().millisecondsSinceEpoch}_${result.segmentPath}',
+      segmentPath: result.segmentPath,
+      startTimeIso: result.startTime.toIso8601String(),
+      endTimeIso: result.endTime.toIso8601String(),
+      durationMs: result.duration.inMilliseconds,
+      transcription: result.transcription,
+      confidence: result.confidence,
+      language: result.language,
+      isFinal: result.isFinal,
+      processingTimeIso: result.processingTime.toIso8601String(),
+      audioFilePath: result.audioFilePath,
+      audioDataSize: result.audioData.length,
+      userId: userId,
+      sessionId: sessionId,
+    );
+  }
+
+  // Convert back to CloudAudioResult (without audio data)
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'segmentPath': segmentPath,
+      'startTime': DateTime.parse(startTimeIso),
+      'endTime': DateTime.parse(endTimeIso),
+      'duration': Duration(milliseconds: durationMs),
+      'transcription': transcription,
+      'confidence': confidence,
+      'language': language,
+      'isFinal': isFinal,
+      'processingTime': DateTime.parse(processingTimeIso),
+      'audioFilePath': audioFilePath,
+      'audioDataSize': audioDataSize,
+      'userId': userId,
+      'sessionId': sessionId,
+    };
+  }
+}
+
+// Cloud ASR Session Storage
+@HiveType(typeId: 14)
+class CloudAsrSessionStorage extends HiveObject {
+  @HiveField(0)
+  String sessionId; // Unique session identifier
+
+  @HiveField(1)
+  String userId; // User ID
+
+  @HiveField(2)
+  String startTimeIso; // Session start time
+
+  @HiveField(3)
+  String? endTimeIso; // Session end time (null if ongoing)
+
+  @HiveField(4)
+  List<String> resultIds; // List of result IDs in this session
+
+  @HiveField(5)
+  bool isActive; // Whether session is currently active
+
+  @HiveField(6)
+  String deviceInfo; // Device information for the session
+
+  CloudAsrSessionStorage({
+    required this.sessionId,
+    required this.userId,
+    required this.startTimeIso,
+    this.endTimeIso,
+    required this.resultIds,
+    required this.isActive,
+    required this.deviceInfo,
+  });
+
+  // Create new session
+  static CloudAsrSessionStorage create({
+    required String userId,
+    required String deviceInfo,
+  }) {
+    final sessionId = 'session_${DateTime.now().millisecondsSinceEpoch}';
+    return CloudAsrSessionStorage(
+      sessionId: sessionId,
+      userId: userId,
+      startTimeIso: DateTime.now().toIso8601String(),
+      resultIds: [],
+      isActive: true,
+      deviceInfo: deviceInfo,
+    );
+  }
+
+  // End session
+  void endSession() {
+    endTimeIso = DateTime.now().toIso8601String();
+    isActive = false;
+  }
+
+  // Add result to session
+  void addResult(String resultId) {
+    if (!resultIds.contains(resultId)) {
+      resultIds.add(resultId);
+    }
   }
 }

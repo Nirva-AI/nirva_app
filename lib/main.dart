@@ -31,6 +31,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'amplifyconfiguration.dart';
 import 'package:nirva_app/hive_helper.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart'; // Import sherpa_onnx for initBindings
+import 'package:hive/hive.dart'; // Import hive for checking boxes
+import 'package:nirva_app/my_hive_objects.dart'; // Import my_hive_objects for CloudAsrResultStorage and CloudAsrSessionStorage
 
 
 void main() async {
@@ -94,7 +96,11 @@ void main() async {
             if (settings.cloudAsrEnabled) {
               // Get the OpusDecoderService from HardwareService to avoid multiple initialization
               final hardwareService = context.read<HardwareService>();
-              return CloudAudioProvider(opusDecoderService: hardwareService.opusDecoder);
+              final userProvider = context.read<UserProvider>();
+              return CloudAudioProvider(
+                opusDecoderService: hardwareService.opusDecoder,
+                userId: userProvider.id,
+              );
             }
             return null;
           },
@@ -195,8 +201,29 @@ Future<void> _initializeApp() async {
 
   // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
   await HiveHelper.initializeHive();
-  await HiveHelper.deleteFromDisk(); // 这句是测试用的。
+  // await HiveHelper.deleteFromDisk(); // 这句是测试用的。 COMMENTED OUT TO PRESERVE DATA
   await HiveHelper.initializeAdapters();
+  
+  // Debug: Check if Cloud ASR boxes are properly opened and contain data
+  try {
+    final cloudAsrResultsBox = Hive.box<CloudAsrResultStorage>('cloudAsrResultsBox');
+    final cloudAsrSessionsBox = Hive.box<CloudAsrSessionStorage>('cloudAsrSessionsBox');
+    debugPrint('Main: Cloud ASR boxes status after initialization:');
+    debugPrint('Main: - Results box length: ${cloudAsrResultsBox.length}');
+    debugPrint('Main: - Sessions box length: ${cloudAsrSessionsBox.length}');
+    
+    // Log some sample data if available
+    if (cloudAsrResultsBox.length > 0) {
+      final firstResult = cloudAsrResultsBox.getAt(0);
+      debugPrint('Main: - First result transcription: "${firstResult?.transcription}"');
+      debugPrint('Main: - First result audio path: ${firstResult?.audioFilePath}');
+    }
+    
+    // Additional detailed logging from HiveHelper
+    HiveHelper.logCloudAsrStatus();
+  } catch (e) {
+    debugPrint('Main: Error checking Cloud ASR boxes: $e');
+  }
 }
 
 Future<void> _configureAmplify() async {

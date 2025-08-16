@@ -1,6 +1,7 @@
 //import 'dart:io'; // 用于获取应用的文档目录
 import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
+import 'package:flutter/foundation.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
@@ -63,6 +64,8 @@ class HiveHelper {
       Hive.deleteBoxFromDisk(_tasksBox),
       Hive.deleteBoxFromDisk(_notesBox),
       Hive.deleteBoxFromDisk(_updateDataTaskBox),
+      Hive.deleteBoxFromDisk('cloudAsrResultsBox'), // Add Cloud ASR boxes
+      Hive.deleteBoxFromDisk('cloudAsrSessionsBox'), // Add Cloud ASR boxes
     ]);
 
     // 这两个操作需要顺序执行，不能并行化
@@ -84,6 +87,7 @@ class HiveHelper {
       _initTasks(),
       _initNotes(),
       _initUpdateDataTask(),
+      _initCloudAsrStorage(),
     ]);
   }
 
@@ -546,5 +550,106 @@ class HiveHelper {
   static Map<String, dynamic>? getUpdateDataTaskConstructorData() {
     final storage = getUpdateDataTask();
     return storage?.toConstructorData();
+  }
+
+  // ===============================================================================
+  // Cloud ASR Storage 相关管理方法
+  // ===============================================================================
+
+  /// 添加 Cloud ASR 存储的初始化方法
+  static Future<void> _initCloudAsrStorage() async {
+    debugPrint('HiveHelper: Starting Cloud ASR storage adapter registration... [${DateTime.now().toIso8601String()}]');
+    
+    if (!Hive.isAdapterRegistered(13)) {
+      Hive.registerAdapter(CloudAsrResultStorageAdapter());
+      debugPrint('HiveHelper: CloudAsrResultStorageAdapter registered with typeId 13');
+    } else {
+      debugPrint('HiveHelper: CloudAsrResultStorageAdapter already registered with typeId 13');
+    }
+    
+    if (!Hive.isAdapterRegistered(14)) {
+      Hive.registerAdapter(CloudAsrSessionStorageAdapter());
+      debugPrint('HiveHelper: CloudAsrSessionStorageAdapter registered with typeId 14');
+    } else {
+      debugPrint('HiveHelper: CloudAsrSessionStorageAdapter already registered with typeId 14');
+    }
+    
+    // Open the Cloud ASR boxes during app initialization
+    await _openCloudAsrBoxes();
+    
+    debugPrint('HiveHelper: Cloud ASR storage adapters registration completed');
+    
+    // Verify registration
+    debugPrint('HiveHelper: Verification - CloudAsrResultStorageAdapter registered: ${Hive.isAdapterRegistered(13)}');
+    debugPrint('HiveHelper: Verification - CloudAsrSessionStorageAdapter registered: ${Hive.isAdapterRegistered(14)}');
+  }
+
+  /// Open Cloud ASR storage boxes
+  static Future<void> _openCloudAsrBoxes() async {
+    try {
+      const String resultsBoxName = 'cloudAsrResultsBox';
+      const String sessionsBoxName = 'cloudAsrSessionsBox';
+      
+      // Open boxes if not already open
+      if (!Hive.isBoxOpen(resultsBoxName)) {
+        await Hive.openBox<CloudAsrResultStorage>(resultsBoxName);
+        debugPrint('HiveHelper: Opened cloudAsrResultsBox');
+      } else {
+        debugPrint('HiveHelper: cloudAsrResultsBox already open');
+      }
+      
+      if (!Hive.isBoxOpen(sessionsBoxName)) {
+        await Hive.openBox<CloudAsrSessionStorage>(sessionsBoxName);
+        debugPrint('HiveHelper: Opened cloudAsrSessionsBox');
+      } else {
+        debugPrint('HiveHelper: cloudAsrSessionsBox already open');
+      }
+      
+      // Log box contents for debugging
+      final resultsBox = Hive.box<CloudAsrResultStorage>(resultsBoxName);
+      final sessionsBox = Hive.box<CloudAsrSessionStorage>(sessionsBoxName);
+      debugPrint('HiveHelper: Cloud ASR boxes opened - Results: ${resultsBox.length}, Sessions: ${sessionsBox.length}');
+      
+    } catch (e) {
+      debugPrint('HiveHelper: Error opening Cloud ASR boxes: $e');
+    }
+  }
+
+  /// Get Cloud ASR results box
+  static Box<CloudAsrResultStorage> getCloudAsrResultsBox() {
+    return Hive.box<CloudAsrResultStorage>('cloudAsrResultsBox');
+  }
+
+  /// Get Cloud ASR sessions box
+  static Box<CloudAsrSessionStorage> getCloudAsrSessionsBox() {
+    return Hive.box<CloudAsrSessionStorage>('cloudAsrSessionsBox');
+  }
+
+  /// Check Cloud ASR data status for debugging
+  static void logCloudAsrStatus() {
+    try {
+      final resultsBox = getCloudAsrResultsBox();
+      final sessionsBox = getCloudAsrSessionsBox();
+      
+      debugPrint('HiveHelper: Cloud ASR Data Status:');
+      debugPrint('HiveHelper: - Results box length: ${resultsBox.length}');
+      debugPrint('HiveHelper: - Sessions box length: ${sessionsBox.length}');
+      
+      if (resultsBox.length > 0) {
+        final firstResult = resultsBox.getAt(0);
+        debugPrint('HiveHelper: - First result key: ${resultsBox.keys.first}');
+        debugPrint('HiveHelper: - First result transcription: "${firstResult?.transcription}"');
+        debugPrint('HiveHelper: - First result audio path: ${firstResult?.audioFilePath}');
+      }
+      
+      if (sessionsBox.length > 0) {
+        final firstSession = sessionsBox.getAt(0);
+        debugPrint('HiveHelper: - First session key: ${sessionsBox.keys.first}');
+        debugPrint('HiveHelper: - First session start time: ${firstSession?.startTimeIso}');
+        debugPrint('HiveHelper: - First session result count: ${firstSession?.resultIds.length}');
+      }
+    } catch (e) {
+      debugPrint('HiveHelper: Error logging Cloud ASR status: $e');
+    }
   }
 }

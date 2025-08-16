@@ -511,3 +511,129 @@ class UpdateDataTaskStorageAdapter extends TypeAdapter<UpdateDataTaskStorage> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class CloudAsrResultStorageAdapter extends TypeAdapter<CloudAsrResultStorage> {
+  @override
+  final int typeId = 13;
+
+  @override
+  CloudAsrResultStorage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return CloudAsrResultStorage(
+      id: fields[0] as String,
+      segmentPath: fields[1] as String,
+      startTimeIso: fields[2] as String,
+      endTimeIso: fields[3] as String,
+      durationMs: fields[4] as int,
+      transcription: fields[5] as String?,
+      confidence: fields[6] as double?,
+      language: fields[7] as String?,
+      isFinal: fields[8] as bool,
+      processingTimeIso: fields[9] as String,
+      audioFilePath: fields[10] as String?,
+      audioDataSize: fields[11] as int,
+      userId: fields[12] as String,
+      sessionId: fields[13] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, CloudAsrResultStorage obj) {
+    writer
+      ..writeByte(14)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.segmentPath)
+      ..writeByte(2)
+      ..write(obj.startTimeIso)
+      ..writeByte(3)
+      ..write(obj.endTimeIso)
+      ..writeByte(4)
+      ..write(obj.durationMs)
+      ..writeByte(5)
+      ..write(obj.transcription)
+      ..writeByte(6)
+      ..write(obj.confidence)
+      ..writeByte(7)
+      ..write(obj.language)
+      ..writeByte(8)
+      ..write(obj.isFinal)
+      ..writeByte(9)
+      ..write(obj.processingTimeIso)
+      ..writeByte(10)
+      ..write(obj.audioFilePath)
+      ..writeByte(11)
+      ..write(obj.audioDataSize)
+      ..writeByte(12)
+      ..write(obj.userId)
+      ..writeByte(13)
+      ..write(obj.sessionId);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CloudAsrResultStorageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class CloudAsrSessionStorageAdapter
+    extends TypeAdapter<CloudAsrSessionStorage> {
+  @override
+  final int typeId = 14;
+
+  @override
+  CloudAsrSessionStorage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return CloudAsrSessionStorage(
+      sessionId: fields[0] as String,
+      userId: fields[1] as String,
+      startTimeIso: fields[2] as String,
+      endTimeIso: fields[3] as String?,
+      resultIds: (fields[4] as List).cast<String>(),
+      isActive: fields[5] as bool,
+      deviceInfo: fields[6] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, CloudAsrSessionStorage obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(0)
+      ..write(obj.sessionId)
+      ..writeByte(1)
+      ..write(obj.userId)
+      ..writeByte(2)
+      ..write(obj.startTimeIso)
+      ..writeByte(3)
+      ..write(obj.endTimeIso)
+      ..writeByte(4)
+      ..write(obj.resultIds)
+      ..writeByte(5)
+      ..write(obj.isActive)
+      ..writeByte(6)
+      ..write(obj.deviceInfo);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CloudAsrSessionStorageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

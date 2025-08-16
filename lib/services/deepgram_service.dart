@@ -194,6 +194,18 @@ class DeepgramService extends ChangeNotifier {
         final jsonResponse = json.decode(responseBody);
         debugPrint('DeepgramService: Transcription successful');
         
+        // Debug: Log the complete API response
+        debugPrint('DeepgramService: === FULL DEEPGRAM API RESPONSE ===');
+        debugPrint('DeepgramService: Response body length: ${responseBody.length} characters');
+        debugPrint('DeepgramService: Raw response body:');
+        debugPrint(responseBody);
+        debugPrint('DeepgramService: Response JSON keys: ${jsonResponse.keys.toList()}');
+        
+        // Log the complete response structure
+        _logCompleteApiResponse(jsonResponse);
+        
+        debugPrint('DeepgramService: === END FULL RESPONSE ===');
+        
         // Parse the response
         final result = _parseDeepgramResponse(jsonResponse, startTime, endTime);
         
@@ -245,6 +257,238 @@ class DeepgramService extends ChangeNotifier {
     }
   }
   
+  /// Log the complete API response structure for debugging
+  void _logCompleteApiResponse(Map<String, dynamic> jsonResponse) {
+    try {
+      debugPrint('DeepgramService: Root level fields:');
+      for (final entry in jsonResponse.entries) {
+        final key = entry.key;
+        final value = entry.value;
+        
+        if (value is Map) {
+          debugPrint('  $key: Map with ${value.length} keys: ${value.keys.toList()}');
+        } else if (value is List) {
+          debugPrint('  $key: List with ${value.length} items');
+        } else {
+          debugPrint('  $key: $value');
+        }
+      }
+      
+      // Log results section in detail
+      if (jsonResponse.containsKey('results')) {
+        final results = jsonResponse['results'] as Map<String, dynamic>?;
+        if (results != null) {
+          debugPrint('DeepgramService: Results section fields: ${results.keys.toList()}');
+          
+          // Check for transcription fields directly in results section
+          for (final entry in results.entries) {
+            final key = entry.key;
+            final value = entry.value;
+            
+            if (value is String && (key.toLowerCase().contains('transcript') || 
+                                   key.toLowerCase().contains('text') || 
+                                   key.toLowerCase().contains('content'))) {
+              debugPrint('DeepgramService: Found transcription-like field "$key" in results section with length: ${value.length}');
+              debugPrint('DeepgramService: Results "$key" content: "$value"');
+            }
+          }
+          
+          // Log channels
+          if (results.containsKey('channels')) {
+            final channels = results['channels'] as List<dynamic>?;
+            if (channels != null && channels.isNotEmpty) {
+              debugPrint('DeepgramService: Found ${channels.length} channels');
+              
+              for (int i = 0; i < channels.length; i++) {
+                final channel = channels[i] as Map<String, dynamic>;
+                debugPrint('DeepgramService: Channel $i fields: ${channel.keys.toList()}');
+                
+                // Check for transcription fields directly in channel section
+                for (final entry in channel.entries) {
+                  final key = entry.key;
+                  final value = entry.value;
+                  
+                  if (value is String && (key.toLowerCase().contains('transcript') || 
+                                         key.toLowerCase().contains('text') || 
+                                         key.toLowerCase().contains('content'))) {
+                    debugPrint('DeepgramService: Found transcription-like field "$key" in channel $i with length: ${value.length}');
+                    debugPrint('DeepgramService: Channel $i "$key" content: "$value"');
+                  }
+                }
+                
+                // Log alternatives
+                if (channel.containsKey('alternatives')) {
+                  final alternatives = channel['alternatives'] as List<dynamic>?;
+                  if (alternatives != null && alternatives.isNotEmpty) {
+                    debugPrint('DeepgramService: Channel $i has ${alternatives.length} alternatives');
+                    
+                    for (int j = 0; j < alternatives.length; j++) {
+                      final alternative = alternatives[j] as Map<String, dynamic>;
+                      debugPrint('DeepgramService: Alternative $j fields: ${alternative.keys.toList()}');
+                      
+                      // Check for transcription fields directly in alternative section
+                      for (final entry in alternative.entries) {
+                        final key = entry.key;
+                        final value = entry.value;
+                        
+                        if (value is String && (key.toLowerCase().contains('transcript') || 
+                                               key.toLowerCase().contains('text') || 
+                                               key.toLowerCase().contains('content'))) {
+                          debugPrint('DeepgramService: Found transcription-like field "$key" in alternative $j with length: ${value.length}');
+                          debugPrint('DeepgramService: Alternative $j "$key" content: "$value"');
+                        }
+                      }
+                      
+                      // Log transcript details
+                      if (alternative.containsKey('transcript')) {
+                        final transcript = alternative['transcript'] as String? ?? '';
+                        debugPrint('DeepgramService: Alternative $j transcript length: ${transcript.length}');
+                        debugPrint('DeepgramService: Alternative $j transcript: "$transcript"');
+                        
+                        // Show first and last 100 characters for long transcripts
+                        if (transcript.length > 200) {
+                          debugPrint('DeepgramService: Alternative $j transcript preview (first 100): "${transcript.substring(0, 100)}..."');
+                          debugPrint('DeepgramService: Alternative $j transcript preview (last 100): "...${transcript.substring(transcript.length - 100)}"');
+                        }
+                      }
+                      
+                      // Log confidence
+                      if (alternative.containsKey('confidence')) {
+                        final confidence = alternative['confidence'];
+                        debugPrint('DeepgramService: Alternative $j confidence: $confidence');
+                      }
+                      
+                      // Check for additional transcription fields
+                      for (final field in alternative.keys) {
+                        if (field.toLowerCase().contains('transcript') || 
+                            field.toLowerCase().contains('text') || 
+                            field.toLowerCase().contains('content')) {
+                          final value = alternative[field];
+                          if (value is String && value.isNotEmpty) {
+                            debugPrint('DeepgramService: Alternative $j has transcription-like field "$field" with length: ${value.length}');
+                            if (value.length > 100) {
+                              debugPrint('DeepgramService: Alternative $j "$field" preview (first 100): "${value.substring(0, 100)}..."');
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      // Log metadata section
+      if (jsonResponse.containsKey('metadata')) {
+        final metadata = jsonResponse['metadata'] as Map<String, dynamic>?;
+        if (metadata != null) {
+          debugPrint('DeepgramService: Metadata section fields: ${metadata.keys.toList()}');
+          for (final entry in metadata.entries) {
+            debugPrint('  ${entry.key}: ${entry.value}');
+          }
+          
+          // Check for transcription fields in metadata section
+          for (final entry in metadata.entries) {
+            final key = entry.key;
+            final value = entry.value;
+            
+            if (value is String && (key.toLowerCase().contains('transcript') || 
+                                   key.toLowerCase().contains('text') || 
+                                   key.toLowerCase().contains('content'))) {
+              debugPrint('DeepgramService: Found transcription-like field "$key" in metadata with length: ${value.length}');
+              debugPrint('DeepgramService: Metadata "$key" content: "$value"');
+            }
+          }
+        }
+      }
+      
+      // Log any other sections
+      for (final entry in jsonResponse.entries) {
+        final key = entry.key;
+        final value = entry.value;
+        
+        if (key != 'results' && key != 'metadata' && value is Map) {
+          debugPrint('DeepgramService: Additional section "$key" with fields: ${value.keys.toList()}');
+          for (final subEntry in value.entries) {
+            debugPrint('  ${subEntry.key}: ${subEntry.value}');
+          }
+          
+          // Check for transcription fields in additional sections
+          for (final subEntry in value.entries) {
+            final subKey = subEntry.key;
+            final subValue = subEntry.value;
+            
+            if (subValue is String && (subKey.toLowerCase().contains('transcript') || 
+                                      subKey.toLowerCase().contains('text') || 
+                                      subKey.toLowerCase().contains('content'))) {
+              debugPrint('DeepgramService: Found transcription-like field "$subKey" in section "$key" with length: ${subValue.length}');
+              debugPrint('DeepgramService: Section "$key" "$subKey" content: "$subValue"');
+            }
+          }
+        }
+      }
+      
+      // Check for any transcription-related fields in the root response
+      debugPrint('DeepgramService: Checking for transcription fields in root response...');
+      for (final entry in jsonResponse.entries) {
+        final key = entry.key;
+        final value = entry.value;
+        
+        if (value is String && (key.toLowerCase().contains('transcript') || 
+                               key.toLowerCase().contains('text') || 
+                               key.toLowerCase().contains('content'))) {
+          debugPrint('DeepgramService: Found transcription-like field "$key" with length: ${value.length}');
+          debugPrint('DeepgramService: "$key" content: "$value"');
+        }
+      }
+      
+      // Recursively check for transcription fields in nested structures
+      debugPrint('DeepgramService: Recursively checking for transcription fields in nested structures...');
+      _checkNestedTranscriptionFields(jsonResponse, 'root');
+      
+    } catch (e) {
+      debugPrint('DeepgramService: Error logging API response: $e');
+    }
+  }
+
+  /// Recursively check for transcription fields in nested structures
+  void _checkNestedTranscriptionFields(dynamic data, String path, {int maxDepth = 5, int currentDepth = 0}) {
+    if (currentDepth >= maxDepth) return;
+    
+    try {
+      if (data is Map) {
+        for (final entry in data.entries) {
+          final key = entry.key;
+          final value = entry.value;
+          final currentPath = '$path.$key';
+          
+          if (value is String && (key.toLowerCase().contains('transcript') || 
+                                 key.toLowerCase().contains('text') || 
+                                 key.toLowerCase().contains('content'))) {
+            debugPrint('DeepgramService: Found transcription-like field "$currentPath" with length: ${value.length}');
+            debugPrint('DeepgramService: "$currentPath" content: "$value"');
+          }
+          
+          // Recursively check nested structures
+          _checkNestedTranscriptionFields(value, currentPath, maxDepth: maxDepth, currentDepth: currentDepth + 1);
+        }
+      } else if (data is List) {
+        for (int i = 0; i < data.length; i++) {
+          final value = data[i];
+          final currentPath = '$path[$i]';
+          
+          // Recursively check nested structures
+          _checkNestedTranscriptionFields(value, currentPath, maxDepth: maxDepth, currentDepth: currentDepth + 1);
+        }
+      }
+    } catch (e) {
+      debugPrint('DeepgramService: Error checking nested transcription fields at path $path: $e');
+    }
+  }
+
   /// Parse Deepgram API response
   DeepgramTranscriptionResult? _parseDeepgramResponse(
     Map<String, dynamic> jsonResponse,
@@ -253,18 +497,67 @@ class DeepgramService extends ChangeNotifier {
   ) {
     try {
       final results = jsonResponse['results'] as Map<String, dynamic>?;
-      if (results == null) return null;
+      if (results == null) {
+        debugPrint('DeepgramService: No results section found in response');
+        return null;
+      }
       
       final channels = results['channels'] as List<dynamic>?;
-      if (channels == null || channels.isEmpty) return null;
+      if (channels == null || channels.isEmpty) {
+        debugPrint('DeepgramService: No channels found in results');
+        return null;
+      }
       
       final channel = channels.first as Map<String, dynamic>;
+      debugPrint('DeepgramService: Processing channel with fields: ${channel.keys.toList()}');
+      
       final alternatives = channel['alternatives'] as List<dynamic>?;
-      if (alternatives == null || alternatives.isEmpty) return null;
+      if (alternatives == null || alternatives.isEmpty) {
+        debugPrint('DeepgramService: No alternatives found in channel');
+        return null;
+      }
       
       final alternative = alternatives.first as Map<String, dynamic>;
-      final transcript = alternative['transcript'] as String? ?? '';
+      debugPrint('DeepgramService: Processing alternative with fields: ${alternative.keys.toList()}');
+      
+      // Look for transcript in various possible fields
+      String? transcript;
+      if (alternative.containsKey('transcript')) {
+        transcript = alternative['transcript'] as String? ?? '';
+        debugPrint('DeepgramService: Found transcript in "transcript" field');
+      } else if (alternative.containsKey('text')) {
+        transcript = alternative['text'] as String? ?? '';
+        debugPrint('DeepgramService: Found transcript in "text" field');
+      } else if (alternative.containsKey('content')) {
+        transcript = alternative['content'] as String? ?? '';
+        debugPrint('DeepgramService: Found transcript in "content" field');
+      } else {
+        debugPrint('DeepgramService: No transcript field found in alternative');
+        debugPrint('DeepgramService: Available fields: ${alternative.keys.toList()}');
+        return null;
+      }
+      
       final confidence = (alternative['confidence'] as num?)?.toDouble() ?? 0.0;
+      
+      // Debug: Log full transcript details
+      debugPrint('DeepgramService: Raw transcript length: ${transcript.length}');
+      debugPrint('DeepgramService: Raw transcript: "$transcript"');
+      
+      // Check for additional transcript fields that might contain longer content
+      for (final field in alternative.keys) {
+        if (field.toLowerCase().contains('transcript') || 
+            field.toLowerCase().contains('text') || 
+            field.toLowerCase().contains('content')) {
+          final value = alternative[field];
+          if (value is String && value.isNotEmpty) {
+            debugPrint('DeepgramService: Found transcript-like field "$field" with length: ${value.length}');
+            if (value.length > transcript.length) {
+              debugPrint('DeepgramService: Field "$field" has longer content than main transcript');
+              debugPrint('DeepgramService: "$field" content: "$value"');
+            }
+          }
+        }
+      }
       
       // Extract language if available
       final language = jsonResponse['metadata']?['language'] as String? ?? 'en';
@@ -282,6 +575,7 @@ class DeepgramService extends ChangeNotifier {
       
     } catch (e) {
       debugPrint('DeepgramService: Error parsing response: $e');
+      debugPrint('DeepgramService: Stack trace: ${StackTrace.current}');
       return null;
     }
   }
