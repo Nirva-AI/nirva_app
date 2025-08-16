@@ -25,7 +25,7 @@ class SherpaAsrService extends ChangeNotifier {
   // ASR state
   bool _isInitialized = false;
   bool _isProcessing = false;
-  String _currentLanguage = 'en';
+  String _currentLanguage = 'auto';
   
   // ASR instances for each language
   final Map<String, OfflineRecognizer> _recognizers = {};
@@ -63,21 +63,21 @@ class SherpaAsrService extends ChangeNotifier {
       debugPrint('  - Channels: $_channels');
       debugPrint('  - Supported Languages: ${_supportedLanguages.keys.join(', ')}');
       
-      // Only initialize the default language (English) to save memory
-      // Other languages will be loaded on-demand when setLanguage() is called
-      final defaultLanguage = 'en';
-      debugPrint('SherpaAsrService: Initializing default language: $defaultLanguage');
+      // Initialize single multilingual Whisper model
+      debugPrint('SherpaAsrService: Initializing multilingual Whisper model...');
       
-      final success = await _initializeRecognizer(defaultLanguage);
+      final success = await _initializeRecognizer('multilingual'); // Use generic key for multilingual model
       if (!success) {
-        debugPrint('SherpaAsrService: Failed to initialize default recognizer');
+        debugPrint('SherpaAsrService: Failed to initialize Whisper model');
         return false;
       }
       
-      // Set the current recognizer
-      _currentRecognizer = _recognizers[defaultLanguage];
-      _currentLanguage = defaultLanguage;
+      // Set the recognizer
+      _currentRecognizer = _recognizers['multilingual'];
+      _currentLanguage = 'auto'; // Mark as auto-detection mode
       _isInitialized = true;
+      
+      debugPrint('SherpaAsrService: Multilingual Whisper model initialized successfully');
       notifyListeners();
       return true;
       
@@ -93,7 +93,7 @@ class SherpaAsrService extends ChangeNotifier {
   /// Initialize recognizer for a specific language
   Future<bool> _initializeRecognizer(String language) async {
     try {
-      debugPrint('SherpaAsrService: Initializing recognizer for $language...');
+      debugPrint('SherpaAsrService: Initializing multilingual Whisper recognizer...');
       
       // Copy the model files from assets to a temporary directory
       final modelPaths = await _copyModelFiles();
@@ -114,7 +114,6 @@ class SherpaAsrService extends ChangeNotifier {
           whisper: OfflineWhisperModelConfig(
             encoder: modelPaths['encoder']!,
             decoder: modelPaths['decoder']!,
-            language: language,
             task: 'transcribe',
           ),
           tokens: modelPaths['tokens']!,
@@ -128,31 +127,31 @@ class SherpaAsrService extends ChangeNotifier {
       
       // Create recognizer
       try {
-        debugPrint('SherpaAsrService: Creating recognizer for $language...');
+        debugPrint('SherpaAsrService: Creating multilingual Whisper recognizer...');
         final recognizer = OfflineRecognizer(config);
-        debugPrint('SherpaAsrService: Recognizer created successfully for $language');
+        debugPrint('SherpaAsrService: Recognizer created successfully');
         
         // Test the recognizer with a small audio sample
         final testResult = await _testRecognizer(recognizer);
         if (!testResult) {
-          debugPrint('SherpaAsrService: Recognizer test failed for $language');
+          debugPrint('SherpaAsrService: Recognizer test failed');
           recognizer.free();
           return false;
         }
         
         _recognizers[language] = recognizer;
-        debugPrint('SherpaAsrService: Recognizer initialized successfully for $language');
+        debugPrint('SherpaAsrService: Multilingual Whisper recognizer initialized successfully');
         
         return true;
         
       } catch (e, stackTrace) {
-        debugPrint('SherpaAsrService: Failed to create recognizer for $language: $e');
+        debugPrint('SherpaAsrService: Failed to create recognizer: $e');
         debugPrint('SherpaAsrService: Stack trace: $stackTrace');
         return false;
       }
       
     } catch (e) {
-      debugPrint('SherpaAsrService: Error initializing recognizer for $language: $e');
+      debugPrint('SherpaAsrService: Error initializing recognizer: $e');
       return false;
     }
   }
@@ -178,48 +177,9 @@ class SherpaAsrService extends ChangeNotifier {
   
   /// Set the current language for transcription
   Future<bool> setLanguage(String language) async {
-    if (!_supportedLanguages.containsKey(language)) {
-      debugPrint('SherpaAsrService: Unsupported language: $language');
-      return false;
-    }
-    
-    if (_currentLanguage == language) {
-      debugPrint('SherpaAsrService: Language already set to $language');
-      return true;
-    }
-    
-    try {
-      // Free the current recognizer to save memory
-      if (_currentLanguage != null && _recognizers.containsKey(_currentLanguage)) {
-        final currentRecognizer = _recognizers[_currentLanguage];
-        if (currentRecognizer != null) {
-          currentRecognizer.free();
-          _recognizers.remove(_currentLanguage);
-          debugPrint('SherpaAsrService: Freed recognizer for $_currentLanguage');
-        }
-      }
-      
-      // Check if the new language recognizer is already loaded
-      if (!_recognizers.containsKey(language)) {
-        debugPrint('SherpaAsrService: Loading recognizer for language: $language');
-        final success = await _initializeRecognizer(language);
-        if (!success) {
-          debugPrint('SherpaAsrService: Failed to load recognizer for language: $language');
-          return false;
-        }
-      }
-      
-      // Set the current recognizer
-      _currentRecognizer = _recognizers[language];
-      _currentLanguage = language;
-      debugPrint('SherpaAsrService: Language switched to $language');
-      notifyListeners();
-      return true;
-      
-    } catch (e) {
-      debugPrint('SherpaAsrService: Error switching language to $language: $e');
-      return false;
-    }
+    // No longer needed with Whisper's automatic language detection
+    debugPrint('SherpaAsrService: Language setting not needed - Whisper detects language automatically');
+    return true;
   }
   
   /// Transcribe PCM audio data
@@ -250,6 +210,8 @@ class SherpaAsrService extends ChangeNotifier {
       
       // Create a stream for processing
       final stream = _currentRecognizer!.createStream();
+      
+      // Feed audio data to the stream
       stream.acceptWaveform(samples: floatAudio, sampleRate: _sampleRate);
       
       if (isFinal) {
@@ -257,6 +219,7 @@ class SherpaAsrService extends ChangeNotifier {
         _currentRecognizer!.decode(stream);
         
         final result = _currentRecognizer!.getResult(stream);
+        
         if (result.text.isNotEmpty) {
           final transcription = TranscriptionResult(
             text: result.text,
@@ -273,8 +236,10 @@ class SherpaAsrService extends ChangeNotifier {
           // Broadcast result
           _transcriptionController.add(transcription);
           
-          debugPrint('SherpaAsrService: Final transcription: ${result.text}');
+          debugPrint('SherpaAsrService: Final transcription completed: "${result.text}"');
           return transcription;
+        } else {
+          debugPrint('SherpaAsrService: Final result has empty text');
         }
       } else {
         // For non-final chunks, we could implement partial results
@@ -303,17 +268,72 @@ class SherpaAsrService extends ChangeNotifier {
       return null;
     }
     
+    if (pcmData.isEmpty) {
+      debugPrint('SherpaAsrService: Cannot transcribe empty audio buffer');
+      return null;
+    }
+    
     try {
-      // Process the entire buffer
+      // Check if audio has meaningful content
+      final hasContent = _checkAudioContent(pcmData);
+      if (!hasContent) {
+        debugPrint('SherpaAsrService: Audio buffer contains only silence, skipping transcription');
+        return null;
+      }
+      
+      // Use single multilingual Whisper model for automatic language detection
+      debugPrint('SherpaAsrService: Starting transcription with multilingual Whisper...');
+      
       final result = await transcribeAudio(pcmData, isFinal: true);
       
-      return result;
+      if (result != null && result.text.isNotEmpty) {
+        // Whisper automatically detects the language, so we just use 'auto'
+        _currentLanguage = 'auto';
+        
+        debugPrint('SherpaAsrService: Transcription successful: "${result.text}" (language: auto-detected)');
+        return TranscriptionResult(
+          text: result.text,
+          language: 'auto',
+          languageName: 'Auto-Detected',
+          timestamp: DateTime.now(),
+          confidence: 0.9,
+          isFinal: true,
+        );
+      } else {
+        debugPrint('SherpaAsrService: No transcription result returned or empty text');
+      }
+      
+      return null;
       
     } catch (e) {
       debugPrint('SherpaAsrService: Error transcribing audio buffer: $e');
       return null;
     }
   }
+  
+  /// Check if audio data contains meaningful content (not just silence)
+  bool _checkAudioContent(Uint8List pcmData) {
+    if (pcmData.isEmpty) return false;
+    
+    // Convert to 16-bit samples and check for non-zero values
+    final samples = pcmData.length ~/ 2;
+    int nonZeroSamples = 0;
+    
+    for (int i = 0; i < samples; i++) {
+      int sample = (pcmData[i * 2] | (pcmData[i * 2 + 1] << 8));
+      if (sample > 32767) {
+        sample = sample - 65536; // Handle signed 16-bit
+      }
+      if (sample.abs() > 100) { // Threshold for meaningful audio
+        nonZeroSamples++;
+      }
+    }
+    
+    final audioRatio = nonZeroSamples / samples;
+    return audioRatio > 0.01; // At least 1% non-silence
+  }
+
+
   
   /// Convert PCM data to Float32List for ASR processing
   Float32List _convertPcmToFloat32(List<int> pcmData) {
@@ -345,8 +365,6 @@ class SherpaAsrService extends ChangeNotifier {
         .toList();
   }
   
-
-  
   /// Get current ASR statistics
   Map<String, dynamic> getStats() {
     return {
@@ -361,13 +379,52 @@ class SherpaAsrService extends ChangeNotifier {
     };
   }
   
+  /// Get memory usage statistics
+  Map<String, dynamic> getMemoryStats() {
+    return {
+      'recognizersLoaded': _recognizers.length,
+      'currentLanguage': _currentLanguage,
+      'isMultilingual': true,
+    };
+  }
+  
+  /// Unload Chinese recognizer to free memory when not needed
+  void unloadChineseRecognizer() {
+    // No longer needed with single multilingual model
+    debugPrint('SherpaAsrService: Memory management not needed with single multilingual model');
+  }
+  
+  /// Schedule automatic memory cleanup
+  // void _scheduleMemoryCleanup() { // Removed as per edit hint
+  //   _memoryCleanupTimer?.cancel();
+  //   _memoryCleanupTimer = Timer(_memoryCleanupDelay, () {
+  //     if (_recognizers.containsKey('zh') && _currentLanguage != 'zh') {
+  //       debugPrint('SherpaAsrService: Auto-unloading Chinese recognizer due to inactivity');
+  //       unloadChineseRecognizer();
+  //     }
+  //   });
+  // }
+  
+  /// Cancel memory cleanup timer
+  // void _cancelMemoryCleanup() { // Removed as per edit hint
+  //   _memoryCleanupTimer?.cancel();
+  // }
+  
   /// Dispose of resources
   @override
   void dispose() {
-    for (final recognizer in _recognizers.values) {
-      recognizer.free();
-    }
+    // Cancel memory cleanup timer
+    // _memoryCleanupTimer?.cancel(); // Removed as per edit hint
+    
+    // Free all recognizers
+    final recognizersToFree = Map<String, OfflineRecognizer>.from(_recognizers);
     _recognizers.clear();
+    
+    for (final recognizer in recognizersToFree.values) {
+      if (recognizer != null) {
+        recognizer.free();
+      }
+    }
     
     _transcriptionController.close();
     _partialResultController.close();
@@ -432,6 +489,8 @@ class SherpaAsrService extends ChangeNotifier {
       return null;
     }
   }
+
+
 }
 
 /// Represents a transcription result from ASR

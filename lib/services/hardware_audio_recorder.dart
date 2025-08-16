@@ -32,9 +32,9 @@ class HardwareAudioCapture extends ChangeNotifier {
   int _currentFileSize = 0;
   int _fileCounter = 0;
   
-  // Timer for periodic file rotation (every 10 seconds)
+  // Timer for periodic file rotation (every 1 minute)
   Timer? _fileRotationTimer;
-  static const Duration _fileRotationInterval = Duration(seconds: 10);
+  static const Duration _fileRotationInterval = Duration(minutes: 1);
   
   // Statistics
   int _totalOpusPacketsReceived = 0;
@@ -129,18 +129,32 @@ class HardwareAudioCapture extends ChangeNotifier {
       
       // Enable local audio processing if available
       if (_localAudioProcessor != null) {
-        await _localAudioProcessor!.initialize();
-        _localAudioProcessor!.enable();
-        debugPrint('HardwareAudioCapture: Local audio processing enabled');
+        debugPrint('HardwareAudioCapture: Initializing local audio processor...');
+        final initialized = await _localAudioProcessor!.initialize();
+        debugPrint('HardwareAudioCapture: Local audio processor initialization result: $initialized');
+        
+        if (initialized) {
+          _localAudioProcessor!.enable();
+          debugPrint('HardwareAudioCapture: Local audio processing enabled');
+        } else {
+          debugPrint('HardwareAudioCapture: Failed to initialize local audio processor');
+        }
+      } else {
+        debugPrint('HardwareAudioCapture: No local audio processor available');
       }
       
       // Subscribe to audio stream from hardware
+      debugPrint('HardwareAudioCapture: Setting up audio stream subscription...');
       _audioSubscription = _hardwareService.audioStream.listen(
         _onAudioPacketReceived,
         onError: (error) {
           debugPrint('Audio stream error during capture: $error');
         },
+        onDone: () {
+          debugPrint('Audio stream subscription completed');
+        },
       );
+      debugPrint('HardwareAudioCapture: Audio stream subscription created successfully');
       
       notifyListeners();
       
@@ -254,9 +268,10 @@ class HardwareAudioCapture extends ChangeNotifier {
         _currentFileSize += decodedPcm.length;
         _totalPcmBytesDecoded += decodedPcm.length;
         
-        // Process audio with local VAD and ASR if available
+        // Process audio with local VAD and ASR if available (asynchronously)
         if (_localAudioProcessor != null && _localAudioProcessor!.isEnabled) {
-          _localAudioProcessor!.processAudioData(decodedPcm);
+          // Process audio data asynchronously to prevent UI blocking
+          _processAudioDataAsync(decodedPcm);
         }
         
         // Check if we need to create a new file (file size limit reached)
@@ -275,7 +290,7 @@ class HardwareAudioCapture extends ChangeNotifier {
       } else {
         _failedDecodes++;
         // Only log decode failures occasionally to avoid spam
-        if (_failedDecodes % 10 == 0) {
+        if (_failedDecodes % 50 == 0) {
           debugPrint('HardwareAudioCapture: Failed to decode $_failedDecodes Opus packets so far');
         }
       }
@@ -283,6 +298,16 @@ class HardwareAudioCapture extends ChangeNotifier {
     } catch (e) {
       _failedDecodes++;
       debugPrint('Error processing audio packet: $e');
+    }
+  }
+  
+  /// Process audio data asynchronously to prevent UI blocking
+  void _processAudioDataAsync(Uint8List decodedPcm) {
+    // Process audio data directly - the isolate processor handles background processing
+    try {
+      _localAudioProcessor!.processAudioData(decodedPcm);
+    } catch (e) {
+      debugPrint('HardwareAudioCapture: Error processing audio data: $e');
     }
   }
   

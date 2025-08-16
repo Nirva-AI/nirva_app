@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:typed_data';
+import 'dart:isolate';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'sherpa_vad_service.dart';
 import 'sherpa_asr_service.dart';
 import '../models/processed_audio_result.dart';
+import 'compute_audio_processor.dart';
 
 /// Integrated local audio processing service combining VAD and ASR
 /// 
@@ -15,6 +20,9 @@ class LocalAudioProcessor extends ChangeNotifier {
   final SherpaVadService _vadService;
   final SherpaAsrService _asrService;
   
+  // Compute-based audio processor for heavy computational work
+  late final ComputeAudioProcessor _computeProcessor;
+  
   // Processing state
   bool _isInitialized = false;
   bool _isProcessing = false;
@@ -22,7 +30,6 @@ class LocalAudioProcessor extends ChangeNotifier {
   
   // Audio processing
   final List<int> _audioBuffer = [];
-  final int _bufferThreshold = 16000 * 2; // 2 seconds of audio at 16kHz
   
   // Speech processing
   bool _isSpeechActive = false;
@@ -38,6 +45,11 @@ class LocalAudioProcessor extends ChangeNotifier {
       StreamController<ProcessedAudioResult>.broadcast();
   final StreamController<bool> _speechStateController = 
       StreamController<bool>.broadcast();
+  
+  // Stream subscriptions
+  StreamSubscription<ProcessedAudioResult>? _isolateResultSubscription;
+  StreamSubscription<bool>? _isolateSpeechStateSubscription;
+  StreamSubscription<TranscriptionResult>? _asrTranscriptionSubscription;
   
   // Getters
   bool get isInitialized => _isInitialized;
@@ -58,59 +70,84 @@ class LocalAudioProcessor extends ChangeNotifier {
   
   /// Initialize the local audio processor
   Future<bool> initialize() async {
+    if (_isInitialized) {
+      debugPrint('LocalAudioProcessor: Already initialized');
+      return true;
+    }
+    
     try {
       debugPrint('LocalAudioProcessor: Initializing local audio processor...');
       
       // Initialize VAD service
+      debugPrint('LocalAudioProcessor: Initializing VAD service...');
       final vadInitialized = await _vadService.initialize();
+      debugPrint('LocalAudioProcessor: VAD service initialization result: $vadInitialized');
+      
       if (!vadInitialized) {
         debugPrint('LocalAudioProcessor: Failed to initialize VAD service');
-        // Don't fail completely, just log the error
-        // _isInitialized = false;
-        // return false;
+        _isInitialized = false;
+        return false;
       }
       
       // Initialize ASR service
+      debugPrint('LocalAudioProcessor: Initializing ASR service...');
       final asrInitialized = await _asrService.initialize();
+      debugPrint('LocalAudioProcessor: ASR service initialization result: $asrInitialized');
+      
       if (!asrInitialized) {
         debugPrint('LocalAudioProcessor: Failed to initialize ASR service');
-        // Don't fail completely, just log the error
-        // _isInitialized = false;
-        // return false;
+        _isInitialized = false;
+        return false;
       }
       
-      // Consider initialized if at least one service works
-      _isInitialized = vadInitialized || asrInitialized;
+      // Initialize compute-based audio processor
+      debugPrint('LocalAudioProcessor: Initializing compute-based audio processor...');
+      _computeProcessor = ComputeAudioProcessor();
+      final computeInitialized = await _computeProcessor.initialize();
+      debugPrint('LocalAudioProcessor: Compute processor initialization result: $computeInitialized');
+      
+      if (!computeInitialized) {
+        debugPrint('LocalAudioProcessor: Failed to initialize compute processor');
+        _isInitialized = false;
+        return false;
+      }
+      
+      // Pass ASR service reference to compute processor
+      _computeProcessor.setAsrService(_asrService);
+      debugPrint('LocalAudioProcessor: ASR service reference passed to compute processor');
+      
+      // All services must be initialized
+      _isInitialized = vadInitialized && asrInitialized && computeInitialized;
+      
+      debugPrint('LocalAudioProcessor: Final initialization result: $_isInitialized');
       
       if (_isInitialized) {
         debugPrint('LocalAudioProcessor: Local audio processor initialized successfully');
         
-        // Set up stream listeners if services are available
-        if (vadInitialized) {
-          try {
-            _vadService.speechDetectionStream.listen(
-              _onVadSpeechDetection,
-              onError: (error) => debugPrint('LocalAudioProcessor: VAD stream error: $error'),
-            );
-          } catch (e) {
-            debugPrint('LocalAudioProcessor: Failed to set up VAD stream listener: $e');
-          }
-        }
-        
-        if (asrInitialized) {
-          try {
-            _asrService.transcriptionStream.listen(
-              _onAsrTranscription,
-              onError: (error) => debugPrint('LocalAudioProcessor: ASR stream error: $error'),
-            );
-          } catch (e) {
-            debugPrint('LocalAudioProcessor: Failed to set up ASR stream listener: $e');
-          }
+        // Set up compute processor stream listeners
+        try {
+          // Cancel existing subscriptions if any
+          await _isolateResultSubscription?.cancel();
+          await _isolateSpeechStateSubscription?.cancel();
+          
+          _isolateResultSubscription = _computeProcessor.resultStream.listen(
+            _onIsolateResult,
+            onError: (error) => debugPrint('LocalAudioProcessor: Compute result stream error: $error'),
+          );
+          
+          _isolateSpeechStateSubscription = _computeProcessor.speechStateStream.listen(
+            _onIsolateSpeechState,
+            onError: (error) => debugPrint('LocalAudioProcessor: Compute speech state stream error: $error'),
+          );
+          
+          debugPrint('LocalAudioProcessor: Compute processor stream listeners set up successfully');
+        } catch (e) {
+          debugPrint('LocalAudioProcessor: Failed to set up compute processor stream listeners: $e');
         }
         
         notifyListeners();
       } else {
-        debugPrint('LocalAudioProcessor: No audio services could be initialized');
+        debugPrint('LocalAudioProcessor: Failed to initialize required services');
       }
       
       return _isInitialized;
@@ -131,7 +168,8 @@ class LocalAudioProcessor extends ChangeNotifier {
     }
     
     _isEnabled = true;
-    debugPrint('LocalAudioProcessor: Local audio processing enabled automatically');
+    _computeProcessor.enable();
+    debugPrint('LocalAudioProcessor: Local audio processing enabled');
     notifyListeners();
   }
   
@@ -142,11 +180,18 @@ class LocalAudioProcessor extends ChangeNotifier {
     _isSpeechActive = false;
     _speechStartTime = null;
     
+    // Disable compute processor
+    _computeProcessor.disable();
+    
+    // Cancel stream subscriptions
+    _isolateResultSubscription?.cancel();
+    _isolateSpeechStateSubscription?.cancel();
+    
     // Clear buffers
     _audioBuffer.clear();
     _detectedSegments.clear();
     
-    debugPrint('LocalAudioProcessor: Local audio processing disabled automatically');
+    debugPrint('LocalAudioProcessor: Local audio processing disabled');
     notifyListeners();
   }
   
@@ -156,168 +201,91 @@ class LocalAudioProcessor extends ChangeNotifier {
   /// [isFinal] - Whether this is the final chunk of audio
   void processAudioData(Uint8List pcmData, {bool isFinal = false}) {
     if (!_isEnabled || !_isInitialized) {
+      debugPrint('LocalAudioProcessor: Skipping - enabled: $_isEnabled, initialized: $_isInitialized');
       return;
     }
     
-    try {
-      _isProcessing = true;
-      notifyListeners();
-      
-      // Add audio data to buffer
-      _audioBuffer.addAll(pcmData);
-      
-      // Process audio with VAD for speech detection
-      final speechDetected = _vadService.processAudioFrame(pcmData);
-      
-      if (speechDetected && !_isSpeechActive) {
-        // Speech started
-        _isSpeechActive = true;
-        _speechStartTime = DateTime.now();
-        _speechStateController.add(true);
-        debugPrint('LocalAudioProcessor: Speech activity started');
-      } else if (!speechDetected && _isSpeechActive) {
-        // Speech ended
-        _isSpeechActive = false;
-        if (_speechStartTime != null) {
-          final speechDuration = DateTime.now().difference(_speechStartTime!);
-          
-          // Create speech segment
-          final segment = VadSpeechSegment(
-            startTime: Duration(milliseconds: _speechStartTime!.millisecondsSinceEpoch),
-            endTime: Duration(milliseconds: DateTime.now().millisecondsSinceEpoch),
-          );
-          
-          _detectedSegments.add(segment);
-          
-          // Process speech segment with ASR if we have enough audio data
-          if (_audioBuffer.length >= _bufferThreshold) {
-            _processSpeechSegment(segment);
-          }
-          
-          debugPrint('LocalAudioProcessor: Speech activity ended, duration: $speechDuration');
-        }
-        
-        _speechStateController.add(false);
-        _speechStartTime = null;
-      }
-      
-      // Process final audio chunk if requested
-      if (isFinal && _audioBuffer.isNotEmpty) {
-        _processFinalAudio();
-      }
-      
-    } catch (e) {
-      debugPrint('LocalAudioProcessor: Error processing audio data: $e');
-    } finally {
-      _isProcessing = false;
-      notifyListeners();
+    // Add audio data to buffer immediately (lightweight operation)
+    _audioBuffer.addAll(pcmData);
+    
+    // Send audio data to compute processor for background processing
+    _computeProcessor.processAudioData(pcmData, isFinal: isFinal);
+    
+    // Process final audio chunk if requested
+    if (isFinal) {
+      _processFinalAudioInBackground();
     }
   }
+
+  /// Process final audio chunk in background
+  Future<void> _processFinalAudioInBackground() async {
+    // This is now handled by the compute processor
+    // The compute processor will handle final audio processing automatically
+    debugPrint('LocalAudioProcessor: Final audio processing delegated to compute processor');
+  }
   
-  /// Process a detected speech segment with ASR
-  Future<void> _processSpeechSegment(VadSpeechSegment segment) async {
-    try {
-      debugPrint('LocalAudioProcessor: Processing speech segment: $segment');
-      
-      // Extract audio data for this segment
-      final segmentAudio = _extractSegmentAudio(segment);
-      if (segmentAudio.isEmpty) {
-        debugPrint('LocalAudioProcessor: No audio data for segment');
-        return;
+  /// Handle results from isolate processor
+  void _onIsolateResult(ProcessedAudioResult result) {
+    // Add to results history
+    _addToResultsHistory(result);
+    
+    // Broadcast result
+    _resultController.add(result);
+    
+    debugPrint('LocalAudioProcessor: Received result from isolate processor: "${result.transcription.text}"');
+    notifyListeners();
+  }
+  
+  /// Handle speech state changes from isolate processor
+  void _onIsolateSpeechState(bool isSpeech) {
+    _isSpeechActive = isSpeech;
+    _speechStateController.add(isSpeech);
+    
+    if (isSpeech) {
+      _speechStartTime = DateTime.now();
+      debugPrint('LocalAudioProcessor: Speech activity started (from isolate)');
+    } else {
+      if (_speechStartTime != null) {
+        final speechDuration = DateTime.now().difference(_speechStartTime!);
+        debugPrint('LocalAudioProcessor: Speech activity ended (from isolate), duration: $speechDuration');
       }
-      
-      // Transcribe the speech segment
-      final transcription = await _asrService.transcribeAudioBuffer(segmentAudio);
-      if (transcription != null) {
-        // Create processed result
-        final result = ProcessedAudioResult(
-          speechSegment: segment,
-          transcription: transcription,
-          processingTime: DateTime.now(),
-          audioDataSize: segmentAudio.length,
-        );
-        
-        // Add to results history
-        _addToResultsHistory(result);
-        
-        // Broadcast result
-        _resultController.add(result);
-        
-        debugPrint('LocalAudioProcessor: Speech segment processed: ${transcription.text}');
-      }
-      
-    } catch (e) {
-      debugPrint('LocalAudioProcessor: Error processing speech segment: $e');
+      _speechStartTime = null;
     }
+    
+    notifyListeners();
   }
   
-  /// Process final audio chunk
-  Future<void> _processFinalAudio() async {
-    try {
-      debugPrint('LocalAudioProcessor: Processing final audio chunk');
-      
-      if (_audioBuffer.isEmpty) return;
-      
-      // Process entire audio buffer with ASR
-      final transcription = await _asrService.transcribeAudioBuffer(
-        Uint8List.fromList(_audioBuffer),
-      );
-      
-      if (transcription != null) {
-        // Create final result
-        final result = ProcessedAudioResult(
-          speechSegment: null, // No specific segment for final processing
-          transcription: transcription,
-          processingTime: DateTime.now(),
-          audioDataSize: _audioBuffer.length,
-          isFinalResult: true,
-        );
-        
-        // Add to results history
-        _addToResultsHistory(result);
-        
-        // Broadcast result
-        _resultController.add(result);
-        
-        debugPrint('LocalAudioProcessor: Final audio processed: ${transcription.text}');
-      }
-      
-      // Clear buffer after final processing
-      _audioBuffer.clear();
-      
-    } catch (e) {
-      debugPrint('LocalAudioProcessor: Error processing final audio: $e');
-    }
-  }
-  
-  /// Extract audio data for a specific speech segment
-  Uint8List _extractSegmentAudio(VadSpeechSegment segment) {
-    // This is a simplified implementation
-    // In a real scenario, you'd want to map timestamps to audio buffer positions
-    // For now, return the current buffer content
-    return Uint8List.fromList(_audioBuffer);
-  }
-  
-  /// Handle VAD speech detection events
-  void _onVadSpeechDetection(bool isSpeech) {
-    // This is handled in processAudioData for real-time processing
-    debugPrint('LocalAudioProcessor: VAD speech detection: $isSpeech');
-  }
-  
-  /// Handle ASR transcription results
-  void _onAsrTranscription(TranscriptionResult transcription) {
-    debugPrint('LocalAudioProcessor: ASR transcription: ${transcription.text}');
-  }
-  
-  /// Add result to history
+  /// Add result to history with size limit
   void _addToResultsHistory(ProcessedAudioResult result) {
     _processingResults.add(result);
     
-    // Maintain history size limit
+    // Keep only the latest results
     if (_processingResults.length > _maxResultsHistory) {
-      _processingResults.removeAt(0);
+      _processingResults.removeRange(0, _processingResults.length - _maxResultsHistory);
     }
   }
+  
+  /// Clear all processing results
+  void clearResults() {
+    _processingResults.clear();
+    _detectedSegments.clear();
+    debugPrint('LocalAudioProcessor: Processing results cleared');
+    notifyListeners();
+  }
+  
+  /// Get the latest processing result
+  ProcessedAudioResult? get latestResult {
+    return _processingResults.isNotEmpty ? _processingResults.last : null;
+  }
+  
+  /// Get all results for a specific time range
+  List<ProcessedAudioResult> getResultsInRange(DateTime start, DateTime end) {
+    return _processingResults.where((result) {
+      return result.processingTime.isAfter(start) && result.processingTime.isBefore(end);
+    }).toList();
+  }
+  
+
   
   /// Set ASR language (defaults to English)
   Future<bool> setLanguage(String language) async {
@@ -341,8 +309,6 @@ class LocalAudioProcessor extends ChangeNotifier {
   /// Get supported languages
   List<String> get supportedLanguages => _asrService.supportedLanguages;
   
-
-  
   /// Get current processor statistics
   Map<String, dynamic> getStats() {
     return {
@@ -357,17 +323,25 @@ class LocalAudioProcessor extends ChangeNotifier {
       'supportedLanguages': supportedLanguages,
       'vadStats': _vadService.getStats(),
       'asrStats': _asrService.getStats(),
+      'computeProcessorStats': _computeProcessor.getStats(),
     };
   }
   
-  /// Dispose of resources
   @override
   void dispose() {
+    // Disable and dispose compute processor
+    _computeProcessor.disable();
+    _computeProcessor.dispose();
+    
+    // Cancel stream subscriptions
+    _isolateResultSubscription?.cancel();
+    _isolateSpeechStateSubscription?.cancel();
+    
+    // Close stream controllers
     _resultController.close();
     _speechStateController.close();
+    
     super.dispose();
   }
 }
-
-/// Represents a processed audio result combining VAD and ASR
 

@@ -1,14 +1,10 @@
-import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:share_plus/share_plus.dart';
 
 import 'services/hardware_service.dart';
 import 'services/hardware_audio_recorder.dart';
-import 'services/audio_streaming_service.dart';
 import 'providers/local_audio_provider.dart';
 import 'models/processed_audio_result.dart';
 
@@ -20,286 +16,59 @@ class HardwareAudioPage extends StatefulWidget {
 }
 
 class _HardwareAudioPageState extends State<HardwareAudioPage> {
-  List<FileSystemEntity> _capturedFiles = [];
-  bool _isLoadingFiles = false;
+
   
-  // Audio playback state
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  String? _currentlyPlayingFile;
-  bool _isPlaying = false;
-  Duration _audioDuration = Duration.zero;
-  Duration _currentPosition = Duration.zero;
+
   
-  // File rotation countdown timer
-  Timer? _countdownTimer;
-  Duration _nextRotationCountdown = Duration.zero;
+
   
   @override
   void initState() {
     super.initState();
-    _loadCapturedFiles();
-    _setupAudioPlayer();
-    _startCountdownTimer();
+    
+    // Ensure local audio processing is enabled when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<LocalAudioProvider>();
+      if (provider.isInitialized) {
+        provider.enableProcessing();
+      }
+    });
   }
   
   @override
   void dispose() {
-    _audioPlayer.dispose();
-    _countdownTimer?.cancel();
     super.dispose();
   }
   
-  void _setupAudioPlayer() {
-    // Listen to audio player state changes
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = state == PlayerState.playing;
-        });
-      }
-    });
-    
-    // Listen to audio duration changes
-    _audioPlayer.onDurationChanged.listen((duration) {
-      if (mounted) {
-        setState(() {
-          _audioDuration = duration;
-        });
-      }
-    });
-    
-    // Listen to audio position changes
-    _audioPlayer.onPositionChanged.listen((position) {
-      if (mounted) {
-        setState(() {
-          _currentPosition = position;
-        });
-      }
-    });
-    
-    // Listen to audio completion
-    _audioPlayer.onPlayerComplete.listen((_) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = false;
-          _currentlyPlayingFile = null;
-          _currentPosition = Duration.zero;
-        });
-      }
-    });
-  }
+
   
-  void _startCountdownTimer() {
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        final audioCapture = context.read<HardwareAudioCapture>();
-        if (audioCapture.isCapturing) {
-          final captureDuration = audioCapture.captureDuration;
-          final nextRotation = Duration(seconds: 10) - Duration(seconds: captureDuration.inSeconds % 10);
-          setState(() {
-            _nextRotationCountdown = nextRotation;
-          });
-        }
-      }
-    });
-  }
 
-  Future<void> _loadCapturedFiles() async {
-    setState(() {
-      _isLoadingFiles = true;
-    });
 
-    try {
-      final hardwareService = context.read<HardwareService>();
-      final audioCapture = HardwareAudioCapture(hardwareService);
-      final files = await audioCapture.getCapturedFiles();
-      
-      setState(() {
-        _capturedFiles = files;
-        _isLoadingFiles = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoadingFiles = false;
-      });
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading captured files: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hardware Audio Recording'),
+        title: const Text('Audio Recording'),
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadCapturedFiles,
-            tooltip: 'Refresh Files',
-          ),
-        ],
       ),
       body: Column(
         children: [
-          // Global audio player controls (when audio is playing)
-          if (_isPlaying && _currentlyPlayingFile != null)
-            _buildGlobalAudioControls(),
-          
           // Audio capture controls
           _buildCaptureControls(),
           
-          // Capture statistics summary
-          _buildCaptureStatistics(),
-          
-          // Local transcription results (with error handling)
-          Builder(
-            builder: (context) {
-              try {
-                return _buildTranscriptionResults();
-              } catch (e) {
-                debugPrint('Error in transcription results: $e');
-                // Show a simple fallback instead of crashing
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey[300]!, width: 1),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.warning, color: Colors.grey[600]),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Transcription results temporarily unavailable',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-          
-
-          
-          // Captured files list
+          // Local transcription results
           Expanded(
-            child: _buildCapturedFilesList(),
+            child: _buildTranscriptionResults(),
           ),
         ],
       ),
     );
   }
 
-  /// Build global audio player controls bar
-  Widget _buildGlobalAudioControls() {
-    final fileName = _currentlyPlayingFile!.split('/').last;
-    
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        border: Border(
-          bottom: BorderSide(color: Colors.blue[200]!, width: 1),
-        ),
-      ),
-      child: Column(
-        children: [
-          // Header with filename and controls
-          Row(
-            children: [
-              Icon(Icons.music_note, color: Colors.blue[700], size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Now Playing: $fileName',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[700],
-                    fontSize: 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              // Playback controls
-              IconButton(
-                icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                onPressed: _isPlaying ? _pauseAudio : _resumeAudio,
-                tooltip: _isPlaying ? 'Pause' : 'Resume',
-                color: Colors.blue[700],
-                iconSize: 24,
-              ),
-              IconButton(
-                icon: const Icon(Icons.stop),
-                onPressed: _stopAudio,
-                tooltip: 'Stop',
-                color: Colors.red[700],
-                iconSize: 24,
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // Progress bar
-          if (_audioDuration > Duration.zero) ...[
-            LayoutBuilder(
-              builder: (context, constraints) {
-                return GestureDetector(
-                  onTapDown: (details) => _onProgressBarTap(details, constraints.maxWidth),
-                  child: LinearProgressIndicator(
-                    value: _audioDuration.inMilliseconds > 0 
-                        ? _currentPosition.inMilliseconds / _audioDuration.inMilliseconds 
-                        : 0.0,
-                    backgroundColor: Colors.blue[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[700]!),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 4),
-            // Time display
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _formatDuration(_currentPosition),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue[600],
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  _formatDuration(_audioDuration),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue[600],
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildCaptureControls() {
     return Consumer2<HardwareService, HardwareAudioCapture>(
@@ -309,23 +78,28 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
         final device = hardwareService.connectedDevice;
 
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
-            border: Border(
-              bottom: BorderSide(color: Colors.grey[300]!, width: 1),
-            ),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Connection status
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     isConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
                     color: isConnected ? Colors.green : Colors.grey,
-                    size: 20,
+                    size: 24,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -335,12 +109,40 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                     style: TextStyle(
                       color: isConnected ? Colors.green[700] : Colors.grey[600],
                       fontWeight: FontWeight.w500,
+                      fontSize: 16,
                     ),
                   ),
                 ],
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
+              
+              // Recording status
+              if (isCapturing) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.red[200]!),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.fiber_manual_record, color: Colors.red[600], size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Recording...',
+                        style: TextStyle(
+                          color: Colors.red[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
               
               // Capture controls
               Row(
@@ -350,16 +152,19 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                       onPressed: isConnected && !isCapturing
                           ? () => _startCapture(audioCapture)
                           : null,
-                      icon: const Icon(Icons.fiber_manual_record),
-                      label: const Text('Start Recording'),
+                      icon: Icon(isCapturing ? Icons.fiber_manual_record : Icons.play_arrow),
+                      label: Text(isCapturing ? 'Recording...' : 'Start Recording'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: isCapturing ? Colors.grey[400] : Colors.red,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: isConnected && isCapturing
@@ -370,7 +175,10 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[600],
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
@@ -383,241 +191,11 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
     );
   }
 
-  Widget _buildCaptureStatistics() {
-    return Consumer<HardwareAudioCapture>(
-      builder: (context, audioCapture, child) {
-        if (!audioCapture.isCapturing) return const SizedBox.shrink();
-        
-        final duration = audioCapture.captureDuration;
-        final nextRotation = _nextRotationCountdown;
-        
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.blue[50],
-            border: Border(
-              bottom: BorderSide(color: Colors.blue[200]!, width: 1),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.timer, color: Colors.blue[700], size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Recording in Progress',
-                    style: TextStyle(
-                      color: Colors.blue[700],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatItem(
-                      'Recording Time',
-                      _formatDuration(duration),
-                      Icons.access_time,
-                      Colors.blue,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildStatItem(
-                      'Next File Rotation',
-                      _formatDuration(nextRotation),
-                      Icons.rotate_right,
-                      Colors.orange,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
 
-  Widget _buildCapturedFilesList() {
-    if (_isLoadingFiles) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    
-    if (_capturedFiles.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.audio_file,
-              size: 64,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No audio files captured yet',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Start recording to capture audio from your hardware device',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-    
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _capturedFiles.length,
-      itemBuilder: (context, index) {
-        final file = _capturedFiles[index];
-        final fileName = file.path.split('/').last;
-        final fileSize = _formatFileSize(file.statSync().size);
-        final modifiedTime = file.statSync().modified;
-        
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: Icon(
-              Icons.audio_file,
-              color: Colors.blue[600],
-              size: 32,
-            ),
-            title: Text(
-              fileName,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Size: $fileSize'),
-                Text('Modified: ${_formatDateTime(modifiedTime)}'),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    _currentlyPlayingFile == file.path && _isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                  ),
-                  onPressed: () => _playAudioFile(file.path),
-                  tooltip: 'Play',
-                ),
-                IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: () => _shareAudioFile(file.path),
-                  tooltip: 'Share',
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => _deleteAudioFile(file.path),
-                  tooltip: 'Delete',
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
-  // Audio playback methods
-  Future<void> _playAudioFile(String filePath) async {
-    try {
-      if (_currentlyPlayingFile == filePath && _isPlaying) {
-        await _pauseAudio();
-        return;
-      }
-      
-      if (_currentlyPlayingFile != filePath) {
-        await _stopAudio();
-        await _audioPlayer.play(DeviceFileSource(filePath));
-        setState(() {
-          _currentlyPlayingFile = filePath;
-        });
-      } else {
-        await _resumeAudio();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error playing audio: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
 
-  Future<void> _pauseAudio() async {
-    await _audioPlayer.pause();
-  }
 
-  Future<void> _resumeAudio() async {
-    await _audioPlayer.resume();
-  }
-
-  Future<void> _stopAudio() async {
-    await _audioPlayer.stop();
-    setState(() {
-      _currentlyPlayingFile = null;
-      _currentPosition = Duration.zero;
-    });
-  }
-
-  void _onProgressBarTap(TapDownDetails details, double maxWidth) {
-    final relativePosition = details.localPosition.dx / maxWidth;
-    final newPosition = Duration(
-      milliseconds: (relativePosition * _audioDuration.inMilliseconds).round(),
-    );
-    _audioPlayer.seek(newPosition);
-  }
 
   // Capture control methods
   Future<void> _startCapture(HardwareAudioCapture audioCapture) async {
@@ -626,7 +204,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Audio recording started'),
+            content: Text('Recording started'),
             backgroundColor: Colors.green,
           ),
         );
@@ -648,31 +226,13 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
       debugPrint('HardwareRecordingPage: Stopping capture...');
       await audioCapture.stopCapture();
       
-      // Wait a moment for the state to update
-      await Future.delayed(const Duration(milliseconds: 100));
-      
-      // Check if it's truly stopped
-      if (audioCapture.isTrulyStopped) {
-        debugPrint('HardwareRecordingPage: Capture successfully stopped');
-        await _loadCapturedFiles(); // Refresh the file list
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Audio recording stopped - WAV file saved'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
-        debugPrint('HardwareRecordingPage: Warning - Capture may not be fully stopped');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Audio recording stopped (checking status...)'),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Recording stopped'),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
     } catch (e) {
       debugPrint('HardwareRecordingPage: Error stopping recording: $e');
@@ -687,126 +247,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
     }
   }
 
-  // Utility methods
-  Future<void> _shareAudioFile(String filePath) async {
-    try {
-      await Share.shareXFiles([XFile(filePath)], text: 'Audio file from hardware device');
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sharing file: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
 
-  Future<void> _deleteAudioFile(String filePath) async {
-    try {
-      final hardwareService = context.read<HardwareService>();
-      final audioCapture = HardwareAudioCapture(hardwareService);
-      final success = await audioCapture.deleteCapturedFile(filePath);
-      
-      if (success) {
-        await _loadCapturedFiles(); // Refresh the file list
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Audio file deleted'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to delete audio file'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error deleting file: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes;
-    final seconds = duration.inSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
-  String _formatFileSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')} '
-           '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-  }
-
-  /// Play audio associated with a transcription result
-  void _playTranscriptionAudio(ProcessedAudioResult result) {
-    try {
-      // Find the most recent audio file that matches the transcription timing
-      if (_capturedFiles.isNotEmpty) {
-        // Sort files by modification time to get the most recent
-        final sortedFiles = List<FileSystemEntity>.from(_capturedFiles)
-          ..sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
-        
-        if (sortedFiles.isNotEmpty) {
-          final audioFile = sortedFiles.first;
-          final audioPath = audioFile.path;
-          
-          debugPrint('Playing audio for transcription: $audioPath');
-          
-          // Stop any currently playing audio
-          _audioPlayer.stop();
-          
-          // Set the source and play
-          _audioPlayer.setSource(DeviceFileSource(audioPath));
-          _audioPlayer.resume();
-          
-          // Update UI state
-          setState(() {
-            _currentlyPlayingFile = audioPath;
-            _isPlaying = true;
-          });
-          
-          // Show feedback to user
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Playing audio: ${audioPath.split('/').last}'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('Error playing transcription audio: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error playing audio: $e'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-  }
 
   /// Build local transcription results widget
   Widget _buildTranscriptionResults() {
@@ -814,101 +255,211 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
       return Selector<LocalAudioProvider, List<ProcessedAudioResult>>(
         selector: (context, provider) => provider.processingResults,
         builder: (context, results, child) {
-          // Limit results to prevent performance issues
-          final displayResults = results.length > 10 ? results.take(10).toList() : results;
-        
-        return Container(
-          height: 300, // Fixed height to make it scrollable
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.orange[50],
-            border: Border(
-              bottom: BorderSide(color: Colors.orange[200]!, width: 1),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.translate, color: Colors.orange[600]),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Local Transcription Results',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[700],
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with language selector
+                Row(
+                  children: [
+                    Icon(Icons.translate, color: Colors.blue[600], size: 24),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Transcription Results',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[700],
+                      ),
                     ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${results.length} results',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.orange[600],
+                    const Spacer(),
+                    // Auto-language detection status
+                    Consumer<LocalAudioProvider>(
+                      builder: (context, provider, child) {
+                        final currentLang = provider.currentLanguage;
+                        final langNames = {'en': 'English', 'zh': '中文', 'auto': 'Auto-Detect'};
+                        final langName = langNames[currentLang] ?? currentLang;
+                        
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.green[50],
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.green[200]!),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.auto_awesome, color: Colors.green[600], size: 16),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Multilingual',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.green[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              if (results.isEmpty)
-                const Text(
-                  'No transcriptions yet. Start recording to see results.',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
-                  ),
-                )
-              else
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: displayResults.map((result) => _buildTranscriptionResultItem(result)).toList(),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Text(
+                        '${results.length}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue[600],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-            ],
-          ),
-        );
-      },
-    );
+                
+
+                const SizedBox(height: 16),
+                
+                // Debug status section
+                Consumer<LocalAudioProvider>(
+                  builder: (context, provider, child) {
+                    final stats = provider.getStats();
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Debug Status',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              _buildStatusItem('Initialized', stats['isInitialized'] ?? false),
+                              const SizedBox(width: 16),
+                              _buildStatusItem('Results', stats['processingResultsCount'] ?? 0),
+                              const SizedBox(width: 16),
+                              _buildStatusItem('Auto-Lang', stats['currentLanguage'] ?? 'unknown'),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          // Memory usage row
+                          Consumer<LocalAudioProvider>(
+                            builder: (context, provider, child) {
+                              final asrService = provider.asrService;
+                              final memoryStats = asrService.getMemoryStats();
+                              return Row(
+                                children: [
+                                  _buildStatusItem('Models', memoryStats['recognizersLoaded'] ?? 0),
+                                  const SizedBox(width: 16),
+                                  _buildStatusItem('Mode', 'Multilingual'),
+                                  const SizedBox(width: 16),
+                                  _buildStatusItem('Language', memoryStats['currentLanguage'] ?? 'auto'),
+                                ],
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          // Action buttons row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  provider.enableProcessing();
+                                  setState(() {});
+                                },
+                                icon: Icon(Icons.refresh, size: 16),
+                                label: Text('Refresh', style: TextStyle(fontSize: 12)),
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  minimumSize: Size(0, 32),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Results list
+                if (results.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.mic_off,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No transcriptions yet',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Start recording to see real-time transcriptions',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: results.length,
+                      itemBuilder: (context, index) {
+                        final result = results[results.length - 1 - index]; // Show newest first
+                        return _buildTranscriptionResultItem(result);
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      );
     } catch (e) {
       debugPrint('Error building transcription results: $e');
       return Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.red[50],
-          border: Border(
-            bottom: BorderSide(color: Colors.red[200]!, width: 1),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.error, color: Colors.red[600]),
-                const SizedBox(width: 8),
-                Text(
-                  'Transcription Results Error',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red[700],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Unable to display transcription results: $e',
-              style: TextStyle(
-                color: Colors.red[600],
-                fontSize: 12,
-              ),
-            ),
-          ],
+        child: Center(
+          child: Text('Error loading transcriptions: $e'),
         ),
       );
     }
@@ -916,111 +467,169 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
 
   /// Build individual transcription result item
   Widget _buildTranscriptionResultItem(ProcessedAudioResult result) {
+    // Calculate timing information
+    final hasSpeechSegment = result.speechSegment != null;
+    final speechStartTime = hasSpeechSegment ? result.speechSegment!.startTime : null;
+    final speechEndTime = hasSpeechSegment ? result.speechSegment!.endTime : null;
+    
+    // Format timestamps for timeline display
+    final startTimeStr = speechStartTime != null 
+        ? '${speechStartTime.inMinutes.toString().padLeft(2, '0')}:${(speechStartTime.inSeconds % 60).toString().padLeft(2, '0')}'
+        : '00:00';
+    
+    final endTimeStr = speechEndTime != null 
+        ? '${speechEndTime.inMinutes.toString().padLeft(2, '0')}:${(speechEndTime.inSeconds % 60).toString().padLeft(2, '0')}'
+        : '00:00';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.orange[300]!),
-      ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.record_voice_over,
-                color: result.isFinalResult ? Colors.green[600] : Colors.blue[600],
-                size: 16,
+          // Timeline timestamp
+          Container(
+            width: 60,
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              startTimeStr,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+                fontFamily: 'monospace',
               ),
-              const SizedBox(width: 8),
-              Text(
-                result.isFinalResult ? 'Final Result' : 'Speech Segment',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: result.isFinalResult ? Colors.green[600] : Colors.blue[600],
-                ),
-              ),
-              const Spacer(),
-              Text(
-                '${result.processingTime.hour.toString().padLeft(2, '0')}:${result.processingTime.minute.toString().padLeft(2, '0')}:${result.processingTime.second.toString().padLeft(2, '0')}',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey[500],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            result.transcription.text,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
-          // Audio playback controls for this transcription
-          Row(
-            children: [
-              Icon(
-                Icons.play_circle_outline,
-                color: Colors.blue[600],
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Tap to play associated audio',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue[600],
-                    fontStyle: FontStyle.italic,
+          
+          // Timeline connector
+          Container(
+            width: 20,
+            child: Column(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: result.isFinalResult ? Colors.green : Colors.blue,
+                    shape: BoxShape.circle,
                   ),
                 ),
-              ),
-              // Find and play the corresponding audio file
-              TextButton.icon(
-                onPressed: () => _playTranscriptionAudio(result),
-                icon: Icon(Icons.play_arrow, size: 16, color: Colors.blue[600]),
-                label: Text(
-                  'Play Audio',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue[600],
-                  ),
+                Container(
+                  width: 2,
+                  height: 20,
+                  color: Colors.grey[300],
                 ),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  minimumSize: Size.zero,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Text(
-                'Language: ${result.transcription.languageName}',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey[600],
+          
+          // Transcription content
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+                border: Border.all(
+                  color: result.isFinalResult ? Colors.green[200]! : Colors.blue[200]!,
+                  width: 1,
                 ),
               ),
-              const SizedBox(width: 16),
-              Text(
-                'Audio: ${(result.audioDataSize / 1024).toStringAsFixed(1)} KB',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey[600],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Transcription text
+                  Text(
+                    result.transcription.text,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.4,
+                    ),
+                  ),
+                  
+                  // Language indicator
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: result.transcription.language == 'zh' ? Colors.orange[50] : Colors.blue[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: result.transcription.language == 'zh' ? Colors.orange[200]! : Colors.blue[200]!,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.language,
+                          size: 12,
+                          color: result.transcription.language == 'zh' ? Colors.orange[600] : Colors.blue[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          result.transcription.language == 'zh' ? '中文 (Auto)' : 'English (Auto)',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: result.transcription.language == 'zh' ? Colors.orange[600] : Colors.blue[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // End time (if different from start)
+                  if (speechEndTime != null && speechEndTime != speechStartTime) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'End: $endTimeStr',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildStatusItem(String label, dynamic value) {
+    return Row(
+      children: [
+        Text(
+          '$label: ',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[600],
+          ),
+        ),
+        Text(
+          value.toString(),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
 }

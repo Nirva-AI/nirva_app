@@ -121,11 +121,15 @@ class LocalAudioProvider extends ChangeNotifier {
   
   /// Enable local audio processing (called automatically when hardware connects)
   void enableProcessing() {
+    debugPrint('LocalAudioProvider: enableProcessing called');
+    debugPrint('LocalAudioProvider: isInitialized: $_isInitialized, isInitializing: $_isInitializing');
+    
     if (!_isInitialized) {
       debugPrint('LocalAudioProvider: Cannot enable - services not initialized');
       return;
     }
     
+    debugPrint('LocalAudioProvider: Enabling local audio processor...');
     _localAudioProcessor.enable();
     debugPrint('LocalAudioProvider: Local audio processing enabled automatically');
     notifyListeners();
@@ -136,7 +140,8 @@ class LocalAudioProvider extends ChangeNotifier {
     if (!_isInitialized) {
       return {
         'isInitialized': false,
-        'error': 'Services not initialized',
+        'isInitializing': _isInitializing,
+        'initializationError': _initializationError,
       };
     }
     
@@ -144,9 +149,10 @@ class LocalAudioProvider extends ChangeNotifier {
       'isInitialized': _isInitialized,
       'isInitializing': _isInitializing,
       'initializationError': _initializationError,
+      'currentLanguage': currentLanguage,
+      'supportedLanguages': supportedLanguages,
+      'processingResultsCount': processingResults.length,
       'localAudioProcessorStats': _localAudioProcessor.getStats(),
-      'vadStats': _vadService.getStats(),
-      'asrStats': _asrService.getStats(),
     };
   }
   

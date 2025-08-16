@@ -78,6 +78,13 @@ void main() async {
               localAudioProvider.localAudioProcessor,
             );
             
+            // Enable local audio processing when hardware connects
+            context.read<HardwareService>().addListener(() {
+              if (context.read<HardwareService>().isConnected) {
+                localAudioProvider.enableProcessing();
+              }
+            });
+            
             return audioCapture;
           },
           update: (_, hardwareService, previous) => 

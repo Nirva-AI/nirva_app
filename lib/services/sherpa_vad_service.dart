@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart';
@@ -15,6 +16,10 @@ class SherpaVadService extends ChangeNotifier {
   static const int _sampleRate = 16000;  // Match OMI firmware sample rate
   static const int _channels = 1;         // Mono audio
   static const int _frameSize = 160;      // 10ms frames (16000Hz / 160 = 100Hz)
+  
+  // VAD processing frequency control - process every frame for better detection
+  static const int _vadProcessingInterval = 1; // Process every frame for better accuracy
+  int _frameCounter = 0;
   
   // VAD state
   bool _isInitialized = false;
@@ -79,15 +84,15 @@ class SherpaVadService extends ChangeNotifier {
       
       debugPrint('SherpaVadService: Using model file at: $modelPath');
       
-      // Create VAD configuration
+      // Create VAD configuration with optimized parameters
       final config = VadModelConfig(
         sileroVad: SileroVadModelConfig(
           model: modelPath,
-          threshold: 0.5,
-          minSilenceDuration: 0.5,
-          minSpeechDuration: 0.5,
-          windowSize: 512, // Use standard window size like test config
-          maxSpeechDuration: 5.0,
+          threshold: 0.5, // Less sensitive threshold to avoid false positives (was 0.1)
+          minSilenceDuration: 0.5, // Longer silence to ensure speech has ended (was 0.3)
+          minSpeechDuration: 0.3, // Longer speech duration for better detection (was 0.2)
+          windowSize: 512, // Use standard window size
+          maxSpeechDuration: 30.0, // Allow longer speech segments
         ),
         sampleRate: _sampleRate,
         numThreads: 1,
@@ -110,6 +115,7 @@ class SherpaVadService extends ChangeNotifier {
         debugPrint('  - Sample Rate: $_sampleRate Hz');
         debugPrint('  - Channels: $_channels');
         debugPrint('  - Frame Size: $_frameSize samples');
+        debugPrint('  - Processing Interval: $_vadProcessingInterval frames');
         
         notifyListeners();
         return true;
@@ -135,12 +141,10 @@ class SherpaVadService extends ChangeNotifier {
   /// Returns true if speech is detected in the current frame
   bool processAudioFrame(Uint8List pcmData) {
     if (!_isInitialized || _vad == null) {
-      debugPrint('SherpaVadService: Cannot process - VAD not initialized');
       return false;
     }
     
     if (pcmData.isEmpty) {
-      debugPrint('SherpaVadService: Cannot process empty audio data');
       return false;
     }
     
@@ -157,14 +161,38 @@ class SherpaVadService extends ChangeNotifier {
         final frameData = _audioBuffer.take(_frameSize * 2).toList();
         _audioBuffer.removeRange(0, _frameSize * 2);
         
+        // Process every frame for better accuracy
+        _frameCounter++;
+        if (_frameCounter % _vadProcessingInterval != 0) {
+          _totalFramesProcessed++;
+          continue; // Skip this frame
+        }
+        
         // Convert to Float32List for VAD processing
         final floatFrame = _convertPcmToFloat32(frameData);
+        
+        // Check if audio has meaningful content
+        final maxAmplitude = floatFrame.reduce((a, b) => a.abs() > b.abs() ? a : b).abs();
+        if (maxAmplitude < 0.0001) { // Reduced from 0.001 to 0.0001 to process more frames
+          // Skip processing for essentially silent frames
+          _silenceFramesDetected++;
+          _totalFramesProcessed++;
+          continue;
+        }
         
         // Process frame with VAD
         _vad!.acceptWaveform(floatFrame);
         
         // Check if speech is detected
-        if (_vad!.isDetected()) {
+        final frameSpeechDetected = _vad!.isDetected();
+        
+        // Log speech detection only when it changes
+        if (frameSpeechDetected != _isSpeechDetected) {
+          debugPrint('SherpaVadService: Speech detection changed to: $frameSpeechDetected (frame: $_frameCounter)');
+        }
+        
+        // Check if speech is detected
+        if (frameSpeechDetected) {
           // Speech detected in this frame
           speechDetected = true;
           _speechFramesDetected++;
@@ -174,7 +202,7 @@ class SherpaVadService extends ChangeNotifier {
             _isSpeechDetected = true;
             _speechStartTime = DateTime.now();
             _speechDetectionController.add(true);
-            debugPrint('SherpaVadService: Speech detected');
+            debugPrint('SherpaVadService: Speech started');
           }
         } else {
           _silenceFramesDetected++;
@@ -188,7 +216,7 @@ class SherpaVadService extends ChangeNotifier {
               _speechDurationController.add(Duration(milliseconds: _speechDuration));
             }
             _speechDetectionController.add(false);
-            debugPrint('SherpaVadService: Speech ended, duration: $_speechDuration');
+            debugPrint('SherpaVadService: Speech ended, duration: ${_speechDuration}ms');
           }
         }
         
@@ -261,10 +289,30 @@ class SherpaVadService extends ChangeNotifier {
   Float32List _convertPcmToFloat32(List<int> pcmData) {
     final floatData = Float32List(pcmData.length ~/ 2);
     
+         // Use moderate amplification since we increased the threshold
+     const double amplificationFactor = 5.0; // Reduced from 10x to 5x
+    
     for (int i = 0; i < floatData.length; i++) {
-      final sample = (pcmData[i * 2] | (pcmData[i * 2 + 1] << 8));
       // Convert 16-bit signed integer to float32 (-1.0 to 1.0)
-      floatData[i] = sample / 32768.0;
+      // Handle both little-endian and big-endian formats
+      int sample;
+      if (Endian.host == Endian.little) {
+        sample = (pcmData[i * 2] | (pcmData[i * 2 + 1] << 8));
+      } else {
+        sample = ((pcmData[i * 2] << 8) | pcmData[i * 2 + 1]);
+      }
+      
+      // Handle signed 16-bit integer
+      if (sample > 32767) {
+        sample = sample - 65536;
+      }
+      
+      // Convert to float and apply higher amplification
+      floatData[i] = (sample / 32768.0) * amplificationFactor;
+      
+      // Clamp to prevent clipping
+      if (floatData[i] > 1.0) floatData[i] = 1.0;
+      if (floatData[i] < -1.0) floatData[i] = -1.0;
     }
     
     return floatData;
@@ -322,6 +370,38 @@ class SherpaVadService extends ChangeNotifier {
     }
   }
   
+  /// Test VAD with a simple audio sample
+  Future<bool> testVadWithSample() async {
+    if (!_isInitialized || _vad == null) {
+      debugPrint('SherpaVadService: Cannot test - VAD not initialized');
+      return false;
+    }
+    
+    try {
+      debugPrint('SherpaVadService: Testing VAD with sample audio...');
+      
+      // Create a simple test audio sample (1 second of alternating tones)
+      final testAudio = Float32List(_sampleRate);
+      for (int i = 0; i < testAudio.length; i++) {
+        // Create a simple tone pattern
+        testAudio[i] = 0.1 * sin(2 * pi * 440 * i / _sampleRate); // 440Hz tone
+      }
+      
+      // Process the test audio
+      _vad!.acceptWaveform(testAudio);
+      
+      // Check if VAD detects anything
+      final detected = _vad!.isDetected();
+      debugPrint('SherpaVadService: VAD test result - detected: $detected');
+      
+      return true;
+      
+    } catch (e) {
+      debugPrint('SherpaVadService: VAD test failed: $e');
+      return false;
+    }
+  }
+  
 
   
   /// Get current VAD statistics
@@ -339,6 +419,9 @@ class SherpaVadService extends ChangeNotifier {
       'sampleRate': _sampleRate,
       'channels': _channels,
       'frameSize': _frameSize,
+      'vadProcessingInterval': _vadProcessingInterval,
+      'frameCounter': _frameCounter,
+      'effectiveProcessingRate': '${_vadProcessingInterval * 10}ms intervals',
     };
   }
   

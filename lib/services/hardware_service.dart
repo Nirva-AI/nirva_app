@@ -427,10 +427,10 @@ class HardwareService extends ChangeNotifier {
     }
     
     try {
-      debugPrint('HardwareService.verifyConnection: Checking connection for device ${_connectedDevice!.id}');
+      // debugPrint('HardwareService.verifyConnection: Checking connection for device ${_connectedDevice!.id}');
       final bluetoothDevice = BluetoothDevice.fromId(_connectedDevice!.id);
       final isConnected = await bluetoothDevice.isConnected;
-      debugPrint('HardwareService.verifyConnection: Bluetooth device reports isConnected=$isConnected');
+      // debugPrint('HardwareService.verifyConnection: Bluetooth device reports isConnected=$isConnected');
       
       if (!isConnected) {
         // Connection was lost, update state
@@ -444,13 +444,13 @@ class HardwareService extends ChangeNotifier {
       
       // If we get here, the connection is verified, so ensure the state is correct
       if (_connectionState?.status != HardwareConnectionStatus.connected) {
-        debugPrint('HardwareService.verifyConnection: Connection verified but state was wrong, fixing it');
+        // debugPrint('HardwareService.verifyConnection: Connection verified but state was wrong, fixing it');
         _updateConnectionState(_connectedDevice!.id, HardwareConnectionStatus.connected);
         _connectedDevice = _connectedDevice!.copyWith(isConnected: true);
         notifyListeners();
       }
       
-      debugPrint('HardwareService.verifyConnection: Connection verified successfully');
+      // debugPrint('HardwareService.verifyConnection: Connection verified successfully');
       return true;
     } catch (e) {
       debugPrint('Error verifying connection: $e');
