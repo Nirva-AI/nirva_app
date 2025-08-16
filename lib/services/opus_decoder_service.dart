@@ -118,22 +118,30 @@ class OpusDecoderService extends ChangeNotifier {
       final pcmData = _decoder!.decode(input: Uint8List.fromList(opusData));
       
       if (pcmData.isNotEmpty) {
-        // Convert Int16List to Uint8List for consistency
-        final pcmBytes = Uint8List(pcmData.length * 2);
-        final pcmBuffer = pcmBytes.buffer.asByteData();
+        // Try sending raw Int16List data directly without byte conversion
+        // This might fix the byte order issue
+        final rawPcmBytes = Uint8List(pcmData.length * 2);
+        final pcmBuffer = rawPcmBytes.buffer.asByteData();
         
         for (int i = 0; i < pcmData.length; i++) {
-          pcmBuffer.setInt16(i * 2, pcmData[i], Endian.little);
+          // Get the 16-bit signed integer sample
+          final sample = pcmData[i];
+          
+          // Ensure sample is within valid 16-bit signed range
+          final clampedSample = sample.clamp(-32768, 32767);
+          
+          // Use ByteData.setInt16 for proper little-endian conversion
+          pcmBuffer.setInt16(i * 2, clampedSample, Endian.little);
         }
         
         // Update statistics
         _totalPacketsDecoded++;
-        _totalBytesDecoded += pcmBytes.length;
+        _totalBytesDecoded += rawPcmBytes.length;
         
         // Broadcast decoded audio
-        _decodedAudioController.add(pcmBytes);
+        _decodedAudioController.add(rawPcmBytes);
         
-        return pcmBytes;
+        return rawPcmBytes;
       } else {
         _failedDecodes++;
         debugPrint('OpusDecoderService: Decoding returned empty data');
@@ -228,7 +236,10 @@ class OpusDecoderService extends ChangeNotifier {
     header.setUint8(3, 0x46); // 'F'
     
     // File size (4 bytes) - total file size minus 8 bytes
-    header.setUint32(4, 36 + pcmDataSize, Endian.little);
+    // Total file size = 44 (header) + pcmDataSize
+    // File size field = total file size - 8 = 44 + pcmDataSize - 8 = 36 + pcmDataSize
+    final fileSizeField = 36 + pcmDataSize;
+    header.setUint32(4, fileSizeField, Endian.little);
     
     // WAVE identifier
     header.setUint8(8, 0x57);  // 'W'
@@ -271,7 +282,7 @@ class OpusDecoderService extends ChangeNotifier {
     header.setUint8(38, 0x74); // 't'
     header.setUint8(39, 0x61); // 'a'
     
-    // data chunk size
+    // data chunk size - this should be the actual PCM data size in bytes
     header.setUint32(40, pcmDataSize, Endian.little);
     
     return header.buffer.asUint8List();

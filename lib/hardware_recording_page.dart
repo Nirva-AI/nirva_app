@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import 'services/hardware_service.dart';
 import 'services/hardware_audio_recorder.dart';
 import 'providers/local_audio_provider.dart';
+import 'providers/cloud_audio_provider.dart';
 import 'models/processed_audio_result.dart';
+import 'services/cloud_audio_processor.dart';
+import 'services/app_settings_service.dart';
 
 class HardwareAudioPage extends StatefulWidget {
   const HardwareAudioPage({super.key});
@@ -26,17 +30,30 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
   void initState() {
     super.initState();
     
-    // Ensure local audio processing is enabled when page loads
+    // Ensure local audio processing is enabled when page loads (only if enabled in settings)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<LocalAudioProvider>();
-      if (provider.isInitialized) {
-        provider.enableProcessing();
+      // Check if local ASR is enabled in system settings
+      final settings = context.read<AppSettingsService>();
+      if (settings.localAsrEnabled) {
+        // Only initialize local ASR if it's enabled in settings
+        final provider = context.read<LocalAudioProvider?>();
+        if (provider != null && provider.isInitialized) {
+          provider.enableProcessing();
+        }
       }
     });
   }
   
   @override
   void dispose() {
+    // Clean up temporary files when leaving the page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cloudProvider = context.read<CloudAudioProvider?>();
+      if (cloudProvider != null) {
+        cloudProvider.cloudProcessor.cleanupTemporaryFiles();
+      }
+    });
+    
     super.dispose();
   }
   
@@ -59,9 +76,19 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
           // Audio capture controls
           _buildCaptureControls(),
           
-          // Local transcription results
+          // Results view based on ASR mode
           Expanded(
-            child: _buildTranscriptionResults(),
+            child: Consumer<AppSettingsService>(
+              builder: (context, settings, child) {
+                if (settings.localAsrEnabled) {
+                  // Show only local ASR results
+                  return _buildLocalTranscriptionResults();
+                } else {
+                  // Show only cloud ASR results
+                  return _buildCloudTranscriptionResults();
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -143,6 +170,45 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                 ),
                 const SizedBox(height: 20),
               ],
+              
+              // ASR Mode Status (Read-only)
+              Consumer<AppSettingsService>(
+                builder: (context, settings, child) {
+                  return Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: settings.localAsrEnabled ? Colors.blue[50] : Colors.green[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: settings.localAsrEnabled ? Colors.blue[200]! : Colors.green[200]!,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          settings.localAsrEnabled ? Icons.mic : Icons.cloud,
+                          color: settings.localAsrEnabled ? Colors.blue[600] : Colors.green[600],
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          settings.localAsrEnabled 
+                              ? 'Local ASR Mode (System Setting)'
+                              : 'Cloud ASR Mode (System Setting)',
+                          style: TextStyle(
+                            color: settings.localAsrEnabled ? Colors.blue[700] : Colors.green[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              
+              const SizedBox(height: 20),
               
               // Capture controls
               Row(
@@ -250,11 +316,25 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
 
 
   /// Build local transcription results widget
-  Widget _buildTranscriptionResults() {
-    try {
-      return Selector<LocalAudioProvider, List<ProcessedAudioResult>>(
-        selector: (context, provider) => provider.processingResults,
-        builder: (context, results, child) {
+  Widget _buildLocalTranscriptionResults() {
+    return Consumer<LocalAudioProvider?>(
+      builder: (context, localProvider, child) {
+        if (localProvider == null) {
+          return const Center(
+            child: Text(
+              'Local ASR is disabled in system settings.\nTo enable, modify AppSettingsService.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+          );
+        }
+        
+        return Selector<LocalAudioProvider, List<ProcessedAudioResult>>(
+          selector: (context, provider) => provider.processingResults,
+          builder: (context, results, child) {
           return Container(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -454,16 +534,9 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
           );
         },
       );
-    } catch (e) {
-      debugPrint('Error building transcription results: $e');
-      return Container(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: Text('Error loading transcriptions: $e'),
-        ),
-      );
-    }
-  }
+    },
+  );
+}
 
   /// Build individual transcription result item
   Widget _buildTranscriptionResultItem(ProcessedAudioResult result) {
@@ -600,6 +673,331 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                       ),
                     ),
                   ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build cloud transcription results widget
+  Widget _buildCloudTranscriptionResults() {
+    return Consumer<CloudAudioProvider?>(
+      builder: (context, cloudProvider, child) {
+        if (cloudProvider == null) {
+          return const Center(
+            child: Text(
+              'Cloud ASR is disabled in system settings.\nTo enable, modify AppSettingsService.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+          );
+        }
+        
+        return Selector<CloudAudioProvider, List<CloudAudioResult>>(
+          selector: (context, provider) => provider.cloudProcessor.transcriptionResults,
+          builder: (context, results, child) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Icon(Icons.cloud, color: Colors.blue[600], size: 24),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Cloud Transcription Results',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[700],
+                      ),
+                    ),
+                    const Spacer(),
+                    // Results count
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Text(
+                        '${results.length}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue[600],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Debug status section
+                Consumer<CloudAudioProvider>(
+                  builder: (context, provider, child) {
+                    final stats = provider.getStats();
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Cloud Processing Status',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              _buildStatusItem('Initialized', stats['isInitialized'] ?? false),
+                              const SizedBox(width: 16),
+                              _buildStatusItem('Enabled', stats['isProcessingEnabled'] ?? false),
+                              const SizedBox(width: 16),
+                              _buildStatusItem('API Key', stats['cloudProcessorStats']?['deepgramStats']?['apiKeyConfigured'] ?? false),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          // Action buttons row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  provider.enableProcessing();
+                                  setState(() {});
+                                },
+                                icon: Icon(Icons.refresh, size: 16),
+                                label: Text('Refresh', style: TextStyle(fontSize: 12)),
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  minimumSize: Size(0, 32),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Results list
+                if (results.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_off,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No cloud transcriptions yet',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Start recording to see cloud-based transcriptions',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: results.length,
+                      itemBuilder: (context, index) {
+                        final result = results[results.length - 1 - index]; // Show newest first
+                        return _buildCloudTranscriptionResultItem(result);
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+  
+  /// Build individual cloud transcription result item
+  Widget _buildCloudTranscriptionResultItem(CloudAudioResult result) {
+    // Format timestamps for timeline display
+    final startTimeStr = '${result.startTime.hour.toString().padLeft(2, '0')}:${result.startTime.minute.toString().padLeft(2, '0')}:${result.startTime.second.toString().padLeft(2, '0')}';
+    final endTimeStr = '${result.endTime.hour.toString().padLeft(2, '0')}:${result.endTime.minute.toString().padLeft(2, '0')}:${result.endTime.second.toString().padLeft(2, '0')}';
+    final durationStr = '${result.duration.inSeconds}s';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Timeline timestamp
+          Container(
+            width: 80,
+            padding: const EdgeInsets.only(top: 4),
+            child: Column(
+              children: [
+                Text(
+                  startTimeStr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[700],
+                    fontFamily: 'monospace',
+                  ),
+                ),
+                Text(
+                  durationStr,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey[500],
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Timeline connector
+          Container(
+            width: 20,
+            child: Column(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: result.isFinal ? Colors.green : Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Container(
+                  width: 2,
+                  height: 20,
+                  color: Colors.grey[300],
+                ),
+              ],
+            ),
+          ),
+          
+          // Transcription content
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+                border: Border.all(
+                  color: result.isFinal ? Colors.green[200]! : Colors.blue[200]!,
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Transcription text
+                  Text(
+                    result.transcription ?? 'Processing...',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.4,
+                    ),
+                  ),
+                  
+                  // Audio playback button (only show if we have a file path)
+                  if (result.audioFilePath != null) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        StreamBuilder<PlayerState>(
+                          stream: context.read<CloudAudioProvider?>()?.audioPlayerStateStream,
+                          builder: (context, snapshot) {
+                            final isPlaying = snapshot.data == PlayerState.playing;
+                            return ElevatedButton.icon(
+                              onPressed: () {
+                                if (isPlaying) {
+                                  context.read<CloudAudioProvider?>()?.stopAudioPlayback();
+                                } else {
+                                  context.read<CloudAudioProvider?>()?.playAudioFile(result.audioFilePath!);
+                                }
+                              },
+                              icon: Icon(
+                                isPlaying ? Icons.stop : Icons.play_arrow,
+                                size: 16,
+                              ),
+                              label: Text(
+                                isPlaying ? 'Stop' : 'Play Audio',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                minimumSize: Size(0, 28),
+                                backgroundColor: isPlaying ? Colors.red[100] : Colors.blue[100],
+                                foregroundColor: isPlaying ? Colors.red[700] : Colors.blue[700],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                  
+                  // End time
+                  const SizedBox(height: 8),
+                  Text(
+                    'End: $endTimeStr',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey[600],
+                      fontFamily: 'monospace',
+                    ),
+                  ),
                 ],
               ),
             ),

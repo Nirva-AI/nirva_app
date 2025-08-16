@@ -11,6 +11,8 @@ import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/services/hardware_audio_recorder.dart';
 import 'package:nirva_app/services/audio_streaming_service.dart';
 import 'package:nirva_app/providers/local_audio_provider.dart';
+import 'package:nirva_app/providers/cloud_audio_provider.dart';
+import 'package:nirva_app/services/app_settings_service.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -25,6 +27,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'amplifyconfiguration.dart';
 import 'package:nirva_app/hive_helper.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart'; // Import sherpa_onnx for initBindings
@@ -44,6 +47,11 @@ void main() async {
   final hardwareService = HardwareService();
   await hardwareService.initialize();
   debugPrint('Main: HardwareService initialized successfully');
+  
+  // Initialize AppSettingsService
+  final appSettingsService = AppSettingsService();
+  await appSettingsService.initialize();
+  debugPrint('Main: AppSettingsService initialized successfully');
 
   runApp(
     MultiProvider(
@@ -64,24 +72,71 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ChatHistoryProvider()),
         ChangeNotifierProvider(create: (_) => CallProvider()),
         ChangeNotifierProvider.value(value: hardwareService),
-        ChangeNotifierProvider(create: (_) => LocalAudioProvider()),
+        ChangeNotifierProvider.value(value: appSettingsService),
+        // Only create providers based on ASR mode setting
+        ChangeNotifierProxyProvider<AppSettingsService, LocalAudioProvider?>(
+          create: (context) {
+            final settings = context.read<AppSettingsService>();
+            return settings.localAsrEnabled ? LocalAudioProvider() : null;
+          },
+          update: (_, settings, previous) {
+            if (settings.localAsrEnabled) {
+              return previous ?? LocalAudioProvider();
+            } else {
+              previous?.dispose();
+              return null;
+            }
+          },
+        ),
+        ChangeNotifierProxyProvider<AppSettingsService, CloudAudioProvider?>(
+          create: (context) {
+            final settings = context.read<AppSettingsService>();
+            if (settings.cloudAsrEnabled) {
+              // Get the OpusDecoderService from HardwareService to avoid multiple initialization
+              final hardwareService = context.read<HardwareService>();
+              return CloudAudioProvider(opusDecoderService: hardwareService.opusDecoder);
+            }
+            return null;
+          },
+          update: (_, settings, previous) {
+            if (settings.cloudAsrEnabled) {
+              return previous; // Keep existing instance
+            } else {
+              previous?.dispose();
+              return null;
+            }
+          },
+        ),
         ChangeNotifierProxyProvider<HardwareService, HardwareAudioCapture>(
           create: (context) {
-            final localAudioProvider = context.read<LocalAudioProvider>();
+            final localAudioProvider = context.read<LocalAudioProvider?>();
+            final cloudAudioProvider = context.read<CloudAudioProvider?>();
+            final settingsService = context.read<AppSettingsService>();
             final audioCapture = HardwareAudioCapture(
               context.read<HardwareService>(),
-              localAudioProvider.localAudioProcessor,
+              localAudioProvider?.localAudioProcessor,
+              cloudAudioProvider?.cloudProcessor,
+              settingsService,
             );
             
-            // Set the local audio processor in the hardware service
-            context.read<HardwareService>().setLocalAudioProcessor(
-              localAudioProvider.localAudioProcessor,
-            );
+            // Set the local audio processor in the hardware service if available
+            if (localAudioProvider != null) {
+              context.read<HardwareService>().setLocalAudioProcessor(
+                localAudioProvider.localAudioProcessor,
+              );
+            }
             
-            // Enable local audio processing when hardware connects
-            context.read<HardwareService>().addListener(() {
+            // Enable audio processing when hardware connects
+            context.read<HardwareService>().addListener(() async {
               if (context.read<HardwareService>().isConnected) {
-                localAudioProvider.enableProcessing();
+                // Initialize cloud provider if needed (local initializes automatically)
+                if (cloudAudioProvider != null && !cloudAudioProvider.isInitialized) {
+                  await cloudAudioProvider.initialize();
+                }
+                
+                // Now enable processing
+                localAudioProvider?.enableProcessing();
+                cloudAudioProvider?.enableProcessing();
               }
             });
             
@@ -91,6 +146,8 @@ void main() async {
               previous ?? HardwareAudioCapture(
                 hardwareService,
                 null, // We'll set this later when needed
+                null, // Cloud processor will be set later
+                null, // Settings service will be set later
               ),
         ),
         ChangeNotifierProvider<AudioStreamingService>(
@@ -121,6 +178,18 @@ void main() async {
 }
 
 Future<void> _initializeApp() async {
+  // Load environment variables from assets
+  try {
+    await dotenv.load(fileName: '.env');
+    debugPrint('Main: Environment variables loaded successfully');
+    debugPrint('Main: DEEPGRAM_API_KEY available: ${dotenv.env['DEEPGRAM_API_KEY'] != null ? 'Yes' : 'No'}');
+  } catch (e) {
+    debugPrint('Main: Warning - Could not load .env file: $e');
+    debugPrint('Main: To use Deepgram API, ensure .env file is in assets and contains DEEPGRAM_API_KEY');
+    // Initialize with empty values to prevent NotInitializedError
+    await dotenv.load(fileName: '.env', mergeWith: {'DEEPGRAM_API_KEY': ''});
+  }
+  
   // 初始化 Amplify
   await _configureAmplify();
 

@@ -77,3 +77,8 @@ amplifytools.xcconfig
 
 # secrets
 /credentials
+
+# Environment variables
+.env
+.env.local
+.env.*.local
