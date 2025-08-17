@@ -73,65 +73,29 @@ class HardwareAudioCapture extends ChangeNotifier {
     _hardwareService.addListener(_onHardwareServiceChanged);
   }
   
-  /// Start automatically capturing audio from the hardware device
+  /// Start automatic audio capture
   Future<void> startCapture() async {
-    if (_isCapturing) {
-      throw Exception('Cannot start capture: Already capturing');
-    }
-    
-    debugPrint('HardwareAudioCapture.startCapture: Starting capture process...');
-    
-    // Verify the device is actually connected
-    if (!_hardwareService.isConnected) {
-      throw Exception('Cannot start capture: No device connected');
-    }
-    
-    // Double-check the connection status
-    try {
-      final isActuallyConnected = await _hardwareService.verifyConnection();
-      if (!isActuallyConnected) {
-        throw Exception('Cannot start capture: Device connection lost');
-      }
-    } catch (e) {
-      throw Exception('Cannot start capture: Connection verification failed: $e');
-    }
+    if (_isCapturing) return;
     
     try {
-      // Request storage permissions
-      final hasPermission = await _requestStoragePermission();
-      if (!hasPermission) {
-        throw Exception('Storage permission not granted');
-      }
+      debugPrint('HardwareAudioCapture: Starting automatic audio capture...');
       
-      // Create audio directory
-      final audioDir = await _getAudioDirectory();
-      if (!await audioDir.exists()) {
-        await audioDir.create(recursive: true);
-      }
-      
-      // Initialize capture
+      // Set capturing to true immediately
       _isCapturing = true;
-      _captureStartTime = DateTime.now();
-      _decodedPcmBuffer.clear();
-      _currentFileSize = 0;
-      _fileCounter++;
       
-      // Reset statistics
-      _totalOpusPacketsReceived = 0;
-      _totalOpusBytesReceived = 0;
-      _totalPcmBytesDecoded = 0;
-      _failedDecodes = 0;
+      // Create capture directory if it doesn't exist
+      final directory = await _getCaptureDirectory();
+      if (directory == null) {
+        throw Exception('Failed to create capture directory');
+      }
       
-      // Generate initial capture filename with timestamp
-      final timestamp = DateTime.now();
-      final filename = _generateFilename(timestamp);
-      final capturePath = '${audioDir.path}/$filename';
-      _currentCapturePath = capturePath;
+      // Create new capture file
+      await _createNewCaptureFile();
       
-      // Start periodic file rotation timer (every 10 seconds)
+      // Start file rotation timer
       _startFileRotationTimer();
       
-      // Start the audio stream from hardware
+      // Start audio stream from hardware
       await _hardwareService.startAudioStream();
       
       // Configure and activate iOS background audio if on iOS
@@ -190,25 +154,25 @@ class HardwareAudioCapture extends ChangeNotifier {
       }
       
       // Subscribe to audio stream from hardware
-      debugPrint('HardwareAudioCapture: Setting up audio stream subscription...');
       _audioSubscription = _hardwareService.audioStream.listen(
         _onAudioPacketReceived,
         onError: (error) {
-          debugPrint('Audio stream error during capture: $error');
+          debugPrint('HardwareAudioCapture: Error in audio stream: $error');
+          // Don't stop capture on stream error, just log it
         },
         onDone: () {
-          debugPrint('Audio stream subscription completed');
+          debugPrint('HardwareAudioCapture: Audio stream completed');
+          // Don't stop capture on stream completion, hardware might reconnect
         },
       );
-      debugPrint('HardwareAudioCapture: Audio stream subscription created successfully');
       
+      _captureStartTime = DateTime.now();
+      debugPrint('HardwareAudioCapture: Automatic audio capture started successfully');
       notifyListeners();
       
-      debugPrint('HardwareAudioCapture: Started audio capture to: $capturePath');
-      
     } catch (e) {
-      debugPrint('HardwareAudioCapture.startCapture: Error during capture setup: $e');
-      _resetCaptureState();
+      debugPrint('HardwareAudioCapture: Error starting capture: $e');
+      _isCapturing = false;
       rethrow;
     }
   }
@@ -610,7 +574,7 @@ class HardwareAudioCapture extends ChangeNotifier {
       'localAudioProcessingStats': _localAudioProcessor?.getStats(),
       'cloudAudioProcessingEnabled': _cloudAudioProcessor?.isEnabled ?? false,
       'cloudAudioProcessingStats': _cloudAudioProcessor?.getStats(),
-      'iosBackgroundAudioStatus': _iosBackgroundAudioManager.getStatus(),
+      'iosBackgroundAudioEnabled': _iosBackgroundAudioManager.isBackgroundAudioEnabled,
     };
   }
   
@@ -620,6 +584,54 @@ class HardwareAudioCapture extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Get capture directory
+  Future<Directory?> _getCaptureDirectory() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final audioDir = Directory('${appDir.path}/$_audioDirectory');
+      
+      if (!await audioDir.exists()) {
+        await audioDir.create(recursive: true);
+      }
+      
+      return audioDir;
+    } catch (e) {
+      debugPrint('HardwareAudioCapture: Error creating capture directory: $e');
+      return null;
+    }
+  }
+  
+  /// Create new capture file
+  Future<void> _createNewCaptureFile() async {
+    try {
+      final directory = await _getCaptureDirectory();
+      if (directory == null) return;
+      
+      // Reset file counter and size
+      _fileCounter++;
+      _currentFileSize = 0;
+      
+      // Generate filename with timestamp
+      final timestamp = DateTime.now();
+      final filename = _generateFilename(timestamp);
+      final capturePath = '${directory.path}/$filename';
+      _currentCapturePath = capturePath;
+      
+      // Clear buffer
+      _decodedPcmBuffer.clear();
+      
+      // Reset statistics
+      _totalOpusPacketsReceived = 0;
+      _totalOpusBytesReceived = 0;
+      _totalPcmBytesDecoded = 0;
+      _failedDecodes = 0;
+      
+      debugPrint('HardwareAudioCapture: New capture file created: $capturePath');
+    } catch (e) {
+      debugPrint('HardwareAudioCapture: Error creating new capture file: $e');
+    }
+  }
+  
   @override
   void dispose() {
     _hardwareService.removeListener(_onHardwareServiceChanged);
