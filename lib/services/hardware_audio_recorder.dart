@@ -10,12 +10,14 @@ import 'hardware_service.dart';
 import 'local_audio_processor.dart';
 import 'cloud_audio_processor.dart';
 import 'app_settings_service.dart';
+import 'ios_background_audio_manager.dart';
 
 class HardwareAudioCapture extends ChangeNotifier {
   final HardwareService _hardwareService;
   final LocalAudioProcessor? _localAudioProcessor;
   final CloudAudioProcessor? _cloudAudioProcessor;
   final AppSettingsService? _settingsService;
+  final IosBackgroundAudioManager _iosBackgroundAudioManager;
   
   // Audio capture state
   bool _isCapturing = false;
@@ -65,7 +67,8 @@ class HardwareAudioCapture extends ChangeNotifier {
       ? (_totalOpusPacketsReceived - _failedDecodes) / _totalOpusPacketsReceived 
       : 0.0;
   
-  HardwareAudioCapture(this._hardwareService, [this._localAudioProcessor, this._cloudAudioProcessor, this._settingsService]) {
+  HardwareAudioCapture(this._hardwareService, [this._localAudioProcessor, this._cloudAudioProcessor, this._settingsService]) 
+      : _iosBackgroundAudioManager = IosBackgroundAudioManager() {
     // Listen to hardware service changes to ensure we're always up to date
     _hardwareService.addListener(_onHardwareServiceChanged);
   }
@@ -130,6 +133,19 @@ class HardwareAudioCapture extends ChangeNotifier {
       
       // Start the audio stream from hardware
       await _hardwareService.startAudioStream();
+      
+      // Configure and activate iOS background audio if on iOS
+      if (_iosBackgroundAudioManager.isIos) {
+        try {
+          debugPrint('HardwareAudioCapture: Configuring iOS background audio...');
+          await _iosBackgroundAudioManager.configureAudioSession();
+          await _iosBackgroundAudioManager.activateAudioSession();
+          await _iosBackgroundAudioManager.startBackgroundAudio();
+          debugPrint('HardwareAudioCapture: iOS background audio configured and started');
+        } catch (e) {
+          debugPrint('HardwareAudioCapture: Warning - iOS background audio setup failed: $e');
+        }
+      }
       
       // Check ASR mode setting and initialize appropriate processor
       final shouldUseLocalAsr = _settingsService?.localAsrEnabled ?? false;
@@ -233,6 +249,17 @@ class HardwareAudioCapture extends ChangeNotifier {
       // Stop the audio stream from hardware
       await _hardwareService.stopAudioStream();
       
+      // Stop iOS background audio if on iOS
+      if (_iosBackgroundAudioManager.isIos) {
+        try {
+          await _iosBackgroundAudioManager.stopBackgroundAudio();
+          await _iosBackgroundAudioManager.deactivateAudioSession();
+          debugPrint('HardwareAudioCapture: iOS background audio stopped');
+        } catch (e) {
+          debugPrint('HardwareAudioCapture: Warning - iOS background audio cleanup failed: $e');
+        }
+      }
+      
       // Reset packet reassembler to clear any pending packets
       _hardwareService.packetReassembler.reset();
       
@@ -271,6 +298,17 @@ class HardwareAudioCapture extends ChangeNotifier {
       
       // Stop hardware audio stream
       await _hardwareService.stopAudioStream();
+      
+      // Stop iOS background audio if on iOS
+      if (_iosBackgroundAudioManager.isIos) {
+        try {
+          await _iosBackgroundAudioManager.stopBackgroundAudio();
+          await _iosBackgroundAudioManager.deactivateAudioSession();
+          debugPrint('HardwareAudioCapture: iOS background audio force stopped');
+        } catch (e) {
+          debugPrint('HardwareAudioCapture: Warning - iOS background audio force cleanup failed: $e');
+        }
+      }
       
       // Reset packet reassembler
       _hardwareService.packetReassembler.reset();
@@ -414,8 +452,8 @@ class HardwareAudioCapture extends ChangeNotifier {
       
       // Save current PCM buffer as WAV file
       if (_decodedPcmBuffer.isNotEmpty && _currentCapturePath != null) {
-        await _saveWavFile(_currentCapturePath!, _decodedPcmBuffer);
-        debugPrint('HardwareAudioCapture: WAV file created: $_currentCapturePath');
+        // await _saveWavFile(_currentCapturePath!, _decodedPcmBuffer);
+        // debugPrint('HardwareAudioCapture: WAV file created: $_currentCapturePath');
       }
       
       // Clear buffer and reset file size
@@ -572,6 +610,7 @@ class HardwareAudioCapture extends ChangeNotifier {
       'localAudioProcessingStats': _localAudioProcessor?.getStats(),
       'cloudAudioProcessingEnabled': _cloudAudioProcessor?.isEnabled ?? false,
       'cloudAudioProcessingStats': _cloudAudioProcessor?.getStats(),
+      'iosBackgroundAudioStatus': _iosBackgroundAudioManager.getStatus(),
     };
   }
   

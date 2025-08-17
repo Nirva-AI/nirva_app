@@ -25,18 +25,34 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // 应用从后台切换到前台时执行的操作
-      debugPrint('App resumed');
+      // App resumed from background
+      debugPrint('App resumed from background');
+      _handleAppResumed();
     } else if (state == AppLifecycleState.paused) {
-      // 应用切换到后台时执行的操作
-      debugPrint('App paused');
+      // App going to background
+      debugPrint('App going to background');
+      _handleAppPaused();
     } else if (state == AppLifecycleState.inactive) {
-      // 应用处于非活动状态（可能是切换任务或锁屏）
+      // App inactive (task switching or lock screen)
       debugPrint('App inactive');
     } else if (state == AppLifecycleState.detached) {
-      // 应用完全退出或分离
+      // App completely exited or detached
       debugPrint('App detached');
     }
+  }
+  
+  /// Handle app resumed from background
+  void _handleAppResumed() {
+    // iOS background audio should continue working
+    // No special action needed for iOS background audio
+    debugPrint('App resumed - iOS background audio should continue');
+  }
+  
+  /// Handle app going to background
+  void _handleAppPaused() {
+    // iOS background audio should continue working
+    // The IosBackgroundAudioManager handles keeping the app alive
+    debugPrint('App paused - iOS background audio should continue');
   }
 
   @override

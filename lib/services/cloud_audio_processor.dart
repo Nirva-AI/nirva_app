@@ -7,6 +7,7 @@ import 'sherpa_vad_service.dart';
 import 'deepgram_service.dart';
 import 'opus_decoder_service.dart';
 import 'cloud_asr_storage_service.dart';
+import 'api_logging_service.dart';
 import '../my_hive_objects.dart';
 
 /// Cloud audio processor that combines local VAD with cloud ASR
@@ -18,6 +19,7 @@ class CloudAudioProcessor extends ChangeNotifier {
   final DeepgramService _deepgramService;
   final OpusDecoderService _opusDecoderService; // Only needed for WAV creation, not decoding
   final CloudAsrStorageService _storageService; // Persistent storage service
+  final ApiLoggingService _loggingService; // API logging service
   
   // User identification
   String? _userId;
@@ -82,7 +84,8 @@ class CloudAudioProcessor extends ChangeNotifier {
     this._deepgramService, 
     this._opusDecoderService,
     {CloudAsrStorageService? storageService, String? userId}
-  ) : _storageService = storageService ?? CloudAsrStorageService() {
+  ) : _storageService = storageService ?? CloudAsrStorageService(),
+      _loggingService = ApiLoggingService() {
     // Store user ID for later use
     _userId = userId;
   }
@@ -97,6 +100,18 @@ class CloudAudioProcessor extends ChangeNotifier {
     try {
       debugPrint('CloudAudioProcessor: Initializing cloud audio processor...');
       
+      // Initialize logging service
+      try {
+        await _loggingService.initialize();
+        debugPrint('CloudAudioProcessor: Logging service initialized successfully');
+        debugPrint('CloudAudioProcessor: Log file path: ${_loggingService.logFilePath}');
+        
+        // Display current log contents
+        await _loggingService.displayLogContents();
+      } catch (e) {
+        debugPrint('CloudAudioProcessor: ERROR initializing logging service: $e');
+      }
+      
       // Initialize VAD service
       debugPrint('CloudAudioProcessor: Initializing VAD service...');
       final vadInitialized = await _vadService.initialize();
@@ -104,6 +119,7 @@ class CloudAudioProcessor extends ChangeNotifier {
       
       if (!vadInitialized) {
         debugPrint('CloudAudioProcessor: Failed to initialize VAD service');
+
         _isInitialized = false;
         return false;
       }
@@ -115,6 +131,7 @@ class CloudAudioProcessor extends ChangeNotifier {
       
       if (!deepgramInitialized) {
         debugPrint('CloudAudioProcessor: Failed to initialize Deepgram service');
+
         _isInitialized = false;
         return false;
       }
@@ -134,6 +151,7 @@ class CloudAudioProcessor extends ChangeNotifier {
       
       if (!storageInitialized) {
         debugPrint('CloudAudioProcessor: Warning - Storage service failed to initialize, results will not be persisted');
+
       }
       
       _isInitialized = vadInitialized && deepgramInitialized;
@@ -145,9 +163,12 @@ class CloudAudioProcessor extends ChangeNotifier {
         debugPrint('  - Opus Decoder Service: Using existing instance for WAV creation');
         debugPrint('  - Segment Close Delay: $_segmentCloseDelay');
         
+
+        
         notifyListeners();
       } else {
         debugPrint('CloudAudioProcessor: Failed to initialize required services');
+
       }
       
       return _isInitialized;
@@ -155,6 +176,9 @@ class CloudAudioProcessor extends ChangeNotifier {
     } catch (e, stackTrace) {
       debugPrint('CloudAudioProcessor: Failed to initialize: $e');
       debugPrint('CloudAudioProcessor: Stack trace: $stackTrace');
+      
+
+      
       _isInitialized = false;
       notifyListeners();
       return false;
@@ -285,6 +309,8 @@ class CloudAudioProcessor extends ChangeNotifier {
         _startNewSegment(now);
         
         debugPrint('CloudAudioProcessor: Speech started, new segment created');
+        
+
       } else {
         // Extend existing segment instead of creating new one
         debugPrint('CloudAudioProcessor: Speech detected but extending existing segment (overlap prevention)');
@@ -570,6 +596,22 @@ class CloudAudioProcessor extends ChangeNotifier {
           debugPrint('CloudAudioProcessor: Final result transcription length: ${finalResult.transcription?.length ?? 0}');
           debugPrint('CloudAudioProcessor: Final result transcription: "${finalResult.transcription}"');
           
+          // Log the API response to file
+          try {
+            debugPrint('CloudAudioProcessor: About to log transcription response...');
+            await _loggingService.logTranscriptionResponse(
+              audioSegmentPath: segmentResult.segmentPath,
+              transcription: transcriptionResult.transcription,
+              confidence: transcriptionResult.confidence,
+              language: transcriptionResult.language,
+              processingTime: DateTime.now().difference(segmentResult.startTime),
+              rawResponse: transcriptionResult.rawResponse,
+            );
+            debugPrint('CloudAudioProcessor: Transcription response logged successfully');
+          } catch (e) {
+            debugPrint('CloudAudioProcessor: ERROR logging transcription response: $e');
+          }
+          
           // Add to results history
           _addToResultsHistory(finalResult);
           
@@ -601,6 +643,13 @@ class CloudAudioProcessor extends ChangeNotifier {
       
     } catch (e) {
       debugPrint('CloudAudioProcessor: Error during async transcription: $e');
+      
+      // Log the error to file
+      await _loggingService.logTranscriptionResponse(
+        audioSegmentPath: segmentResult.segmentPath,
+        transcription: 'Transcription failed',
+        error: e.toString(),
+      );
       
       // Create error result
       final errorResult = segmentResult.copyWith(

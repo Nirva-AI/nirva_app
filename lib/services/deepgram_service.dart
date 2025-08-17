@@ -246,6 +246,7 @@ class DeepgramService extends ChangeNotifier {
         processingTime: DateTime.now(),
         isError: true,
         errorMessage: e.toString(),
+        rawResponse: null,
       );
       
       // Add to results history
@@ -577,6 +578,7 @@ class DeepgramService extends ChangeNotifier {
         processingTime: DateTime.now(),
         isError: false,
         errorMessage: null,
+        rawResponse: jsonResponse,
       );
       
     } catch (e) {
@@ -644,6 +646,7 @@ class DeepgramTranscriptionResult {
   final DateTime processingTime;
   final bool isError;
   final String? errorMessage;
+  final Map<String, dynamic>? rawResponse;
   
   const DeepgramTranscriptionResult({
     required this.transcription,
@@ -654,6 +657,7 @@ class DeepgramTranscriptionResult {
     required this.processingTime,
     required this.isError,
     this.errorMessage,
+    this.rawResponse,
   });
   
   /// Get the duration of the audio segment

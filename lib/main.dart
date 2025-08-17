@@ -13,6 +13,7 @@ import 'package:nirva_app/services/audio_streaming_service.dart';
 import 'package:nirva_app/providers/local_audio_provider.dart';
 import 'package:nirva_app/providers/cloud_audio_provider.dart';
 import 'package:nirva_app/services/app_settings_service.dart';
+import 'package:nirva_app/services/ios_background_audio_manager.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -75,6 +76,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => CallProvider()),
         ChangeNotifierProvider.value(value: hardwareService),
         ChangeNotifierProvider.value(value: appSettingsService),
+        ChangeNotifierProvider<IosBackgroundAudioManager>(
+          create: (_) => IosBackgroundAudioManager(),
+        ),
         // Only create providers based on ASR mode setting
         ChangeNotifierProxyProvider<AppSettingsService, LocalAudioProvider?>(
           create: (context) {
