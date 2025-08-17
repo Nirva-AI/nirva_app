@@ -7,6 +7,7 @@ import 'package:nirva_app/update_data_task.dart';
 import 'package:nirva_app/analyze_task.dart';
 import 'package:nirva_app/transcribe_file_name.dart';
 import 'package:nirva_app/services/cloud_audio_processor.dart';
+import 'package:nirva_app/models/hardware_device.dart';
 part 'my_hive_objects.g.dart';
 
 // 本机存储的日记收藏列表
@@ -505,6 +506,128 @@ class UpdateDataTaskStorage extends HiveObject {
           uploadAndTranscribeTaskStorage?.toConstructorData(),
       'analyzeTaskData': analyzeTaskStorage?.toConstructorData(),
     };
+  }
+}
+
+// Hardware device storage for persistence across app restarts
+@HiveType(typeId: 15)
+class HardwareDeviceStorage extends HiveObject {
+  @HiveField(0)
+  String id; // Device ID
+
+  @HiveField(1)
+  String name; // Device name
+
+  @HiveField(2)
+  String address; // Bluetooth address
+
+  @HiveField(3)
+  int rssi; // Signal strength
+
+  @HiveField(4)
+  bool isConnected; // Connection status
+
+  @HiveField(5)
+  String discoveredAtIso; // Discovery timestamp
+
+  @HiveField(6)
+  String? connectedAtIso; // Connection timestamp
+
+  @HiveField(7)
+  String? lastSeenAtIso; // Last seen timestamp
+
+  @HiveField(8)
+  int? batteryLevel; // Battery level
+
+  @HiveField(9)
+  String? firmwareVersion; // Firmware version
+
+  @HiveField(10)
+  String? hardwareVersion; // Hardware version
+
+  @HiveField(11)
+  String? manufacturer; // Manufacturer
+
+  @HiveField(12)
+  bool isFavorite; // Whether this device is marked as favorite
+
+  HardwareDeviceStorage({
+    required this.id,
+    required this.name,
+    required this.address,
+    required this.rssi,
+    required this.isConnected,
+    required this.discoveredAtIso,
+    this.connectedAtIso,
+    this.lastSeenAtIso,
+    this.batteryLevel,
+    this.firmwareVersion,
+    this.hardwareVersion,
+    this.manufacturer,
+    this.isFavorite = false,
+  });
+
+  // Convert from HardwareDevice model
+  static HardwareDeviceStorage fromHardwareDevice(
+    HardwareDevice device, {
+    bool isFavorite = false,
+  }) {
+    return HardwareDeviceStorage(
+      id: device.id,
+      name: device.name,
+      address: device.address,
+      rssi: device.rssi,
+      isConnected: device.isConnected,
+      discoveredAtIso: device.discoveredAt.toIso8601String(),
+      connectedAtIso: device.connectedAt?.toIso8601String(),
+      lastSeenAtIso: device.lastSeenAt?.toIso8601String(),
+      batteryLevel: device.batteryLevel,
+      firmwareVersion: device.firmwareVersion,
+      hardwareVersion: device.hardwareVersion,
+      manufacturer: device.manufacturer,
+      isFavorite: isFavorite,
+    );
+  }
+
+  // Convert to HardwareDevice model
+  HardwareDevice toHardwareDevice() {
+    return HardwareDevice(
+      id: id,
+      name: name,
+      address: address,
+      rssi: rssi,
+      isConnected: isConnected,
+      discoveredAt: DateTime.parse(discoveredAtIso),
+      connectedAt: connectedAtIso != null ? DateTime.parse(connectedAtIso!) : null,
+      lastSeenAt: lastSeenAtIso != null ? DateTime.parse(lastSeenAtIso!) : null,
+      batteryLevel: batteryLevel,
+      firmwareVersion: firmwareVersion,
+      hardwareVersion: hardwareVersion,
+      manufacturer: manufacturer,
+    );
+  }
+
+  // Update connection status
+  void updateConnectionStatus(bool connected) {
+    isConnected = connected;
+    if (connected) {
+      connectedAtIso = DateTime.now().toIso8601String();
+    }
+    lastSeenAtIso = DateTime.now().toIso8601String();
+  }
+
+  // Update device info
+  void updateDeviceInfo({
+    int? batteryLevel,
+    String? firmwareVersion,
+    String? hardwareVersion,
+    String? manufacturer,
+  }) {
+    if (batteryLevel != null) this.batteryLevel = batteryLevel;
+    if (firmwareVersion != null) this.firmwareVersion = firmwareVersion;
+    if (hardwareVersion != null) this.hardwareVersion = hardwareVersion;
+    if (manufacturer != null) this.manufacturer = manufacturer;
+    lastSeenAtIso = DateTime.now().toIso8601String();
   }
 }
 

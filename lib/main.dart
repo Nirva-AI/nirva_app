@@ -49,6 +49,9 @@ void main() async {
   // Initialize HardwareService first
   final hardwareService = HardwareService();
   await hardwareService.initialize();
+  
+  // Initialize device persistence and attempt reconnection
+  await hardwareService.initializeDevicePersistence();
   debugPrint('Main: HardwareService initialized successfully');
   
   // Initialize AppSettingsService

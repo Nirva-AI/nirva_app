@@ -512,6 +512,76 @@ class UpdateDataTaskStorageAdapter extends TypeAdapter<UpdateDataTaskStorage> {
           typeId == other.typeId;
 }
 
+class HardwareDeviceStorageAdapter extends TypeAdapter<HardwareDeviceStorage> {
+  @override
+  final int typeId = 15;
+
+  @override
+  HardwareDeviceStorage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return HardwareDeviceStorage(
+      id: fields[0] as String,
+      name: fields[1] as String,
+      address: fields[2] as String,
+      rssi: fields[3] as int,
+      isConnected: fields[4] as bool,
+      discoveredAtIso: fields[5] as String,
+      connectedAtIso: fields[6] as String?,
+      lastSeenAtIso: fields[7] as String?,
+      batteryLevel: fields[8] as int?,
+      firmwareVersion: fields[9] as String?,
+      hardwareVersion: fields[10] as String?,
+      manufacturer: fields[11] as String?,
+      isFavorite: fields[12] as bool,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, HardwareDeviceStorage obj) {
+    writer
+      ..writeByte(13)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.address)
+      ..writeByte(3)
+      ..write(obj.rssi)
+      ..writeByte(4)
+      ..write(obj.isConnected)
+      ..writeByte(5)
+      ..write(obj.discoveredAtIso)
+      ..writeByte(6)
+      ..write(obj.connectedAtIso)
+      ..writeByte(7)
+      ..write(obj.lastSeenAtIso)
+      ..writeByte(8)
+      ..write(obj.batteryLevel)
+      ..writeByte(9)
+      ..write(obj.firmwareVersion)
+      ..writeByte(10)
+      ..write(obj.hardwareVersion)
+      ..writeByte(11)
+      ..write(obj.manufacturer)
+      ..writeByte(12)
+      ..write(obj.isFavorite);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HardwareDeviceStorageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class CloudAsrResultStorageAdapter extends TypeAdapter<CloudAsrResultStorage> {
   @override
   final int typeId = 13;

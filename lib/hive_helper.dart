@@ -6,6 +6,7 @@ import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/update_data_task.dart';
+import 'package:nirva_app/models/hardware_device.dart';
 import 'dart:convert';
 
 class HiveHelper {
@@ -40,6 +41,11 @@ class HiveHelper {
   static const String _updateDataTaskBox = 'updateDataTaskBox';
   static const String _updateDataTaskKey = 'updateDataTask';
 
+  // 添加硬件设备存储相关常量
+  static const String _hardwareDevicesBox = 'hardwareDevicesBox';
+  static const String _hardwareDevicesKey = 'hardwareDevices';
+  static const String _lastConnectedDeviceKey = 'lastConnectedDevice';
+
   // 这句必须得调用！
   static Future<void> initializeHive() async {
     // 获取应用的文档目录
@@ -66,6 +72,8 @@ class HiveHelper {
       Hive.deleteBoxFromDisk(_updateDataTaskBox),
       Hive.deleteBoxFromDisk('cloudAsrResultsBox'), // Add Cloud ASR boxes
       Hive.deleteBoxFromDisk('cloudAsrSessionsBox'), // Add Cloud ASR boxes
+      Hive.deleteBoxFromDisk(_hardwareDevicesBox), // Add hardware devices box
+      Hive.deleteBoxFromDisk('mixedStorageBox'), // Add mixed storage box
     ]);
 
     // 这两个操作需要顺序执行，不能并行化
@@ -88,6 +96,7 @@ class HiveHelper {
       _initNotes(),
       _initUpdateDataTask(),
       _initCloudAsrStorage(),
+      _initHardwareDevices(),
     ]);
   }
 
@@ -510,6 +519,112 @@ class HiveHelper {
   static Future<void> deleteUpdateDataTask() async {
     final box = Hive.box<UpdateDataTaskStorage>(_updateDataTaskBox);
     await box.delete(_updateDataTaskKey);
+  }
+
+  // ===============================================================================
+  // Hardware Devices 相关管理方法
+  // ===============================================================================
+
+  /// 初始化硬件设备存储
+  static Future<void> _initHardwareDevices() async {
+    if (!Hive.isAdapterRegistered(15)) {
+      Hive.registerAdapter(HardwareDeviceStorageAdapter());
+    }
+    if (!Hive.isBoxOpen(_hardwareDevicesBox)) {
+      await Hive.openBox<HardwareDeviceStorage>(_hardwareDevicesBox);
+    }
+    
+    // Initialize the mixed storage box for storing device counts and last connected device
+    if (!Hive.isBoxOpen('mixedStorageBox')) {
+      await Hive.openBox('mixedStorageBox');
+    }
+  }
+
+  /// 保存硬件设备列表
+  static Future<void> saveHardwareDevices(List<HardwareDeviceStorage> devices) async {
+    try {
+      debugPrint('HiveHelper: Saving ${devices.length} hardware devices...');
+      final box = Hive.box<HardwareDeviceStorage>(_hardwareDevicesBox);
+      
+      // Clear existing devices and add new ones
+      await box.clear();
+      debugPrint('HiveHelper: Cleared existing devices from storage');
+      
+      for (int i = 0; i < devices.length; i++) {
+        await box.put('device_$i', devices[i]);
+      }
+      debugPrint('HiveHelper: Stored ${devices.length} devices in hardware box');
+      
+      // Store the count in a separate box for mixed types
+      final mixedBox = Hive.box('mixedStorageBox');
+      await mixedBox.put(_hardwareDevicesKey, devices.length);
+      debugPrint('HiveHelper: Stored device count ${devices.length} in mixed storage box');
+      
+      debugPrint('HiveHelper: Successfully saved ${devices.length} hardware devices');
+    } catch (e) {
+      debugPrint('HiveHelper: Error saving hardware devices: $e');
+      rethrow;
+    }
+  }
+
+  /// 获取保存的硬件设备列表
+  static List<HardwareDeviceStorage> getHardwareDevices() {
+    try {
+      debugPrint('HiveHelper: Retrieving hardware devices from storage...');
+      final box = Hive.box<HardwareDeviceStorage>(_hardwareDevicesBox);
+      final mixedBox = Hive.box('mixedStorageBox');
+      
+      final count = mixedBox.get(_hardwareDevicesKey) as int? ?? 0;
+      debugPrint('HiveHelper: Found device count: $count');
+      
+      final devices = <HardwareDeviceStorage>[];
+      
+      for (int i = 0; i < count; i++) {
+        final device = box.get('device_$i') as HardwareDeviceStorage?;
+        if (device != null) {
+          devices.add(device);
+        }
+      }
+      
+      debugPrint('HiveHelper: Retrieved ${devices.length} devices from storage');
+      return devices;
+    } catch (e) {
+      debugPrint('HiveHelper: Error retrieving hardware devices: $e');
+      return [];
+    }
+  }
+
+  /// 保存最后连接的设备ID
+  static Future<void> saveLastConnectedDevice(String deviceId) async {
+    try {
+      debugPrint('HiveHelper: Saving last connected device ID: $deviceId');
+      final mixedBox = Hive.box('mixedStorageBox');
+      await mixedBox.put(_lastConnectedDeviceKey, deviceId);
+      debugPrint('HiveHelper: Successfully saved last connected device ID: $deviceId');
+    } catch (e) {
+      debugPrint('HiveHelper: Error saving last connected device ID: $e');
+      rethrow;
+    }
+  }
+
+  /// 获取最后连接的设备ID
+  static String? getLastConnectedDevice() {
+    try {
+      debugPrint('HiveHelper: Retrieving last connected device ID...');
+      final mixedBox = Hive.box('mixedStorageBox');
+      final deviceId = mixedBox.get(_lastConnectedDeviceKey) as String?;
+      debugPrint('HiveHelper: Retrieved last connected device ID: $deviceId');
+      return deviceId;
+    } catch (e) {
+      debugPrint('HiveHelper: Error retrieving last connected device ID: $e');
+      return null;
+    }
+  }
+
+  /// 清除硬件设备存储
+  static Future<void> clearHardwareDevices() async {
+    final box = Hive.box<HardwareDeviceStorage>(_hardwareDevicesBox);
+    await box.clear();
   }
 
   /// 检查是否存在保存的 UpdateDataTask

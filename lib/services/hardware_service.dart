@@ -11,6 +11,8 @@ import 'hardware_constants.dart';
 import 'omi_packet_reassembler.dart';
 import 'opus_decoder_service.dart';
 import 'local_audio_processor.dart';
+import '../hive_helper.dart';
+import '../my_hive_objects.dart';
 
 class HardwareService extends ChangeNotifier {
   // Device management
@@ -26,6 +28,9 @@ class HardwareService extends ChangeNotifier {
   StreamController<HardwareAudioPacket>? _audioStreamController;
   StreamSubscription<List<int>>? _audioSubscription;
   int _audioSequenceNumber = 0;
+  
+  // Service state
+  bool _isDisposed = false;
   
   // OMI audio processing services
   late OmiPacketReassembler _packetReassembler;
@@ -248,6 +253,9 @@ class HardwareService extends ChangeNotifier {
       await FlutterBluePlus.stopScan();
       _isScanning = false;
       notifyListeners();
+      
+      // Save discovered devices to persistent storage after scan completes
+      _saveDiscoveredDevices();
     } catch (e) {
       debugPrint('Error stopping scan: $e');
     }
@@ -286,6 +294,9 @@ class HardwareService extends ChangeNotifier {
     }
     
     notifyListeners();
+    
+    // Save discovered devices to persistent storage
+    _saveDiscoveredDevices();
   }
   
   /// Connect to a hardware device
@@ -370,6 +381,9 @@ class HardwareService extends ChangeNotifier {
       
       debugPrint('HardwareService.connectToDevice: Device connected successfully');
       
+      // Save connected device to persistent storage
+      await _saveConnectedDevice();
+      
       // Automatically enable local audio processing when hardware connects
       if (_localAudioProcessor != null) {
         _localAudioProcessor!.enable();
@@ -411,6 +425,9 @@ class HardwareService extends ChangeNotifier {
       // Update state
       _connectedDevice = _connectedDevice!.copyWith(isConnected: false);
       _updateConnectionState(_connectedDevice!.id, HardwareConnectionStatus.disconnected);
+      
+      // Save disconnected state to persistent storage
+      await _saveConnectedDevice();
       
       notifyListeners();
       
@@ -986,8 +1003,175 @@ class HardwareService extends ChangeNotifier {
     }
   }
 
+  // ===============================================================================
+  // Device Persistence Methods
+  // ===============================================================================
+
+  /// Save discovered devices to persistent storage
+  Future<void> _saveDiscoveredDevices() async {
+    try {
+      debugPrint('HardwareService: Saving ${_discoveredDevices.length} discovered devices to storage...');
+      final devices = _discoveredDevices.map((device) {
+        final isFavorite = device.id == _connectedDevice?.id; // Mark connected device as favorite
+        return HardwareDeviceStorage.fromHardwareDevice(device, isFavorite: isFavorite);
+      }).toList();
+      
+      debugPrint('HardwareService: Device IDs to save: ${devices.map((d) => d.id).join(', ')}');
+      await HiveHelper.saveHardwareDevices(devices);
+      debugPrint('HardwareService: Successfully saved ${devices.length} discovered devices to storage');
+    } catch (e) {
+      debugPrint('HardwareService: Error saving discovered devices: $e');
+    }
+  }
+
+  /// Load discovered devices from persistent storage
+  Future<void> _loadDiscoveredDevices() async {
+    try {
+      debugPrint('HardwareService: Attempting to load discovered devices from storage...');
+      final storedDevices = HiveHelper.getHardwareDevices();
+      debugPrint('HardwareService: Retrieved ${storedDevices.length} devices from storage');
+      
+      if (storedDevices.isNotEmpty) {
+        _discoveredDevices = storedDevices.map((storage) => storage.toHardwareDevice()).toList();
+        debugPrint('HardwareService: Successfully loaded ${_discoveredDevices.length} devices from storage');
+        debugPrint('HardwareService: Device IDs: ${_discoveredDevices.map((d) => d.id).join(', ')}');
+        notifyListeners();
+      } else {
+        debugPrint('HardwareService: No stored devices found');
+      }
+    } catch (e) {
+      debugPrint('HardwareService: Error loading discovered devices: $e');
+    }
+  }
+
+  /// Save the currently connected device ID
+  Future<void> _saveConnectedDevice() async {
+    if (_connectedDevice != null) {
+      try {
+        debugPrint('HardwareService: Saving connected device ID: ${_connectedDevice!.id}');
+        await HiveHelper.saveLastConnectedDevice(_connectedDevice!.id);
+        debugPrint('HardwareService: Successfully saved connected device ID: ${_connectedDevice!.id}');
+      } catch (e) {
+        debugPrint('HardwareService: Error saving connected device: $e');
+      }
+    } else {
+      debugPrint('HardwareService: No connected device to save');
+    }
+  }
+
+  /// Attempt to reconnect to the last connected device
+  Future<void> _attemptReconnectToLastDevice() async {
+    try {
+      debugPrint('HardwareService: Attempting to reconnect to last connected device...');
+      final lastDeviceId = HiveHelper.getLastConnectedDevice();
+      debugPrint('HardwareService: Last connected device ID: $lastDeviceId');
+      
+      if (lastDeviceId != null) {
+        debugPrint('HardwareService: Attempting to reconnect to last device: $lastDeviceId');
+        debugPrint('HardwareService: Available discovered devices: ${_discoveredDevices.map((d) => d.id).join(', ')}');
+        
+        // Find the device in discovered devices
+        final device = _discoveredDevices.firstWhereOrNull((d) => d.id == lastDeviceId);
+        if (device != null) {
+          debugPrint('HardwareService: Found last device in discovered devices, attempting reconnection');
+          
+          // Wait for Bluetooth to be ready before attempting connection
+          await _waitForBluetoothReady();
+          
+          try {
+            await connectToDevice(device);
+            debugPrint('HardwareService: Reconnection successful!');
+          } catch (e) {
+            debugPrint('HardwareService: Reconnection failed: $e');
+            debugPrint('HardwareService: Scheduling retry in 5 seconds...');
+            _scheduleReconnectionRetry();
+          }
+        } else {
+          debugPrint('HardwareService: Last device not found in discovered devices, will need to scan');
+        }
+      } else {
+        debugPrint('HardwareService: No last connected device found');
+      }
+    } catch (e) {
+      debugPrint('HardwareService: Error attempting reconnection: $e');
+    }
+  }
+  
+  /// Wait for Bluetooth to be ready before attempting connection
+  Future<void> _waitForBluetoothReady() async {
+    int retryCount = 0;
+    const maxRetries = 10;
+    const retryDelay = Duration(milliseconds: 500);
+    
+    while (retryCount < maxRetries) {
+      try {
+        // Check if Bluetooth is available
+        final state = await FlutterBluePlus.adapterState.first;
+        if (state == BluetoothAdapterState.on) {
+          debugPrint('HardwareService: Bluetooth is ready, proceeding with connection');
+          return;
+        } else if (state == BluetoothAdapterState.off) {
+          debugPrint('HardwareService: Bluetooth is off, waiting for it to turn on...');
+        } else if (state == BluetoothAdapterState.turningOn) {
+          debugPrint('HardwareService: Bluetooth is turning on, waiting...');
+        } else if (state == BluetoothAdapterState.turningOff) {
+          debugPrint('HardwareService: Bluetooth is turning off, waiting...');
+        } else {
+          debugPrint('HardwareService: Bluetooth state unknown, waiting...');
+        }
+        
+        retryCount++;
+        if (retryCount < maxRetries) {
+          debugPrint('HardwareService: Waiting for Bluetooth to be ready (attempt $retryCount/$maxRetries)...');
+          await Future.delayed(retryDelay);
+        }
+      } catch (e) {
+        debugPrint('HardwareService: Error checking Bluetooth state: $e');
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await Future.delayed(retryDelay);
+        }
+      }
+    }
+    
+    debugPrint('HardwareService: Bluetooth not ready after $maxRetries attempts, proceeding anyway');
+  }
+  
+  /// Schedule a retry of the reconnection after a delay
+  void _scheduleReconnectionRetry() {
+    debugPrint('HardwareService: Scheduling reconnection retry in 5 seconds...');
+    Future.delayed(const Duration(seconds: 5), () {
+      if (!_isDisposed) {
+        debugPrint('HardwareService: Executing scheduled reconnection retry...');
+        _attemptReconnectToLastDevice();
+      }
+    });
+  }
+
+  /// Initialize device persistence and attempt reconnection
+  Future<void> initializeDevicePersistence() async {
+    try {
+      debugPrint('HardwareService: Initializing device persistence...');
+      
+      // Load previously discovered devices
+      await _loadDiscoveredDevices();
+      
+      // Wait a bit for the app to fully initialize before attempting reconnection
+      debugPrint('HardwareService: Waiting for app to fully initialize before attempting reconnection...');
+      await Future.delayed(const Duration(seconds: 2));
+      
+      // Attempt to reconnect to last connected device
+      await _attemptReconnectToLastDevice();
+      
+      debugPrint('HardwareService: Device persistence initialization complete');
+    } catch (e) {
+      debugPrint('HardwareService: Error initializing device persistence: $e');
+    }
+  }
+
   @override
   void dispose() {
+    _isDisposed = true;
     stopAudioStream();
     disconnect();
     super.dispose();
