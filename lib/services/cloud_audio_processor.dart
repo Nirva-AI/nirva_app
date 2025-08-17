@@ -30,7 +30,7 @@ class CloudAudioProcessor extends ChangeNotifier {
   bool _isEnabled = false;
   
   // VAD configuration
-  static const Duration _segmentCloseDelay = Duration(seconds: 4); // 4 second wait time to match VAD minSilenceDuration
+  static const Duration _segmentCloseDelay = Duration(seconds: 3); // 3 second wait time to match VAD minSilenceDuration
   
 
   
@@ -38,6 +38,7 @@ class CloudAudioProcessor extends ChangeNotifier {
   bool _isSpeechActive = false;
   DateTime? _lastSpeechTime;
   Timer? _segmentCloseTimer;
+  int? _lastLoggedSeconds; // Track last logged second to avoid duplicate logs
   
   // Current segment tracking
   String? _currentSegmentPath;
@@ -405,6 +406,7 @@ class CloudAudioProcessor extends ChangeNotifier {
   void _startNewSegment(DateTime startTime) {
     _currentSegmentStartTime = startTime;
     _currentSegmentBuffer.clear();
+    _lastLoggedSeconds = null; // Reset logging state for new segment
     
     // Generate segment filename
     final timestamp = startTime.millisecondsSinceEpoch;
@@ -446,7 +448,12 @@ class CloudAudioProcessor extends ChangeNotifier {
       _closeCurrentSegment();
     });
     
-    debugPrint('CloudAudioProcessor: Segment close scheduled in ${remainingDelay.inMilliseconds}ms');
+    // Only log once per second to avoid spam
+    final remainingSeconds = remainingDelay.inSeconds;
+    if (remainingSeconds != _lastLoggedSeconds) {
+      _lastLoggedSeconds = remainingSeconds;
+      debugPrint('CloudAudioProcessor: Segment close scheduled in ${remainingSeconds}s');
+    }
   }
   
   /// Check if current segment overlaps with previous segments
@@ -510,6 +517,7 @@ class CloudAudioProcessor extends ChangeNotifier {
     _currentSegmentBuffer.clear();
     _isSpeechActive = false;
     _lastSpeechTime = null;
+    _lastLoggedSeconds = null; // Reset logging state
     _speechStateStream.add(false);
     _segmentCloseTimer?.cancel();
     _segmentCloseTimer = null;

@@ -89,7 +89,7 @@ class SherpaVadService extends ChangeNotifier {
         sileroVad: SileroVadModelConfig(
           model: modelPath,
           threshold: 0.6, // Higher threshold to reduce false positives and short segments
-          minSilenceDuration: 4.0, // 4 second wait time before closing segment (increased from 3.0)
+          minSilenceDuration: 3.0, // 3 second wait time before closing segment
           minSpeechDuration: 0.5, // Longer speech duration to prevent very short segments (increased from 0.3)
           windowSize: 512, // Use standard window size
           maxSpeechDuration: 30.0, // Allow longer speech segments
