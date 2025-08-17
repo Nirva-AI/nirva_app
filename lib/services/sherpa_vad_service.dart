@@ -6,19 +6,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart';
 import 'package:path_provider/path_provider.dart';
+import 'audio_config.dart';
 
 /// Voice Activity Detection (VAD) service using sherpa_onnx
 /// 
 /// This service processes audio streams to detect speech segments
 /// and integrates with the existing hardware audio pipeline
 class SherpaVadService extends ChangeNotifier {
-  // VAD configuration
-  static const int _sampleRate = 16000;  // Match OMI firmware sample rate
-  static const int _channels = 1;         // Mono audio
-  static const int _frameSize = 160;      // 10ms frames (16000Hz / 160 = 100Hz)
+  // VAD configuration - using centralized AudioConfig
+  // All constants are now synchronized with CloudAudioProcessor
   
   // VAD processing frequency control - process every frame for better detection
-  static const int _vadProcessingInterval = 1; // Process every frame for better accuracy
   int _frameCounter = 0;
   
   // VAD state
@@ -31,7 +29,7 @@ class SherpaVadService extends ChangeNotifier {
   
   // Audio processing
   final List<int> _audioBuffer = [];
-  final int _bufferThreshold = _sampleRate * 2; // 2 seconds of audio
+  final int _bufferThreshold = AudioConfig.vadSampleRate * 2; // 2 seconds of audio
   
   // Speech detection state
   DateTime? _speechStartTime;
@@ -88,16 +86,16 @@ class SherpaVadService extends ChangeNotifier {
       final config = VadModelConfig(
         sileroVad: SileroVadModelConfig(
           model: modelPath,
-          threshold: 0.6, // Higher threshold to reduce false positives and short segments
-          minSilenceDuration: 3.0, // 3 second wait time before closing segment
-          minSpeechDuration: 0.5, // Longer speech duration to prevent very short segments (increased from 0.3)
-          windowSize: 512, // Use standard window size
-          maxSpeechDuration: 30.0, // Allow longer speech segments
+          threshold: AudioConfig.vadThreshold,
+          minSilenceDuration: AudioConfig.vadMinSilenceDuration,
+          minSpeechDuration: AudioConfig.vadMinSpeechDuration,
+          windowSize: AudioConfig.vadWindowSize,
+          maxSpeechDuration: AudioConfig.vadMaxSpeechDuration,
         ),
-        sampleRate: _sampleRate,
-        numThreads: 1,
-        provider: 'cpu',
-        debug: false, // Disable debug to reduce memory usage
+        sampleRate: AudioConfig.vadSampleRate,
+        numThreads: AudioConfig.vadNumThreads,
+        provider: AudioConfig.vadProvider,
+        debug: AudioConfig.vadDebug,
       );
       
       debugPrint('SherpaVadService: VAD config created, attempting to create VAD instance...');
@@ -106,16 +104,16 @@ class SherpaVadService extends ChangeNotifier {
         // Create VAD instance
         _vad = VoiceActivityDetector(
           config: config,
-          bufferSizeInSeconds: 2.0,
+          bufferSizeInSeconds: AudioConfig.vadBufferSizeInSeconds,
         );
         debugPrint('SherpaVadService: VAD instance created successfully');
         
         _isInitialized = true;
         debugPrint('SherpaVadService: VAD service initialized successfully');
-        debugPrint('  - Sample Rate: $_sampleRate Hz');
-        debugPrint('  - Channels: $_channels');
-        debugPrint('  - Frame Size: $_frameSize samples');
-        debugPrint('  - Processing Interval: $_vadProcessingInterval frames');
+        debugPrint('  - Sample Rate: ${AudioConfig.vadSampleRate} Hz');
+        debugPrint('  - Channels: ${AudioConfig.vadChannels}');
+        debugPrint('  - Frame Size: ${AudioConfig.vadFrameSize} samples');
+        debugPrint('  - Processing Interval: ${AudioConfig.vadProcessingInterval} frames');
         
         notifyListeners();
         return true;
@@ -157,13 +155,13 @@ class SherpaVadService extends ChangeNotifier {
       
       // Process frames when we have enough data
       bool speechDetected = false;
-      while (_audioBuffer.length >= _frameSize * 2) { // 2 bytes per sample (16-bit)
-        final frameData = _audioBuffer.take(_frameSize * 2).toList();
-        _audioBuffer.removeRange(0, _frameSize * 2);
+      while (_audioBuffer.length >= AudioConfig.vadFrameSize * 2) { // 2 bytes per sample (16-bit)
+        final frameData = _audioBuffer.take(AudioConfig.vadFrameSize * 2).toList();
+        _audioBuffer.removeRange(0, AudioConfig.vadFrameSize * 2);
         
         // Process every frame for better accuracy
         _frameCounter++;
-        if (_frameCounter % _vadProcessingInterval != 0) {
+        if (_frameCounter % AudioConfig.vadProcessingInterval != 0) {
           _totalFramesProcessed++;
           continue; // Skip this frame
         }
@@ -173,7 +171,7 @@ class SherpaVadService extends ChangeNotifier {
         
         // Check if audio has meaningful content
         final maxAmplitude = floatFrame.reduce((a, b) => a.abs() > b.abs() ? a : b).abs();
-        if (maxAmplitude < 0.0001) { // Reduced from 0.001 to 0.0001 to process more frames
+        if (maxAmplitude < AudioConfig.vadMinAmplitudeThreshold) {
           // Skip processing for essentially silent frames
           _silenceFramesDetected++;
           _totalFramesProcessed++;
@@ -188,7 +186,7 @@ class SherpaVadService extends ChangeNotifier {
         
         // Log speech detection only when it changes
         if (frameSpeechDetected != _isSpeechDetected) {
-          debugPrint('SherpaVadService: Speech detection changed to: $frameSpeechDetected (frame: $_frameCounter)');
+          debugPrint('SherpaVadService: Speech detection changed to: $frameSpeechDetected');
         }
         
         // Check if speech is detected
@@ -253,23 +251,23 @@ class SherpaVadService extends ChangeNotifier {
       int offset = 0;
       
       while (offset < pcmData.length) {
-        final frameSize = (_frameSize * 2).clamp(0, pcmData.length - offset);
+        final frameSize = (AudioConfig.vadFrameSize * 2).clamp(0, pcmData.length - offset);
         final frameData = pcmData.sublist(offset, offset + frameSize);
         
-        if (frameData.length == _frameSize * 2) {
+        if (frameData.length == AudioConfig.vadFrameSize * 2) {
           final speechDetected = processAudioFrame(frameData);
           
           if (speechDetected && segments.isEmpty) {
             // Start of new speech segment
             segments.add(VadSpeechSegment(
-              startTime: Duration(milliseconds: (offset / 2 / _sampleRate * 1000).round()),
-              endTime: Duration(milliseconds: ((offset + frameSize) / 2 / _sampleRate * 1000).round()),
+              startTime: Duration(milliseconds: (offset / 2 / AudioConfig.vadSampleRate * 1000).round()),
+              endTime: Duration(milliseconds: ((offset + frameSize) / 2 / AudioConfig.vadSampleRate * 1000).round()),
             ));
           } else if (speechDetected && segments.isNotEmpty) {
             // Extend current speech segment
             final lastSegment = segments.last;
             segments[segments.length - 1] = lastSegment.copyWith(
-              endTime: Duration(milliseconds: ((offset + frameSize) / 2 / _sampleRate * 1000).round()),
+              endTime: Duration(milliseconds: ((offset + frameSize) / 2 / AudioConfig.vadSampleRate * 1000).round()),
             );
           }
         }
@@ -289,8 +287,8 @@ class SherpaVadService extends ChangeNotifier {
   Float32List _convertPcmToFloat32(List<int> pcmData) {
     final floatData = Float32List(pcmData.length ~/ 2);
     
-         // Use moderate amplification since we increased the threshold
-     const double amplificationFactor = 5.0; // Reduced from 10x to 5x
+    // Use moderate amplification since we increased the threshold
+    const double amplificationFactor = AudioConfig.vadAmplificationFactor;
     
     for (int i = 0; i < floatData.length; i++) {
       // Convert 16-bit signed integer to float32 (-1.0 to 1.0)
@@ -299,7 +297,7 @@ class SherpaVadService extends ChangeNotifier {
       if (Endian.host == Endian.little) {
         sample = (pcmData[i * 2] | (pcmData[i * 2 + 1] << 8));
       } else {
-        sample = ((pcmData[i * 2] << 8) | pcmData[i * 2 + 1]);
+        sample = ((pcmData[i * 2] << 8) | (pcmData[i * 2 + 1]));
       }
       
       // Handle signed 16-bit integer
@@ -381,10 +379,10 @@ class SherpaVadService extends ChangeNotifier {
       debugPrint('SherpaVadService: Testing VAD with sample audio...');
       
       // Create a simple test audio sample (1 second of alternating tones)
-      final testAudio = Float32List(_sampleRate);
+      final testAudio = Float32List(AudioConfig.vadSampleRate);
       for (int i = 0; i < testAudio.length; i++) {
         // Create a simple tone pattern
-        testAudio[i] = 0.1 * sin(2 * pi * 440 * i / _sampleRate); // 440Hz tone
+        testAudio[i] = 0.1 * sin(2 * pi * 440 * i / AudioConfig.vadSampleRate); // 440Hz tone
       }
       
       // Process the test audio
@@ -402,7 +400,31 @@ class SherpaVadService extends ChangeNotifier {
     }
   }
   
-
+  /// Reset VAD state (useful for debugging and synchronization)
+  void resetVadState() {
+    if (_vad != null) {
+      _vad!.clear();
+      debugPrint('SherpaVadService: VAD instance cleared');
+    }
+    
+    // Reset all state variables
+    _isSpeechDetected = false;
+    _speechStartTime = null;
+    _speechEndTime = null;
+    _speechDuration = 0;
+    _frameCounter = 0;
+    
+    // Clear audio buffer completely
+    _audioBuffer.clear();
+    
+    // Reset statistics for clean state
+    _totalFramesProcessed = 0;
+    _speechFramesDetected = 0;
+    _silenceFramesDetected = 0;
+    
+    debugPrint('SherpaVadService: VAD state completely reset - ready for new audio stream');
+    notifyListeners();
+  }
   
   /// Get current VAD statistics
   Map<String, dynamic> getStats() {
@@ -416,12 +438,12 @@ class SherpaVadService extends ChangeNotifier {
       'silenceFramesDetected': _silenceFramesDetected,
       'speechRatio': speechRatio,
       'audioBufferSize': _audioBuffer.length,
-      'sampleRate': _sampleRate,
-      'channels': _channels,
-      'frameSize': _frameSize,
-      'vadProcessingInterval': _vadProcessingInterval,
+      'sampleRate': AudioConfig.vadSampleRate,
+      'channels': AudioConfig.vadChannels,
+      'frameSize': AudioConfig.vadFrameSize,
+      'vadProcessingInterval': AudioConfig.vadProcessingInterval,
       'frameCounter': _frameCounter,
-      'effectiveProcessingRate': '${_vadProcessingInterval * 10}ms intervals',
+      'effectiveProcessingRate': '${AudioConfig.vadProcessingInterval * 10}ms intervals',
     };
   }
   

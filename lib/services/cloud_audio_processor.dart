@@ -8,6 +8,7 @@ import 'deepgram_service.dart';
 import 'opus_decoder_service.dart';
 import 'cloud_asr_storage_service.dart';
 import 'api_logging_service.dart';
+import 'audio_config.dart';
 import '../my_hive_objects.dart';
 
 /// Cloud audio processor that combines local VAD with cloud ASR
@@ -29,10 +30,8 @@ class CloudAudioProcessor extends ChangeNotifier {
   bool _isProcessing = false;
   bool _isEnabled = false;
   
-  // VAD configuration
-  static const Duration _segmentCloseDelay = Duration(seconds: 3); // 3 second wait time to match VAD minSilenceDuration
-  
-
+  // VAD configuration - using centralized AudioConfig
+  // All timing constants are now synchronized with VAD service
   
   // Speech detection state
   bool _isSpeechActive = false;
@@ -44,11 +43,11 @@ class CloudAudioProcessor extends ChangeNotifier {
   String? _currentSegmentPath;
   DateTime? _currentSegmentStartTime;
   final List<int> _currentSegmentBuffer = [];
-  final int _maxSegmentBufferSize = 1024 * 1024; // 1MB per segment
+  final int _maxSegmentBufferSize = AudioConfig.maxSegmentBufferSize;
   
   // Transcription results
   final List<CloudAudioResult> _transcriptionResults = [];
-  final int _maxResultsHistory = 100;
+  final int _maxResultsHistory = AudioConfig.maxResultsHistory;
   
   // Temporary files that should be cleaned up later
   final List<String> _temporaryFiles = [];
@@ -162,14 +161,21 @@ class CloudAudioProcessor extends ChangeNotifier {
         debugPrint('  - VAD Service: Initialized');
         debugPrint('  - Deepgram Service: Initialized');
         debugPrint('  - Opus Decoder Service: Using existing instance for WAV creation');
-        debugPrint('  - Segment Close Delay: $_segmentCloseDelay');
+        debugPrint('  - Segment Close Delay: ${AudioConfig.segmentCloseDelay.inSeconds}s');
+        debugPrint('  - Max Segment Duration: ${AudioConfig.maxSegmentDuration.inSeconds}s');
         
-
+        // Validate configuration consistency
+        final configValid = AudioConfig.validateTimingConsistency();
+        if (configValid) {
+          debugPrint('CloudAudioProcessor: ✅ Configuration validation passed - all timing constants are synchronized');
+        } else {
+          debugPrint('CloudAudioProcessor: ⚠️ Configuration validation failed - timing constants are not synchronized!');
+          debugPrint('CloudAudioProcessor: Configuration summary: ${AudioConfig.getConfigSummary()}');
+        }
         
         notifyListeners();
       } else {
         debugPrint('CloudAudioProcessor: Failed to initialize required services');
-
       }
       
       return _isInitialized;
@@ -310,8 +316,6 @@ class CloudAudioProcessor extends ChangeNotifier {
         _startNewSegment(now);
         
         debugPrint('CloudAudioProcessor: Speech started, new segment created');
-        
-
       } else {
         // Extend existing segment instead of creating new one
         debugPrint('CloudAudioProcessor: Speech detected but extending existing segment (overlap prevention)');
@@ -343,14 +347,13 @@ class CloudAudioProcessor extends ChangeNotifier {
       
       // Add minimum segment duration check to prevent very short segments
       final segmentDuration = DateTime.now().difference(_currentSegmentStartTime ?? DateTime.now());
-      final minSegmentDuration = Duration(seconds: 2); // Minimum 2 seconds
       
-      if (silenceDuration >= _segmentCloseDelay && segmentDuration >= minSegmentDuration) {
+      if (silenceDuration >= AudioConfig.segmentCloseDelay && segmentDuration >= AudioConfig.minSegmentDuration) {
         // Close the current segment
         _closeCurrentSegment();
-      } else if (silenceDuration >= _segmentCloseDelay && segmentDuration < minSegmentDuration) {
+      } else if (silenceDuration >= AudioConfig.segmentCloseDelay && segmentDuration < AudioConfig.minSegmentDuration) {
         // Segment too short - extend it instead of closing
-        debugPrint('CloudAudioProcessor: Segment too short (${segmentDuration.inMilliseconds}ms) - extending instead of closing');
+        debugPrint('CloudAudioProcessor: Segment too short (${segmentDuration.inMilliseconds}ms) - extending instead of closing (need ${AudioConfig.minSegmentDuration.inMilliseconds}ms)');
         _extendSegmentForMinimumDuration();
       } else {
         // Schedule segment close timer
@@ -367,21 +370,30 @@ class CloudAudioProcessor extends ChangeNotifier {
       return true;
     }
     
-    // Check if enough time has passed since last segment start
-    final timeSinceSegmentStart = now.difference(_currentSegmentStartTime!);
-    if (timeSinceSegmentStart < Duration(seconds: 5)) {
-      // Too soon to start new segment - extend existing one
-      debugPrint('CloudAudioProcessor: Preventing new segment - only ${timeSinceSegmentStart.inSeconds}s since last segment start (need 5s)');
-      return false;
-    }
-    
     // Check if current segment is too long (merge long segments)
-    if (timeSinceSegmentStart > Duration(seconds: 30)) {
+    final timeSinceSegmentStart = now.difference(_currentSegmentStartTime!);
+    if (timeSinceSegmentStart > AudioConfig.maxSegmentDuration) {
       debugPrint('CloudAudioProcessor: Current segment too long (${timeSinceSegmentStart.inSeconds}s) - forcing new segment');
       return true;
     }
     
-    debugPrint('CloudAudioProcessor: Allowing new segment - ${timeSinceSegmentStart.inSeconds}s since last segment start');
+    // CRITICAL: If we already have an active segment, NEVER start a new one
+    // This prevents overlapping segments from being created
+    // Only allow new segments when the current one is completely closed
+    if (_isSpeechActive) {
+      debugPrint('CloudAudioProcessor: Preventing new segment - current segment is still active (${timeSinceSegmentStart.inSeconds}s)');
+      return false;
+    }
+    
+    // If speech is not active but we have a segment, check if it's been closed long enough
+    // This prevents rapid segment creation that could cause overlaps
+    final timeSinceLastSpeech = _lastSpeechTime != null ? now.difference(_lastSpeechTime!) : Duration.zero;
+    if (timeSinceLastSpeech < AudioConfig.segmentOverlapThreshold) {
+      debugPrint('CloudAudioProcessor: Preventing new segment - too soon after last speech (${timeSinceLastSpeech.inMilliseconds}ms < ${AudioConfig.segmentOverlapThreshold.inMilliseconds}ms)');
+      return false;
+    }
+    
+    debugPrint('CloudAudioProcessor: Allowing new segment - current segment inactive and sufficient time passed');
     return true;
   }
   
@@ -399,11 +411,23 @@ class CloudAudioProcessor extends ChangeNotifier {
     // Cancel existing segment close timer
     _segmentCloseTimer?.cancel();
     
-    debugPrint('CloudAudioProcessor: Extended existing segment: $_currentSegmentPath');
+    // Log the extension for debugging
+    final segmentDuration = now.difference(_currentSegmentStartTime!);
+    debugPrint('CloudAudioProcessor: Extended existing segment: $_currentSegmentPath (duration: ${segmentDuration.inMilliseconds}ms)');
+    
+    // If segment is getting very long, consider forcing a new one
+    if (segmentDuration > AudioConfig.maxSegmentDuration) {
+      debugPrint('CloudAudioProcessor: Segment extended beyond max duration (${segmentDuration.inSeconds}s) - will force new segment on next speech detection');
+    }
   }
   
   /// Start a new audio segment
   void _startNewSegment(DateTime startTime) {
+    // Ensure no existing segment is active
+    if (_isSpeechActive) {
+      debugPrint('CloudAudioProcessor: WARNING - Starting new segment while speech is active! This should not happen.');
+    }
+    
     _currentSegmentStartTime = startTime;
     _currentSegmentBuffer.clear();
     _lastLoggedSeconds = null; // Reset logging state for new segment
@@ -420,8 +444,7 @@ class CloudAudioProcessor extends ChangeNotifier {
     if (_currentSegmentStartTime == null) return;
     
     final segmentDuration = DateTime.now().difference(_currentSegmentStartTime!);
-    final minSegmentDuration = Duration(seconds: 2);
-    final remainingTime = minSegmentDuration - segmentDuration;
+    final remainingTime = AudioConfig.minSegmentDuration - segmentDuration;
     
     if (remainingTime.isNegative) return;
     
@@ -439,7 +462,7 @@ class CloudAudioProcessor extends ChangeNotifier {
   void _scheduleSegmentClose() {
     _segmentCloseTimer?.cancel();
     
-    var remainingDelay = _segmentCloseDelay - DateTime.now().difference(_lastSpeechTime!);
+    var remainingDelay = AudioConfig.segmentCloseDelay - DateTime.now().difference(_lastSpeechTime!);
     if (remainingDelay.isNegative) {
       remainingDelay = Duration.zero;
     }
@@ -452,88 +475,101 @@ class CloudAudioProcessor extends ChangeNotifier {
     final remainingSeconds = remainingDelay.inSeconds;
     if (remainingSeconds != _lastLoggedSeconds) {
       _lastLoggedSeconds = remainingSeconds;
-      debugPrint('CloudAudioProcessor: Segment close scheduled in ${remainingSeconds}s');
+      if (remainingSeconds > 0) {
+        debugPrint('CloudAudioProcessor: Segment close scheduled in ${remainingSeconds}s');
+      }
     }
   }
   
   /// Check if current segment overlaps with previous segments
   bool _hasOverlapWithPreviousSegments(Duration currentDuration) {
-    if (_transcriptionResults.isEmpty) return false;
-    
-    final currentStart = _currentSegmentStartTime!;
-    final currentEnd = currentStart.add(currentDuration);
-    
-    // Check last 3 results for overlap
-    for (int i = _transcriptionResults.length - 1; i >= 0 && i >= _transcriptionResults.length - 3; i--) {
-      final previousResult = _transcriptionResults[i];
-      final previousStart = previousResult.startTime;
-      final previousEnd = previousResult.endTime;
-      
-      // Check for overlap (segments that are too close in time)
-      final timeGap = currentStart.difference(previousEnd);
-      if (timeGap.abs() < Duration(seconds: 3)) {
-        debugPrint('CloudAudioProcessor: Overlap detected - gap: ${timeGap.inMilliseconds}ms between segments');
-        return true;
-      }
-    }
-    
+    // This method is no longer needed since we prevent overlaps by ensuring only one segment is active
+    // Keeping for backward compatibility but it should never return true
     return false;
   }
   
   /// Merge current segment with previous segment instead of creating new one
   void _mergeWithPreviousSegment() {
+    // This method is no longer needed since we prevent overlaps by ensuring only one segment is active
+    debugPrint('CloudAudioProcessor: Merge method called but not needed - overlaps prevented by single active segment');
+    _closeCurrentSegment();
+  }
+  
+  /// Validate segment timing to prevent overlaps
+  bool _validateSegmentTiming(DateTime startTime, DateTime endTime) {
     if (_transcriptionResults.isEmpty) {
-      // No previous segment to merge with, just close normally
-      _closeCurrentSegment();
-      return;
+      return true; // First segment is always valid
     }
     
-    debugPrint('CloudAudioProcessor: Merging current segment with previous segment');
-    
-    // Get the last result
+    // Check against the most recent result to prevent overlaps
     final lastResult = _transcriptionResults.last;
+    final timeBetweenSegments = startTime.difference(lastResult.endTime);
     
-    // Extend the previous segment with current audio data
-    final extendedResult = lastResult.copyWith(
-      endTime: DateTime.now(),
-      duration: DateTime.now().difference(lastResult.startTime),
-      audioData: Uint8List.fromList([...lastResult.audioData, ..._currentSegmentBuffer]),
-    );
+    // Ensure there's sufficient gap between segments (at least 1 second)
+    if (timeBetweenSegments < Duration(seconds: 1)) {
+      debugPrint('CloudAudioProcessor: WARNING - Potential segment overlap detected!');
+      debugPrint('CloudAudioProcessor: Last segment ended at: ${lastResult.endTime.toIso8601String()}');
+      debugPrint('CloudAudioProcessor: New segment starts at: ${startTime.toIso8601String()}');
+      debugPrint('CloudAudioProcessor: Gap between segments: ${timeBetweenSegments.inMilliseconds}ms (should be >= 1000ms)');
+      return false;
+    }
     
-    // Replace the last result with extended one
-    _transcriptionResults[_transcriptionResults.length - 1] = extendedResult;
-    
-    // Re-transcribe the extended segment
-    _transcribeSegmentAsync(extendedResult);
-    
-    // Reset current segment state
-    _resetSegment();
+    debugPrint('CloudAudioProcessor: Segment timing validated - gap: ${timeBetweenSegments.inMilliseconds}ms');
+    return true;
+  }
+  
+  /// Check if segments should be merged due to timing proximity
+  bool _shouldMergeWithPreviousSegment() {
+    // This method is no longer needed since we prevent overlaps by ensuring only one segment is active
+    return false;
   }
   
   /// Reset segment state
   void _resetSegment() {
+    // Cancel any pending timers first
+    _segmentCloseTimer?.cancel();
+    _segmentCloseTimer = null;
+    
+    // Clear segment data
     _currentSegmentPath = null;
     _currentSegmentStartTime = null;
     _currentSegmentBuffer.clear();
+    
+    // Reset speech state
     _isSpeechActive = false;
     _lastSpeechTime = null;
     _lastLoggedSeconds = null; // Reset logging state
+    
+    // Notify listeners of state change
     _speechStateStream.add(false);
-    _segmentCloseTimer?.cancel();
-    _segmentCloseTimer = null;
+    
+    // Reset VAD state to ensure proper synchronization
+    // This is critical to prevent overlapping segments
+    _vadService.resetVadState();
+    
+    debugPrint('CloudAudioProcessor: Segment state reset, VAD state reset for synchronization');
   }
   
   /// Close the current audio segment
   void _closeCurrentSegment() {
     if (!_isSpeechActive || _currentSegmentStartTime == null) {
+      debugPrint('CloudAudioProcessor: Cannot close segment - not active or no start time');
       return;
     }
     
     try {
       final endTime = DateTime.now();
       final segmentDuration = endTime.difference(_currentSegmentStartTime!);
+      final bufferSize = _currentSegmentBuffer.length;
       
       debugPrint('CloudAudioProcessor: Closing segment: $_currentSegmentPath (duration: $segmentDuration)');
+      
+      // Validate segment timing to prevent overlaps
+      if (!_validateSegmentTiming(_currentSegmentStartTime!, endTime)) {
+        debugPrint('CloudAudioProcessor: Segment timing validation failed - discarding segment to prevent overlap');
+        _resetSegment();
+        return;
+      }
       
       // Create segment result
       final segmentResult = CloudAudioResult(
@@ -549,13 +585,16 @@ class CloudAudioProcessor extends ChangeNotifier {
       // Send to Deepgram for transcription (asynchronously)
       _transcribeSegmentAsync(segmentResult);
       
-      // Reset segment state
+      // Reset segment state BEFORE transcription completes to prevent overlaps
+      // This is critical for preventing overlapping segments
       _resetSegment();
       
       debugPrint('CloudAudioProcessor: Segment closed successfully');
       
     } catch (e) {
       debugPrint('CloudAudioProcessor: Error closing segment: $e');
+      // Even if there's an error, reset the segment to prevent stuck state
+      _resetSegment();
     }
   }
   
@@ -588,64 +627,50 @@ class CloudAudioProcessor extends ChangeNotifier {
         endTime: segmentResult.endTime,
       );
       
-              if (transcriptionResult != null) {
-          // Create final result with transcription
-          final finalResult = segmentResult.copyWith(
+      if (transcriptionResult != null) {
+        // Create final result with transcription
+        final finalResult = segmentResult.copyWith(
+          transcription: transcriptionResult.transcription,
+          confidence: transcriptionResult.confidence,
+          language: transcriptionResult.language,
+          isFinal: true,
+          audioFilePath: rawFilePath, // Include the file path for playback
+        );
+        
+        // Log the API response to file
+        try {
+          await _loggingService.logTranscriptionResponse(
+            audioSegmentPath: segmentResult.segmentPath,
             transcription: transcriptionResult.transcription,
             confidence: transcriptionResult.confidence,
             language: transcriptionResult.language,
-            isFinal: true,
-            audioFilePath: rawFilePath, // Include the file path for playback
+            processingTime: DateTime.now().difference(segmentResult.startTime),
+            rawResponse: transcriptionResult.rawResponse,
           );
-          
-          // Debug: Log transcription details
-          debugPrint('CloudAudioProcessor: Original transcription length: ${transcriptionResult.transcription.length}');
-          debugPrint('CloudAudioProcessor: Original transcription: "${transcriptionResult.transcription}"');
-          debugPrint('CloudAudioProcessor: Final result transcription length: ${finalResult.transcription?.length ?? 0}');
-          debugPrint('CloudAudioProcessor: Final result transcription: "${finalResult.transcription}"');
-          
-          // Log the API response to file
-          try {
-            debugPrint('CloudAudioProcessor: About to log transcription response...');
-            await _loggingService.logTranscriptionResponse(
-              audioSegmentPath: segmentResult.segmentPath,
-              transcription: transcriptionResult.transcription,
-              confidence: transcriptionResult.confidence,
-              language: transcriptionResult.language,
-              processingTime: DateTime.now().difference(segmentResult.startTime),
-              rawResponse: transcriptionResult.rawResponse,
-            );
-            debugPrint('CloudAudioProcessor: Transcription response logged successfully');
-          } catch (e) {
-            debugPrint('CloudAudioProcessor: ERROR logging transcription response: $e');
-          }
-          
-          // Add to results history
-          _addToResultsHistory(finalResult);
-          
-                       // Store result persistently
-             try {
-               debugPrint('CloudAudioProcessor: Attempting to store result persistently...');
-               debugPrint('CloudAudioProcessor: Storage service initialized: ${_storageService.isInitialized}');
-               debugPrint('CloudAudioProcessor: Storage service user ID: ${_storageService.currentUserId}');
-               debugPrint('CloudAudioProcessor: Storage service session ID: ${_storageService.currentSessionId}');
-               
-               final stored = await _storageService.storeResult(finalResult);
-               if (stored) {
-                 debugPrint('CloudAudioProcessor: Result stored persistently: ${finalResult.segmentPath}');
-               } else {
-                 debugPrint('CloudAudioProcessor: Failed to store result persistently: ${finalResult.segmentPath}');
-               }
-             } catch (e) {
-               debugPrint('CloudAudioProcessor: Error storing result: $e');
-               debugPrint('CloudAudioProcessor: Stack trace: ${StackTrace.current}');
-             }
-          
-          // Broadcast result
-          _resultController.add(finalResult);
-          
-          debugPrint('CloudAudioProcessor: Transcription completed: "${transcriptionResult.transcription}"');
+        } catch (e) {
+          debugPrint('CloudAudioProcessor: ERROR logging transcription response: $e');
         }
+        
+        // Add to results history
+        _addToResultsHistory(finalResult);
+        
+        // Store result persistently
+        try {
+          final stored = await _storageService.storeResult(finalResult);
+          if (stored) {
+            debugPrint('CloudAudioProcessor: Result stored persistently: ${finalResult.segmentPath}');
+          } else {
+            debugPrint('CloudAudioProcessor: Failed to store result persistently: ${finalResult.segmentPath}');
+          }
+        } catch (e) {
+          debugPrint('CloudAudioProcessor: Error storing result: $e');
+        }
+        
+        // Broadcast result
+        _resultController.add(finalResult);
+        
+        debugPrint('CloudAudioProcessor: Transcription completed: "${transcriptionResult.transcription}"');
+      }
       
       // Note: Temporary file cleanup is delayed until user leaves the page
       
@@ -679,33 +704,12 @@ class CloudAudioProcessor extends ChangeNotifier {
       final tempDir = await getTemporaryDirectory();
       final rawFilePath = '${tempDir.path}/${segmentResult.segmentPath.replaceAll('.wav', '.raw')}';
       
-      // Debug: Show PCM data details
-      debugPrint('CloudAudioProcessor: PCM data details - Length: ${segmentResult.audioData.length} bytes, First 8 bytes: ${segmentResult.audioData.take(8).toList()}');
-      
-      // Debug: Show PCM data format in hex
-      if (segmentResult.audioData.length >= 20) {
-        final pcmHex = segmentResult.audioData.take(20).map((b) => '0x${b.toRadixString(16).padLeft(2, '0')}').join(' ');
-        debugPrint('CloudAudioProcessor: PCM data hex (first 20 bytes): $pcmHex');
-      }
-      
-      // Debug: Check if PCM data length is even (should be for 16-bit samples)
-      if (segmentResult.audioData.length % 2 != 0) {
-        debugPrint('CloudAudioProcessor: WARNING - PCM data length is odd (${segmentResult.audioData.length}), should be even for 16-bit samples');
-      }
-      
-      // Debug: Show first few 16-bit samples
-      if (segmentResult.audioData.length >= 8) {
-        final sample1 = segmentResult.audioData[0] | (segmentResult.audioData[1] << 8);
-        final sample2 = segmentResult.audioData[2] | (segmentResult.audioData[3] << 8);
-        debugPrint('CloudAudioProcessor: First 16-bit samples (little-endian): $sample1, $sample2');
-      }
-      
       // Create WAV file directly from PCM data using the proven OpusDecoderService
       final wavData = _opusDecoderService.convertPcmToWav(
         segmentResult.audioData, // Use PCM data directly
-        sampleRate: 16000,
-        channels: 1,
-        bitDepth: 16,
+        sampleRate: AudioConfig.audioSampleRate,
+        channels: AudioConfig.audioChannels,
+        bitDepth: AudioConfig.audioBitDepth,
       );
       
       final file = File(rawFilePath.replaceAll('.raw', '.wav'));
@@ -715,8 +719,6 @@ class CloudAudioProcessor extends ChangeNotifier {
       _temporaryFiles.add(file.path);
       
       debugPrint('CloudAudioProcessor: WAV file created: ${file.path} (${wavData.length} bytes)');
-      debugPrint('CloudAudioProcessor: WAV file created using OpusDecoderService - PCM data: ${segmentResult.audioData.length} bytes, Sample rate: 16000Hz, Channels: 1, Bits: 16');
-      debugPrint('CloudAudioProcessor: File stored for delayed cleanup. Total temp files: ${_temporaryFiles.length}');
       return file.path;
       
     } catch (e) {
@@ -831,16 +833,55 @@ class CloudAudioProcessor extends ChangeNotifier {
   
   /// Get current processor statistics
   Map<String, dynamic> getStats() {
+    final now = DateTime.now();
+    final currentSegmentDuration = _currentSegmentStartTime != null 
+        ? now.difference(_currentSegmentStartTime!).inMilliseconds 
+        : 0;
+    final timeSinceLastSpeech = _lastSpeechTime != null 
+        ? now.difference(_lastSpeechTime!).inMilliseconds 
+        : 0;
+    
     return {
       'isInitialized': _isInitialized,
       'isProcessing': _isProcessing,
       'isEnabled': _isEnabled,
       'isSpeechActive': _isSpeechActive,
-
+      'currentSegmentPath': _currentSegmentPath,
+      'currentSegmentStartTime': _currentSegmentStartTime?.toIso8601String(),
+      'currentSegmentDuration': '${currentSegmentDuration}ms',
       'currentSegmentBufferSize': _currentSegmentBuffer.length,
-      'segmentCloseDelay': _segmentCloseDelay.inSeconds,
+      'timeSinceLastSpeech': '${timeSinceLastSpeech}ms',
+      'segmentCloseDelay': AudioConfig.segmentCloseDelay.inSeconds,
+      'minSegmentDuration': AudioConfig.minSegmentDuration.inSeconds,
+      'maxSegmentDuration': AudioConfig.maxSegmentDuration.inSeconds,
+      'segmentOverlapThreshold': AudioConfig.segmentOverlapThreshold.inMilliseconds,
+      'hasSegmentCloseTimer': _segmentCloseTimer != null,
       'vadStats': _vadService.getStats(),
       'deepgramStats': _deepgramService.getStats(),
+      'totalResults': _transcriptionResults.length,
+      'lastResultTime': _transcriptionResults.isNotEmpty 
+          ? _transcriptionResults.last.endTime.toIso8601String() 
+          : 'None',
+    };
+  }
+  
+  /// Get current audio configuration status
+  Map<String, dynamic> getConfigurationStatus() {
+    return {
+      'configuration': AudioConfig.getConfigSummary(),
+      'timingConsistency': AudioConfig.validateTimingConsistency(),
+      'processorState': {
+        'isInitialized': _isInitialized,
+        'isEnabled': _isEnabled,
+        'isProcessing': _isProcessing,
+        'isSpeechActive': _isSpeechActive,
+      },
+      'segmentState': {
+        'currentSegmentPath': _currentSegmentPath,
+        'currentSegmentStartTime': _currentSegmentStartTime?.toIso8601String(),
+        'currentSegmentBufferSize': _currentSegmentBuffer.length,
+        'hasSegmentCloseTimer': _segmentCloseTimer != null,
+      },
     };
   }
   

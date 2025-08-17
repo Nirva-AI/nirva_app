@@ -11,6 +11,7 @@ import 'local_audio_processor.dart';
 import 'cloud_audio_processor.dart';
 import 'app_settings_service.dart';
 import 'ios_background_audio_manager.dart';
+import 'audio_config.dart';
 
 class HardwareAudioCapture extends ChangeNotifier {
   final HardwareService _hardwareService;
@@ -27,12 +28,12 @@ class HardwareAudioCapture extends ChangeNotifier {
   
   // Audio buffer for continuous capture (now stores decoded PCM data)
   final List<int> _decodedPcmBuffer = [];
-  final int _maxBufferSize = 1024 * 1024; // 1MB buffer for decoded PCM
+  final int _maxBufferSize = AudioConfig.maxSegmentBufferSize; // Use centralized config
   
   // Capture settings
   final String _audioDirectory = 'hardware_audio';
   final String _audioFileExtension = '.wav'; // Changed from .opus to .wav
-  final int _maxFileSize = 10 * 1024 * 1024; // 10MB max file size
+  final int _maxFileSize = AudioConfig.maxFileSize; // Use centralized config
   
   // File management
   int _currentFileSize = 0;
@@ -40,7 +41,7 @@ class HardwareAudioCapture extends ChangeNotifier {
   
   // Timer for periodic file rotation (every 1 minute)
   Timer? _fileRotationTimer;
-  static const Duration _fileRotationInterval = Duration(minutes: 1);
+  static const Duration _fileRotationInterval = AudioConfig.fileRotationInterval; // Use centralized config
   
   // Statistics
   int _totalOpusPacketsReceived = 0;
@@ -342,7 +343,7 @@ class HardwareAudioCapture extends ChangeNotifier {
       } else {
         _failedDecodes++;
         // Only log decode failures occasionally to avoid spam
-        if (_failedDecodes % 50 == 0) {
+        if (_failedDecodes % 100 == 0) {
           debugPrint('HardwareAudioCapture: Failed to decode $_failedDecodes Opus packets so far');
         }
       }
@@ -452,9 +453,9 @@ class HardwareAudioCapture extends ChangeNotifier {
       // Convert PCM data to WAV format using our Opus decoder service
       final wavData = _hardwareService.opusDecoder.convertPcmToWav(
         Uint8List.fromList(pcmData),
-        sampleRate: 16000,  // OMI firmware sample rate
-        channels: 1,        // OMI firmware mono audio
-        bitDepth: 16,       // OMI firmware 16-bit
+        sampleRate: AudioConfig.audioSampleRate,  // Use centralized config
+        channels: AudioConfig.audioChannels,      // Use centralized config
+        bitDepth: AudioConfig.audioBitDepth,     // Use centralized config
       );
       
       if (wavData.isNotEmpty) {
