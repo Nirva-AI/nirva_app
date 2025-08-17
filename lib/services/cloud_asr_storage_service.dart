@@ -343,9 +343,9 @@ class CloudAsrStorageService extends ChangeNotifier {
     }
     
     try {
-      debugPrint('CloudAsrStorageService: Getting results for user: $_currentUserId');
-      debugPrint('CloudAsrStorageService: Results box length: ${_resultsBox.length}');
-      debugPrint('CloudAsrStorageService: All results in box: ${_resultsBox.values.map((r) => '${r.id}:${r.userId}').toList()}');
+      // debugPrint('CloudAsrStorageService: Getting results for user: $_currentUserId');
+      // debugPrint('CloudAsrStorageService: Results box length: ${_resultsBox.length}');
+      // debugPrint('CloudAsrStorageService: All results in box: ${_resultsBox.values.map((r) => '${r.id}:${r.userId}').toList()}');
       
       final results = _resultsBox.values
           .where((result) => result.userId == _currentUserId)

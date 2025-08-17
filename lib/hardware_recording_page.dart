@@ -905,16 +905,6 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                     itemBuilder: (context, index) {
                       final result = results[index];
                       
-                      // Debug: Log what's being displayed
-                      debugPrint('HardwareRecordingPage: Displaying result ${result.id} - transcription length: ${result.transcription?.length ?? 0}');
-                      debugPrint('HardwareRecordingPage: Displaying transcription: "${result.transcription}"');
-                      
-                      // Debug: Check if transcription is truncated
-                      if (result.transcription != null && result.transcription!.length > 100) {
-                        debugPrint('HardwareRecordingPage: Long transcription detected - first 100 chars: "${result.transcription!.substring(0, 100)}..."');
-                        debugPrint('HardwareRecordingPage: Long transcription detected - last 100 chars: "...${result.transcription!.substring(result.transcription!.length - 100)}"');
-                      }
-                      
                       return _buildPersistentTranscriptionResultItem(result);
                     },
                   ),
