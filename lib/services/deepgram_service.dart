@@ -157,8 +157,14 @@ class DeepgramService extends ChangeNotifier {
       
       // Build URI with query parameters
       final uri = Uri.parse(_baseUrl).replace(queryParameters: {
-        'model': 'nova-2', // Use the standard nova-2 model
+        'model': 'nova-3', // Use the latest nova-3 model
         'detect_language': 'true', // Enable automatic language detection
+        'diarize': 'true', // Enable speaker diarization
+        'punctuate': 'true', // Enable punctuation
+        'utterances': 'true', // Enable utterances
+        'sentiment': 'true', // Enable sentiment analysis
+        'intents': 'true', // Enable intent recognition
+        'topics': 'true', // Enable topic detection
       });
       
       final request = http.Request('POST', uri);

@@ -1085,7 +1085,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
                             final provider = context.read<CloudAudioProvider?>();
                             final canPlayAudio = provider?.isAudioPlaybackAvailable ?? false;
                             
-                            debugPrint('HardwareRecordingPage: Audio playback status (current session) - canPlayAudio: $canPlayAudio, isPlaying: $isPlaying');
+                            // debugPrint('HardwareRecordingPage: Audio playback status (current session) - canPlayAudio: $canPlayAudio, isPlaying: $isPlaying');
                             
                             return ElevatedButton.icon(
                               onPressed: canPlayAudio ? () {
