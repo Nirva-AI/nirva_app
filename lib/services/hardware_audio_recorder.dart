@@ -15,9 +15,9 @@ import 'audio_config.dart';
 
 class HardwareAudioCapture extends ChangeNotifier {
   final HardwareService _hardwareService;
-  final LocalAudioProcessor? _localAudioProcessor;
-  final CloudAudioProcessor? _cloudAudioProcessor;
-  final AppSettingsService? _settingsService;
+  LocalAudioProcessor? _localAudioProcessor;
+  CloudAudioProcessor? _cloudAudioProcessor;
+  AppSettingsService? _settingsService;
   final IosBackgroundAudioManager _iosBackgroundAudioManager;
   
   // Audio capture state
@@ -72,6 +72,15 @@ class HardwareAudioCapture extends ChangeNotifier {
       : _iosBackgroundAudioManager = IosBackgroundAudioManager() {
     // Listen to hardware service changes to ensure we're always up to date
     _hardwareService.addListener(_onHardwareServiceChanged);
+  }
+  
+  /// Update audio processors (called when providers change)
+  void updateProviders(LocalAudioProcessor? localProcessor, CloudAudioProcessor? cloudProcessor, AppSettingsService? settingsService) {
+    _localAudioProcessor = localProcessor;
+    _cloudAudioProcessor = cloudProcessor;
+    _settingsService = settingsService;
+    
+    debugPrint('HardwareAudioCapture: Updated providers - Local: ${localProcessor != null}, Cloud: ${cloudProcessor != null}');
   }
   
   /// Start automatic audio capture
@@ -316,15 +325,15 @@ class HardwareAudioCapture extends ChangeNotifier {
         final shouldUseCloudAsr = _settingsService?.cloudAsrEnabled ?? true;
         
         // Process audio with local VAD and ASR if enabled
+        // SEQUENTIAL PROCESSING: Process one at a time to prevent overlaps
         if (shouldUseLocalAsr && _localAudioProcessor != null && _localAudioProcessor!.isEnabled) {
-          // Process audio data asynchronously to prevent UI blocking
-          _processAudioDataAsync(decodedPcm);
+          _processAudioDataSequentially(decodedPcm);
         }
-        
+
         // Process audio with cloud VAD and ASR if enabled
+        // SEQUENTIAL PROCESSING: Process one at a time to prevent overlaps
         if (shouldUseCloudAsr && _cloudAudioProcessor != null && _cloudAudioProcessor!.isEnabled) {
-          // Process audio data asynchronously to prevent UI blocking
-          _processCloudAudioDataAsync(decodedPcm);
+          _processCloudAudioDataSequentially(decodedPcm);
         }
         
         // Check if we need to create a new file (file size limit reached)
@@ -354,8 +363,8 @@ class HardwareAudioCapture extends ChangeNotifier {
     }
   }
   
-  /// Process audio data asynchronously to prevent UI blocking
-  void _processAudioDataAsync(Uint8List decodedPcm) {
+  /// Process audio data sequentially to prevent UI blocking and race conditions
+  void _processAudioDataSequentially(Uint8List decodedPcm) {
     // Process audio data directly - the isolate processor handles background processing
     try {
       _localAudioProcessor!.processAudioData(decodedPcm);
@@ -364,11 +373,14 @@ class HardwareAudioCapture extends ChangeNotifier {
     }
   }
   
-  /// Process audio data with cloud processor asynchronously to prevent UI blocking
-  void _processCloudAudioDataAsync(Uint8List decodedPcm) {
+  /// Process audio data with cloud processor sequentially to prevent race conditions
+  void _processCloudAudioDataSequentially(Uint8List decodedPcm) {
     // Process audio data directly - the cloud processor handles background processing
+    // SEQUENTIAL PROCESSING: This ensures audio packets are processed one by one
     try {
-      _cloudAudioProcessor!.processAudioData(decodedPcm);
+      if (_cloudAudioProcessor != null && _cloudAudioProcessor!.isEnabled && _cloudAudioProcessor!.isInitialized) {
+        _cloudAudioProcessor!.processAudioData(decodedPcm);
+      }
     } catch (e) {
       debugPrint('HardwareAudioCapture: Error processing cloud audio data: $e');
     }
@@ -401,7 +413,6 @@ class HardwareAudioCapture extends ChangeNotifier {
         if (shouldUseLocalAsr && _localAudioProcessor != null && _localAudioProcessor!.isEnabled) {
           _localAudioProcessor!.processAudioData(
             Uint8List.fromList(_decodedPcmBuffer),
-            isFinal: true,
           );
           debugPrint('HardwareAudioCapture: Final audio chunk processed with local VAD/ASR');
         }
@@ -410,7 +421,6 @@ class HardwareAudioCapture extends ChangeNotifier {
         if (shouldUseCloudAsr && _cloudAudioProcessor != null && _cloudAudioProcessor!.isEnabled) {
           _cloudAudioProcessor!.processAudioData(
             Uint8List.fromList(_decodedPcmBuffer),
-            isFinal: true,
           );
           debugPrint('HardwareAudioCapture: Final audio chunk processed with cloud VAD/ASR');
         }

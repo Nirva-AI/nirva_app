@@ -21,7 +21,7 @@ class AudioConfig {
   // ===== VAD (Voice Activity Detection) Configuration =====
   
   /// VAD model configuration
-  static const double vadThreshold = 0.6;
+  static const double vadThreshold = 0.45; // Original threshold for speech detection
   static const double vadMinSilenceDuration = 3.0;
   static const double vadMinSpeechDuration = 0.5;
   static const double vadMaxSpeechDuration = 30.0;
@@ -34,8 +34,12 @@ class AudioConfig {
   static const int vadSampleRate = 16000;
   static const int vadChannels = 1;
   static const int vadFrameSize = 160; // 10ms frames (16000Hz / 160 = 100Hz)
-  static const int vadProcessingInterval = 1; // Process every frame
   static const double vadBufferSizeInSeconds = 2.0;
+  
+  /// VAD optimization parameters
+  static const int vadMinProcessingGap = 500; // Minimum 500ms between VAD calls (exactly 2Hz max)
+  static const bool vadSkipSilentFrames = true; // Skip processing for silent frames
+  static const double vadSilenceThreshold = 0.001; // Higher threshold to skip more silent frames
   
   /// VAD audio quality thresholds
   static const double vadMinAmplitudeThreshold = 0.0001;
@@ -47,7 +51,7 @@ class AudioConfig {
   static const Duration segmentCloseDelay = Duration(seconds: 3);
   static const Duration minSegmentDuration = Duration(milliseconds: 500);
   static const Duration maxSegmentDuration = Duration(seconds: 30);
-  static const Duration segmentOverlapThreshold = Duration(milliseconds: 500);
+  static const Duration minSegmentGap = Duration(milliseconds: 1000); // Minimum time gap between segments (prevents false splits, NOT audio loss)
   
   /// Segment buffer configuration
   static const int maxSegmentBufferSize = 1024 * 1024; // 1MB per segment
@@ -89,13 +93,17 @@ class AudioConfig {
         'maxSpeechDuration': '${vadMaxSpeechDuration}s',
         'sampleRate': '${vadSampleRate}Hz',
         'frameSize': '${vadFrameSize} samples',
-        'processingInterval': '${vadProcessingInterval} frames',
+        'processingFrequency': '2Hz (time-based)',
+        'minProcessingGap': '${vadMinProcessingGap}ms',
+        'targetFrequency': '2Hz',
+        'skipSilentFrames': vadSkipSilentFrames,
+        'silenceThreshold': vadSilenceThreshold,
       },
       'segmentation': {
         'segmentCloseDelay': '${segmentCloseDelay.inSeconds}s',
         'minSegmentDuration': '${minSegmentDuration.inMilliseconds}ms',
         'maxSegmentDuration': '${maxSegmentDuration.inSeconds}s',
-        'overlapThreshold': '${segmentOverlapThreshold.inMilliseconds}ms',
+        'minSegmentGap': '${minSegmentGap.inMilliseconds}ms',
       },
       'audio': {
         'sampleRate': '${audioSampleRate}Hz',

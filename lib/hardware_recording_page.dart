@@ -819,11 +819,6 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
     return Selector<CloudAudioProvider, List<CloudAsrResultStorage>>(
       selector: (context, provider) {
         final results = provider.persistentResults;
-        debugPrint('HardwareRecordingPage: Selector called - provider.isInitialized: ${provider.isInitialized}');
-        debugPrint('HardwareRecordingPage: Selector called - results length: ${results.length}');
-        if (results.isNotEmpty) {
-          debugPrint('HardwareRecordingPage: Selector called - first result transcription: "${results.first.transcription}"');
-        }
         return results;
       },
       builder: (context, results, child) {

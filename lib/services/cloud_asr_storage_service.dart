@@ -163,21 +163,12 @@ class CloudAsrStorageService extends ChangeNotifier {
     }
     
     try {
-      debugPrint('CloudAsrStorageService: Storing result for user: $_currentUserId, session: $_currentSessionId');
-      debugPrint('CloudAsrStorageService: Result has transcription: ${result.transcription != null}, length: ${result.transcription?.length ?? 0}');
-      
       // Create storage object
       final storageResult = CloudAsrResultStorage.fromCloudAudioResult(
         result,
         _currentUserId!,
         _currentSessionId!,
       );
-      
-      // Debug: Log transcription details
-      debugPrint('CloudAsrStorageService: Input transcription length: ${result.transcription?.length ?? 0}');
-      debugPrint('CloudAsrStorageService: Input transcription: "${result.transcription}"');
-      debugPrint('CloudAsrStorageService: Storage result transcription length: ${storageResult.transcription?.length ?? 0}');
-      debugPrint('CloudAsrStorageService: Storage result transcription: "${storageResult.transcription}"');
       
       // Store audio file persistently if it exists
       if (result.audioFilePath != null) {
@@ -193,22 +184,12 @@ class CloudAsrStorageService extends ChangeNotifier {
       // Store in Hive
       await _resultsBox.add(storageResult);
       
-      // Debug: Verify what was stored
-      final storedResult = _resultsBox.values.last;
-      debugPrint('CloudAsrStorageService: Hive stored transcription length: ${storedResult.transcription?.length ?? 0}');
-      debugPrint('CloudAsrStorageService: Hive stored transcription: "${storedResult.transcription}"');
-      
-      // Debug: Verify the storage object itself
-      debugPrint('CloudAsrStorageService: Original storage object transcription length: ${storageResult.transcription?.length ?? 0}');
-      debugPrint('CloudAsrStorageService: Original storage object transcription: "${storageResult.transcription}"');
-      
       // Update session with result ID
       final session = _sessionsBox.values
           .firstWhere((s) => s.sessionId == _currentSessionId);
       session.addResult(storageResult.id);
       await session.save();
       
-      debugPrint('CloudAsrStorageService: Stored result: ${storageResult.id}');
       notifyListeners();
       return true;
       
@@ -291,7 +272,6 @@ class CloudAsrStorageService extends ChangeNotifier {
             result.audioFilePath = newPath;
             await result.save();
             updatedCount++;
-            debugPrint('CloudAsrStorageService: Updated file path from ${result.audioFilePath} to $newPath');
           } else {
             // Try to find the file in the old app container directory
             final oldAppContainerPath = result.audioFilePath!;
@@ -343,29 +323,12 @@ class CloudAsrStorageService extends ChangeNotifier {
     }
     
     try {
-      // debugPrint('CloudAsrStorageService: Getting results for user: $_currentUserId');
-      // debugPrint('CloudAsrStorageService: Results box length: ${_resultsBox.length}');
-      // debugPrint('CloudAsrStorageService: All results in box: ${_resultsBox.values.map((r) => '${r.id}:${r.userId}').toList()}');
-      
       final results = _resultsBox.values
           .where((result) => result.userId == _currentUserId)
           .toList()
         ..sort((a, b) => DateTime.parse(b.processingTimeIso)
             .compareTo(DateTime.parse(a.processingTimeIso)));
       
-      // Debug: Log retrieved results
-      for (final result in results.take(3)) { // Log first 3 results
-        debugPrint('CloudAsrStorageService: Retrieved result ${result.id} - transcription length: ${result.transcription?.length ?? 0}');
-        debugPrint('CloudAsrStorageService: Retrieved transcription: "${result.transcription}"');
-        
-        // Debug: Check if transcription is truncated
-        if (result.transcription != null && result.transcription!.length > 100) {
-          debugPrint('CloudAsrStorageService: Long transcription detected - first 100 chars: "${result.transcription!.substring(0, 100)}..."');
-          debugPrint('CloudAsrStorageService: Long transcription detected - last 100 chars: "...${result.transcription!.substring(result.transcription!.length - 100)}"');
-        }
-      }
-      
-      debugPrint('CloudAsrStorageService: Retrieved ${results.length} results for user $_currentUserId');
       return results;
       
     } catch (e) {

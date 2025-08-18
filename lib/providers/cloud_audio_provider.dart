@@ -22,8 +22,8 @@ class CloudAudioProvider extends ChangeNotifier {
   String? _userId;
   
   CloudAudioProvider({OpusDecoderService? opusDecoderService, String? userId}) {
+    debugPrint('CloudAudioProvider: Constructor called with userId: $_userId');
     _userId = userId;
-    debugPrint('CloudAudioProvider: Creating provider with userId: $_userId');
     
     // Initialize services
     _vadService = SherpaVadService();
@@ -40,13 +40,40 @@ class CloudAudioProvider extends ChangeNotifier {
       userId: _userId,
     );
     
-    debugPrint('CloudAudioProvider: CloudAudioProcessor created with userId: $_userId');
+    debugPrint('CloudAudioProvider: CloudAudioProcessor created');
     
     // Listen to processor changes
     _cloudProcessor.addListener(_onProcessorChanged);
     
+    // Initialize core services immediately
+    debugPrint('CloudAudioProvider: Calling _initializeCoreServices()');
+    _initializeCoreServices();
+    
     // Initialize storage service immediately to make stored data available
+    debugPrint('CloudAudioProvider: Calling _initializeStorageService()');
     _initializeStorageService();
+  }
+  
+  /// Initialize core services immediately to ensure VAD and ASR are ready
+  Future<void> _initializeCoreServices() async {
+    debugPrint('CloudAudioProvider: _initializeCoreServices() method called');
+    try {
+      debugPrint('CloudAudioProvider: Initializing core services...');
+      final initialized = await _cloudProcessor.initialize();
+      debugPrint('CloudAudioProvider: Core services initialization result: $initialized');
+      
+      if (initialized) {
+        _isInitialized = true;
+        debugPrint('CloudAudioProvider: Core services initialized successfully');
+        debugPrint('CloudAudioProvider: VAD service ready: ${_vadService.isInitialized}');
+        debugPrint('CloudAudioProvider: Deepgram service ready: ${_deepgramService.isInitialized}');
+        notifyListeners();
+      } else {
+        debugPrint('CloudAudioProvider: Failed to initialize core services');
+      }
+    } catch (e) {
+      debugPrint('CloudAudioProvider: Error initializing core services: $e');
+    }
   }
   
   /// Initialize storage service immediately to access stored data
@@ -62,23 +89,6 @@ class CloudAudioProvider extends ChangeNotifier {
         debugPrint('CloudAudioProvider: Audio player initialized successfully');
       } catch (e) {
         debugPrint('CloudAudioProvider: Error initializing audio player: $e');
-      }
-      
-      // Check what data is available
-      try {
-        final persistentResults = _cloudProcessor.getPersistentResults();
-        final allSessions = _cloudProcessor.getAllSessions();
-        final storageStats = _cloudProcessor.getStorageStats();
-        
-        debugPrint('CloudAudioProvider: Available data after storage init - Results: ${persistentResults.length}, Sessions: ${allSessions.length}');
-        debugPrint('CloudAudioProvider: Storage stats: $storageStats');
-        
-        if (persistentResults.isNotEmpty) {
-          debugPrint('CloudAudioProvider: First result transcription: "${persistentResults.first.transcription}"');
-          debugPrint('CloudAudioProvider: First result audio path: ${persistentResults.first.audioFilePath}');
-        }
-      } catch (e) {
-        debugPrint('CloudAudioProvider: Error checking storage data: $e');
       }
       
       // Notify listeners that data is available
@@ -189,9 +199,16 @@ class CloudAudioProvider extends ChangeNotifier {
   }
   
   /// Enable cloud audio processing
-  void enableProcessing() {
+  void enableProcessing() async {
+    debugPrint('CloudAudioProvider: enableProcessing() method called');
+    // Ensure core services are initialized before enabling
     if (!_isInitialized) {
-      debugPrint('CloudAudioProvider: Cannot enable - not initialized');
+      debugPrint('CloudAudioProvider: Core services not initialized yet, initializing now...');
+      await _initializeCoreServices();
+    }
+    
+    if (!_isInitialized) {
+      debugPrint('CloudAudioProvider: Cannot enable - core services failed to initialize');
       return;
     }
     
@@ -210,7 +227,7 @@ class CloudAudioProvider extends ChangeNotifier {
   }
   
   /// Process audio data from hardware
-  void processAudioData(List<int> pcmData, {bool isFinal = false}) {
+  void processAudioData(List<int> pcmData) {
     if (!_isProcessingEnabled || !_isInitialized) {
       return;
     }
@@ -218,7 +235,6 @@ class CloudAudioProvider extends ChangeNotifier {
     try {
       _cloudProcessor.processAudioData(
         Uint8List.fromList(pcmData),
-        isFinal: isFinal,
       );
     } catch (e) {
       debugPrint('CloudAudioProvider: Error processing audio data: $e');

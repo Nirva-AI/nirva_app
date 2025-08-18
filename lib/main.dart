@@ -143,25 +143,44 @@ void main() async {
             context.read<HardwareService>().addListener(() async {
               if (context.read<HardwareService>().isConnected) {
                 // Initialize cloud provider if needed (local initializes automatically)
-                if (cloudAudioProvider != null && !cloudAudioProvider.isInitialized) {
-                  await cloudAudioProvider.initialize();
+                final cap = context.read<CloudAudioProvider?>();
+                if (cap != null && !cap.isInitialized) {
+                  await cap.initialize();
                 }
                 
-                // Now enable processing
-                localAudioProvider?.enableProcessing();
-                cloudAudioProvider?.enableProcessing();
+                // Now enable processing (no await since these are not Futures)
+                context.read<LocalAudioProvider?>()?.enableProcessing();
+                context.read<CloudAudioProvider?>()?.enableProcessing();
               }
             });
             
             return audioCapture;
           },
-          update: (_, hardwareService, previous) => 
-              previous ?? HardwareAudioCapture(
+          update: (context, hardwareService, previous) {
+            // Get the current providers
+            final localAudioProvider = context.read<LocalAudioProvider?>();
+            final cloudAudioProvider = context.read<CloudAudioProvider?>();
+            final settingsService = context.read<AppSettingsService>();
+            
+            // Update the audio capture with current providers
+            if (previous != null) {
+              // Update the existing instance with new providers
+              previous.updateProviders(
+                localAudioProvider?.localAudioProcessor,
+                cloudAudioProvider?.cloudProcessor,
+                settingsService,
+              );
+              return previous;
+            } else {
+              // Create new instance
+              return HardwareAudioCapture(
                 hardwareService,
-                null, // We'll set this later when needed
-                null, // Cloud processor will be set later
-                null, // Settings service will be set later
-              ),
+                localAudioProvider?.localAudioProcessor,
+                cloudAudioProvider?.cloudProcessor,
+                settingsService,
+              );
+            }
+          },
         ),
         ChangeNotifierProvider<AudioStreamingService>(
           create: (context) => AudioStreamingService(

@@ -750,19 +750,6 @@ class HiveHelper {
       debugPrint('HiveHelper: - Results box length: ${resultsBox.length}');
       debugPrint('HiveHelper: - Sessions box length: ${sessionsBox.length}');
       
-      if (resultsBox.length > 0) {
-        final firstResult = resultsBox.getAt(0);
-        debugPrint('HiveHelper: - First result key: ${resultsBox.keys.first}');
-        debugPrint('HiveHelper: - First result transcription: "${firstResult?.transcription}"');
-        debugPrint('HiveHelper: - First result audio path: ${firstResult?.audioFilePath}');
-      }
-      
-      if (sessionsBox.length > 0) {
-        final firstSession = sessionsBox.getAt(0);
-        debugPrint('HiveHelper: - First session key: ${sessionsBox.keys.first}');
-        debugPrint('HiveHelper: - First session start time: ${firstSession?.startTimeIso}');
-        debugPrint('HiveHelper: - First session result count: ${firstSession?.resultIds.length}');
-      }
     } catch (e) {
       debugPrint('HiveHelper: Error logging Cloud ASR status: $e');
     }

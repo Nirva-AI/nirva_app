@@ -13,11 +13,18 @@ import 'audio_config.dart';
 /// This service processes audio streams to detect speech segments
 /// and integrates with the existing hardware audio pipeline
 class SherpaVadService extends ChangeNotifier {
+  SherpaVadService() {
+    debugPrint('SherpaVadService: Constructor called');
+  }
+  
+  // Pending bytes to feed VAD in 2Hz batches
+  final List<int> _pendingVadBytes = [];
   // VAD configuration - using centralized AudioConfig
   // All constants are now synchronized with CloudAudioProcessor
   
   // VAD processing frequency control - process every frame for better detection
   int _frameCounter = 0;
+  DateTime? _lastVadProcessingTime;
   
   // VAD state
   bool _isInitialized = false;
@@ -65,6 +72,7 @@ class SherpaVadService extends ChangeNotifier {
   
   /// Initialize the VAD service
   Future<bool> initialize() async {
+    debugPrint('SherpaVadService: initialize() method called');
     if (_isInitialized) {
       debugPrint('SherpaVadService: Already initialized');
       return true;
@@ -81,6 +89,16 @@ class SherpaVadService extends ChangeNotifier {
       }
       
       debugPrint('SherpaVadService: Using model file at: $modelPath');
+      
+      // Verify the model file exists and has content
+      final modelFile = File(modelPath);
+      if (await modelFile.exists()) {
+        final fileSize = await modelFile.length();
+        debugPrint('SherpaVadService: Model file exists, size: ${fileSize} bytes');
+      } else {
+        debugPrint('SherpaVadService: ERROR - Model file does not exist at: $modelPath');
+        return false;
+      }
       
       // Create VAD configuration with optimized parameters for better segment management
       final config = VadModelConfig(
@@ -110,10 +128,11 @@ class SherpaVadService extends ChangeNotifier {
         
         _isInitialized = true;
         debugPrint('SherpaVadService: VAD service initialized successfully');
-        debugPrint('  - Sample Rate: ${AudioConfig.vadSampleRate} Hz');
-        debugPrint('  - Channels: ${AudioConfig.vadChannels}');
-        debugPrint('  - Frame Size: ${AudioConfig.vadFrameSize} samples');
-        debugPrint('  - Processing Interval: ${AudioConfig.vadProcessingInterval} frames');
+        
+        // Test VAD with a simple sample to verify it's working
+        debugPrint('SherpaVadService: Testing VAD with sample audio...');
+        final testResult = await testVadWithSample();
+        debugPrint('SherpaVadService: VAD test result: $testResult');
         
         notifyListeners();
         return true;
@@ -138,90 +157,75 @@ class SherpaVadService extends ChangeNotifier {
   /// [pcmData] - Raw PCM audio data (16-bit, little-endian)
   /// Returns true if speech is detected in the current frame
   bool processAudioFrame(Uint8List pcmData) {
-    if (!_isInitialized || _vad == null) {
-      return false;
-    }
-    
-    if (pcmData.isEmpty) {
-      return false;
-    }
-    
-    try {
-      _isProcessing = true;
-      notifyListeners();
-      
-      // Add audio data to buffer
-      _audioBuffer.addAll(pcmData);
-      
-      // Process frames when we have enough data
-      bool speechDetected = false;
-      while (_audioBuffer.length >= AudioConfig.vadFrameSize * 2) { // 2 bytes per sample (16-bit)
-        final frameData = _audioBuffer.take(AudioConfig.vadFrameSize * 2).toList();
-        _audioBuffer.removeRange(0, AudioConfig.vadFrameSize * 2);
-        
-        // Process every frame for better accuracy
-        _frameCounter++;
-        if (_frameCounter % AudioConfig.vadProcessingInterval != 0) {
-          _totalFramesProcessed++;
-          continue; // Skip this frame
-        }
-        
-        // Convert to Float32List for VAD processing
-        final floatFrame = _convertPcmToFloat32(frameData);
-        
-        // Check if audio has meaningful content
-        final maxAmplitude = floatFrame.reduce((a, b) => a.abs() > b.abs() ? a : b).abs();
-        if (maxAmplitude < AudioConfig.vadMinAmplitudeThreshold) {
-          // Skip processing for essentially silent frames
-          _silenceFramesDetected++;
-          _totalFramesProcessed++;
-          continue;
-        }
-        
-        // Process frame with VAD
-        _vad!.acceptWaveform(floatFrame);
-        
-        // Check if speech is detected
-        final frameSpeechDetected = _vad!.isDetected();
-        
-        // Log speech detection only when it changes
-        if (frameSpeechDetected != _isSpeechDetected) {
-          debugPrint('SherpaVadService: Speech detection changed to: $frameSpeechDetected');
-        }
-        
-        // Check if speech is detected
-        if (frameSpeechDetected) {
-          // Speech detected in this frame
-          speechDetected = true;
-          _speechFramesDetected++;
-          
-          // Update speech state
-          if (!_isSpeechDetected) {
-            _isSpeechDetected = true;
-            _speechStartTime = DateTime.now();
-            _speechDetectionController.add(true);
-            debugPrint('SherpaVadService: Speech started');
-          }
-        } else {
-          _silenceFramesDetected++;
-          
-          // Update silence state
-          if (_isSpeechDetected) {
-            _isSpeechDetected = false;
-            _speechEndTime = DateTime.now();
-            if (_speechStartTime != null) {
-              _speechDuration = _speechEndTime!.millisecondsSinceEpoch - _speechStartTime!.millisecondsSinceEpoch;
-              _speechDurationController.add(Duration(milliseconds: _speechDuration));
-            }
-            _speechDetectionController.add(false);
-            debugPrint('SherpaVadService: Speech ended, duration: ${_speechDuration}ms');
-          }
-        }
-        
-        _totalFramesProcessed++;
-      }
-      
-      return speechDetected;
+     if (!_isInitialized || _vad == null) {
+       debugPrint('SherpaVadService: Cannot process - VAD not initialized: initialized=$_isInitialized, vad=${_vad != null}');
+       return false;
+     }
+     
+     if (pcmData.isEmpty) {
+       debugPrint('SherpaVadService: Cannot process empty PCM data');
+       return false;
+     }
+     
+     try {
+       _isProcessing = true;
+       notifyListeners();
+       
+       // Add audio data to buffer
+       _audioBuffer.addAll(pcmData);
+       // Also accumulate into the 2Hz batch buffer
+       _pendingVadBytes.addAll(pcmData);
+       
+       // Process frames when we have enough data
+       bool speechDetected = false;
+       int framesProcessed = 0;
+       
+       while (_audioBuffer.length >= AudioConfig.vadFrameSize * 2) { // 2 bytes per sample (16-bit)
+         final frameData = _audioBuffer.take(AudioConfig.vadFrameSize * 2).toList();
+         _audioBuffer.removeRange(0, AudioConfig.vadFrameSize * 2);
+         
+         // We still advance statistics for each 10ms frame
+         framesProcessed++;
+         _totalFramesProcessed++;
+
+         // Only feed VAD every vadMinProcessingGap (2Hz) with the accumulated batch
+         final now = DateTime.now();
+         final shouldProcessBatch = _lastVadProcessingTime == null ||
+             now.difference(_lastVadProcessingTime!).inMilliseconds >= AudioConfig.vadMinProcessingGap;
+
+         if (shouldProcessBatch && _pendingVadBytes.isNotEmpty) {
+           // Convert the entire pending batch to float32 and evaluate once
+           final floatBatch = _convertPcmToFloat32(_pendingVadBytes);
+
+           // Optional: skip batch if essentially silent
+           if (AudioConfig.vadSkipSilentFrames) {
+             final maxAmp = floatBatch.reduce((a, b) => a.abs() > b.abs() ? a : b).abs();
+             if (maxAmp < AudioConfig.vadSilenceThreshold) {
+               _silenceFramesDetected++;
+               _lastVadProcessingTime = now;
+               _pendingVadBytes.clear();
+               continue;
+             }
+           }
+
+           _vad!.acceptWaveform(floatBatch);
+           _lastVadProcessingTime = now;
+
+           final vadResult = _vad!.isDetected();
+           
+           if (vadResult) {
+             speechDetected = true;
+             _speechFramesDetected++;
+            //  debugPrint('SherpaVadService: Speech detected! Batch size: ${_pendingVadBytes.length} bytes');
+           } else {
+             _silenceFramesDetected++;
+           }
+
+           // Clear batch after processing
+           _pendingVadBytes.clear();
+         }
+       }
+       return speechDetected;
       
     } catch (e) {
       debugPrint('SherpaVadService: Error processing audio frame: $e');
@@ -441,9 +445,60 @@ class SherpaVadService extends ChangeNotifier {
       'sampleRate': AudioConfig.vadSampleRate,
       'channels': AudioConfig.vadChannels,
       'frameSize': AudioConfig.vadFrameSize,
-      'vadProcessingInterval': AudioConfig.vadProcessingInterval,
+      'processingFrequency': '2Hz (time-based)',
       'frameCounter': _frameCounter,
-      'effectiveProcessingRate': '${AudioConfig.vadProcessingInterval * 10}ms intervals',
+      'minProcessingGap': '${AudioConfig.vadMinProcessingGap}ms',
+    };
+  }
+  
+  /// Check if VAD is ready to process new audio data without overlaps
+  bool isReadyForNewAudio() {
+    // Always ready for new audio - the processing queue handles overlaps
+    return true;
+  }
+  
+  /// Get current VAD processing state for debugging
+  Map<String, dynamic> getProcessingState() {
+    return {
+      'isProcessing': _isProcessing,
+      'isSpeechDetected': _isSpeechDetected,
+      'speechStartTime': _speechStartTime?.toIso8601String(),
+      'speechEndTime': _speechEndTime?.toIso8601String(),
+      'speechDuration': _speechDuration,
+      'audioBufferSize': _audioBuffer.length,
+      'frameCounter': _frameCounter,
+      'readyForNewAudio': isReadyForNewAudio(),
+      // VAD optimization stats
+      'lastVadProcessingTime': _lastVadProcessingTime?.toIso8601String(),
+      'processingFrequency': '2Hz (time-based)',
+      'minProcessingGap': '${AudioConfig.vadMinProcessingGap}ms',
+      'skipSilentFrames': AudioConfig.vadSkipSilentFrames,
+    };
+  }
+  
+  /// Get current VAD processing frequency
+  double getCurrentVadFrequency() {
+    if (_lastVadProcessingTime == null) return 0.0;
+    
+    final now = DateTime.now();
+    final timeSinceLastVad = now.difference(_lastVadProcessingTime!);
+    
+    if (timeSinceLastVad.inMilliseconds == 0) return 0.0;
+    
+    // Calculate frequency in Hz (calls per second)
+    return 1000.0 / timeSinceLastVad.inMilliseconds;
+  }
+  
+  /// Get VAD processing statistics
+  Map<String, dynamic> getVadFrequencyStats() {
+    return {
+      'currentFrequency': '${getCurrentVadFrequency().toStringAsFixed(1)}Hz',
+      'targetFrequency': '2Hz (time-based)',
+      'minProcessingGap': '${AudioConfig.vadMinProcessingGap}ms',
+      'lastProcessingTime': _lastVadProcessingTime?.toIso8601String(),
+      'totalFramesProcessed': _totalFramesProcessed,
+      'speechFramesDetected': _speechFramesDetected,
+      'silenceFramesDetected': _silenceFramesDetected,
     };
   }
   

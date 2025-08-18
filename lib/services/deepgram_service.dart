@@ -160,11 +160,10 @@ class DeepgramService extends ChangeNotifier {
         'model': 'nova-3', // Use the latest nova-3 model
         'detect_language': 'true', // Enable automatic language detection
         'diarize': 'true', // Enable speaker diarization
-        'punctuate': 'true', // Enable punctuation
-        'utterances': 'true', // Enable utterances
-        'sentiment': 'true', // Enable sentiment analysis
-        'intents': 'true', // Enable intent recognition
-        'topics': 'true', // Enable topic detection
+        'punctuate': 'true', // Enable punctuation (required companion for paragraphs)
+        'utterances': 'true', // Enable utterances for finer units inside paragraphs
+        'paragraphs': 'true', // Group transcript into readable paragraphs (great for conversation blocks)
+        'smart_format': 'true', // Provide punctuation and formatting for the transcript
       });
       
       final request = http.Request('POST', uri);
@@ -203,8 +202,8 @@ class DeepgramService extends ChangeNotifier {
         // Debug: Log the complete API response
         debugPrint('DeepgramService: === FULL DEEPGRAM API RESPONSE ===');
         debugPrint('DeepgramService: Response body length: ${responseBody.length} characters');
-        debugPrint('DeepgramService: Raw response body:');
-        debugPrint(responseBody);
+        // debugPrint('DeepgramService: Raw response body:');
+        // debugPrint(responseBody);
         debugPrint('DeepgramService: Response JSON keys: ${jsonResponse.keys.toList()}');
         
         // Log the complete response structure
@@ -527,21 +526,48 @@ class DeepgramService extends ChangeNotifier {
       final alternative = alternatives.first as Map<String, dynamic>;
       debugPrint('DeepgramService: Processing alternative with fields: ${alternative.keys.toList()}');
       
-      // Look for transcript in various possible fields
+      // Look for transcript in various possible fields, prioritizing paragraphs and utterances
       String? transcript;
-      if (alternative.containsKey('transcript')) {
-        transcript = alternative['transcript'] as String? ?? '';
-        debugPrint('DeepgramService: Found transcript in "transcript" field');
-      } else if (alternative.containsKey('text')) {
-        transcript = alternative['text'] as String? ?? '';
-        debugPrint('DeepgramService: Found transcript in "text" field');
-      } else if (alternative.containsKey('content')) {
-        transcript = alternative['content'] as String? ?? '';
-        debugPrint('DeepgramService: Found transcript in "content" field');
-      } else {
-        debugPrint('DeepgramService: No transcript field found in alternative');
-        debugPrint('DeepgramService: Available fields: ${alternative.keys.toList()}');
-        return null;
+      
+      // First, try to get paragraphs (most readable format)
+      if (alternative.containsKey('paragraphs')) {
+        final paragraphs = alternative['paragraphs'];
+        if (paragraphs is Map<String, dynamic> && paragraphs.containsKey('transcript')) {
+          transcript = paragraphs['transcript'] as String? ?? '';
+          debugPrint('DeepgramService: Found transcript in "paragraphs.transcript" field');
+        } else if (paragraphs is List<dynamic> && paragraphs.isNotEmpty) {
+          transcript = paragraphs.map((p) => p['sentences']?.join(' ') ?? '').join('\n\n');
+          debugPrint('DeepgramService: Found transcript in "paragraphs" list field');
+        }
+      }
+      
+      // If no paragraphs, try utterances
+      if (transcript == null || transcript!.isEmpty) {
+        if (alternative.containsKey('utterances')) {
+          final utterances = alternative['utterances'];
+          if (utterances is List<dynamic> && utterances.isNotEmpty) {
+            transcript = utterances.map((u) => u['transcript'] ?? '').join(' ');
+            debugPrint('DeepgramService: Found transcript in "utterances" field');
+          }
+        }
+      }
+      
+      // Fallback to traditional transcript field
+      if (transcript == null || transcript!.isEmpty) {
+        if (alternative.containsKey('transcript')) {
+          transcript = alternative['transcript'] as String? ?? '';
+          debugPrint('DeepgramService: Found transcript in "transcript" field');
+        } else if (alternative.containsKey('text')) {
+          transcript = alternative['text'] as String? ?? '';
+          debugPrint('DeepgramService: Found transcript in "text" field');
+        } else if (alternative.containsKey('content')) {
+          transcript = alternative['content'] as String? ?? '';
+          debugPrint('DeepgramService: Found transcript in "content" field');
+        } else {
+          debugPrint('DeepgramService: No transcript field found in alternative');
+          debugPrint('DeepgramService: Available fields: ${alternative.keys.toList()}');
+          return null;
+        }
       }
       
       final confidence = (alternative['confidence'] as num?)?.toDouble() ?? 0.0;
