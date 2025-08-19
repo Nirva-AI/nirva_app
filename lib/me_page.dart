@@ -6,6 +6,7 @@ import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/hive_data_viewer_page.dart';
 import 'package:nirva_app/mini_call_bar.dart';
 import 'package:nirva_app/hardware_device_page.dart';
+import 'package:nirva_app/lifecycle_logs_page.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -335,6 +336,21 @@ class _MePageState extends State<MePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const HiveDataViewerPage(),
+                    ),
+                  );
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.analytics,
+                title: 'App Lifecycle Logs',
+                subtitle: 'View app state changes and kill events',
+                onTap: () {
+                  debugPrint('App Lifecycle Logs tapped');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LifecycleLogsPage(),
                     ),
                   );
                 },

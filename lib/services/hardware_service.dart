@@ -11,6 +11,7 @@ import 'hardware_constants.dart';
 import 'omi_packet_reassembler.dart';
 import 'opus_decoder_service.dart';
 import 'local_audio_processor.dart';
+import 'hardware_audio_recorder.dart';
 import '../hive_helper.dart';
 import '../my_hive_objects.dart';
 
@@ -39,6 +40,9 @@ class HardwareService extends ChangeNotifier {
   // Local audio processing services
   LocalAudioProcessor? _localAudioProcessor;
   
+  // Audio recording service for automatic recording
+  HardwareAudioCapture? _audioCapture;
+  
   // Services and characteristics
   BluetoothService? _audioService;
   BluetoothService? _batteryService;
@@ -57,6 +61,9 @@ class HardwareService extends ChangeNotifier {
   
   // Local audio processing getters
   LocalAudioProcessor? get localAudioProcessor => _localAudioProcessor;
+  
+  // Audio recording getters
+  HardwareAudioCapture? get audioCapture => _audioCapture;
   
   bool get isConnected {
     final hasDevice = _connectedDevice != null;
@@ -135,6 +142,53 @@ class HardwareService extends ChangeNotifier {
   void setLocalAudioProcessor(LocalAudioProcessor processor) {
     _localAudioProcessor = processor;
     debugPrint('HardwareService: Local audio processor set');
+  }
+  
+  /// Set the audio capture service for automatic recording
+  void setAudioCapture(HardwareAudioCapture audioCapture) {
+    _audioCapture = audioCapture;
+    debugPrint('HardwareService: Audio capture service set for automatic recording');
+    
+    // If a device is already connected, start recording automatically
+    if (isConnected && !_audioCapture!.isCapturing) {
+      _startAutomaticRecording();
+    }
+  }
+  
+  /// Check if we should start automatic recording (called when audio capture becomes available)
+  void checkAndStartAutomaticRecording() {
+    if (_audioCapture != null && isConnected && !_audioCapture!.isCapturing) {
+      debugPrint('HardwareService: Audio capture service available and device connected, starting automatic recording');
+      _startAutomaticRecording();
+    }
+  }
+  
+  /// Start automatic recording (internal method)
+  Future<void> _startAutomaticRecording() async {
+    if (_audioCapture == null || _audioCapture!.isCapturing) {
+      debugPrint('HardwareService: Cannot start automatic recording - audioCapture: ${_audioCapture != null}, isCapturing: ${_audioCapture?.isCapturing}');
+      return;
+    }
+    
+    try {
+      debugPrint('HardwareService: Starting automatic recording...');
+      
+      // Add a small delay to ensure hardware is fully ready
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Initialize audio stream first
+      await startAudioStream();
+      debugPrint('HardwareService: Audio stream initialized for automatic recording');
+      
+      // Add another small delay to ensure audio stream is ready
+      await Future.delayed(const Duration(milliseconds: 300));
+      
+      // Then start recording
+      await _audioCapture!.startCapture();
+      debugPrint('HardwareService: Automatic recording started successfully');
+    } catch (e) {
+      debugPrint('HardwareService: Error starting automatic recording: $e');
+    }
   }
   
 
@@ -390,7 +444,11 @@ class HardwareService extends ChangeNotifier {
         debugPrint('HardwareService: Local audio processing enabled automatically');
       }
       
-      // Note: Audio stream will be initialized manually when recording starts
+      // Automatically start recording when hardware connects
+      if (_audioCapture != null && !_audioCapture!.isCapturing) {
+        _startAutomaticRecording();
+      }
+      
       notifyListeners();
       
     } catch (e) {
@@ -413,6 +471,19 @@ class HardwareService extends ChangeNotifier {
         _localAudioProcessor!.disable();
         debugPrint('HardwareService: Local audio processing disabled automatically');
       }
+      
+      // Automatically stop recording when hardware disconnects
+      if (_audioCapture != null && _audioCapture!.isCapturing) {
+        try {
+          await _audioCapture!.stopCapture();
+          debugPrint('HardwareService: Automatic recording stopped when device disconnected');
+        } catch (e) {
+          debugPrint('HardwareService: Error stopping automatic recording: $e');
+        }
+      }
+      
+      // Stop audio stream when disconnecting
+      await stopAudioStream();
       
       // Reset packet reassembler
       _packetReassembler.reset();
@@ -455,6 +526,20 @@ class HardwareService extends ChangeNotifier {
         _updateConnectionState(_connectedDevice!.id, HardwareConnectionStatus.disconnected);
         // Don't clear the device, just mark it as disconnected
         _connectedDevice = _connectedDevice!.copyWith(isConnected: false);
+        
+        // Automatically stop recording when connection is lost
+        if (_audioCapture != null && _audioCapture!.isCapturing) {
+          try {
+            await _audioCapture!.stopCapture();
+            debugPrint('HardwareService: Automatic recording stopped when connection lost');
+          } catch (e) {
+            debugPrint('HardwareService: Error stopping automatic recording on connection loss: $e');
+          }
+        }
+        
+        // Stop audio stream when connection is lost
+        await stopAudioStream();
+        
         notifyListeners();
         return false;
       }

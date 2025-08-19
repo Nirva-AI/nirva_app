@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -32,18 +29,8 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
   void initState() {
     super.initState();
     
-    // Ensure local audio processing is enabled when page loads (only if enabled in settings)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Check if local ASR is enabled in system settings
-      final settings = context.read<AppSettingsService>();
-      if (settings.localAsrEnabled) {
-        // Only initialize local ASR if it's enabled in settings
-        final provider = context.read<LocalAudioProvider?>();
-        if (provider != null && provider.isInitialized) {
-          provider.enableProcessing();
-        }
-      }
-    });
+    // No provider setup needed - everything is handled automatically when hardware connects
+    // This page only shows results
   }
   
   @override
@@ -176,76 +163,6 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
               ),
               
               const SizedBox(height: 20),
-              
-              // Recording status
-              if (isCapturing) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.red[50],
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.red[200]!),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.fiber_manual_record, color: Colors.red[600], size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Recording...',
-                        style: TextStyle(
-                          color: Colors.red[600],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-              
-
-              
-              // Capture controls
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: isConnected && !isCapturing
-                          ? () => _startCapture(audioCapture)
-                          : null,
-                      icon: Icon(isCapturing ? Icons.fiber_manual_record : Icons.play_arrow),
-                      label: Text(isCapturing ? 'Recording...' : 'Start Recording'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isCapturing ? Colors.grey[400] : Colors.red,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: isConnected && isCapturing
-                          ? () => _stopCapture(audioCapture)
-                          : null,
-                      icon: const Icon(Icons.stop),
-                      label: const Text('Stop Recording'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[600],
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         );
@@ -259,55 +176,7 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
 
 
 
-  // Capture control methods
-  Future<void> _startCapture(HardwareAudioCapture audioCapture) async {
-    try {
-      await audioCapture.startCapture();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Recording started'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error starting recording: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
 
-  Future<void> _stopCapture(HardwareAudioCapture audioCapture) async {
-    try {
-      debugPrint('HardwareRecordingPage: Stopping capture...');
-      await audioCapture.stopCapture();
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Recording stopped'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      debugPrint('HardwareRecordingPage: Error stopping recording: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error stopping recording: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
 
 
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nirva_app/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'services/ios_background_audio_manager.dart';
+import 'services/app_lifecycle_logging_service.dart';
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -12,11 +13,13 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   IosBackgroundAudioManager? _iosBackgroundAudioManager;
+  AppLifecycleLoggingService? _lifecycleLoggingService;
   
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); // Add lifecycle observer
+    _initializeLifecycleLogging();
   }
 
   @override
@@ -24,6 +27,23 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     super.didChangeDependencies();
     // Get the iOS background audio manager from provider
     _iosBackgroundAudioManager = context.read<IosBackgroundAudioManager>();
+  }
+  
+  /// Initialize lifecycle logging service
+  Future<void> _initializeLifecycleLogging() async {
+    try {
+      _lifecycleLoggingService = AppLifecycleLoggingService();
+      await _lifecycleLoggingService!.initialize();
+      debugPrint('MainApp: Lifecycle logging service initialized');
+      
+      // Log app start
+      await _lifecycleLoggingService!.logCustomEvent('APP_START', {
+        'description': 'App started or resumed from cold start',
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint('MainApp: Error initializing lifecycle logging: $e');
+    }
   }
 
   @override
@@ -36,22 +56,29 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     
+    // Log the lifecycle state change
+    _lifecycleLoggingService?.logAppLifecycleStateChange(state);
+    
     if (state == AppLifecycleState.resumed) {
       // App resumed from background
       debugPrint('App resumed from background');
       _handleAppResumed();
+      _lifecycleLoggingService?.logAppResumed();
     } else if (state == AppLifecycleState.paused) {
       // App going to background
       debugPrint('App going to background');
       _handleAppPaused();
+      _lifecycleLoggingService?.logAppPaused();
     } else if (state == AppLifecycleState.inactive) {
       // App inactive (task switching or lock screen)
       debugPrint('App inactive');
       _handleAppInactive();
+      _lifecycleLoggingService?.logAppInactive();
     } else if (state == AppLifecycleState.detached) {
       // App completely exited or detached
       debugPrint('App detached');
       _handleAppDetached();
+      _lifecycleLoggingService?.logAppDetached();
     }
   }
   

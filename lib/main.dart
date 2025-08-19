@@ -10,10 +10,12 @@ import 'package:nirva_app/providers/call_provider.dart';
 import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/services/hardware_audio_recorder.dart';
 import 'package:nirva_app/services/audio_streaming_service.dart';
+
 import 'package:nirva_app/providers/local_audio_provider.dart';
 import 'package:nirva_app/providers/cloud_audio_provider.dart';
 import 'package:nirva_app/services/app_settings_service.dart';
 import 'package:nirva_app/services/ios_background_audio_manager.dart';
+import 'package:nirva_app/services/app_lifecycle_logging_service.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -54,10 +56,27 @@ void main() async {
   await hardwareService.initializeDevicePersistence();
   debugPrint('Main: HardwareService initialized successfully');
   
+  // Create HardwareAudioCapture immediately to enable automatic recording
+  final hardwareAudioCapture = HardwareAudioCapture(
+    hardwareService,
+    null, // Local audio processor will be set later
+    null, // Cloud audio processor will be set later
+    null, // Settings service will be set later
+  );
+  
+  // Set the audio capture service in the hardware service for automatic recording
+  hardwareService.setAudioCapture(hardwareAudioCapture);
+  debugPrint('Main: HardwareAudioCapture created and set for automatic recording');
+  
   // Initialize AppSettingsService
   final appSettingsService = AppSettingsService();
   await appSettingsService.initialize();
   debugPrint('Main: AppSettingsService initialized successfully');
+  
+  // Initialize AppLifecycleLoggingService
+  final lifecycleLoggingService = AppLifecycleLoggingService();
+  await lifecycleLoggingService.initialize();
+  debugPrint('Main: AppLifecycleLoggingService initialized successfully');
 
   runApp(
     MultiProvider(
@@ -97,90 +116,30 @@ void main() async {
             }
           },
         ),
-        ChangeNotifierProxyProvider<AppSettingsService, CloudAudioProvider?>(
+        ChangeNotifierProvider<CloudAudioProvider>(
           create: (context) {
             final settings = context.read<AppSettingsService>();
             if (settings.cloudAsrEnabled) {
               // Get the OpusDecoderService from HardwareService to avoid multiple initialization
               final hardwareService = context.read<HardwareService>();
               final userProvider = context.read<UserProvider>();
-              return CloudAudioProvider(
+              final cloudProvider = CloudAudioProvider(
                 opusDecoderService: hardwareService.opusDecoder,
                 userId: userProvider.id,
               );
+              // Initialize immediately so it's ready when hardware connects
+              cloudProvider.initialize();
+              return cloudProvider;
             }
-            return null;
-          },
-          update: (_, settings, previous) {
-            if (settings.cloudAsrEnabled) {
-              return previous; // Keep existing instance
-            } else {
-              previous?.dispose();
-              return null;
-            }
+            // Return a dummy provider if cloud ASR is disabled
+            return CloudAudioProvider(
+              opusDecoderService: context.read<HardwareService>().opusDecoder,
+              userId: context.read<UserProvider>().id,
+            );
           },
         ),
-        ChangeNotifierProxyProvider<HardwareService, HardwareAudioCapture>(
-          create: (context) {
-            final localAudioProvider = context.read<LocalAudioProvider?>();
-            final cloudAudioProvider = context.read<CloudAudioProvider?>();
-            final settingsService = context.read<AppSettingsService>();
-            final audioCapture = HardwareAudioCapture(
-              context.read<HardwareService>(),
-              localAudioProvider?.localAudioProcessor,
-              cloudAudioProvider?.cloudProcessor,
-              settingsService,
-            );
-            
-            // Set the local audio processor in the hardware service if available
-            if (localAudioProvider != null) {
-              context.read<HardwareService>().setLocalAudioProcessor(
-                localAudioProvider.localAudioProcessor,
-              );
-            }
-            
-            // Enable audio processing when hardware connects
-            context.read<HardwareService>().addListener(() async {
-              if (context.read<HardwareService>().isConnected) {
-                // Initialize cloud provider if needed (local initializes automatically)
-                final cap = context.read<CloudAudioProvider?>();
-                if (cap != null && !cap.isInitialized) {
-                  await cap.initialize();
-                }
-                
-                // Now enable processing (no await since these are not Futures)
-                context.read<LocalAudioProvider?>()?.enableProcessing();
-                context.read<CloudAudioProvider?>()?.enableProcessing();
-              }
-            });
-            
-            return audioCapture;
-          },
-          update: (context, hardwareService, previous) {
-            // Get the current providers
-            final localAudioProvider = context.read<LocalAudioProvider?>();
-            final cloudAudioProvider = context.read<CloudAudioProvider?>();
-            final settingsService = context.read<AppSettingsService>();
-            
-            // Update the audio capture with current providers
-            if (previous != null) {
-              // Update the existing instance with new providers
-              previous.updateProviders(
-                localAudioProvider?.localAudioProcessor,
-                cloudAudioProvider?.cloudProcessor,
-                settingsService,
-              );
-              return previous;
-            } else {
-              // Create new instance
-              return HardwareAudioCapture(
-                hardwareService,
-                localAudioProvider?.localAudioProcessor,
-                cloudAudioProvider?.cloudProcessor,
-                settingsService,
-              );
-            }
-          },
+        ChangeNotifierProvider<HardwareAudioCapture>.value(
+          value: hardwareAudioCapture,
         ),
         ChangeNotifierProvider<AudioStreamingService>(
           create: (context) => AudioStreamingService(
@@ -188,8 +147,30 @@ void main() async {
             context.read<UserProvider>().id,
           ),
         ),
-      ],
-      child: const MainApp(),
+              ],
+        child: Builder(
+          builder: (context) {
+            // Update HardwareAudioCapture with providers when they become available
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final settingsService = context.read<AppSettingsService>();
+              final cloudProvider = context.read<CloudAudioProvider>();
+              final localAudioProvider = context.read<LocalAudioProvider?>();
+              
+              hardwareAudioCapture.updateProviders(
+                localAudioProvider?.localAudioProcessor,
+                cloudProvider.cloudProcessor,
+                settingsService,
+              );
+              
+              // Also set the local audio processor in the hardware service
+              if (localAudioProvider != null) {
+                context.read<HardwareService>().setLocalAudioProcessor(localAudioProvider.localAudioProcessor);
+              }
+            });
+            
+            return const MainApp();
+          },
+        ),
     ),
   );
 

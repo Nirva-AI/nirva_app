@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -68,10 +69,20 @@ class HardwareAudioCapture extends ChangeNotifier {
       ? (_totalOpusPacketsReceived - _failedDecodes) / _totalOpusPacketsReceived 
       : 0.0;
   
+  // Provider access getters
+  CloudAudioProcessor? get cloudAudioProcessor => _cloudAudioProcessor;
+  AppSettingsService? get settingsService => _settingsService;
+  
   HardwareAudioCapture(this._hardwareService, [this._localAudioProcessor, this._cloudAudioProcessor, this._settingsService]) 
       : _iosBackgroundAudioManager = IosBackgroundAudioManager() {
     // Listen to hardware service changes to ensure we're always up to date
     _hardwareService.addListener(_onHardwareServiceChanged);
+    
+    // Notify hardware service that audio capture is now available
+    // This ensures automatic recording starts if a device is already connected
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _hardwareService.checkAndStartAutomaticRecording();
+    });
   }
   
   /// Update audio processors (called when providers change)
@@ -81,6 +92,11 @@ class HardwareAudioCapture extends ChangeNotifier {
     _settingsService = settingsService;
     
     debugPrint('HardwareAudioCapture: Updated providers - Local: ${localProcessor != null}, Cloud: ${cloudProcessor != null}');
+    
+    // Check if we should start automatic recording now that providers are available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _hardwareService.checkAndStartAutomaticRecording();
+    });
   }
   
   /// Start automatic audio capture
@@ -300,9 +316,10 @@ class HardwareAudioCapture extends ChangeNotifier {
   }
   
   /// Handle incoming audio packets from hardware (automatic streaming)
-  void _onAudioPacketReceived(HardwareAudioPacket packet) {
+  void _onAudioPacketReceived(HardwareAudioPacket packet) {    
     // Double-check that we're still capturing and have an active subscription
     if (!_isCapturing || _audioSubscription == null) {
+      // debugPrint('HardwareAudioCapture: Ignoring packet - not capturing or no subscription');
       return;
     }
     

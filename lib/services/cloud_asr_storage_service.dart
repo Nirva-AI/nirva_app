@@ -258,7 +258,7 @@ class CloudAsrStorageService extends ChangeNotifier {
           
           // Check if the old file path is still valid
           if (await oldFile.exists()) {
-            debugPrint('CloudAsrStorageService: File still exists at old path: ${result.audioFilePath}');
+            // debugPrint('CloudAsrStorageService: File still exists at old path: ${result.audioFilePath}');
             continue; // File is still accessible
           }
           
