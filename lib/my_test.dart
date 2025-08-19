@@ -34,6 +34,22 @@ class MyTest {
       'assets/analyze_result_nirva-2025-07-30-00.txt.json',
       DateTime(2025, 7, 30),
     );
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-08-15-00.txt.json',
+      DateTime(2025, 8, 15),
+    );
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-08-16-00.txt.json',
+      DateTime(2025, 8, 16),
+    );
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-08-17-00.txt.json',
+      DateTime(2025, 8, 17),
+    );
+    await loadTestJournalFile(
+      'assets/analyze_result_nirva-2025-08-18-00.txt.json',
+      DateTime(2025, 8, 18),
+    );
   }
 
   // 加载测试日记文件

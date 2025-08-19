@@ -11,9 +11,8 @@ import 'package:nirva_app/nirva_call_screen.dart';
 import 'package:nirva_app/me_page.dart';
 import 'package:nirva_app/experience_page.dart';
 import 'package:nirva_app/mini_call_bar.dart';
-import 'package:nirva_app/hardware_device_page.dart';
 
-enum HomePageNavigationType { journals, smartDiary, dashboard, hardware, me }
+enum HomePageNavigationType { journals, smartDiary, dashboard, me }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -47,8 +46,6 @@ class _HomePageState extends State<HomePage> {
         return const ExperiencePage();
       case HomePageNavigationType.dashboard:
         return const DashboardPage();
-      case HomePageNavigationType.hardware:
-        return const HardwareDevicePage();
       case HomePageNavigationType.me:
         return const MePage();
     }
@@ -62,8 +59,6 @@ class _HomePageState extends State<HomePage> {
         return 'Explore';
       case HomePageNavigationType.dashboard:
         return 'Dashboard';
-      case HomePageNavigationType.hardware:
-        return 'Hardware';
       case HomePageNavigationType.me:
         return 'Me';
     }
@@ -204,7 +199,7 @@ class _HomePageState extends State<HomePage> {
             height: 60,
             child: Row(
               children: [
-                // Left side tabs (3 tabs)
+                // Left side tabs (2 tabs)
                 Expanded(
                   child: Row(
                     children: [
@@ -232,23 +227,11 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-                      Expanded(
-                        child: _buildBottomAppBarItem(
-                          icon: Icons.device_hub,
-                          label: 'Hardware',
-                          isSelected: _selectedPage == HomePageNavigationType.hardware,
-                          onTap: () {
-                            setState(() {
-                              _selectedPage = HomePageNavigationType.hardware;
-                            });
-                          },
-                        ),
-                      ),
                     ],
                   ),
                 ),
                 // Center space for floating action button
-                const SizedBox(width: 120), // Increased space for larger button and 3 tabs
+                const SizedBox(width: 120), // Space for floating action button
                 // Right side tabs (2 tabs)
                 Expanded(
                   child: Row(

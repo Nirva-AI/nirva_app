@@ -101,6 +101,11 @@ flutter:
     - assets/onnx/whisper_small/
     - assets/analyze_result_nirva-2025-04-19-00.txt.json
     - assets/analyze_result_nirva-2025-05-09-00.txt.json
+    - assets/analyze_result_nirva-2025-07-30-00.txt.json
+    - assets/analyze_result_nirva-2025-08-15-00.txt.json
+    - assets/analyze_result_nirva-2025-08-16-00.txt.json
+    - assets/analyze_result_nirva-2025-08-17-00.txt.json
+    - assets/analyze_result_nirva-2025-08-18-00.txt.json
     - .env
 
   # To add assets to your application, add an assets section, like this:

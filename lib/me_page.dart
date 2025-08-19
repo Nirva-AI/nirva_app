@@ -5,6 +5,7 @@ import 'package:nirva_app/update_data_page.dart';
 import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/hive_data_viewer_page.dart';
 import 'package:nirva_app/mini_call_bar.dart';
+import 'package:nirva_app/hardware_device_page.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -82,6 +83,13 @@ class _MePageState extends State<MePage> {
         child: InkWell(
           onTap: () {
             debugPrint('Nirva Necklace tapped');
+            // Navigate to hardware device page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HardwareDevicePage(),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(20),
           child: Column(
