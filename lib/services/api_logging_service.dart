@@ -45,6 +45,9 @@ class ApiLoggingService {
     Duration? processingTime,
     Map<String, dynamic>? rawResponse,
     String? error,
+    Map<String, dynamic>? sentiment,
+    List<Map<String, dynamic>>? topics,
+    List<Map<String, dynamic>>? intents,
   }) async {
     if (_logFile == null) return;
     
@@ -58,6 +61,11 @@ Confidence: ${confidence ?? 'N/A'}
 Language: ${language ?? 'N/A'}
 Processing Time: ${processingTime?.inMilliseconds ?? 'N/A'}ms
 Error: ${error ?? 'None'}
+
+=== ANALYSIS DATA ===
+Sentiment: ${sentiment != null ? jsonEncode(sentiment) : 'None'}
+Topics: ${topics != null ? '${topics.length} topics detected' : 'None'}
+Intents: ${intents != null ? '${intents.length} intents detected' : 'None'}
 
 === COMPLETE RAW API RESPONSE ===
 ${rawResponse != null ? jsonEncode(rawResponse) : 'No raw response available'}

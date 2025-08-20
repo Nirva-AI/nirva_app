@@ -5,6 +5,7 @@ import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/journal_details_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/daily_reflection_page.dart';
+import 'package:nirva_app/providers/events_provider.dart';
 import 'package:intl/intl.dart';
 // import 'package:nirva_app/mini_call_bar.dart'; // No longer needed
 
@@ -86,10 +87,38 @@ class _JournalsPageState extends State<JournalsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFfaf9f5),
-      body: Consumer<JournalFilesProvider>(
-        builder: (context, journalProvider, child) {
+      body: Consumer2<JournalFilesProvider, EventsProvider>(
+        builder: (context, journalProvider, eventsProvider, child) {
           final journalFile = journalProvider.getJournalFileByDate(_selectedDate);
-          final events = journalFile?.events ?? [];
+          final dateKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
+          
+          // Use FutureBuilder to get merged events from backend and local sources
+          return FutureBuilder<List<EventAnalysis>>(
+            future: eventsProvider.getEventsForDate(dateKey),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error loading events',
+                        style: TextStyle(fontSize: 18, color: Colors.red.shade300),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () => setState(() {}),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              
+              final events = snapshot.data ?? [];
+              final isLoading = snapshot.connectionState == ConnectionState.waiting;
 
           return Stack(
             children: [
@@ -118,35 +147,56 @@ class _JournalsPageState extends State<JournalsPage> {
                             ),
                           ),
                           const Spacer(),
-                                                     // Create new event button
-                           Container(
-                             width: 42,
-                             height: 42,
-                             decoration: BoxDecoration(
-                               color: Colors.grey.shade200,
-                               shape: BoxShape.circle,
-                             ),
-                             child: Icon(
-                               Icons.add,
-                               color: Colors.grey.shade600,
-                               size: 20,
-                             ),
-                           ),
+                          // Refresh button
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                eventsProvider.clearCache(dateKey);
+                                setState(() {});
+                              },
+                              icon: Icon(
+                                Icons.refresh,
+                                color: Colors.grey.shade600,
+                                size: 20,
+                              ),
+                            ),
+                          ),
                           const SizedBox(width: 12),
-                                                     // Search button
-                           Container(
-                             width: 42,
-                             height: 42,
-                             decoration: BoxDecoration(
-                               color: Colors.grey.shade200,
-                               shape: BoxShape.circle,
-                             ),
-                             child: Icon(
-                               Icons.search,
-                               color: Colors.grey.shade600,
-                               size: 20,
-                             ),
-                           ),
+                          // Create new event button
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.grey.shade600,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Search button
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.search,
+                              color: Colors.grey.shade600,
+                              size: 20,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -163,7 +213,17 @@ class _JournalsPageState extends State<JournalsPage> {
                     // Timeline with events
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: _buildTimeline(events),
+                      child: isLoading 
+                        ? const Center(
+                            child: Column(
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(height: 16),
+                                Text('Loading events...'),
+                              ],
+                            ),
+                          )
+                        : _buildTimeline(events),
                     ),
                     
                     // Add bottom padding for safe area
@@ -173,6 +233,8 @@ class _JournalsPageState extends State<JournalsPage> {
               ),
               // MiniCallBar removed since this is now a root page with HomePage handling navigation
             ],
+          );
+            },
           );
         },
       ),
@@ -218,7 +280,7 @@ class _JournalsPageState extends State<JournalsPage> {
               Row(
                 children: [
                   const Text(
-                    'Hi, Wei',
+                    'Hi, Jason',
                     style: TextStyle(
                       fontSize: 36, // Much bigger text size
                       fontWeight: FontWeight.normal, // Removed bold

@@ -41,7 +41,13 @@ class URLConfiguration {
   }
 
   String get uploadTranscriptUrl {
+    // The backend expects: /action/upload_transcript/v1/
     return _urlConfig.endpoints['upload_transcript'] ?? '';
+  }
+
+  String get getEventsUrl {
+    // The backend expects: /action/analyze/events/get/v1/
+    return _urlConfig.endpoints['get_events'] ?? '';
   }
 
   // 格式化URL

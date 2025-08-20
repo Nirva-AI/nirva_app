@@ -7,6 +7,7 @@ import 'package:nirva_app/hive_data_viewer_page.dart';
 import 'package:nirva_app/mini_call_bar.dart';
 import 'package:nirva_app/hardware_device_page.dart';
 import 'package:nirva_app/lifecycle_logs_page.dart';
+import 'package:nirva_app/services/hardware_service.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -149,67 +150,103 @@ class _MePageState extends State<MePage> {
               const SizedBox(height: 20),
               
               // Battery level indicator
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.battery_full,
-                      color: Color(0xFF0E3C26),
-                      size: 20,
+              Consumer<HardwareService>(
+                builder: (context, hardwareService, child) {
+                  final connectedDevice = hardwareService.connectedDevice;
+                  final batteryLevel = connectedDevice?.batteryLevel;
+                  final isConnected = hardwareService.isConnected;
+                  
+                  // Default values when no device is connected
+                  final displayBatteryLevel = batteryLevel ?? 0;
+                  final batteryValue = displayBatteryLevel / 100.0;
+                  final batteryText = isConnected ? '$displayBatteryLevel%' : 'Not Connected';
+                  final batteryIcon = isConnected 
+                      ? (displayBatteryLevel > 20 ? Icons.battery_full : Icons.battery_alert)
+                      : Icons.battery_unknown;
+                  
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Battery Level',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF0E3C26),
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'Georgia',
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
+                    child: Row(
+                      children: [
+                        Icon(
+                          batteryIcon,
+                          color: const Color(0xFF0E3C26),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: LinearProgressIndicator(
-                                  value: 0.88,
-                                  backgroundColor: Colors.grey.shade300,
-                                  valueColor: const AlwaysStoppedAnimation<Color>(
-                                    Color(0xFF0E3C26),
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
                               const Text(
-                                '88%',
+                                'Battery Level',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
                                   color: Color(0xFF0E3C26),
+                                  fontWeight: FontWeight.w500,
                                   fontFamily: 'Georgia',
                                 ),
                               ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: LinearProgressIndicator(
+                                      value: isConnected ? batteryValue : 0.0,
+                                      backgroundColor: Colors.grey.shade300,
+                                      valueColor: const AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF0E3C26),
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    batteryText,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0E3C26),
+                                      fontFamily: 'Georgia',
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        if (isConnected)
+                          IconButton(
+                            icon: const Icon(Icons.refresh, size: 16),
+                            onPressed: () async {
+                              try {
+                                await hardwareService.getBatteryLevel();
+                                // The service will update the device info automatically
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to refresh battery level: $e'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            tooltip: 'Refresh battery level',
+                          ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
               const SizedBox(height: 16),
               

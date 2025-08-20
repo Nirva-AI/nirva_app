@@ -13,6 +13,8 @@ import 'package:nirva_app/services/audio_streaming_service.dart';
 
 import 'package:nirva_app/providers/local_audio_provider.dart';
 import 'package:nirva_app/providers/cloud_audio_provider.dart';
+import 'package:nirva_app/providers/transcription_sync_provider.dart';
+import 'package:nirva_app/providers/events_provider.dart';
 import 'package:nirva_app/services/app_settings_service.dart';
 import 'package:nirva_app/services/ios_background_audio_manager.dart';
 import 'package:nirva_app/services/app_lifecycle_logging_service.dart';
@@ -147,14 +149,27 @@ void main() async {
             context.read<UserProvider>().id,
           ),
         ),
+        ChangeNotifierProvider<TranscriptionSyncProvider>(
+          create: (context) => TranscriptionSyncProvider(),
+        ),
+        ChangeNotifierProvider<EventsProvider>(
+          create: (context) => EventsProvider(),
+        ),
               ],
         child: Builder(
           builder: (context) {
             // Update HardwareAudioCapture with providers when they become available
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
               final settingsService = context.read<AppSettingsService>();
               final cloudProvider = context.read<CloudAudioProvider>();
               final localAudioProvider = context.read<LocalAudioProvider?>();
+              final syncProvider = context.read<TranscriptionSyncProvider>();
+              
+              // Initialize the sync provider
+              await syncProvider.initialize();
+              
+              // Connect sync provider to cloud audio processor
+              cloudProvider.cloudProcessor.setSyncProvider(syncProvider);
               
               hardwareAudioCapture.updateProviders(
                 localAudioProvider?.localAudioProcessor,

@@ -404,6 +404,123 @@ class NirvaAPI {
     return uploadResponse;
   }
 
+  // 批量上传转录文本到后端 (使用正确的API格式)
+  static Future<UploadTranscriptActionResponse?> uploadTranscriptBatch(
+    List<Map<String, String>> transcripts,
+  ) async {
+    // The backend expects: {"transcripts": [{"time_stamp": "...", "content": "..."}]}
+    final requestData = {
+      'transcripts': transcripts,
+    };
+
+    final response = await safePost<Map<String, dynamic>>(
+      _dio,
+      _urlConfig.uploadTranscriptUrl,
+      data: requestData,
+    );
+
+    if (response == null || response.data == null) {
+      Logger().e('Upload transcript batch failed: No response data');
+      return null;
+    }
+
+    final uploadResponse = UploadTranscriptActionResponse.fromJson(
+      response.data!,
+    );
+    Logger().d(
+      'Upload transcript batch response: ${jsonEncode(uploadResponse.toJson())}',
+    );
+
+    return uploadResponse;
+  }
+
+  // 获取用户事件数据
+  static Future<Map<String, dynamic>?> getEvents(String timeStamp) async {
+    try {
+      final requestData = {
+        'time_stamp': timeStamp,
+      };
+
+      final response = await safePost<Map<String, dynamic>>(
+        _dio,
+        _urlConfig.getEventsUrl,
+        data: requestData,
+      );
+
+      if (response == null || response.data == null) {
+        Logger().e('Get events failed: No response data');
+        return null;
+      }
+
+      Logger().d('Get events response: ${jsonEncode(response.data!)}');
+      return response.data!;
+      
+    } catch (e) {
+      Logger().e('Get events error: $e');
+      return null;
+    }
+  }
+
+  // 启动分析任务 - 将转录文本转换为事件
+  static Future<Map<String, dynamic>?> startAnalysis(String timeStamp, int fileNumber) async {
+    try {
+      final requestData = {
+        'time_stamp': timeStamp,
+        'file_number': fileNumber,
+      };
+
+      Logger().d('Starting analysis for $timeStamp, file $fileNumber');
+
+      final response = await safePost<Map<String, dynamic>>(
+        _dio,
+        _urlConfig.analyzeActionUrl,
+        data: requestData,
+      );
+
+      if (response == null || response.data == null) {
+        Logger().e('Start analysis failed: No response data');
+        return null;
+      }
+
+      Logger().d('Start analysis response: ${jsonEncode(response.data!)}');
+      return response.data!;
+      
+    } catch (e) {
+      Logger().e('Start analysis error: $e');
+      return null;
+    }
+  }
+
+  // 检查分析任务状态
+  static Future<Map<String, dynamic>?> checkAnalysisStatus(String taskId) async {
+    try {
+      final url = _urlConfig.formatTaskStatusUrl(taskId);
+      if (url.isEmpty) {
+        Logger().e('Task status URL not configured');
+        return null;
+      }
+
+      Logger().d('Checking analysis status for task: $taskId');
+
+      final response = await safeGet<Map<String, dynamic>>(
+        _dio,
+        url,
+      );
+
+      if (response == null || response.data == null) {
+        Logger().e('Check analysis status failed: No response data');
+        return null;
+      }
+
+      Logger().d('Analysis status response: ${jsonEncode(response.data!)}');
+      return response.data!;
+      
+    } catch (e) {
+      Logger().e('Check analysis status error: $e');
+      return null;
+    }
+  }
+
   // 分析请求, 故意不抓留给外面抓。
   static Future<BackgroundTaskResponse?> analyze(
     String timeStamp,

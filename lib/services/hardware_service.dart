@@ -421,13 +421,25 @@ class HardwareService extends ChangeNotifier {
         }
       }
       
-      // Update device state with firmware and hardware info
+      // Get initial battery level
+      int? batteryLevel;
+      if (_batteryService != null) {
+        try {
+          batteryLevel = await getBatteryLevel();
+          debugPrint('HardwareService.connectToDevice: Initial battery level: $batteryLevel%');
+        } catch (e) {
+          debugPrint('HardwareService.connectToDevice: Failed to get initial battery level: $e');
+        }
+      }
+      
+      // Update device state with firmware, hardware, and battery info
       _setConnectedDevice(device.copyWith(
         isConnected: true,
         connectedAt: DateTime.now(),
         firmwareVersion: deviceInfo['firmware'],
         hardwareVersion: deviceInfo['hardware'],
         manufacturer: deviceInfo['manufacturer'],
+        batteryLevel: batteryLevel,
       ));
       
       // Ensure connection state is properly set
@@ -570,6 +582,9 @@ class HardwareService extends ChangeNotifier {
           final isStillConnected = await verifyConnection();
           if (!isStillConnected) {
             debugPrint('Connection monitoring detected lost connection');
+          } else {
+            // If still connected, refresh battery level periodically
+            await getBatteryLevel();
           }
         } catch (e) {
           debugPrint('Connection monitoring error: $e');
@@ -744,7 +759,7 @@ class HardwareService extends ChangeNotifier {
     notifyListeners();
   }
   
-  /// Get battery level from connected device
+  /// Get battery level from connected device and update the device info
   Future<int?> getBatteryLevel() async {
     if (_batteryService == null || _connectedDevice == null) return null;
     
@@ -757,7 +772,19 @@ class HardwareService extends ChangeNotifier {
       
       final value = await batteryChar.read();
       if (value.isNotEmpty) {
-        return value[0];
+        final batteryLevel = value[0];
+        
+        // Update the connected device with the new battery level
+        _connectedDevice = _connectedDevice!.copyWith(batteryLevel: batteryLevel);
+        
+        // Save the updated device info to persistent storage
+        await _saveConnectedDevice();
+        
+        // Notify listeners about the battery level update
+        notifyListeners();
+        
+        debugPrint('HardwareService.getBatteryLevel: Updated battery level to $batteryLevel%');
+        return batteryLevel;
       }
       
       return null;
@@ -1029,24 +1056,40 @@ class HardwareService extends ChangeNotifier {
     };
   }
 
-  /// Refresh device info for connected device (firmware version, hardware version, etc.)
+  /// Refresh device info for connected device (firmware version, hardware version, battery level, etc.)
   Future<void> refreshDeviceInfo() async {
-    if (_connectedDevice == null || _deviceInfoService == null) {
-      debugPrint('HardwareService.refreshDeviceInfo: No connected device or device info service');
+    if (_connectedDevice == null) {
+      debugPrint('HardwareService.refreshDeviceInfo: No connected device');
       return;
     }
     
     try {
       debugPrint('HardwareService.refreshDeviceInfo: Refreshing device info...');
-      final deviceInfo = await getDeviceInfo();
-      debugPrint('HardwareService.refreshDeviceInfo: Retrieved device info: $deviceInfo');
+      
+      // Get device info if service is available
+      Map<String, String> deviceInfo = {};
+      if (_deviceInfoService != null) {
+        deviceInfo = await getDeviceInfo();
+        debugPrint('HardwareService.refreshDeviceInfo: Retrieved device info: $deviceInfo');
+      }
+      
+      // Get battery level if service is available
+      int? batteryLevel;
+      if (_batteryService != null) {
+        batteryLevel = await getBatteryLevel();
+        debugPrint('HardwareService.refreshDeviceInfo: Retrieved battery level: $batteryLevel%');
+      }
       
       // Update the connected device with new info
       _connectedDevice = _connectedDevice!.copyWith(
         firmwareVersion: deviceInfo['firmware'],
         hardwareVersion: deviceInfo['hardware'],
         manufacturer: deviceInfo['manufacturer'],
+        batteryLevel: batteryLevel,
       );
+      
+      // Save to persistent storage
+      await _saveConnectedDevice();
       
       notifyListeners();
       debugPrint('HardwareService.refreshDeviceInfo: Device info refreshed successfully');

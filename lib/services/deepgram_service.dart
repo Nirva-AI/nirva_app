@@ -164,6 +164,10 @@ class DeepgramService extends ChangeNotifier {
         'utterances': 'true', // Enable utterances for finer units inside paragraphs
         'paragraphs': 'true', // Group transcript into readable paragraphs (great for conversation blocks)
         'smart_format': 'true', // Provide punctuation and formatting for the transcript
+        'words': 'false', // Disable word-level data to reduce response size
+        'sentiment': 'true', // Enable sentiment analysis
+        'topics': 'true', // Enable topic detection
+        'intents': 'true', // Enable intent recognition
       });
       
       final request = http.Request('POST', uri);
@@ -209,6 +213,9 @@ class DeepgramService extends ChangeNotifier {
         // Log the complete response structure
         _logCompleteApiResponse(jsonResponse);
         
+        // Log sentiment, topic, and intent analysis if available
+        _logAnalysisData(jsonResponse);
+        
         debugPrint('DeepgramService: === END FULL RESPONSE ===');
         
         // Parse the response
@@ -246,6 +253,9 @@ class DeepgramService extends ChangeNotifier {
         isError: true,
         errorMessage: e.toString(),
         rawResponse: null,
+        sentiment: null,
+        topics: null,
+        intents: null,
       );
       
       // Add to results history
@@ -495,6 +505,64 @@ class DeepgramService extends ChangeNotifier {
     }
   }
 
+  /// Log sentiment, topic, and intent analysis data if available
+  void _logAnalysisData(Map<String, dynamic> jsonResponse) {
+    try {
+      debugPrint('DeepgramService: === ANALYSIS DATA LOG ===');
+      
+      final results = jsonResponse['results'] as Map<String, dynamic>?;
+      if (results == null) {
+        debugPrint('DeepgramService: No results section found for analysis data');
+        return;
+      }
+      
+      final channels = results['channels'] as List<dynamic>?;
+      if (channels == null || channels.isEmpty) {
+        debugPrint('DeepgramService: No channels found for analysis data');
+        return;
+      }
+      
+      final channel = channels.first as Map<String, dynamic>;
+      final alternatives = channel['alternatives'] as List<dynamic>?;
+      if (alternatives == null || alternatives.isEmpty) {
+        debugPrint('DeepgramService: No alternatives found for analysis data');
+        return;
+      }
+      
+      final alternative = alternatives.first as Map<String, dynamic>;
+      debugPrint('DeepgramService: Alternative fields available: ${alternative.keys.toList()}');
+      
+      // Check for sentiment analysis
+      if (alternative.containsKey('sentiment')) {
+        final sentiment = alternative['sentiment'];
+        debugPrint('DeepgramService: ✅ Sentiment analysis found: $sentiment');
+      } else {
+        debugPrint('DeepgramService: ❌ No sentiment analysis found');
+      }
+      
+      // Check for topic detection
+      if (alternative.containsKey('topics')) {
+        final topics = alternative['topics'];
+        debugPrint('DeepgramService: ✅ Topic detection found: $topics');
+      } else {
+        debugPrint('DeepgramService: ❌ No topic detection found');
+      }
+      
+      // Check for intent recognition
+      if (alternative.containsKey('intents')) {
+        final intents = alternative['intents'];
+        debugPrint('DeepgramService: ✅ Intent recognition found: $intents');
+      } else {
+        debugPrint('DeepgramService: ❌ No intent recognition found');
+      }
+      
+      debugPrint('DeepgramService: === END ANALYSIS DATA LOG ===');
+      
+    } catch (e) {
+      debugPrint('DeepgramService: Error logging analysis data: $e');
+    }
+  }
+
   /// Parse Deepgram API response
   DeepgramTranscriptionResult? _parseDeepgramResponse(
     Map<String, dynamic> jsonResponse,
@@ -595,6 +663,15 @@ class DeepgramService extends ChangeNotifier {
       // Extract language if available
       final language = jsonResponse['metadata']?['language'] as String? ?? 'en';
       
+      // Extract sentiment, topic, and intent analysis if available
+      final sentiment = alternative['sentiment'] as Map<String, dynamic>?;
+      final topics = alternative['topics'] as List<dynamic>?;
+      final intents = alternative['intents'] as List<dynamic>?;
+      
+      // Convert topics and intents to proper format
+      final List<Map<String, dynamic>>? topicsList = topics?.map((t) => t as Map<String, dynamic>).toList();
+      final List<Map<String, dynamic>>? intentsList = intents?.map((i) => i as Map<String, dynamic>).toList();
+      
       return DeepgramTranscriptionResult(
         transcription: transcript.trim(),
         confidence: confidence,
@@ -605,6 +682,9 @@ class DeepgramService extends ChangeNotifier {
         isError: false,
         errorMessage: null,
         rawResponse: jsonResponse,
+        sentiment: sentiment,
+        topics: topicsList,
+        intents: intentsList,
       );
       
     } catch (e) {
@@ -674,6 +754,11 @@ class DeepgramTranscriptionResult {
   final String? errorMessage;
   final Map<String, dynamic>? rawResponse;
   
+  // New fields for sentiment, topic, and intent analysis
+  final Map<String, dynamic>? sentiment;
+  final List<Map<String, dynamic>>? topics;
+  final List<Map<String, dynamic>>? intents;
+  
   const DeepgramTranscriptionResult({
     required this.transcription,
     required this.confidence,
@@ -684,6 +769,9 @@ class DeepgramTranscriptionResult {
     required this.isError,
     this.errorMessage,
     this.rawResponse,
+    this.sentiment,
+    this.topics,
+    this.intents,
   });
   
   /// Get the duration of the audio segment
@@ -699,6 +787,10 @@ class DeepgramTranscriptionResult {
   
   @override
   String toString() {
-    return 'DeepgramTranscriptionResult(transcription: "$transcription", confidence: $confidence, language: $language, isError: $isError)';
+    final sentimentStr = sentiment != null ? 'sentiment: $sentiment' : 'sentiment: null';
+    final topicsStr = topics != null ? 'topics: ${topics?.length ?? 0} items' : 'topics: null';
+    final intentsStr = intents != null ? 'intents: ${intents?.length ?? 0} items' : 'intents: null';
+    
+    return 'DeepgramTranscriptionResult(transcription: "$transcription", confidence: $confidence, language: $language, isError: $isError, $sentimentStr, $topicsStr, $intentsStr)';
   }
 }

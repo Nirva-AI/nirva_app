@@ -10,6 +10,7 @@ import 'models/processed_audio_result.dart';
 import 'services/cloud_audio_processor.dart';
 import 'services/app_settings_service.dart';
 import 'my_hive_objects.dart';
+import 'widgets/transcription_sync_status_widget.dart';
 
 class HardwareAudioPage extends StatefulWidget {
   const HardwareAudioPage({super.key});
@@ -163,6 +164,17 @@ class _HardwareAudioPageState extends State<HardwareAudioPage> {
               ),
               
               const SizedBox(height: 20),
+              
+              // Transcription sync status (only show for cloud ASR)
+              Consumer<AppSettingsService>(
+                builder: (context, settings, child) {
+                  if (!settings.cloudAsrEnabled) {
+                    return const SizedBox.shrink();
+                  }
+                  
+                  return const TranscriptionSyncStatusWidget();
+                },
+              ),
             ],
           ),
         );

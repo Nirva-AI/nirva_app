@@ -12,6 +12,7 @@ import 'cloud_asr_storage_service.dart';
 import 'api_logging_service.dart';
 import 'audio_config.dart';
 import '../my_hive_objects.dart';
+import '../providers/transcription_sync_provider.dart';
 
 /// Cloud audio processor that combines local VAD with cloud ASR
 /// 
@@ -109,6 +110,15 @@ class CloudAudioProcessor extends ChangeNotifier {
       _loggingService = ApiLoggingService() {
     // Store user ID for later use
     _userId = userId;
+  }
+  
+  /// Reference to the transcription sync provider (set externally)
+  TranscriptionSyncProvider? _syncProvider;
+  
+  /// Set the transcription sync provider
+  void setSyncProvider(TranscriptionSyncProvider provider) {
+    _syncProvider = provider;
+    debugPrint('CloudAudioProcessor: Transcription sync provider set');
   }
   
   /// Initialize the cloud audio processor
@@ -876,6 +886,9 @@ class CloudAudioProcessor extends ChangeNotifier {
             language: transcriptionResult.language,
             processingTime: DateTime.now().difference(segmentResult.startTime),
             rawResponse: transcriptionResult.rawResponse,
+            sentiment: transcriptionResult.sentiment,
+            topics: transcriptionResult.topics,
+            intents: transcriptionResult.intents,
           );
         } catch (e) {
           debugPrint('CloudAudioProcessor: ERROR logging transcription response: $e');
@@ -889,6 +902,9 @@ class CloudAudioProcessor extends ChangeNotifier {
           final stored = await _storageService.storeResult(finalResult);
           if (!stored) {
             debugPrint('CloudAudioProcessor: Failed to store result persistently: ${finalResult.segmentPath}');
+          } else {
+            // Add to sync queue for backend synchronization
+            _addToSyncQueue(finalResult);
           }
         } catch (e) {
           debugPrint('CloudAudioProcessor: Error storing result: $e');
@@ -1214,7 +1230,19 @@ class CloudAudioProcessor extends ChangeNotifier {
     };
   }
   
-
+  /// Add transcription result to the sync queue for backend synchronization
+  void _addToSyncQueue(CloudAudioResult result) {
+    if (_syncProvider != null && result.transcription != null && result.transcription!.isNotEmpty) {
+      try {
+        // Generate a unique ID for the transcription
+        final transcriptionId = '${result.startTime.millisecondsSinceEpoch}_${result.segmentPath}';
+        _syncProvider!.addPendingTranscription(transcriptionId);
+        debugPrint('CloudAudioProcessor: Added transcription to sync queue: $transcriptionId');
+      } catch (e) {
+        debugPrint('CloudAudioProcessor: Error adding transcription to sync queue: $e');
+      }
+    }
+  }
   
   @override
   void dispose() {
