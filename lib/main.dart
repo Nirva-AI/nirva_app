@@ -120,8 +120,8 @@ void main() async {
         ),
         ChangeNotifierProvider<CloudAudioProvider>(
           create: (context) {
-            final settings = context.read<AppSettingsService>();
-            if (settings.cloudAsrEnabled) {
+            final settingsService = context.read<AppSettingsService>();
+            if (settingsService.cloudAsrEnabled) {
               // Get the OpusDecoderService from HardwareService to avoid multiple initialization
               final hardwareService = context.read<HardwareService>();
               final userProvider = context.read<UserProvider>();

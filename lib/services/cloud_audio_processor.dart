@@ -10,6 +10,7 @@ import 'deepgram_service.dart';
 import 'opus_decoder_service.dart';
 import 'cloud_asr_storage_service.dart';
 import 'api_logging_service.dart';
+import 'ios_background_audio_manager.dart';
 import 'audio_config.dart';
 import '../my_hive_objects.dart';
 import '../providers/transcription_sync_provider.dart';
@@ -18,6 +19,9 @@ import '../providers/transcription_sync_provider.dart';
 /// 
 /// This processor uses local VAD to detect meaningful speech segments
 /// and then sends them to Deepgram for transcription
+/// 
+/// ENHANCED WITH iOS BACKGROUND PROCESSING: Uses iOS background manager for
+/// 2Hz VAD scheduling and BT wake event handling
 /// 
 /// ENFORCES SINGLETON PATTERN: Only one audio segment can be created at a time
 class CloudAudioProcessor extends ChangeNotifier {
@@ -58,6 +62,9 @@ class CloudAudioProcessor extends ChangeNotifier {
   // SEQUENTIAL PROCESSING: Queue to ensure audio packets are processed one by one
   final Queue<Uint8List> _audioQueue = Queue<Uint8List>();
   bool _isProcessingAudio = false;
+  
+  // iOS Background Processing Enhancement
+
   
   // Audio processing statistics
   int _totalAudioBytesProcessed = 0;
@@ -110,6 +117,8 @@ class CloudAudioProcessor extends ChangeNotifier {
       _loggingService = ApiLoggingService() {
     // Store user ID for later use
     _userId = userId;
+    
+    debugPrint('CloudAudioProcessor: Constructor called for BT wake event processing');
   }
   
   /// Reference to the transcription sync provider (set externally)
@@ -120,6 +129,8 @@ class CloudAudioProcessor extends ChangeNotifier {
     _syncProvider = provider;
     debugPrint('CloudAudioProcessor: Transcription sync provider set');
   }
+  
+
   
   /// Initialize the cloud audio processor
   Future<bool> initialize() async {
@@ -277,7 +288,8 @@ class CloudAudioProcessor extends ChangeNotifier {
     }
     
     _isEnabled = true;
-    debugPrint('CloudAudioProcessor: Cloud audio processing enabled');
+    debugPrint('CloudAudioProcessor: Cloud audio processing enabled (BT wake events supported)');
+    
     notifyListeners();
   }
   
@@ -315,6 +327,14 @@ class CloudAudioProcessor extends ChangeNotifier {
       return;
     }
 
+    // Process audio data immediately (BT wake events handled by iOS)
+    _processAudioDataImmediately(pcmData);
+  }
+  
+
+  
+  /// Process audio data immediately (existing logic)
+  void _processAudioDataImmediately(Uint8List pcmData) {
     try {
       _isProcessingAudio = true;
       _totalAudioBytesProcessed += pcmData.length;

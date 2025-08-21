@@ -88,10 +88,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     
     if (_iosBackgroundAudioManager?.isIos == true) {
       // If background audio was interrupted, try to restore it
-      if (_iosBackgroundAudioManager!.isBackgroundAudioEnabled && 
-          !_iosBackgroundAudioManager!.isBackgroundTaskActive) {
-        debugPrint('App resumed - restoring background audio processing');
-        _iosBackgroundAudioManager!.startBackgroundAudio();
+              if (_iosBackgroundAudioManager!.isInitialized) {
+        debugPrint('App resumed - iOS background manager is ready for BT wake events');
       }
     }
   }
@@ -102,10 +100,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     
     if (_iosBackgroundAudioManager?.isIos == true) {
       // Ensure background audio is active before going to background
-      if (_iosBackgroundAudioManager!.isAudioSessionActive && 
-          !_iosBackgroundAudioManager!.isBackgroundAudioEnabled) {
-        debugPrint('App paused - starting background audio processing');
-        _iosBackgroundAudioManager!.startBackgroundAudio();
+      if (_iosBackgroundAudioManager!.isInitialized) {
+        debugPrint('App paused - iOS background manager is ready for BT wake events');
       }
     }
   }
@@ -116,8 +112,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     
     if (_iosBackgroundAudioManager?.isIos == true) {
       // Ensure audio session stays active during task switching
-      if (_iosBackgroundAudioManager!.isAudioSessionActive) {
-        debugPrint('App inactive - audio session maintained');
+      if (_iosBackgroundAudioManager!.isInitialized) {
+        debugPrint('App inactive - iOS background manager ready for BT wake events');
       }
     }
   }

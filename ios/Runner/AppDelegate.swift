@@ -2,15 +2,22 @@ import Flutter
 import UIKit
 import BackgroundTasks
 import AVFoundation
+import CoreBluetooth
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, CBCentralManagerDelegate {
   
   // Background task identifier
   private let backgroundTaskIdentifier = "com.nirva.backgroundAudioProcessing"
   
   // Method channel for Flutter communication
   private var methodChannel: FlutterMethodChannel?
+  
+  // Bluetooth wake event handling
+  private var centralManager: CBCentralManager?
+  
+  // Track if app was woken from background
+  private var wasWokenFromBackground = false
   
   override func application(
     _ application: UIApplication,
@@ -26,39 +33,41 @@ import AVFoundation
     // Configure audio session for background processing
     configureAudioSession()
     
-    // Register background tasks for iOS 13+
-    if #available(iOS 13.0, *) {
-      BGTaskScheduler.shared.register(
-        forTaskWithIdentifier: backgroundTaskIdentifier,
-        using: nil
-      ) { task in
-        self.handleBackgroundTask(task)
-      }
-    }
-    
-    // Register for app lifecycle notifications
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(handleApplicationWillResignActive),
-      name: UIApplication.willResignActiveNotification,
-      object: nil
-    )
-    
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(handleApplicationDidEnterBackground),
-      name: UIApplication.didEnterBackgroundNotification,
-      object: nil
-    )
-    
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(handleApplicationWillEnterForeground),
-      name: UIApplication.willEnterForegroundNotification,
-      object: nil
-    )
+    // Initialize Bluetooth manager for wake events
+    initializeBluetoothManager()
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+  
+  // MARK: - App Lifecycle Handling
+  
+  override func applicationWillEnterForeground(_ application: UIApplication) {
+    print("AppDelegate: App will enter foreground")
+    
+    // Check if app was woken from background
+    if wasWokenFromBackground {
+      print("AppDelegate: App was woken from background - notifying Flutter")
+      methodChannel?.invokeMethod("onBtWakeEvent", arguments: nil)
+      wasWokenFromBackground = false
+    }
+  }
+  
+  override func applicationDidBecomeActive(_ application: UIApplication) {
+    print("AppDelegate: App became active")
+    
+    // Check if app was woken from background
+    if wasWokenFromBackground {
+      print("AppDelegate: App was woken from background - notifying Flutter")
+      methodChannel?.invokeMethod("onBtWakeEvent", arguments: nil)
+      wasWokenFromBackground = false
+    }
+  }
+  
+  // MARK: - Bluetooth Manager Setup
+  
+  private func initializeBluetoothManager() {
+    centralManager = CBCentralManager(delegate: self, queue: nil)
+    print("AppDelegate: Bluetooth manager initialized")
   }
   
   // MARK: - Method Channel Setup
@@ -95,24 +104,9 @@ import AVFoundation
       let success = deactivateAudioSession()
       result(success)
       
-    case "scheduleBackgroundTask":
-      if #available(iOS 13.0, *) {
-        let success = scheduleNextBackgroundTask()
-        result(success)
-      } else {
-        result(false)
-      }
-      
-    case "cancelAllBackgroundTasks":
-      if #available(iOS 13.0, *) {
-        let success = cancelAllBackgroundTasks()
-        result(success)
-      } else {
-        result(false)
-      }
-      
-    case "sendKeepAliveSignal":
-      sendKeepAliveSignal()
+    case "onBtWakeEvent":
+      // Handle BT wake event from Flutter side
+      print("AppDelegate: BT wake event received from Flutter")
       result(true)
       
     default:
@@ -169,112 +163,50 @@ import AVFoundation
     }
   }
   
-  // MARK: - Background Task Handling
+  // MARK: - CBCentralManagerDelegate
   
-  @available(iOS 13.0, *)
-  private func handleBackgroundTask(_ task: BGTask) {
-    print("AppDelegate: Background task started: \(task.identifier)")
+  func centralManagerDidUpdateState(_ central: CBCentralManager) {
+    print("AppDelegate: Bluetooth central manager state updated: \(central.state.rawValue)")
     
-    // Set expiration handler
-    task.expirationHandler = {
-      print("AppDelegate: Background task expiring, cleaning up...")
-      self.cleanupBackgroundTask()
-    }
-    
-    // Schedule next background task
-    _ = self.scheduleNextBackgroundTask()
-    
-    // Simulate some work to keep the task alive
-    DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
-      print("AppDelegate: Background task completing successfully")
-      task.setTaskCompleted(success: true)
-    }
-  }
-  
-  @available(iOS 13.0, *)
-  private func scheduleNextBackgroundTask() -> Bool {
-    let request = BGProcessingTaskRequest(identifier: backgroundTaskIdentifier)
-    request.requiresNetworkConnectivity = false
-    request.requiresExternalPower = false
-    request.earliestBeginDate = Date(timeIntervalSinceNow: 30) // Schedule for 30 seconds later
-    
-    do {
-      try BGTaskScheduler.shared.submit(request)
-      print("AppDelegate: Next background task scheduled successfully")
-      return true
-    } catch {
-      print("AppDelegate: Failed to schedule background task: \(error)")
-      return false
+    switch central.state {
+    case .poweredOn:
+      print("AppDelegate: Bluetooth is powered on")
+      // Start scanning for peripherals to enable background wake events
+      centralManager?.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+    case .poweredOff:
+      print("AppDelegate: Bluetooth is powered off")
+      centralManager?.stopScan()
+    case .resetting:
+      print("AppDelegate: Bluetooth is resetting")
+    case .unauthorized:
+      print("AppDelegate: Bluetooth is unauthorized")
+    case .unknown:
+      print("AppDelegate: Bluetooth state is unknown")
+    case .unsupported:
+      print("AppDelegate: Bluetooth is unsupported")
+    @unknown default:
+      print("AppDelegate: Bluetooth state is unknown default")
     }
   }
   
-  @available(iOS 13.0, *)
-  private func cancelAllBackgroundTasks() -> Bool {
-    do {
-      BGTaskScheduler.shared.cancelAllTaskRequests()
-      print("AppDelegate: All background tasks cancelled successfully")
-      return true
-    } catch {
-      print("AppDelegate: Failed to cancel background tasks: \(error)")
-      return false
+  func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+    print("AppDelegate: Discovered peripheral: \(peripheral.name ?? "Unknown")")
+    
+    // Only notify if app was woken from background
+    if wasWokenFromBackground {
+      print("AppDelegate: BT peripheral discovered while app was woken from background")
+      methodChannel?.invokeMethod("onBtWakeEvent", arguments: nil)
     }
   }
   
-  private func sendKeepAliveSignal() {
-    print("AppDelegate: Keep-alive signal sent")
-    // This is a lightweight operation to keep the background task alive
-    // The actual work is done by the background task scheduler
-  }
-  
-  // MARK: - App Lifecycle Handling
-  
-  @objc private func handleApplicationWillResignActive() {
-    print("AppDelegate: Application will resign active")
+  func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    print("AppDelegate: Connected to peripheral: \(peripheral.name ?? "Unknown")")
     
-    // Start background task to keep app alive
-    if #available(iOS 13.0, *) {
-      _ = scheduleNextBackgroundTask()
+    // Only notify if app was woken from background
+    if wasWokenFromBackground {
+      print("AppDelegate: BT peripheral connected while app was woken from background")
+      methodChannel?.invokeMethod("onBtWakeEvent", arguments: nil)
     }
-  }
-  
-  @objc private func handleApplicationDidEnterBackground() {
-    print("AppDelegate: Application did enter background")
-    
-    // Ensure audio session stays active
-    _ = activateAudioSession()
-    
-    // Schedule immediate background task
-    if #available(iOS 13.0, *) {
-      _ = scheduleNextBackgroundTask()
-    }
-  }
-  
-  @objc private func handleApplicationWillEnterForeground() {
-    print("AppDelegate: Application will enter foreground")
-    
-    // Cancel any pending background tasks
-    if #available(iOS 13.0, *) {
-      _ = cancelAllBackgroundTasks()
-    }
-  }
-  
-  // MARK: - Background Task Cleanup
-  
-  private func cleanupBackgroundTask() {
-    print("AppDelegate: Cleaning up background task")
-    
-    // Notify Flutter about background task expiration
-    methodChannel?.invokeMethod("onBackgroundTaskExpiring", arguments: nil)
-  }
-  
-  // MARK: - Memory Warning Handling
-  
-  override func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
-    super.applicationDidReceiveMemoryWarning(application)
-    print("AppDelegate: Memory warning received")
-    
-    // Try to keep critical audio processing alive
-    // The audio session should prevent the app from being terminated
   }
   
   // MARK: - Deallocation
