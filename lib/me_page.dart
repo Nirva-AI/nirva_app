@@ -8,6 +8,7 @@ import 'package:nirva_app/mini_call_bar.dart';
 import 'package:nirva_app/hardware_device_page.dart';
 import 'package:nirva_app/lifecycle_logs_page.dart';
 import 'package:nirva_app/services/hardware_service.dart';
+import 'package:nirva_app/hardware_ble_test_page.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -388,6 +389,21 @@ class _MePageState extends State<MePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const LifecycleLogsPage(),
+                    ),
+                  );
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.bluetooth,
+                title: 'BLE Audio Test',
+                subtitle: 'Test BLE audio functionality',
+                onTap: () {
+                  debugPrint('BLE Audio Test tapped');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HardwareBleTestPage(),
                     ),
                   );
                 },

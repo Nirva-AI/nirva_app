@@ -18,6 +18,7 @@ import 'package:nirva_app/providers/events_provider.dart';
 import 'package:nirva_app/services/app_settings_service.dart';
 import 'package:nirva_app/services/ios_background_audio_manager.dart';
 import 'package:nirva_app/services/app_lifecycle_logging_service.dart';
+import 'package:nirva_app/services/ble_audio_service.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -154,6 +155,9 @@ void main() async {
         ),
         ChangeNotifierProvider<EventsProvider>(
           create: (context) => EventsProvider(),
+        ),
+        ChangeNotifierProvider<BleAudioService>(
+          create: (context) => BleAudioService(),
         ),
               ],
         child: Builder(

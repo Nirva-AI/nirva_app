@@ -25,6 +25,9 @@ import CoreBluetooth
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
     
+    // Register our custom BLE Audio Plugin
+    RegisterGeneratedPlugins(registry: self)
+    
     // Setup method channel after Flutter engine is ready
     DispatchQueue.main.async {
       self.setupMethodChannel()
@@ -78,6 +81,7 @@ import CoreBluetooth
       return
     }
     
+    // Background task method channel
     methodChannel = FlutterMethodChannel(
       name: "com.nirva/backgroundTask",
       binaryMessenger: controller.binaryMessenger
@@ -87,7 +91,9 @@ import CoreBluetooth
       self?.handleMethodCall(call, result: result)
     }
     
-    print("AppDelegate: Method channel setup completed")
+
+    
+    print("AppDelegate: Method channels setup completed")
   }
   
   private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

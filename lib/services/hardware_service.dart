@@ -52,7 +52,11 @@ class HardwareService extends ChangeNotifier {
   List<HardwareDevice> get discoveredDevices => _discoveredDevices;
   HardwareDevice? get connectedDevice => _connectedDevice;
   HardwareConnectionState? get connectionState => _connectionState;
-  BluetoothAdapterState get bluetoothState => _bluetoothState;
+  BluetoothAdapterState get bluetoothState {
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    // return _bluetoothState;
+    return BluetoothAdapterState.unknown; // Return unknown state for now
+  }
   bool get isScanning => _isScanning;
   
   // OMI service getters
@@ -88,8 +92,9 @@ class HardwareService extends ChangeNotifier {
       _audioStreamController?.stream ?? Stream.empty();
   
   HardwareService() {
-    _initializeBluetooth();
-    _startConnectionMonitoring();
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    // _initializeBluetooth();
+    // _startConnectionMonitoring();
     // Note: OMI services are initialized in the async initialize() method
   }
   
@@ -104,11 +109,12 @@ class HardwareService extends ChangeNotifier {
   }
   
   void _initializeBluetooth() {
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
     // Listen to Bluetooth adapter state changes
-    FlutterBluePlus.adapterState.listen((state) {
-      _bluetoothState = state;
-      notifyListeners();
-    });
+    // FlutterBluePlus.adapterState.listen((state) {
+    //   _bluetoothState = state;
+    //   notifyListeners();
+    // });
   }
   
   /// Initialize OMI audio processing services
@@ -195,403 +201,72 @@ class HardwareService extends ChangeNotifier {
   
   /// Request necessary permissions for Bluetooth and location
   Future<bool> requestPermissions() async {
-    try {
-      // Request Bluetooth permissions
-      if (Platform.isAndroid) {
-        final bluetoothScan = await Permission.bluetoothScan.request();
-        final bluetoothConnect = await Permission.bluetoothConnect.request();
-        final bluetoothAdvertise = await Permission.bluetoothAdvertise.request();
-        
-        // Request location permission (required for BLE scanning on Android)
-        final location = await Permission.location.request();
-        
-        return bluetoothScan.isGranted && 
-               bluetoothConnect.isGranted && 
-               bluetoothAdvertise.isGranted && 
-               location.isGranted;
-      } else if (Platform.isIOS) {
-        // On iOS, we need to trigger the permission by attempting a Bluetooth operation
-        // The permission_handler doesn't trigger the system dialog for Bluetooth on iOS
-        try {
-          // First check if Bluetooth is available (this triggers permission dialog)
-          final isAvailable = await FlutterBluePlus.isAvailable;
-          if (!isAvailable) {
-            debugPrint('Bluetooth is not available on this device');
-            return false;
-          }
-          
-          // Check current Bluetooth state - this will trigger permission dialog if needed
-          final state = await FlutterBluePlus.adapterState.first;
-          if (state == BluetoothAdapterState.unauthorized) {
-            // Permission denied
-            return false;
-          }
-          
-          // Try to turn on Bluetooth if it's off (this also triggers permission)
-          if (state == BluetoothAdapterState.off) {
-            try {
-              await FlutterBluePlus.turnOn();
-            } catch (e) {
-              debugPrint('Could not turn on Bluetooth: $e');
-              // This is expected if permission is not granted
-            }
-          }
-          
-          return state != BluetoothAdapterState.unauthorized;
-        } catch (e) {
-          debugPrint('Error checking Bluetooth state on iOS: $e');
-          return false;
-        }
-      }
-      return true;
-    } catch (e) {
-      debugPrint('Error requesting permissions: $e');
-      return false;
-    }
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    debugPrint('Bluetooth permissions disabled for new BLE implementation testing');
+    return true; // Return true to avoid blocking other functionality
   }
   
   /// Start scanning for hardware devices
   Future<void> startScan({Duration timeout = const Duration(seconds: 10)}) async {
-    if (_isScanning) return;
-    
-    try {
-      // Check Bluetooth state
-      if (_bluetoothState != BluetoothAdapterState.on) {
-        throw Exception('Bluetooth is not enabled');
-      }
-      
-      // Request permissions
-      final hasPermissions = await requestPermissions();
-      if (!hasPermissions) {
-        throw Exception('Required permissions not granted');
-      }
-      
-      _isScanning = true;
-      _discoveredDevices.clear();
-      notifyListeners();
-      
-      // Start scanning with specific service UUIDs
-      await FlutterBluePlus.startScan(
-        timeout: timeout,
-        withServices: [
-          Guid(hardwareAudioServiceUuid),
-          Guid(hardwareButtonServiceUuid),
-        ],
-      );
-      
-      // Listen to scan results
-      FlutterBluePlus.scanResults.listen((results) {
-        for (ScanResult result in results) {
-          _processScanResult(result);
-        }
-      });
-      
-      // Stop scanning after timeout
-      Timer(timeout, () {
-        stopScan();
-      });
-      
-    } catch (e) {
-      _isScanning = false;
-      notifyListeners();
-      debugPrint('Error starting scan: $e');
-      rethrow;
-    }
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    debugPrint('Bluetooth scanning disabled for new BLE implementation testing');
+    return;
   }
   
   /// Stop scanning for devices
   Future<void> stopScan() async {
-    if (!_isScanning) return;
-    
-    try {
-      await FlutterBluePlus.stopScan();
-      _isScanning = false;
-      notifyListeners();
-      
-      // Save discovered devices to persistent storage after scan completes
-      _saveDiscoveredDevices();
-    } catch (e) {
-      debugPrint('Error stopping scan: $e');
-    }
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    debugPrint('Bluetooth scanning stop disabled for new BLE implementation testing');
+    return;
   }
   
   /// Process scan results and add to discovered devices
   void _processScanResult(ScanResult result) {
-    final device = result.device;
-    final advertisementData = result.advertisementData;
-    
-    // Check if device already exists
-    final existingIndex = _discoveredDevices.indexWhere((d) => d.id == device.id.id);
-    if (existingIndex != -1) {
-      // Update existing device
-      _discoveredDevices[existingIndex] = _discoveredDevices[existingIndex].copyWith(
-        rssi: result.rssi,
-        lastSeenAt: DateTime.now(),
-      );
-    } else {
-      // Add new device
-      final hardwareDevice = HardwareDevice(
-        id: device.id.id,
-        name: advertisementData.localName.isNotEmpty 
-            ? advertisementData.localName 
-            : device.platformName.isNotEmpty 
-                ? device.platformName 
-                : 'Unknown Device',
-        address: device.id.id,
-        rssi: result.rssi,
-        isConnected: false,
-        discoveredAt: DateTime.now(),
-        lastSeenAt: DateTime.now(),
-      );
-      
-      _discoveredDevices.add(hardwareDevice);
-    }
-    
-    notifyListeners();
-    
-    // Save discovered devices to persistent storage
-    _saveDiscoveredDevices();
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    debugPrint('Bluetooth scan result processing disabled for new BLE implementation testing');
+    return;
   }
   
   /// Connect to a hardware device
   Future<void> connectToDevice(HardwareDevice device) async {
-    try {
-      debugPrint('HardwareService.connectToDevice: Starting connection to ${device.id}');
-      _updateConnectionState(device.id, HardwareConnectionStatus.connecting);
-      
-      final bluetoothDevice = BluetoothDevice.fromId(device.id);
-      
-      // Connect to device
-      debugPrint('HardwareService.connectToDevice: Attempting Bluetooth connection...');
-      await bluetoothDevice.connect(timeout: const Duration(seconds: 10));
-      debugPrint('HardwareService.connectToDevice: Bluetooth connection established');
-      
-      // Discover services
-      debugPrint('HardwareService.connectToDevice: Discovering services...');
-      final services = await bluetoothDevice.discoverServices();
-      debugPrint('HardwareService.connectToDevice: Found ${services.length} services');
-      
-      // Log all available services for debugging
-      for (final service in services) {
-        debugPrint('HardwareService.connectToDevice: Service: ${service.uuid.str128}');
-        for (final char in service.characteristics) {
-          debugPrint('  - Characteristic: ${char.uuid.str128} (${char.properties})');
-        }
-      }
-      
-      // Find required services
-      _audioService = services.firstWhereOrNull(
-        (s) => s.uuid.str128.toLowerCase() == hardwareAudioServiceUuid.toLowerCase(),
-      );
-      
-      _batteryService = services.firstWhereOrNull(
-        (s) => s.uuid.str128.toLowerCase() == hardwareBatteryServiceUuid.toLowerCase(),
-      );
-      
-      _deviceInfoService = services.firstWhereOrNull(
-        (s) => s.uuid.str128.toLowerCase() == hardwareDeviceInfoServiceUuid.toLowerCase(),
-      );
-      
-      debugPrint('HardwareService.connectToDevice: Audio service found: ${_audioService != null}');
-      debugPrint('HardwareService.connectToDevice: Battery service found: ${_batteryService != null}');
-      debugPrint('HardwareService.connectToDevice: Device info service found: ${_deviceInfoService != null}');
-      
-      if (_audioService == null) {
-        throw Exception('Audio service not found on device. Expected UUID: $hardwareAudioServiceUuid');
-      }
-      
-      // Request MTU for better audio streaming
-      if (Platform.isAndroid) {
-        try {
-          await bluetoothDevice.requestMtu(hardwareDefaultMtu);
-          debugPrint('HardwareService.connectToDevice: MTU request successful');
-        } catch (e) {
-          debugPrint('HardwareService.connectToDevice: MTU request failed: $e');
-        }
-      }
-      
-      // Get device info including firmware version
-      Map<String, String> deviceInfo = {};
-      if (_deviceInfoService != null) {
-        try {
-          deviceInfo = await getDeviceInfo();
-          debugPrint('HardwareService.connectToDevice: Device info retrieved: $deviceInfo');
-        } catch (e) {
-          debugPrint('HardwareService.connectToDevice: Failed to get device info: $e');
-        }
-      }
-      
-      // Get initial battery level
-      int? batteryLevel;
-      if (_batteryService != null) {
-        try {
-          batteryLevel = await getBatteryLevel();
-          debugPrint('HardwareService.connectToDevice: Initial battery level: $batteryLevel%');
-        } catch (e) {
-          debugPrint('HardwareService.connectToDevice: Failed to get initial battery level: $e');
-        }
-      }
-      
-      // Update device state with firmware, hardware, and battery info
-      _setConnectedDevice(device.copyWith(
-        isConnected: true,
-        connectedAt: DateTime.now(),
-        firmwareVersion: deviceInfo['firmware'],
-        hardwareVersion: deviceInfo['hardware'],
-        manufacturer: deviceInfo['manufacturer'],
-        batteryLevel: batteryLevel,
-      ));
-      
-      // Ensure connection state is properly set
-      _updateConnectionState(device.id, HardwareConnectionStatus.connected);
-      
-      debugPrint('HardwareService.connectToDevice: Device connected successfully');
-      
-      // Save connected device to persistent storage
-      await _saveConnectedDevice();
-      
-      // Automatically enable local audio processing when hardware connects
-      if (_localAudioProcessor != null) {
-        _localAudioProcessor!.enable();
-        debugPrint('HardwareService: Local audio processing enabled automatically');
-      }
-      
-      // Automatically start recording when hardware connects
-      if (_audioCapture != null && !_audioCapture!.isCapturing) {
-        _startAutomaticRecording();
-      }
-      
-      notifyListeners();
-      
-    } catch (e) {
-      debugPrint('HardwareService.connectToDevice: Error connecting to device: $e');
-      _updateConnectionState(device.id, HardwareConnectionStatus.error, e.toString());
-      rethrow;
-    }
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    debugPrint('Bluetooth connection disabled for new BLE implementation testing');
+    return;
   }
   
   /// Disconnect from the current device
   Future<void> disconnect() async {
-    if (_connectedDevice == null) return;
-    
-    try {
-      // Stop audio streaming
-      await stopAudioStream();
-      
-      // Disable local audio processing when hardware disconnects
-      if (_localAudioProcessor != null) {
-        _localAudioProcessor!.disable();
-        debugPrint('HardwareService: Local audio processing disabled automatically');
-      }
-      
-      // Automatically stop recording when hardware disconnects
-      if (_audioCapture != null && _audioCapture!.isCapturing) {
-        try {
-          await _audioCapture!.stopCapture();
-          debugPrint('HardwareService: Automatic recording stopped when device disconnected');
-        } catch (e) {
-          debugPrint('HardwareService: Error stopping automatic recording: $e');
-        }
-      }
-      
-      // Stop audio stream when disconnecting
-      await stopAudioStream();
-      
-      // Reset packet reassembler
-      _packetReassembler.reset();
-      debugPrint('HardwareService.disconnect: Packet reassembler reset');
-      
-      // Disconnect from device
-      final bluetoothDevice = BluetoothDevice.fromId(_connectedDevice!.id);
-      await bluetoothDevice.disconnect();
-      
-      // Update state
-      _connectedDevice = _connectedDevice!.copyWith(isConnected: false);
-      _updateConnectionState(_connectedDevice!.id, HardwareConnectionStatus.disconnected);
-      
-      // Save disconnected state to persistent storage
-      await _saveConnectedDevice();
-      
-      notifyListeners();
-      
-    } catch (e) {
-      debugPrint('Error disconnecting: $e');
-    }
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    debugPrint('Bluetooth disconnect disabled for new BLE implementation testing');
+    return;
   }
   
   /// Verify the current Bluetooth connection status
   Future<bool> verifyConnection() async {
-    if (_connectedDevice == null) {
-      debugPrint('HardwareService.verifyConnection: No connected device');
-      return false;
-    }
-    
-    try {
-      // debugPrint('HardwareService.verifyConnection: Checking connection for device ${_connectedDevice!.id}');
-      final bluetoothDevice = BluetoothDevice.fromId(_connectedDevice!.id);
-      final isConnected = await bluetoothDevice.isConnected;
-      // debugPrint('HardwareService.verifyConnection: Bluetooth device reports isConnected=$isConnected');
-      
-      if (!isConnected) {
-        // Connection was lost, update state
-        debugPrint('HardwareService.verifyConnection: Connection lost, updating state');
-        _updateConnectionState(_connectedDevice!.id, HardwareConnectionStatus.disconnected);
-        // Don't clear the device, just mark it as disconnected
-        _connectedDevice = _connectedDevice!.copyWith(isConnected: false);
-        
-        // Automatically stop recording when connection is lost
-        if (_audioCapture != null && _audioCapture!.isCapturing) {
-          try {
-            await _audioCapture!.stopCapture();
-            debugPrint('HardwareService: Automatic recording stopped when connection lost');
-          } catch (e) {
-            debugPrint('HardwareService: Error stopping automatic recording on connection loss: $e');
-          }
-        }
-        
-        // Stop audio stream when connection is lost
-        await stopAudioStream();
-        
-        notifyListeners();
-        return false;
-      }
-      
-      // If we get here, the connection is verified, so ensure the state is correct
-      if (_connectionState?.status != HardwareConnectionStatus.connected) {
-        // debugPrint('HardwareService.verifyConnection: Connection verified but state was wrong, fixing it');
-        _updateConnectionState(_connectedDevice!.id, HardwareConnectionStatus.connected);
-        _connectedDevice = _connectedDevice!.copyWith(isConnected: true);
-        notifyListeners();
-      }
-      
-      // debugPrint('HardwareService.verifyConnection: Connection verified successfully');
-      return true;
-    } catch (e) {
-      debugPrint('Error verifying connection: $e');
-      // Connection verification failed, but don't assume disconnected - just log the error
-      debugPrint('HardwareService.verifyConnection: Verification failed but keeping device connected: $e');
-      return true; // Assume still connected if verification fails
-    }
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    debugPrint('Bluetooth connection verification disabled for new BLE implementation testing');
+    return false; // Return false to indicate no connection
   }
   
   /// Start periodic connection monitoring
   void _startConnectionMonitoring() {
-    Timer.periodic(const Duration(seconds: 10), (timer) async { // Increased interval to 10 seconds
-      if (_connectedDevice != null && _connectionState?.status == HardwareConnectionStatus.connected) {
-        try {
-          final isStillConnected = await verifyConnection();
-          if (!isStillConnected) {
-            debugPrint('Connection monitoring detected lost connection');
-          } else {
-            // If still connected, refresh battery level periodically
-            await getBatteryLevel();
-          }
-        } catch (e) {
-          debugPrint('Connection monitoring error: $e');
-          // Don't fail the monitoring on errors
-        }
-      }
-    });
+    // DISABLED: Commenting out existing Bluetooth logic to test new BLE implementation
+    // Timer.periodic(const Duration(seconds: 10), (timer) async { // Increased interval to 10 seconds
+    //   if (_connectedDevice != null && _connectionState?.status == HardwareConnectionStatus.connected) {
+    //     try {
+    //     final isStillConnected = await verifyConnection();
+    //     if (!isStillConnected) {
+    //       debugPrint('Connection monitoring detected lost connection');
+    //     } else {
+    //       // If still connected, refresh battery level periodically
+    //       await getBatteryLevel();
+    //     }
+    //     } catch (e) {
+    //       debugPrint('Connection monitoring error: $e');
+    //       // Don't fail the monitoring on errors
+    //     }
+    //   }
+    // });
   }
 
   /// Initialize audio streaming from the device
