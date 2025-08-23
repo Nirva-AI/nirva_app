@@ -191,7 +191,12 @@ class PacketReassembler {
                 
                 // Deliver complete packet
                 DispatchQueue.main.async { [weak self] in
-                    self?.onCompletePacket?(completePacket)
+                    if self?.onCompletePacket != nil {
+                        print("PacketReassembler: Delivering complete Opus packet to callback")
+                        self?.onCompletePacket?(completePacket)
+                    } else {
+                        print("PacketReassembler: WARNING - No callback set for complete packets!")
+                    }
                 }
                 
                 // Remove from buffers

@@ -32,8 +32,8 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   
-  # Add Opus library for audio decoding
-  pod 'OpusKit', '~> 1.0'
+  # Add libopus for audio decoding
+  pod 'libopus-static', '~> 1.3'
   
   target 'RunnerTests' do
     inherit! :search_paths

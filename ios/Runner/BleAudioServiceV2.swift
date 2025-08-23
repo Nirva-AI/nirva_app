@@ -109,8 +109,25 @@ class BleAudioServiceV2: NSObject {
             self?.handleCompleteOpusPacket(opusData)
         }
         
-        // Initialize audio processor (will be created in Phase 2)
-        // audioProcessor = AudioProcessor()
+        // Initialize audio processor with Opus decoder
+        print("BleAudioServiceV2: Creating AudioProcessor...")
+        DebugLogger.shared.log("BleAudioServiceV2: Creating AudioProcessor...")
+        audioProcessor = AudioProcessor()
+        
+        if audioProcessor != nil {
+            print("BleAudioServiceV2: AudioProcessor created successfully")
+            DebugLogger.shared.log("BleAudioServiceV2: AudioProcessor created successfully")
+            
+            audioProcessor?.onSegmentReady = { [weak self] wavData, duration in
+                self?.handleAudioSegment(wavData, duration: duration)
+            }
+            audioProcessor?.onError = { error in
+                print("BleAudioServiceV2: AudioProcessor error: \(error)")
+            }
+        } else {
+            print("BleAudioServiceV2: ERROR - Failed to create AudioProcessor!")
+            DebugLogger.shared.log("BleAudioServiceV2: ERROR - Failed to create AudioProcessor!")
+        }
         
         isInitialized = true
         print("BleAudioServiceV2: Initialization complete")
@@ -238,7 +255,41 @@ class BleAudioServiceV2: NSObject {
             info["timeSinceLastBgPacket"] = Date().timeIntervalSince(lastBgTime)
         }
         
+        // Add saved audio files info
+        let audioFiles = getSavedAudioFiles()
+        info["savedAudioFiles"] = audioFiles.count
+        info["audioFilesList"] = audioFiles
+        
+        // Add audio processor stats
+        if let audioStats = audioProcessor?.getStatistics() {
+            info["audioProcessor"] = audioStats
+        }
+        
         return info
+    }
+    
+    /// Get saved audio files
+    func getSavedAudioFiles() -> [String] {
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let audioDir = (documentsPath as NSString).appendingPathComponent("ble_audio_segments")
+        
+        do {
+            let files = try FileManager.default.contentsOfDirectory(atPath: audioDir)
+            let wavFiles = files.filter { $0.hasSuffix(".wav") }
+            print("BleAudioServiceV2: Found \(wavFiles.count) WAV files in \(audioDir)")
+            for file in wavFiles {
+                let filePath = (audioDir as NSString).appendingPathComponent(file)
+                if let attributes = try? FileManager.default.attributesOfItem(atPath: filePath),
+                   let fileSize = attributes[.size] as? Int {
+                    print("  - \(file): \(fileSize) bytes")
+                }
+            }
+            return wavFiles
+        } catch {
+            print("BleAudioServiceV2: Error reading audio directory: \(error)")
+            print("  Directory path: \(audioDir)")
+            return []
+        }
     }
     
     /// Get streaming statistics
@@ -343,14 +394,35 @@ class BleAudioServiceV2: NSObject {
     
     private func handleCompleteOpusPacket(_ opusData: Data) {
         print("BleAudioServiceV2: Complete Opus packet received (\(opusData.count) bytes)")
+        DebugLogger.shared.log("BleAudioServiceV2: Complete Opus packet received (\(opusData.count) bytes)")
         
-        // Forward to audio processor (will be implemented in Phase 2)
-        // audioProcessor?.processOpusPacket(opusData)
+        // Forward to audio processor for decoding and buffering
+        if let processor = audioProcessor {
+            print("BleAudioServiceV2: Forwarding to AudioProcessor")
+            processor.processOpusPacket(opusData)
+        } else {
+            print("BleAudioServiceV2: WARNING - AudioProcessor is nil!")
+        }
         
-        // For now, just notify that we received a complete packet
+        // Notify Flutter about the packet
         onSegmentEvent?([
             "event": "opusPacketComplete",
             "size": opusData.count,
+            "timestamp": Date().timeIntervalSince1970
+        ])
+    }
+    
+    private func handleAudioSegment(_ wavData: Data, duration: TimeInterval) {
+        print("BleAudioServiceV2: Audio segment ready - Duration: \(duration)s, Size: \(wavData.count) bytes")
+        
+        // TODO: Phase 6 - Upload to S3 via background URLSession
+        // TODO: Phase 7 - Send to Deepgram for transcription
+        
+        // Notify Flutter about the segment
+        onSegmentEvent?([
+            "event": "audioSegmentReady",
+            "duration": duration,
+            "size": wavData.count,
             "timestamp": Date().timeIntervalSince1970
         ])
     }
@@ -370,11 +442,4 @@ class BleAudioServiceV2: NSObject {
 }
 
 // PacketReassembler is now implemented in PacketReassembler.swift
-
-// MARK: - AudioProcessor (Placeholder - will be implemented in Phase 2)
-@available(iOS 13.0, *)
-class AudioProcessor {
-    func processOpusPacket(_ opusData: Data) {
-        // TODO: Implement audio processing pipeline (Phase 2.2-2.4)
-    }
-}
+// AudioProcessor is now implemented in AudioProcessor.swift

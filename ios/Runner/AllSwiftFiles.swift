@@ -18,4 +18,6 @@ internal class _CompileHelper {
     private let _6 = PacketReassembler.self
     private let _7 = OpusDecoder.self
     private let _8 = AudioProcessor.self
+    private let _9 = VoiceActivityDetector.self
+    private let _10 = DebugLogger.self
 }
