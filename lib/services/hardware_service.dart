@@ -864,40 +864,9 @@ class HardwareService extends ChangeNotifier {
 
   /// Attempt to reconnect to the last connected device
   Future<void> _attemptReconnectToLastDevice() async {
-    try {
-      debugPrint('HardwareService: Attempting to reconnect to last connected device...');
-      final lastDeviceId = HiveHelper.getLastConnectedDevice();
-      debugPrint('HardwareService: Last connected device ID: $lastDeviceId');
-      
-      if (lastDeviceId != null) {
-        debugPrint('HardwareService: Attempting to reconnect to last device: $lastDeviceId');
-        debugPrint('HardwareService: Available discovered devices: ${_discoveredDevices.map((d) => d.id).join(', ')}');
-        
-        // Find the device in discovered devices
-        final device = _discoveredDevices.firstWhereOrNull((d) => d.id == lastDeviceId);
-        if (device != null) {
-          debugPrint('HardwareService: Found last device in discovered devices, attempting reconnection');
-          
-          // Wait for Bluetooth to be ready before attempting connection
-          await _waitForBluetoothReady();
-          
-          try {
-            await connectToDevice(device);
-            debugPrint('HardwareService: Reconnection successful!');
-          } catch (e) {
-            debugPrint('HardwareService: Reconnection failed: $e');
-            debugPrint('HardwareService: Scheduling retry in 5 seconds...');
-            _scheduleReconnectionRetry();
-          }
-        } else {
-          debugPrint('HardwareService: Last device not found in discovered devices, will need to scan');
-        }
-      } else {
-        debugPrint('HardwareService: No last connected device found');
-      }
-    } catch (e) {
-      debugPrint('HardwareService: Error attempting reconnection: $e');
-    }
+    // DISABLED: Using new BLE V2 auto-reconnect flow instead
+    debugPrint('HardwareService: Auto-reconnect disabled - using BLE V2 flow');
+    return;
   }
   
   /// Wait for Bluetooth to be ready before attempting connection

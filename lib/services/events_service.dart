@@ -26,31 +26,31 @@ class EventsService extends ChangeNotifier {
   /// Get events for a specific date, merging backend and local sources
   Future<List<EventAnalysis>> getEventsForDate(String dateKey) async {
     try {
-      _logger.d('EventsService: Getting events for date: $dateKey');
+      // _logger.d('EventsService: Getting events for date: $dateKey');
       
       // Check cache first
       if (_mergedEventsCache.containsKey(dateKey)) {
-        _logger.d('EventsService: Returning cached merged events for $dateKey');
+        // _logger.d('EventsService: Returning cached merged events for $dateKey');
         return _mergedEventsCache[dateKey]!;
       }
       
       // Get local events from Hive
       final localEvents = await _getLocalEvents(dateKey);
-      _logger.d('EventsService: Found ${localEvents.length} local events for $dateKey');
+      // _logger.d('EventsService: Found ${localEvents.length} local events for $dateKey');
       
       // Get backend events
       final backendEvents = await _getBackendEvents(dateKey);
-      _logger.d('EventsService: Found ${backendEvents.length} backend events for $dateKey');
+      // _logger.d('EventsService: Found ${backendEvents.length} backend events for $dateKey');
       
       // Merge events (backend events take precedence for duplicates)
       final mergedEvents = _mergeEvents(localEvents, backendEvents);
-      _logger.d('EventsService: Merged into ${mergedEvents.length} total events for $dateKey');
+      // _logger.d('EventsService: Merged into ${mergedEvents.length} total events for $dateKey');
       
       // Cache the result
       _mergedEventsCache[dateKey] = mergedEvents;
       
       // Log detailed event information
-      _logEventsInfo(dateKey, localEvents, backendEvents, mergedEvents);
+      // _logEventsInfo(dateKey, localEvents, backendEvents, mergedEvents);
       
       return mergedEvents;
       
@@ -153,7 +153,7 @@ class EventsService extends ChangeNotifier {
         }
       }
       
-      _logger.d('EventsService: Successfully parsed ${events.length} backend events');
+      // _logger.d('EventsService: Successfully parsed ${events.length} backend events');
       return events;
       
     } catch (e) {

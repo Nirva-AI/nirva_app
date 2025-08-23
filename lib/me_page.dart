@@ -9,6 +9,7 @@ import 'package:nirva_app/hardware_device_page.dart';
 import 'package:nirva_app/lifecycle_logs_page.dart';
 import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/hardware_ble_test_page.dart';
+import 'package:nirva_app/hardware_ble_connection_test.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -404,6 +405,21 @@ class _MePageState extends State<MePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const HardwareBleTestPage(),
+                    ),
+                  );
+                },
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: Icons.bluetooth_searching,
+                title: 'BLE Connection Test (V2)',
+                subtitle: 'Test new background BLE connection',
+                onTap: () {
+                  debugPrint('BLE Connection Test V2 tapped');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HardwareBleConnectionTest(),
                     ),
                   );
                 },

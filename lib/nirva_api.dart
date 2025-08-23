@@ -167,7 +167,7 @@ class NirvaAPI {
     Map<String, dynamic>? query,
     int receiveTimeout = 30, // 添加接收超时参数，默认30秒
   }) async {
-    Logger().d('POST Request - URL: $path, Data: $data');
+    // Logger().d('POST Request - URL: $path, Data: $data');
     final response = await dio.post<T>(
       path,
       data: data,
@@ -186,7 +186,7 @@ class NirvaAPI {
       return null;
     }
 
-    Logger().d('POST Response: ${response.data}');
+    // Logger().d('POST Response: ${response.data}');
     return response;
   }
 
@@ -452,7 +452,7 @@ class NirvaAPI {
         return null;
       }
 
-      Logger().d('Get events response: ${jsonEncode(response.data!)}');
+      // Logger().d('Get events response: ${jsonEncode(response.data!)}');
       return response.data!;
       
     } catch (e) {
