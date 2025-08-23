@@ -3,6 +3,10 @@ import Foundation
 class DebugLogger {
     static let shared = DebugLogger()
     private let logFile: URL
+    private let maxFileSize = 200 * 1024 * 1024  // 200MB
+    private let targetFileSize = 100 * 1024 * 1024  // Keep 100MB after cleanup
+    private var logCounter = 0
+    private let checkInterval = 100  // Check size every 100 logs
     
     private init() {
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -48,6 +52,13 @@ class DebugLogger {
         
         // Also print to console
         print(logMessage)
+        
+        // Check file size periodically
+        logCounter += 1
+        if logCounter >= checkInterval {
+            logCounter = 0
+            checkAndTrimLogFile()
+        }
     }
     
     func getLogPath() -> String {
@@ -77,5 +88,38 @@ class DebugLogger {
         let recentData = data.suffix(maxBytes)
         let logText = String(data: recentData, encoding: .utf8) ?? "Failed to decode log"
         return "...(showing last \(recentData.count) of \(data.count) bytes)...\n" + logText
+    }
+    
+    private func checkAndTrimLogFile() {
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: logFile.path)
+            guard let fileSize = attributes[.size] as? Int else { return }
+            
+            if fileSize > maxFileSize {
+                print("DebugLogger: File size \(fileSize) exceeds limit, trimming to \(targetFileSize) bytes")
+                
+                // Read the entire file
+                let data = try Data(contentsOf: logFile)
+                
+                // Keep only the last targetFileSize bytes
+                let trimmedData = data.suffix(targetFileSize)
+                
+                // Write back the trimmed content
+                try trimmedData.write(to: logFile)
+                
+                // Add a marker to indicate trimming occurred
+                let trimMarker = "\n=== Log trimmed at \(Date()) (kept last \(targetFileSize) bytes) ===\n"
+                if let markerData = trimMarker.data(using: .utf8),
+                   let fileHandle = try? FileHandle(forWritingTo: logFile) {
+                    fileHandle.seekToEndOfFile()
+                    fileHandle.write(markerData)
+                    fileHandle.closeFile()
+                }
+                
+                print("DebugLogger: Trimmed log file to \(trimmedData.count) bytes")
+            }
+        } catch {
+            print("DebugLogger: Error checking/trimming log file: \(error)")
+        }
     }
 }
