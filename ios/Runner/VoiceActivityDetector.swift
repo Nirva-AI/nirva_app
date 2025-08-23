@@ -10,14 +10,17 @@ class VoiceActivityDetector {
     struct Configuration {
         let sampleRate: Int = 16000
         let frameSize: Int = 320            // 20ms at 16kHz
-        let energyThreshold: Float = 0.001  // Lower initial energy threshold for real audio
+        let energyThreshold: Float = 0.0008  // Slightly higher to filter typing noise
         let silenceDuration: TimeInterval = 2.0  // 2 seconds of silence to trigger segment
         let minSpeechDuration: TimeInterval = 0.5 // Minimum speech duration to be valid
-        let adaptationRate: Float = 0.95    // Moderate adaptation rate
-        let hangoverFrames: Int = 10        // Moderate hangover for stability
-        let noiseMultiplier: Float = 3.0    // Speech must be 3x louder than noise
-        let zcrThresholdLow: Float = 0.1    // Low ZCR threshold for speech
-        let zcrThresholdHigh: Float = 0.4   // High ZCR threshold for noise/clicks
+        let adaptationRate: Float = 0.9     // Slightly slower adaptation
+        let hangoverFrames: Int = 12        // Moderate hangover for balance
+        let noiseMultiplier: Float = 2.2    // Higher multiplier to filter ambient noise
+        let zcrThresholdLow: Float = 0.1    // Impact/pong sounds often have very low ZCR
+        let zcrThresholdHigh: Float = 0.45  // Typing often has moderate-high ZCR
+        let minConsecutiveFrames: Int = 1   // Don't require consecutive frames
+        let speechMultiplier: Float = 1.4   // Slightly higher threshold for speech detection
+        let impactDurationThreshold: Int = 3 // Impact sounds are typically very short
     }
     
     // MARK: - Properties
@@ -31,6 +34,9 @@ class VoiceActivityDetector {
     private var silenceStartTime: Date?
     private var speechStartTime: Date?
     private var hangoverCounter = 0
+    private var consecutiveSpeechFrames = 0  // Track consecutive speech frames
+    private var recentEnergyPeak: Float = 0.0  // Track recent energy peak for impact detection
+    private var framesSinceEnergyPeak = 0  // Frames since last energy peak
     
     // Energy calculation
     private var energyHistory: [Float] = []
@@ -186,39 +192,63 @@ class VoiceActivityDetector {
     }
     
     private func detectSpeech(energy: Float, zcr: Float) -> Bool {
-        // Speech detection with energy AND zero-crossing rate filtering
+        // Enhanced detection with better noise filtering
         let prevSpeechState = isSpeechActive
         var result = false
         
-        // Filter out clicks/pongs with very high ZCR (typical of impulsive sounds)
-        let isLikelyNoise = zcr > config.zcrThresholdHigh
+        // Track energy peaks for impact detection
+        if energy > recentEnergyPeak {
+            recentEnergyPeak = energy
+            framesSinceEnergyPeak = 0
+        } else {
+            framesSinceEnergyPeak += 1
+            // Decay the peak over time
+            if framesSinceEnergyPeak > 10 {
+                recentEnergyPeak *= 0.9
+            }
+        }
         
-        // Use energy thresholds only if ZCR suggests it's not a click/pong
-        if !isLikelyNoise && energy > energyThreshold * 1.5 {
-            // Clear speech detected - requires 1.5x threshold
+        // Detect different types of sounds
+        let isHighZCRNoise = zcr > config.zcrThresholdHigh  // Clicks, keyboards
+        let isLowZCRImpact = zcr < config.zcrThresholdLow && 
+                             energy > energyThreshold * 2.5 && 
+                             framesSinceEnergyPeak < config.impactDurationThreshold  // Impacts are short
+        
+        // Check for impact/pong characteristics:
+        // - Very low ZCR (smooth waveform)
+        // - High energy spike
+        // - Very short duration (< 3 frames)
+        let isProbableImpact = isLowZCRImpact || 
+                               (isHighZCRNoise && energy > energyThreshold * 3.0)
+        
+        if isProbableImpact {
+            // This looks like an impact/click/pong
+            result = false
+            if energy > energyThreshold * 2.0 {
+                print("VAD: Filtered noise - Energy=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)), Type=\(isLowZCRImpact ? "Impact" : "Click")")
+            }
+        } else if energy > energyThreshold * config.speechMultiplier {
+            // Speech detected with lower threshold
             hangoverCounter = config.hangoverFrames
+            consecutiveSpeechFrames += 1
             result = true
-        } else if !isLikelyNoise && energy > energyThreshold && hangoverCounter > 0 {
-            // Possible speech with hangover
+        } else if energy > energyThreshold && hangoverCounter > 0 {
+            // Standard threshold during hangover
             result = true
         } else if hangoverCounter > 0 {
             // Hangover period
             hangoverCounter -= 1
             result = true
         } else {
-            // Silence or noise
+            // Silence
+            consecutiveSpeechFrames = 0
             result = false
         }
         
-        // Log state transitions and when filtering out noise
-        if (result != prevSpeechState) || (isLikelyNoise && energy > energyThreshold) {
-            if isLikelyNoise && energy > energyThreshold {
-                print("VAD: Filtered noise/click - Energy=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)) (too high)")
-                DebugLogger.shared.log("VAD: Filtered noise - ZCR=\(String(format: "%.3f", zcr))")
-            } else if (result != prevSpeechState) {
-                print("VAD: Energy=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)), Threshold=\(String(format: "%.6f", energyThreshold)), Speech=\(result)")
-                DebugLogger.shared.log("VAD: E=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)), Speech=\(result)")
-            }
+        // Log state changes
+        if result != prevSpeechState {
+            print("VAD: State change - Energy=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)), Speech=\(result)")
+            DebugLogger.shared.log("VAD: E=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)), Speech=\(result)")
         }
         
         return result
@@ -234,8 +264,10 @@ class VoiceActivityDetector {
                 noiseFloor = noiseFloor * config.adaptationRate + energy * (1 - config.adaptationRate)
             }
             
-            // Set threshold above noise floor with higher multiplier
-            energyThreshold = max(noiseFloor * config.noiseMultiplier, config.energyThreshold)
+            // Set threshold above noise floor with lower multiplier for better sensitivity
+            // Use different threshold if we've been detecting speech recently
+            let multiplier = consecutiveSpeechFrames > 0 ? config.noiseMultiplier * 0.8 : config.noiseMultiplier
+            energyThreshold = max(noiseFloor * multiplier, config.energyThreshold)
         }
     }
     
