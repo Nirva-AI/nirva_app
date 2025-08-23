@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
+import 'package:provider/provider.dart';
+import 'package:nirva_app/services/hardware_service.dart';
+import 'package:nirva_app/models/hardware_device.dart';
 
 /// Test page for the new background-first BLE connection system
 class HardwareBleConnectionTest extends StatefulWidget {
@@ -40,6 +43,11 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
     super.initState();
     _initializeService();
     _setupEventListeners();
+    // Get initial connection info after a short delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      print('HardwareBleConnectionTest: Getting initial connection info...');
+      _getConnectionInfo();
+    });
   }
   
   @override
@@ -76,6 +84,28 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
           setState(() {
             _connectionState = event['state'];
           });
+          
+          // Update HardwareService when connection state changes
+          final hardwareService = context.read<HardwareService>();
+          if (event['state'] == 'connected' && event['deviceId'] != null) {
+            // Create a HardwareDevice and update HardwareService
+            final device = HardwareDevice(
+              id: event['deviceId'],
+              name: event['name'] ?? 'OMI Device',
+              address: event['address'] ?? event['deviceId'],  // Use deviceId as fallback
+              rssi: event['rssi'] ?? 0,
+              batteryLevel: event['batteryLevel'] ?? 0,
+              isConnected: true,
+              discoveredAt: DateTime.now(),
+              connectedAt: DateTime.now(),
+            );
+            hardwareService.updateConnectedDeviceFromBle(device);
+            // Also get battery level
+            _getBatteryLevel();
+          } else if (event['state'] == 'disconnected' || event['state'] == 'idle') {
+            // Clear connected device when disconnected
+            hardwareService.updateConnectedDeviceFromBle(null);
+          }
         }
         // Handle device discovery
         if (event['event'] == 'deviceDiscovered') {
@@ -180,13 +210,80 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   
   Future<void> _getConnectionInfo() async {
     try {
+      print('HardwareBleConnectionTest: Invoking getConnectionInfo...');
       final info = await _methodChannel.invokeMethod('getConnectionInfo');
+      print('HardwareBleConnectionTest: Connection info received: $info');
+      
       setState(() {
         _connectionInfo = Map<String, dynamic>.from(info as Map);
       });
-      _addLog('Got connection info');
+      _addLog('Got connection info: ${_connectionInfo}');
+      
+      // Update HardwareService with connection info
+      final hardwareService = context.read<HardwareService>();
+      if (_connectionInfo['isConnected'] == true && _connectionInfo['deviceId'] != null) {
+        print('HardwareBleConnectionTest: Device is connected, updating HardwareService');
+        
+        // Extract battery level - could be under different keys
+        int batteryLevel = 0;
+        if (_connectionInfo['batteryLevel'] != null) {
+          batteryLevel = _connectionInfo['batteryLevel'] as int;
+        } else if (_connectionInfo['battery'] != null) {
+          batteryLevel = _connectionInfo['battery'] as int;
+        } else if (_connectionInfo['batteryPercentage'] != null) {
+          batteryLevel = _connectionInfo['batteryPercentage'] as int;
+        }
+        
+        print('HardwareBleConnectionTest: Battery level: $batteryLevel%');
+        
+        // Create a HardwareDevice with the connection info
+        final device = HardwareDevice(
+          id: _connectionInfo['deviceId'] as String,
+          name: _connectionInfo['deviceName'] ?? _connectionInfo['name'] ?? 'OMI Device',
+          address: _connectionInfo['deviceAddress'] ?? _connectionInfo['address'] ?? _connectionInfo['deviceId'] as String,
+          rssi: _connectionInfo['rssi'] ?? 0,
+          batteryLevel: batteryLevel,
+          isConnected: true,
+          discoveredAt: DateTime.now(),
+          connectedAt: DateTime.now(),
+        );
+        
+        print('HardwareBleConnectionTest: Updating HardwareService with device: ${device.name}, battery: ${device.batteryLevel}%');
+        hardwareService.updateConnectedDeviceFromBle(device);
+      } else {
+        print('HardwareBleConnectionTest: No device connected');
+        hardwareService.updateConnectedDeviceFromBle(null);
+      }
     } catch (e) {
+      print('HardwareBleConnectionTest: Error getting connection info: $e');
       _addLog('Error getting info: $e');
+    }
+  }
+  
+  Future<void> _getBatteryLevel() async {
+    try {
+      // Try to get battery level from a dedicated method if available
+      try {
+        final batteryLevel = await _methodChannel.invokeMethod('getBatteryLevel');
+        if (batteryLevel != null && batteryLevel is int) {
+          print('HardwareBleConnectionTest: Got battery level: $batteryLevel%');
+          final hardwareService = context.read<HardwareService>();
+          hardwareService.updateBatteryLevel(batteryLevel);
+          return;
+        }
+      } catch (e) {
+        // getBatteryLevel method might not exist yet
+        print('HardwareBleConnectionTest: getBatteryLevel not available: $e');
+      }
+      
+      // Fallback to getting from connection info
+      final info = await _methodChannel.invokeMethod('getConnectionInfo');
+      if (info is Map && info['batteryLevel'] != null) {
+        final hardwareService = context.read<HardwareService>();
+        hardwareService.updateBatteryLevel(info['batteryLevel'] as int);
+      }
+    } catch (e) {
+      _addLog('Error getting battery level: $e');
     }
   }
   
@@ -238,6 +335,25 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
                     Text('Connection State: $_connectionState'),
                     Text('Scanning: $_isScanning'),
                     Text('Streaming: $_isStreaming'),
+                    const Divider(),
+                    Consumer<HardwareService>(
+                      builder: (context, hardwareService, child) {
+                        final device = hardwareService.connectedDevice;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('HardwareService Status:', 
+                              style: Theme.of(context).textTheme.titleSmall),
+                            Text('Connected: ${hardwareService.isConnected}'),
+                            if (device != null) ...[
+                              Text('Device: ${device.name}'),
+                              Text('Battery: ${device.batteryLevel}%'),
+                              Text('ID: ${device.id}'),
+                            ],
+                          ],
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -265,6 +381,17 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
                 ElevatedButton(
                   onPressed: _getConnectionInfo,
                   child: const Text('Get Info'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _getConnectionInfo();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Updated HardwareService')),
+                      );
+                    }
+                  },
+                  child: const Text('Update HW Service'),
                 ),
                 ElevatedButton(
                   onPressed: _getStreamingStats,

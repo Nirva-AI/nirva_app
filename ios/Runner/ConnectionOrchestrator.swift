@@ -36,6 +36,7 @@ class ConnectionOrchestrator: NSObject {
     private var rememberedServiceUUIDs: [CBUUID] = []
     private var targetPeripheral: CBPeripheral?
     private var audioCharacteristic: CBCharacteristic?
+    private var lastKnownBatteryLevel: Int?
     
     // Service and characteristic UUIDs for OMI/hardware device
     private let audioServiceUUID = CBUUID(string: "19B10000-E8F2-537E-4F6C-D104768A1214")
@@ -721,7 +722,9 @@ extension ConnectionOrchestrator: CBCentralManagerDelegate {
         print("ConnectionOrchestrator: Connected to peripheral \(peripheral.identifier)")
         
         peripheral.delegate = self
-        peripheral.discoverServices([audioServiceUUID])
+        // Discover both audio and battery services
+        let batteryServiceUUID = CBUUID(string: "180F")
+        peripheral.discoverServices([audioServiceUUID, batteryServiceUUID])
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -758,16 +761,22 @@ extension ConnectionOrchestrator: CBPeripheralDelegate {
             return
         }
         
+        var foundAudioService = false
         for service in services {
             if service.uuid == audioServiceUUID {
                 print("ConnectionOrchestrator: Found audio service")
                 peripheral.discoverCharacteristics([audioCharacteristicUUID], for: service)
-                return
+                foundAudioService = true
+            } else if service.uuid == CBUUID(string: "180F") {
+                print("ConnectionOrchestrator: Found battery service")
+                peripheral.discoverCharacteristics([CBUUID(string: "2A19")], for: service)
             }
         }
         
-        print("ConnectionOrchestrator: Audio service not found")
-        transitionToBackoff(error: "Audio service not found")
+        if !foundAudioService {
+            print("ConnectionOrchestrator: Audio service not found")
+            transitionToBackoff(error: "Audio service not found")
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
@@ -812,11 +821,22 @@ extension ConnectionOrchestrator: CBPeripheralDelegate {
                 print("ConnectionOrchestrator: Characteristic notifying: \(characteristic.isNotifying)")
                 DebugLogger.shared.log("ConnectionOrchestrator: Characteristic notifying: \(characteristic.isNotifying)")
                 return
+            } else if characteristic.uuid == CBUUID(string: "2A19") {
+                print("ConnectionOrchestrator: Found battery characteristic")
+                // Read battery level immediately
+                peripheral.readValue(for: characteristic)
+                // Also enable notifications for battery updates if supported
+                if characteristic.properties.contains(.notify) {
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
             }
         }
         
-        print("ConnectionOrchestrator: Audio characteristic not found")
-        transitionToBackoff(error: "Audio characteristic not found")
+        // Only fail if we're looking for audio characteristic in audio service
+        if service.uuid == audioServiceUUID {
+            print("ConnectionOrchestrator: Audio characteristic not found")
+            transitionToBackoff(error: "Audio characteristic not found")
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
@@ -852,6 +872,17 @@ extension ConnectionOrchestrator: CBPeripheralDelegate {
             return
         }
         
+        // Check if this is battery level characteristic
+        if characteristic.uuid == CBUUID(string: "2A19") {
+            if !data.isEmpty {
+                let batteryLevel = Int(data[0])
+                lastKnownBatteryLevel = batteryLevel
+                print("ConnectionOrchestrator: Battery level updated: \(batteryLevel)%")
+                DebugLogger.shared.log("Battery level: \(batteryLevel)%")
+            }
+            return
+        }
+        
         // Log ALL packets in background - this is our wake event!
         if appState == .background || appState == .inactive {
             print("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT! Packet size: \(data.count) bytes")
@@ -867,5 +898,44 @@ extension ConnectionOrchestrator: CBPeripheralDelegate {
         
         // Forward packet to processing pipeline
         onPacketReceived?(data)
+    }
+    
+    // MARK: - Battery Level
+    
+    func getBatteryLevel() -> Int? {
+        guard let peripheral = targetPeripheral,
+              peripheral.state == .connected else {
+            print("ConnectionOrchestrator: No connected device for battery query")
+            return nil
+        }
+        
+        // Find battery service (standard UUID: 0x180F)
+        guard let batteryService = peripheral.services?.first(where: { 
+            $0.uuid == CBUUID(string: "180F") 
+        }) else {
+            print("ConnectionOrchestrator: Battery service not found")
+            return lastKnownBatteryLevel  // Return cached value if available
+        }
+        
+        // Find battery level characteristic (standard UUID: 0x2A19)
+        guard let batteryChar = batteryService.characteristics?.first(where: {
+            $0.uuid == CBUUID(string: "2A19")
+        }) else {
+            print("ConnectionOrchestrator: Battery characteristic not found")
+            return lastKnownBatteryLevel
+        }
+        
+        // Check if we have a cached value
+        if let value = batteryChar.value, !value.isEmpty {
+            let batteryLevel = Int(value[0])
+            lastKnownBatteryLevel = batteryLevel
+            print("ConnectionOrchestrator: Battery level: \(batteryLevel)%")
+            return batteryLevel
+        }
+        
+        // Request a read if no cached value
+        peripheral.readValue(for: batteryChar)
+        print("ConnectionOrchestrator: Requested battery read, returning cached: \(lastKnownBatteryLevel ?? -1)")
+        return lastKnownBatteryLevel
     }
 }

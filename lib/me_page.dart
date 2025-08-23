@@ -5,10 +5,8 @@ import 'package:nirva_app/update_data_page.dart';
 import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/hive_data_viewer_page.dart';
 import 'package:nirva_app/mini_call_bar.dart';
-import 'package:nirva_app/hardware_device_page.dart';
 import 'package:nirva_app/lifecycle_logs_page.dart';
 import 'package:nirva_app/services/hardware_service.dart';
-import 'package:nirva_app/hardware_ble_test_page.dart';
 import 'package:nirva_app/hardware_ble_connection_test.dart';
 
 class MePage extends StatefulWidget {
@@ -87,86 +85,113 @@ class _MePageState extends State<MePage> {
         child: InkWell(
           onTap: () {
             debugPrint('Nirva Necklace tapped');
-            // Navigate to hardware device page
+            // Navigate to BLE connection test V2 page
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HardwareDevicePage(),
+                builder: (context) => const HardwareBleConnectionTest(),
               ),
             );
           },
           borderRadius: BorderRadius.circular(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with icon and status
-              Row(
+          child: Consumer<HardwareService>(
+            builder: (context, hardwareService, child) {
+              final isConnected = hardwareService.isConnected;
+              final deviceName = hardwareService.connectedDevice?.name ?? 'Nirva Necklace';
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.water_drop,
-                    size: 48,
-                    color: Color(0xFFe7bf57),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Nirva Necklace',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0E3C26),
-                            fontFamily: 'Georgia',
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
+                  // Header with icon and status
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.water_drop,
+                        size: 48,
+                        color: Color(0xFFe7bf57),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Connected',
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                            Text(
+                              deviceName,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0E3C26),
                                 fontFamily: 'Georgia',
                               ),
                             ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: isConnected ? Colors.green : Colors.grey,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  isConnected ? 'Connected' : 'Not Connected',
+                                  style: TextStyle(
+                                    color: isConnected ? Colors.green : Colors.grey,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: 'Georgia',
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              
-              // Battery level indicator
-              Consumer<HardwareService>(
-                builder: (context, hardwareService, child) {
-                  final connectedDevice = hardwareService.connectedDevice;
-                  final batteryLevel = connectedDevice?.batteryLevel;
-                  final isConnected = hardwareService.isConnected;
+                  const SizedBox(height: 20),
                   
-                  // Default values when no device is connected
-                  final displayBatteryLevel = batteryLevel ?? 0;
-                  final batteryValue = displayBatteryLevel / 100.0;
-                  final batteryText = isConnected ? '$displayBatteryLevel%' : 'Not Connected';
-                  final batteryIcon = isConnected 
-                      ? (displayBatteryLevel > 20 ? Icons.battery_full : Icons.battery_alert)
-                      : Icons.battery_unknown;
-                  
-                  return Container(
+                  // Battery level indicator
+                  Builder(
+                    builder: (context) {
+                      final connectedDevice = hardwareService.connectedDevice;
+                      final batteryLevel = connectedDevice?.batteryLevel;
+                      
+                      // Default values when no device is connected
+                      final displayBatteryLevel = batteryLevel ?? 0;
+                      final batteryValue = displayBatteryLevel / 100.0;
+                      final batteryText = isConnected ? '$displayBatteryLevel%' : 'Not Connected';
+                      
+                      // Choose battery icon and color based on level
+                      IconData batteryIcon;
+                      Color batteryColor;
+                      Color progressColor;
+                      if (!isConnected) {
+                        batteryIcon = Icons.battery_unknown;
+                        batteryColor = Colors.grey;
+                        progressColor = Colors.grey;
+                      } else if (displayBatteryLevel <= 20) {
+                        batteryIcon = Icons.battery_alert;
+                        batteryColor = Colors.red;
+                        progressColor = Colors.red;
+                      } else if (displayBatteryLevel <= 50) {
+                        batteryIcon = Icons.battery_3_bar;
+                        batteryColor = Colors.orange;
+                        progressColor = Colors.orange;
+                      } else if (displayBatteryLevel <= 80) {
+                        batteryIcon = Icons.battery_5_bar;
+                        batteryColor = const Color(0xFF0E3C26);
+                        progressColor = const Color(0xFF0E3C26);
+                      } else {
+                        batteryIcon = Icons.battery_full;
+                        batteryColor = Colors.green;
+                        progressColor = Colors.green;
+                      }
+                      
+                      return Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.7),
@@ -180,7 +205,7 @@ class _MePageState extends State<MePage> {
                       children: [
                         Icon(
                           batteryIcon,
-                          color: const Color(0xFF0E3C26),
+                          color: batteryColor,
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -204,8 +229,8 @@ class _MePageState extends State<MePage> {
                                     child: LinearProgressIndicator(
                                       value: isConnected ? batteryValue : 0.0,
                                       backgroundColor: Colors.grey.shade300,
-                                      valueColor: const AlwaysStoppedAnimation<Color>(
-                                        Color(0xFF0E3C26),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        progressColor,
                                       ),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
@@ -213,10 +238,10 @@ class _MePageState extends State<MePage> {
                                   const SizedBox(width: 12),
                                   Text(
                                     batteryText,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF0E3C26),
+                                      color: isConnected ? const Color(0xFF0E3C26) : Colors.grey,
                                       fontFamily: 'Georgia',
                                     ),
                                   ),
@@ -247,48 +272,67 @@ class _MePageState extends State<MePage> {
                           ),
                       ],
                     ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
               
-              // Last sync info
-              Row(
-                children: [
-                  Icon(
-                    Icons.sync,
-                    size: 16,
-                    color: Colors.grey.shade600,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Last synced 2 hours ago',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                      fontFamily: 'Georgia',
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0E3C26).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Tap to manage',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF0E3C26),
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Georgia',
+                // Device info and management
+                Row(
+                  children: [
+                    if (isConnected) ...[
+                      Icon(
+                        Icons.bluetooth,
+                        size: 16,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Device connected',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                    ] else ...[
+                      Icon(
+                        Icons.bluetooth_disabled,
+                        size: 16,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Tap to connect',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                    ],
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0E3C26).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        isConnected ? 'Tap to manage' : 'Tap to connect',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF0E3C26),
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Georgia',
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            );
+            },
           ),
         ),
       ),
@@ -390,36 +434,6 @@ class _MePageState extends State<MePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const LifecycleLogsPage(),
-                    ),
-                  );
-                },
-              ),
-              _buildDivider(),
-              _buildSettingsItem(
-                icon: Icons.bluetooth,
-                title: 'BLE Audio Test',
-                subtitle: 'Test BLE audio functionality',
-                onTap: () {
-                  debugPrint('BLE Audio Test tapped');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HardwareBleTestPage(),
-                    ),
-                  );
-                },
-              ),
-              _buildDivider(),
-              _buildSettingsItem(
-                icon: Icons.bluetooth_searching,
-                title: 'BLE Connection Test (V2)',
-                subtitle: 'Test new background BLE connection',
-                onTap: () {
-                  debugPrint('BLE Connection Test V2 tapped');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HardwareBleConnectionTest(),
                     ),
                   );
                 },

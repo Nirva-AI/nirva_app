@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:collection/collection.dart';
@@ -932,7 +933,10 @@ class HardwareService extends ChangeNotifier {
       debugPrint('HardwareService: Waiting for app to fully initialize before attempting reconnection...');
       await Future.delayed(const Duration(seconds: 2));
       
-      // Attempt to reconnect to last connected device
+      // Check if BLE V2 service has an active connection
+      await _checkBleV2Connection();
+      
+      // Attempt to reconnect to last connected device (if not using BLE V2)
       await _attemptReconnectToLastDevice();
       
       debugPrint('HardwareService: Device persistence initialization complete');
@@ -940,10 +944,132 @@ class HardwareService extends ChangeNotifier {
       debugPrint('HardwareService: Error initializing device persistence: $e');
     }
   }
+  
+  /// Check if BLE V2 service has an active connection
+  Future<void> _checkBleV2Connection() async {
+    try {
+      debugPrint('HardwareService: Checking BLE V2 connection status...');
+      const MethodChannel methodChannel = MethodChannel('com.nirva.ble_audio_v2');
+      
+      final info = await methodChannel.invokeMethod('getConnectionInfo');
+      if (info is Map) {
+        debugPrint('HardwareService: BLE V2 connection info: $info');
+        
+        if (info['isConnected'] == true && info['deviceId'] != null) {
+          debugPrint('HardwareService: BLE V2 device is connected, updating state');
+          
+          // Extract battery level - could be under different keys
+          int batteryLevel = 0;
+          if (info['batteryLevel'] != null) {
+            batteryLevel = info['batteryLevel'] as int;
+          } else if (info['battery'] != null) {
+            batteryLevel = info['battery'] as int;
+          } else if (info['batteryPercentage'] != null) {
+            batteryLevel = info['batteryPercentage'] as int;
+          }
+          
+          // Create a HardwareDevice with the connection info
+          final device = HardwareDevice(
+            id: info['deviceId'] as String,
+            name: info['deviceName'] ?? info['name'] ?? 'OMI Device',
+            address: info['deviceAddress'] ?? info['address'] ?? info['deviceId'] as String,
+            rssi: info['rssi'] ?? 0,
+            batteryLevel: batteryLevel,
+            isConnected: true,
+            discoveredAt: DateTime.now(),
+            connectedAt: DateTime.now(),
+          );
+          
+          debugPrint('HardwareService: Updating with BLE V2 device: ${device.name}, battery: ${device.batteryLevel}%');
+          updateConnectedDeviceFromBle(device);
+        } else {
+          debugPrint('HardwareService: No BLE V2 device connected');
+        }
+      }
+    } catch (e) {
+      debugPrint('HardwareService: Error checking BLE V2 connection: $e');
+    }
+  }
+
+  /// Update connected device from BLE connection test
+  void updateConnectedDeviceFromBle(HardwareDevice? device) {
+    debugPrint('HardwareService: Updating device from BLE - ${device?.name ?? "null"}');
+    _connectedDevice = device;
+    if (device != null) {
+      _updateConnectionState(device.id, HardwareConnectionStatus.connected);
+      // Add to discovered devices if not already there
+      if (!_discoveredDevices.any((d) => d.id == device.id)) {
+        _discoveredDevices.add(device);
+      }
+      _saveConnectedDevice();
+      
+      // Start periodic battery updates
+      _startBatteryUpdateTimer();
+    } else {
+      if (_connectionState != null) {
+        _updateConnectionState(_connectionState!.deviceId, HardwareConnectionStatus.disconnected);
+      }
+      _stopBatteryUpdateTimer();
+    }
+    notifyListeners();
+  }
+  
+  Timer? _batteryUpdateTimer;
+  
+  void _startBatteryUpdateTimer() {
+    _stopBatteryUpdateTimer();
+    // Update battery level every 60 seconds
+    _batteryUpdateTimer = Timer.periodic(const Duration(seconds: 60), (_) {
+      _updateBatteryFromBleV2();
+    });
+  }
+  
+  void _stopBatteryUpdateTimer() {
+    _batteryUpdateTimer?.cancel();
+    _batteryUpdateTimer = null;
+  }
+  
+  Future<void> _updateBatteryFromBleV2() async {
+    if (_connectedDevice == null) return;
+    
+    try {
+      const MethodChannel methodChannel = MethodChannel('com.nirva.ble_audio_v2');
+      final info = await methodChannel.invokeMethod('getConnectionInfo');
+      
+      if (info is Map && info['isConnected'] == true) {
+        // Extract battery level
+        int? batteryLevel;
+        if (info['batteryLevel'] != null) {
+          batteryLevel = info['batteryLevel'] as int;
+        } else if (info['battery'] != null) {
+          batteryLevel = info['battery'] as int;
+        } else if (info['batteryPercentage'] != null) {
+          batteryLevel = info['batteryPercentage'] as int;
+        }
+        
+        if (batteryLevel != null && batteryLevel != _connectedDevice!.batteryLevel) {
+          debugPrint('HardwareService: Updating battery level to $batteryLevel%');
+          updateBatteryLevel(batteryLevel);
+        }
+      }
+    } catch (e) {
+      debugPrint('HardwareService: Error updating battery from BLE V2: $e');
+    }
+  }
+  
+  /// Update battery level for connected device
+  void updateBatteryLevel(int batteryLevel) {
+    if (_connectedDevice != null) {
+      debugPrint('HardwareService: Updating battery level to $batteryLevel%');
+      _connectedDevice = _connectedDevice!.copyWith(batteryLevel: batteryLevel);
+      notifyListeners();
+    }
+  }
 
   @override
   void dispose() {
     _isDisposed = true;
+    _stopBatteryUpdateTimer();
     stopAudioStream();
     disconnect();
     super.dispose();

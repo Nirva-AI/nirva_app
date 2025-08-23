@@ -171,9 +171,18 @@ class BleAudioPluginV2: NSObject, FlutterPlugin {
             
         // Information queries
         case "getConnectionInfo":
-            let info = bleService.getConnectionInfo()
+            var info = bleService.getConnectionInfo()
+            // Add battery level to connection info
+            if let batteryLevel = bleService.getBatteryLevel() {
+                info["batteryLevel"] = batteryLevel
+            }
             print("BleAudioPluginV2: Connection info: \(info)")
             result(info)
+            
+        case "getBatteryLevel":
+            let batteryLevel = bleService.getBatteryLevel()
+            print("BleAudioPluginV2: Battery level: \(batteryLevel ?? -1)")
+            result(batteryLevel)
             
         case "getStreamingStats":
             let stats = bleService.getStreamingStats()

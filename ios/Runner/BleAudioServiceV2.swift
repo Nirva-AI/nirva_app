@@ -439,6 +439,13 @@ class BleAudioServiceV2: NSObject {
         
         return Double(totalPacketsReceived) / duration
     }
+    
+    // MARK: - Battery Level
+    
+    /// Get battery level from connected device
+    func getBatteryLevel() -> Int? {
+        return connectionOrchestrator.getBatteryLevel()
+    }
 }
 
 // PacketReassembler is now implemented in PacketReassembler.swift
