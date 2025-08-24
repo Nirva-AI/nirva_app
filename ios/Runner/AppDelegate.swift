@@ -128,9 +128,12 @@ import CoreBluetooth
     
     // Store the completion handler to be called when URLSession finishes
     if identifier == "com.nirva.s3upload" {
-      // The S3BackgroundUploader will handle the session events
-      // Just call the completion handler to let iOS know we're done
-      completionHandler()
+      // Store the completion handler in S3BackgroundUploader so it can be called when all tasks complete
+      if #available(iOS 13.0, *) {
+        S3BackgroundUploader.shared.backgroundCompletionHandler = completionHandler
+      } else {
+        completionHandler()
+      }
     } else {
       completionHandler()
     }

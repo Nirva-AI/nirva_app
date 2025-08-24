@@ -22,6 +22,9 @@ class S3BackgroundUploader: NSObject {
     // Tracking
     private var activeUploads: [URLSessionTask: PendingS3Upload] = [:]
     
+    // Background completion handler
+    var backgroundCompletionHandler: (() -> Void)?
+    
     // Callbacks
     var onUploadComplete: ((String, String) -> Void)? // (localPath, s3URL)
     var onUploadFailed: ((String, Error) -> Void)? // (localPath, error)
@@ -43,6 +46,8 @@ class S3BackgroundUploader: NSObject {
         config.sessionSendsLaunchEvents = true
         config.allowsCellularAccess = true
         config.shouldUseExtendedBackgroundIdleMode = true
+        config.timeoutIntervalForRequest = 60
+        config.timeoutIntervalForResource = 300
         
         backgroundSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
     }
@@ -62,10 +67,8 @@ class S3BackgroundUploader: NSObject {
         print("S3BackgroundUploader: Credentials updated")
         DebugLogger.shared.log("S3BackgroundUploader: Credentials updated for bucket: \(credentials?.bucket ?? "")")
         
-        // Process any queued uploads after a delay to avoid startup congestion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) { [weak self] in
-            self?.processQueuedUploads()
-        }
+        // Process any queued uploads immediately
+        processQueuedUploads()
     }
     
     // MARK: - Upload Management
@@ -112,17 +115,23 @@ class S3BackgroundUploader: NSObject {
             return
         }
         
-        // Limit concurrent uploads to prevent overwhelming the system
-        let maxConcurrentUploads = 3
-        let uploadsToProcess = Array(uploadQueue.prefix(maxConcurrentUploads))
+        // Check if there are already active uploads for these files
+        let activeFiles = Set(activeUploads.values.map { $0.localPath })
+        let queuedFiles = uploadQueue.filter { !activeFiles.contains($0.localPath) }
+        
+        guard !queuedFiles.isEmpty else {
+            print("S3BackgroundUploader: All queued files are already being uploaded")
+            return
+        }
         
         let appState = UIApplication.shared.applicationState
         let stateString = appState == .background ? "BACKGROUND" : appState == .inactive ? "INACTIVE" : "FOREGROUND"
         
-        print("S3BackgroundUploader: Processing \(uploadsToProcess.count) of \(uploadQueue.count) queued uploads (App State: \(stateString))")
-        DebugLogger.shared.log("S3BackgroundUploader: Processing \(uploadsToProcess.count) uploads in \(stateString)")
+        print("S3BackgroundUploader: Processing \(queuedFiles.count) of \(uploadQueue.count) queued uploads (App State: \(stateString))")
+        DebugLogger.shared.log("S3BackgroundUploader: Processing \(queuedFiles.count) uploads in \(stateString)")
         
-        for upload in uploadsToProcess {
+        // Process all queued uploads that aren't already active
+        for upload in queuedFiles {
             // Verify file still exists before trying to upload
             guard FileManager.default.fileExists(atPath: upload.localPath) else {
                 print("S3BackgroundUploader: File no longer exists, removing from queue: \(upload.localPath)")
@@ -339,11 +348,22 @@ class S3BackgroundUploader: NSObject {
             saveUploadQueue()
             
             print("S3BackgroundUploader: Will retry upload (attempt \(retryUpload.retryCount))")
+            
+            // Retry after a short delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                self?.processQueuedUploads()
+            }
         } else {
             onUploadFailed?(upload.localPath, error)
             // Remove from queue after max retries
             uploadQueue.removeAll { $0.localPath == upload.localPath }
             saveUploadQueue()
+            
+            // Process any remaining queued uploads
+            if !uploadQueue.isEmpty {
+                print("S3BackgroundUploader: Processing remaining \(uploadQueue.count) queued uploads after failure")
+                processQueuedUploads()
+            }
         }
     }
     
@@ -387,6 +407,12 @@ extension S3BackgroundUploader: URLSessionDelegate, URLSessionTaskDelegate, URLS
                 
                 // Delete local file after successful upload
                 try? FileManager.default.removeItem(atPath: upload.localPath)
+                
+                // Process any remaining queued uploads
+                if !uploadQueue.isEmpty {
+                    print("S3BackgroundUploader: Processing remaining \(uploadQueue.count) queued uploads")
+                    processQueuedUploads()
+                }
             } else {
                 print("S3BackgroundUploader: Upload failed with status: \(response.statusCode)")
                 handleUploadFailure(upload, error: UploadError.httpError(response.statusCode))
@@ -407,6 +433,21 @@ extension S3BackgroundUploader: URLSessionDelegate, URLSessionTaskDelegate, URLS
         
         print("S3BackgroundUploader: Background session finished events (App State: \(stateString))")
         DebugLogger.shared.log("S3BackgroundUploader: Background session finished in \(stateString) state")
+        
+        // Call the stored completion handler to let iOS know we're done
+        if let completionHandler = backgroundCompletionHandler {
+            print("S3BackgroundUploader: Calling background completion handler")
+            DispatchQueue.main.async {
+                completionHandler()
+            }
+            backgroundCompletionHandler = nil
+        }
+        
+        // Process any remaining queued uploads
+        if !uploadQueue.isEmpty {
+            print("S3BackgroundUploader: Processing remaining queued uploads after session finish")
+            processQueuedUploads()
+        }
     }
 }
 
