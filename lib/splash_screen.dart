@@ -12,6 +12,7 @@ import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/hive_helper.dart';
+import 'package:nirva_app/services/native_s3_bridge.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -150,6 +151,16 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       Logger().i('用户登录成功');
+      
+      // Fetch S3 credentials after successful login
+      try {
+        Logger().i('Fetching S3 upload credentials...');
+        await NativeS3Bridge.instance.refreshCredentialsIfNeeded();
+        Logger().i('S3 credentials fetch initiated');
+      } catch (e) {
+        Logger().w('Failed to fetch S3 credentials on login: $e');
+        // Don't fail the login process if S3 credentials fail
+      }
     } catch (e) {
       Logger().e('API初始化或登录失败: $e');
       rethrow; // 重新抛出异常，让上层处理

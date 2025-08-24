@@ -24,6 +24,7 @@ class BleAudioServiceV2: NSObject {
     private var sessionStartTime: Date?
     private var backgroundPacketsReceived = 0
     private var lastBackgroundPacketTime: Date?
+    private var totalSegments = 0  // Track number of segments for metadata
     
     // Callbacks for Flutter communication
     var onStateChanged: ((String) -> Void)?
@@ -118,8 +119,8 @@ class BleAudioServiceV2: NSObject {
             print("BleAudioServiceV2: AudioProcessor created successfully")
             DebugLogger.shared.log("BleAudioServiceV2: AudioProcessor created successfully")
             
-            audioProcessor?.onSegmentReady = { [weak self] wavData, duration in
-                self?.handleAudioSegment(wavData, duration: duration)
+            audioProcessor?.onSegmentReady = { [weak self] wavData, duration, filePath in
+                self?.handleAudioSegment(wavData, duration: duration, filePath: filePath)
             }
             audioProcessor?.onError = { error in
                 print("BleAudioServiceV2: AudioProcessor error: \(error)")
@@ -244,7 +245,7 @@ class BleAudioServiceV2: NSObject {
         info["isStreaming"] = isStreaming
         info["totalPacketsReceived"] = totalPacketsReceived
         info["totalBytesReceived"] = totalBytesReceived
-        info["backgroundPacketsReceived"] = backgroundPacketsReceived
+        info["backgroundPacketsReceived"] = Int(backgroundPacketsReceived)  // Convert to Int for JSON
         
         if let startTime = sessionStartTime {
             info["sessionDuration"] = Date().timeIntervalSince(startTime)
@@ -412,18 +413,49 @@ class BleAudioServiceV2: NSObject {
         ])
     }
     
-    private func handleAudioSegment(_ wavData: Data, duration: TimeInterval) {
+    private func handleAudioSegment(_ wavData: Data, duration: TimeInterval, filePath: String) {
         print("BleAudioServiceV2: Audio segment ready - Duration: \(duration)s, Size: \(wavData.count) bytes")
+        print("BleAudioServiceV2: Segment file path: \(filePath)")
+        DebugLogger.shared.log("BleAudioServiceV2: Audio segment ready at: \(filePath)")
         
-        // TODO: Phase 6 - Upload to S3 via background URLSession
-        // TODO: Phase 7 - Send to Deepgram for transcription
+        // Phase 5: Queue for S3 upload via background URLSession
+        // The AudioProcessor already saved the WAV file, we just need to queue it
+        
+        // Check if file exists (it should have been saved by AudioProcessor)
+        if FileManager.default.fileExists(atPath: filePath) {
+            print("BleAudioServiceV2: Queueing segment for S3 upload: \(filePath)")
+            let fileName = URL(fileURLWithPath: filePath).lastPathComponent
+            DebugLogger.shared.log("BleAudioServiceV2: Queueing segment for S3 upload: \(fileName)")
+            
+            // Get user ID from UserDefaults (set by Flutter)
+            let userId = UserDefaults.standard.string(forKey: "userId") ?? "default_user"
+            
+            // Queue for S3 upload with metadata
+            S3BackgroundUploader.shared.queueUpload(
+                localPath: filePath,
+                userId: userId,
+                metadata: [
+                    "duration": String(duration),
+                    "segmentNumber": String(totalSegments),
+                    "deviceId": connectionOrchestrator.getConnectionInfo()["deviceId"] as? String ?? "unknown"
+                ]
+            )
+            
+            totalSegments += 1
+        } else {
+            print("BleAudioServiceV2: ERROR - WAV file not found at: \(filePath)")
+            DebugLogger.shared.log("BleAudioServiceV2: ERROR - WAV file not found at: \(filePath)")
+        }
+        
+        // TODO: Phase 6 - Send to Deepgram for transcription
         
         // Notify Flutter about the segment
         onSegmentEvent?([
             "event": "audioSegmentReady",
             "duration": duration,
             "size": wavData.count,
-            "timestamp": Date().timeIntervalSince1970
+            "timestamp": Date().timeIntervalSince1970,
+            "filePath": filePath
         ])
     }
     

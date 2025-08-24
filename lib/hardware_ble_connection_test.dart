@@ -301,12 +301,93 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   Future<void> _getDebugLog() async {
     try {
       final log = await _methodChannel.invokeMethod('getDebugLog');
-      print('=== NATIVE DEBUG LOG ===');
-      print(log);
-      print('=== END DEBUG LOG ===');
-      _addLog('Debug log retrieved (check console)');
+      final logString = log.toString();
+      
+      // Parse the log to get all lines
+      final allLines = logString.split('\n');
+      
+      // Extract critical info from the beginning (state summary)
+      final criticalLines = <String>[];
+      final s3Lines = <String>[];
+      var foundLogStart = false;
+      
+      for (final line in allLines) {
+        // Capture critical info at the beginning
+        if (!foundLogStart) {
+          if (line.contains('=== LOG START')) {
+            foundLogStart = true;
+          } else {
+            criticalLines.add(line);
+          }
+        }
+        
+        // Capture S3-related lines
+        if (line.contains('S3') || 
+            line.contains('upload') || 
+            line.contains('Upload') ||
+            line.contains('segment') && line.contains('wav') ||
+            line.contains('Segment') ||
+            line.contains('credentials') ||
+            line.contains('AWS') ||
+            line.contains('Queued') ||
+            line.contains('queueUpload')) {
+          s3Lines.add(line);
+        }
+      }
+      
+      // Get the last 300 lines from the actual log
+      final logStartIndex = allLines.indexWhere((line) => line.contains('=== LOG START'));
+      final logLines = logStartIndex >= 0 
+          ? allLines.sublist(logStartIndex + 1)
+          : allLines;
+      
+      final last300Lines = logLines.length > 300 
+          ? logLines.sublist(logLines.length - 300)
+          : logLines;
+      
+      // Print to console
+      print('\n' + '=' * 80);
+      print('NATIVE DEBUG LOG - CRITICAL INFO');
+      print('=' * 80);
+      for (final line in criticalLines) {
+        if (line.trim().isNotEmpty) {
+          print(line);
+        }
+      }
+      
+      print('\n' + '=' * 80);
+      print('S3 UPLOAD RELATED LOGS (${s3Lines.length} lines found)');
+      print('=' * 80);
+      if (s3Lines.isEmpty) {
+        print('No S3-related logs found!');
+        print('This means segments are NOT being queued for upload.');
+      } else {
+        // Show last 50 S3 lines
+        final s3ToShow = s3Lines.length > 50 
+            ? s3Lines.sublist(s3Lines.length - 50)
+            : s3Lines;
+        for (final line in s3ToShow) {
+          print(line);
+        }
+        if (s3Lines.length > 50) {
+          print('... (${s3Lines.length - 50} more S3 lines omitted)');
+        }
+      }
+      
+      print('\n' + '=' * 80);
+      print('LAST 300 LINES OF DEBUG LOG');
+      print('=' * 80);
+      for (final line in last300Lines) {
+        print(line);
+      }
+      print('=' * 80);
+      print('END OF DEBUG LOG');
+      print('=' * 80 + '\n');
+      
+      _addLog('Debug log printed to console (${allLines.length} total lines)');
     } catch (e) {
       _addLog('Error getting debug log: $e');
+      print('Error getting debug log: $e');
     }
   }
   

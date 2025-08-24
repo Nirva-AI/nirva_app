@@ -9,7 +9,8 @@ import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/providers/call_provider.dart';
 import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/services/hardware_audio_recorder.dart';
-import 'package:nirva_app/services/audio_streaming_service.dart';
+// DISABLED: Old Amplify flow - using native S3 upload instead
+// import 'package:nirva_app/services/audio_streaming_service.dart';
 
 import 'package:nirva_app/providers/local_audio_provider.dart';
 import 'package:nirva_app/providers/cloud_audio_provider.dart';
@@ -19,6 +20,7 @@ import 'package:nirva_app/services/app_settings_service.dart';
 import 'package:nirva_app/services/ios_background_audio_manager.dart';
 import 'package:nirva_app/services/app_lifecycle_logging_service.dart';
 import 'package:nirva_app/services/ble_audio_service.dart';
+import 'package:nirva_app/services/native_s3_bridge.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_chat_app.dart';
@@ -80,6 +82,15 @@ void main() async {
   final lifecycleLoggingService = AppLifecycleLoggingService();
   await lifecycleLoggingService.initialize();
   debugPrint('Main: AppLifecycleLoggingService initialized successfully');
+  
+  // Initialize NativeS3Bridge for S3 upload credentials
+  debugPrint('Main: Starting NativeS3Bridge initialization...');
+  try {
+    await NativeS3Bridge.instance.initialize();
+    debugPrint('Main: NativeS3Bridge initialized successfully');
+  } catch (e) {
+    debugPrint('Main: Error initializing NativeS3Bridge: $e');
+  }
 
   runApp(
     MultiProvider(
@@ -144,12 +155,13 @@ void main() async {
         ChangeNotifierProvider<HardwareAudioCapture>.value(
           value: hardwareAudioCapture,
         ),
-        ChangeNotifierProvider<AudioStreamingService>(
-          create: (context) => AudioStreamingService(
-            context.read<HardwareAudioCapture>(),
-            context.read<UserProvider>().id,
-          ),
-        ),
+        // DISABLED: Old Amplify flow - using native S3 upload instead
+        // ChangeNotifierProvider<AudioStreamingService>(
+        //   create: (context) => AudioStreamingService(
+        //     context.read<HardwareAudioCapture>(),
+        //     context.read<UserProvider>().id,
+        //   ),
+        // ),
         ChangeNotifierProvider<TranscriptionSyncProvider>(
           create: (context) => TranscriptionSyncProvider(),
         ),

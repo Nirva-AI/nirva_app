@@ -40,6 +40,9 @@ import CoreBluetooth
       DebugLogger.shared.log("AppDelegate: ❌ Normal launch, not BLE wake")
     }
     
+    // Configure background fetch for S3 uploads
+    configureBackgroundFetch(application)
+    
     GeneratedPluginRegistrant.register(with: self)
     
     print("AppDelegate: GeneratedPluginRegistrant.register completed")
@@ -79,6 +82,58 @@ import CoreBluetooth
     print("AppDelegate: All initialization completed")
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+  
+  // MARK: - Background Fetch Configuration
+  
+  private func configureBackgroundFetch(_ application: UIApplication) {
+    // Configure background fetch interval (minimum fetch interval)
+    application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
+    print("AppDelegate: Background fetch configured with minimum interval")
+    DebugLogger.shared.log("AppDelegate: Background fetch configured")
+  }
+  
+  // Handle background fetch
+  override func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    print("AppDelegate: ============ BACKGROUND FETCH TRIGGERED ============")
+    DebugLogger.shared.log("AppDelegate: ============ BACKGROUND FETCH TRIGGERED ============")
+    
+    // Process queued S3 uploads
+    if #available(iOS 13.0, *) {
+      S3BackgroundUploader.shared.processQueuedUploads()
+      
+      // Check if there are pending uploads
+      let stats = S3BackgroundUploader.shared.getStatistics()
+      let pendingCount = stats["pendingUploads"] as? Int ?? 0
+      
+      if pendingCount > 0 {
+        print("AppDelegate: Processing \(pendingCount) pending uploads")
+        DebugLogger.shared.log("AppDelegate: Processing \(pendingCount) pending uploads")
+        completionHandler(.newData)
+      } else {
+        print("AppDelegate: No pending uploads")
+        DebugLogger.shared.log("AppDelegate: No pending uploads")
+        completionHandler(.noData)
+      }
+    } else {
+      completionHandler(.noData)
+    }
+  }
+  
+  // Handle background URLSession events for S3 uploads
+  override func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+    print("AppDelegate: ============ BACKGROUND URL SESSION EVENT ============")
+    print("AppDelegate: Session identifier: \(identifier)")
+    DebugLogger.shared.log("AppDelegate: Background URLSession event for: \(identifier)")
+    
+    // Store the completion handler to be called when URLSession finishes
+    if identifier == "com.nirva.s3upload" {
+      // The S3BackgroundUploader will handle the session events
+      // Just call the completion handler to let iOS know we're done
+      completionHandler()
+    } else {
+      completionHandler()
+    }
   }
   
   // MARK: - App Lifecycle Handling

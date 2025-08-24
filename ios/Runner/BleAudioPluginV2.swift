@@ -189,8 +189,8 @@ class BleAudioPluginV2: NSObject, FlutterPlugin {
             result(stats)
             
         case "getDebugLog":
-            // Get recent log contents (last 100KB)
-            let logContents = DebugLogger.shared.getRecentLogContents(maxBytes: 102400)
+            // Get recent log contents (last 500KB for more history)
+            let logContents = DebugLogger.shared.getRecentLogContents(maxBytes: 512000)
             
             // Get connection info for summary
             let connInfo = BleAudioServiceV2.shared.getConnectionInfo()
@@ -239,12 +239,28 @@ class BleAudioPluginV2: NSObject, FlutterPlugin {
             // This would configure VAD batch size (Phase 2)
             result(true)
             
-        case "setUploadPolicy":
+        case "setS3Credentials":
             guard let args = call.arguments as? [String: Any] else {
-                result(FlutterError(code: "INVALID_ARGS", message: "Missing policy", details: nil))
+                result(FlutterError(code: "INVALID_ARGS", message: "Missing credentials", details: nil))
                 return
             }
-            // This would configure S3 upload policy (Phase 3)
+            
+            // Pass credentials to S3BackgroundUploader
+            S3BackgroundUploader.shared.setCredentials(args)
+            
+            // Also store userId in UserDefaults for native access
+            if let userId = args["userId"] as? String {
+                UserDefaults.standard.set(userId, forKey: "userId")
+            }
+            
+            result(true)
+            
+        case "getUploadQueueStatus":
+            let stats = S3BackgroundUploader.shared.getStatistics()
+            result(stats)
+            
+        case "processQueuedUploads":
+            S3BackgroundUploader.shared.processQueuedUploads()
             result(true)
             
         default:

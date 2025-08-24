@@ -33,11 +33,10 @@ class AudioProcessor {
     private var isSpeechActive = false
     
     // Callbacks
-    var onSegmentReady: ((Data, TimeInterval) -> Void)?
+    var onSegmentReady: ((Data, TimeInterval, String) -> Void)?  // Added filePath parameter
     var onError: ((Error) -> Void)?
     
     // Statistics
-    private var totalSegments = 0
     private var totalPCMBytes = 0
     private var totalDuration: TimeInterval = 0
     
@@ -65,8 +64,8 @@ class AudioProcessor {
         print("  Max Segment Duration: \(config.maxSegmentDuration)s")
         print("  Silence Threshold: \(config.silenceThreshold)s")
         print("  Min Segment Duration: \(config.minSegmentDuration)s")
-        print("  Silence Threshold: \(config.silenceThreshold)s")
         print("  VAD: Enabled")
+        print("  File naming: Using timestamp-based unique names")
         DebugLogger.shared.log("AudioProcessor: Fully initialized with VAD")
     }
     
@@ -188,7 +187,7 @@ class AudioProcessor {
     private func startNewSegment() {
         segmentStartTime = Date()
         currentSegment.removeAll()
-        print("AudioProcessor: Started new segment #\(totalSegments + 1)")
+        print("AudioProcessor: Started new segment")
     }
     
     private func finalizeSegment(forced: Bool) {
@@ -203,25 +202,26 @@ class AudioProcessor {
             return
         }
         
-        totalSegments += 1
         totalDuration += duration
         
-        print("AudioProcessor: Finalized segment #\(totalSegments)")
+        print("AudioProcessor: Finalizing segment")
         print("  Duration: \(String(format: "%.1f", duration))s")
         print("  Size: \(currentSegment.count) bytes")
         print("  Forced: \(forced)")
         
         // Create WAV file from PCM data
         if let wavData = createWAVFile(from: currentSegment) {
-            // Save WAV file to disk
-            let fileName = "segment_\(totalSegments)_\(Int(Date().timeIntervalSince1970)).wav"
+            // Save WAV file to disk  
+            // Use timestamp with milliseconds for guaranteed uniqueness
+            let timestamp = Int(Date().timeIntervalSince1970 * 1000)
+            let fileName = "segment_\(timestamp).wav"
             if let filePath = saveWAVFile(wavData, fileName: fileName) {
                 print("AudioProcessor: Segment saved to: \(filePath)")
                 DebugLogger.shared.log("AudioProcessor: Segment saved to: \(filePath)")
+                
+                // Notify that segment is ready with the actual file path
+                onSegmentReady?(wavData, duration, filePath)
             }
-            
-            // Notify that segment is ready
-            onSegmentReady?(wavData, duration)
         }
         
         // Clear segment
@@ -289,7 +289,6 @@ class AudioProcessor {
     func getStatistics() -> [String: Any] {
         return processingQueue.sync {
             var stats: [String: Any] = [
-                "totalSegments": totalSegments,
                 "totalPCMBytes": totalPCMBytes,
                 "totalDuration": totalDuration,
                 "currentSegmentSize": currentSegment.count,
@@ -313,7 +312,6 @@ class AudioProcessor {
             self?.pcmBuffer.removeAll()
             self?.currentSegment.removeAll()
             self?.segmentStartTime = nil
-            self?.totalSegments = 0
             self?.totalPCMBytes = 0
             self?.totalDuration = 0
             self?.vad?.reset()

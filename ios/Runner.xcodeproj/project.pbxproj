@@ -27,6 +27,7 @@
 		BLE017 /* AudioProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BLE018 /* AudioProcessor.swift */; };
 		BLE019 /* VoiceActivityDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BLE020 /* VoiceActivityDetector.swift */; };
 		BLE021 /* OpusWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = BLE022 /* OpusWrapper.m */; };
+		BLE025 /* S3BackgroundUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BLE024 /* S3BackgroundUploader.swift */; };
 		F928CC7DE8958604D623E0D8 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D4C634E429C38158B2D3FBB /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -87,6 +88,7 @@
 		BLE020 /* VoiceActivityDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceActivityDetector.swift; sourceTree = "<group>"; };
 		BLE022 /* OpusWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpusWrapper.m; sourceTree = "<group>"; };
 		BLE023 /* OpusWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpusWrapper.h; sourceTree = "<group>"; };
+		BLE024 /* S3BackgroundUploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = S3BackgroundUploader.swift; sourceTree = "<group>"; };
 		C8690C903D64A0863E36DCDC /* DebugLogger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		D1B915CD7490DEE2A915792B /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		FB6508C7FE489B80E1E92208 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,6 +186,7 @@
 				BLE020 /* VoiceActivityDetector.swift */,
 				BLE022 /* OpusWrapper.m */,
 				BLE023 /* OpusWrapper.h */,
+				BLE024 /* S3BackgroundUploader.swift */,
 				C8690C903D64A0863E36DCDC /* DebugLogger.swift */,
 			);
 			path = Runner;
@@ -445,6 +448,7 @@
 				BLE017 /* AudioProcessor.swift in Sources */,
 				BLE019 /* VoiceActivityDetector.swift in Sources */,
 				BLE021 /* OpusWrapper.m in Sources */,
+				BLE025 /* S3BackgroundUploader.swift in Sources */,
 				4F4DBBD8C411169AB7CC9D54 /* DebugLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
