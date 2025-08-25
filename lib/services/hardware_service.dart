@@ -742,7 +742,48 @@ class HardwareService extends ChangeNotifier {
     try {
       debugPrint('HardwareService.refreshDeviceInfo: Refreshing device info...');
       
-      // Get device info if service is available
+      // For new BLE implementation, get info from native side
+      // Try BLE V2 method channel first
+      try {
+        const MethodChannel bleV2Channel = MethodChannel('com.nirva.ble_audio_v2');
+        final connectionInfo = await bleV2Channel.invokeMethod('getConnectionInfo');
+        
+        if (connectionInfo is Map) {
+          debugPrint('HardwareService.refreshDeviceInfo: Got connection info from BLE V2: $connectionInfo');
+          
+          // Extract battery level - could be under different keys
+          int? batteryLevel;
+          if (connectionInfo['batteryLevel'] != null) {
+            batteryLevel = connectionInfo['batteryLevel'] as int;
+          } else if (connectionInfo['battery'] != null) {
+            batteryLevel = connectionInfo['battery'] as int;
+          } else if (connectionInfo['batteryPercentage'] != null) {
+            batteryLevel = connectionInfo['batteryPercentage'] as int;
+          }
+          
+          // Update the connected device with new info
+          _connectedDevice = _connectedDevice!.copyWith(
+            name: connectionInfo['deviceName'] ?? connectionInfo['name'] ?? _connectedDevice!.name,
+            batteryLevel: batteryLevel ?? _connectedDevice!.batteryLevel,
+            firmwareVersion: connectionInfo['firmwareVersion'] ?? connectionInfo['firmware'],
+            hardwareVersion: connectionInfo['hardwareVersion'] ?? connectionInfo['hardware'],
+            manufacturer: connectionInfo['manufacturer'],
+          );
+          
+          debugPrint('HardwareService.refreshDeviceInfo: Updated device - battery: $batteryLevel%');
+          
+          // Save to persistent storage
+          await _saveConnectedDevice();
+          
+          notifyListeners();
+          debugPrint('HardwareService.refreshDeviceInfo: Device info refreshed successfully via BLE V2');
+          return;
+        }
+      } catch (e) {
+        debugPrint('HardwareService.refreshDeviceInfo: BLE V2 method not available, trying old methods: $e');
+      }
+      
+      // Fallback to old Bluetooth services if available
       Map<String, String> deviceInfo = {};
       if (_deviceInfoService != null) {
         deviceInfo = await getDeviceInfo();

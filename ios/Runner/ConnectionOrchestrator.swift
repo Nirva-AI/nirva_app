@@ -241,13 +241,26 @@ class ConnectionOrchestrator: NSObject {
     
     /// Get current connection info
     func getConnectionInfo() -> [String: Any] {
-        let info: [String: Any] = [
+        var info: [String: Any] = [
             "state": currentState.rawValue,
             "deviceId": rememberedDeviceUUID?.uuidString ?? "",
             "isConnected": currentState == .subscribed,
             "connectionAttempts": connectionAttempts,
             "successfulConnections": successfulConnections
         ]
+        
+        // Add device name if available
+        if let deviceName = targetPeripheral?.name {
+            info["deviceName"] = deviceName
+            info["name"] = deviceName  // Also add as "name" for compatibility
+        }
+        
+        // Add battery level if available
+        if let batteryLevel = getBatteryLevel() {
+            info["batteryLevel"] = batteryLevel
+            info["battery"] = batteryLevel  // Also add as "battery" for compatibility
+        }
+        
         print("ConnectionOrchestrator: getConnectionInfo - currentState: \(currentState.rawValue), isConnected: \(currentState == .subscribed)")
         DebugLogger.shared.log("ConnectionOrchestrator: getConnectionInfo - currentState: \(currentState.rawValue), isConnected: \(currentState == .subscribed)")
         return info
@@ -885,15 +898,15 @@ extension ConnectionOrchestrator: CBPeripheralDelegate {
         }
         
         // Log ALL packets in background - this is our wake event!
-        if appState == .background || appState == .inactive {
-            print("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT! Packet size: \(data.count) bytes")
+        // if appState == .background || appState == .inactive {
+            // print("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT! Packet size: \(data.count) bytes")
             // Keep critical background wake event
-            DebugLogger.shared.log("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT!")
+            // DebugLogger.shared.log("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT!")
             
             // We have ~10 seconds to process after wake
-            print("ConnectionOrchestrator: Processing in BLE wake window...")
+            // print("ConnectionOrchestrator: Processing in BLE wake window...")
             // DebugLogger.shared.log("ConnectionOrchestrator: Processing in BLE wake window...")
-        }
+        // }
         
         // Refresh watchdog on packet received
         refreshStreamWatchdog()

@@ -87,22 +87,44 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
           
           // Update HardwareService when connection state changes
           final hardwareService = context.read<HardwareService>();
-          if (event['state'] == 'connected' && event['deviceId'] != null) {
-            // Create a HardwareDevice and update HardwareService
-            final device = HardwareDevice(
-              id: event['deviceId'],
-              name: event['name'] ?? 'OMI Device',
-              address: event['address'] ?? event['deviceId'],  // Use deviceId as fallback
-              rssi: event['rssi'] ?? 0,
-              batteryLevel: event['batteryLevel'] ?? 0,
-              isConnected: true,
-              discoveredAt: DateTime.now(),
-              connectedAt: DateTime.now(),
-            );
-            hardwareService.updateConnectedDeviceFromBle(device);
-            // Also get battery level
-            _getBatteryLevel();
-          } else if (event['state'] == 'disconnected' || event['state'] == 'idle') {
+          // The native side sends "subscribed" when fully connected and streaming
+          if (event['state'] == 'subscribed') {
+            print('HardwareBleConnectionTest: Device subscribed, updating HardwareService');
+            
+            // Use device info from the event if available
+            final deviceId = event['deviceId'] ?? _connectionInfo['deviceId'] ?? '';
+            final deviceName = event['name'] ?? event['deviceName'] ?? 'OMI Device';
+            final batteryLevel = event['batteryLevel'] ?? 0;
+            final rssi = event['rssi'] ?? 0;
+            
+            if (deviceId.isNotEmpty) {
+              print('HardwareBleConnectionTest: Device info - name: $deviceName, battery: $batteryLevel%');
+              
+              // Create a HardwareDevice with the info from the event
+              final device = HardwareDevice(
+                id: deviceId,
+                name: deviceName,
+                address: event['address'] ?? deviceId,  // Use deviceId as fallback
+                rssi: rssi,
+                batteryLevel: batteryLevel,
+                isConnected: true,
+                discoveredAt: DateTime.now(),
+                connectedAt: DateTime.now(),
+              );
+              hardwareService.updateConnectedDeviceFromBle(device);
+              
+              // Still fetch additional info but with shorter delay since we have basic info
+              Future.delayed(const Duration(milliseconds: 200), () {
+                print('HardwareBleConnectionTest: Fetching additional device info');
+                _getConnectionInfo();  // This will fetch any additional device info
+              });
+            } else {
+              print('HardwareBleConnectionTest: No device ID in subscribed event, fetching info...');
+              // Fallback: fetch info immediately if not provided in event
+              _getConnectionInfo();
+            }
+          } else if (event['state'] == 'disconnected' || event['state'] == 'idle' || event['state'] == 'backoff') {
+            print('HardwareBleConnectionTest: Device disconnected/idle, clearing HardwareService');
             // Clear connected device when disconnected
             hardwareService.updateConnectedDeviceFromBle(null);
           }

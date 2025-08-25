@@ -78,11 +78,36 @@ class BleAudioPluginV2: NSObject, FlutterPlugin {
         // Connection state changes
         bleService.onStateChanged = { [weak self] state in
             DispatchQueue.main.async {
-                self?.connectionEventSink?([
+                guard let self = self else { return }
+                
+                var eventData: [String: Any] = [
                     "event": "connectionStateChanged",
                     "state": state,
                     "timestamp": Date().timeIntervalSince1970
-                ])
+                ]
+                
+                // If state is "subscribed", include full connection info
+                if state == "subscribed" {
+                    let connectionInfo = self.bleService.getConnectionInfo()
+                    // Add device info to the event
+                    if let deviceId = connectionInfo["deviceId"] as? String, !deviceId.isEmpty {
+                        eventData["deviceId"] = deviceId
+                    }
+                    if let deviceName = connectionInfo["deviceName"] as? String {
+                        eventData["name"] = deviceName
+                        eventData["deviceName"] = deviceName
+                    }
+                    if let batteryLevel = connectionInfo["batteryLevel"] as? Int {
+                        eventData["batteryLevel"] = batteryLevel
+                    } else if let battery = self.bleService.getBatteryLevel() {
+                        eventData["batteryLevel"] = battery
+                    }
+                    if let rssi = connectionInfo["rssi"] as? Int {
+                        eventData["rssi"] = rssi
+                    }
+                }
+                
+                self.connectionEventSink?(eventData)
             }
         }
         
