@@ -43,7 +43,7 @@ class AudioProcessor {
     // MARK: - Initialization
     init() {
         print("AudioProcessor: init() called")
-        DebugLogger.shared.log("AudioProcessor: init() called")
+        // DebugLogger.shared.log("AudioProcessor: init() called")
         
         opusDecoder = OpusDecoder()
         if opusDecoder == nil {
@@ -51,7 +51,7 @@ class AudioProcessor {
             DebugLogger.shared.log("AudioProcessor: Failed to initialize Opus decoder")
         } else {
             print("AudioProcessor: Initialized with Opus decoder")
-            DebugLogger.shared.log("AudioProcessor: Initialized with Opus decoder")
+            // DebugLogger.shared.log("AudioProcessor: Initialized with Opus decoder")
         }
         
         // Initialize VAD
@@ -66,7 +66,7 @@ class AudioProcessor {
         print("  Min Segment Duration: \(config.minSegmentDuration)s")
         print("  VAD: Enabled")
         print("  File naming: Using timestamp-based unique names")
-        DebugLogger.shared.log("AudioProcessor: Fully initialized with VAD")
+        // DebugLogger.shared.log("AudioProcessor: Fully initialized with VAD")
     }
     
     private func setupVAD() {
@@ -88,7 +88,7 @@ class AudioProcessor {
     /// Process incoming Opus packet
     func processOpusPacket(_ opusData: Data) {
         print("AudioProcessor: processOpusPacket called with \(opusData.count) bytes")
-        DebugLogger.shared.log("AudioProcessor: processOpusPacket called with \(opusData.count) bytes")
+        // DebugLogger.shared.log("AudioProcessor: processOpusPacket called with \(opusData.count) bytes")
         
         processingQueue.async { [weak self] in
             guard let self = self else { return }
@@ -96,6 +96,7 @@ class AudioProcessor {
             // Decode Opus to PCM
             guard let pcmData = self.opusDecoder?.decode(opusData) else {
                 print("AudioProcessor: Failed to decode Opus packet")
+                // Keep critical error
                 DebugLogger.shared.log("AudioProcessor: Failed to decode Opus packet")
                 return
             }
@@ -104,7 +105,7 @@ class AudioProcessor {
             let hasAudio = pcmData.contains { $0 != 0 }
             if hasAudio {
                 print("AudioProcessor: Decoded to \(pcmData.count) bytes of PCM (contains audio!)")
-                DebugLogger.shared.log("AudioProcessor: Decoded PCM contains audio data!")
+                // DebugLogger.shared.log("AudioProcessor: Decoded PCM contains audio data!")
             }
             
             // Add to buffer
@@ -162,7 +163,7 @@ class AudioProcessor {
                 let silenceDuration = Date().timeIntervalSince(lastSpeech)
                 if silenceDuration >= config.silenceThreshold {
                     print("AudioProcessor: \(String(format: "%.1f", silenceDuration))s of silence detected, closing segment")
-                    DebugLogger.shared.log("AudioProcessor: Closing segment after \(silenceDuration)s silence")
+                    // DebugLogger.shared.log("AudioProcessor: Closing segment after \(silenceDuration)s silence")
                     finalizeSegment(forced: false)
                     segmentStartTime = nil
                     isSpeechActive = false
@@ -217,7 +218,8 @@ class AudioProcessor {
             let fileName = "segment_\(timestamp).wav"
             if let filePath = saveWAVFile(wavData, fileName: fileName) {
                 print("AudioProcessor: Segment saved to: \(filePath)")
-                DebugLogger.shared.log("AudioProcessor: Segment saved to: \(filePath)")
+                // Keep segment creation logging for tracking
+                DebugLogger.shared.log("AudioProcessor: Segment saved: \(fileName)")
                 
                 // Notify that segment is ready with the actual file path
                 onSegmentReady?(wavData, duration, filePath)
@@ -350,7 +352,7 @@ class AudioProcessor {
             guard let self = self else { return }
             
             print("AudioProcessor: Silence detected - Duration: \(String(format: "%.1f", duration))s")
-            DebugLogger.shared.log("AudioProcessor: VAD silence callback - duration: \(duration)s")
+            // DebugLogger.shared.log("AudioProcessor: VAD silence callback - duration: \(duration)s")
             
             // Check if we should close the segment due to silence
             if duration >= self.config.silenceThreshold && !self.currentSegment.isEmpty {
@@ -359,7 +361,7 @@ class AudioProcessor {
                 print("AudioProcessor: Closing segment due to \(duration)s silence")
                 print("  Segment duration: \(String(format: "%.1f", segmentDuration))s")
                 print("  Segment size: \(segmentSize) bytes")
-                DebugLogger.shared.log("AudioProcessor: Closing segment - duration: \(segmentDuration)s, size: \(segmentSize)")
+                // DebugLogger.shared.log("AudioProcessor: Closing segment - duration: \(segmentDuration)s, size: \(segmentSize)")
                 
                 self.finalizeSegment(forced: false)
                 // Don't immediately start a new segment - wait for speech

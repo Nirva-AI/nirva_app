@@ -129,7 +129,7 @@ class PacketReassembler {
         // Parse packet header
         guard let header = PacketHeader(from: data) else {
             print("PacketReassembler: Invalid packet header, data size: \(data.count)")
-            DebugLogger.shared.log("PacketReassembler: Invalid packet header, data size: \(data.count)")
+            // DebugLogger.shared.log("PacketReassembler: Invalid packet header, data size: \(data.count)")
             return
         }
         
@@ -139,7 +139,7 @@ class PacketReassembler {
         // Log first few packets and periodically
         if totalFragmentsReceived <= 5 || totalFragmentsReceived % 50 == 0 {
             print("PacketReassembler: Fragment #\(totalFragmentsReceived) - Packet ID: \(header.packetId), Fragment: \(header.fragmentIndex), Audio: \(header.audioData.count) bytes")
-            DebugLogger.shared.log("PacketReassembler: Fragment #\(totalFragmentsReceived) - Packet ID: \(header.packetId), Fragment: \(header.fragmentIndex), Audio: \(header.audioData.count) bytes")
+            // DebugLogger.shared.log("PacketReassembler: Fragment #\(totalFragmentsReceived) - Packet ID: \(header.packetId), Fragment: \(header.fragmentIndex), Audio: \(header.audioData.count) bytes")
         }
         
         // Get or create packet metadata
@@ -178,14 +178,14 @@ class PacketReassembler {
         if metadata.fragments.count == 1 && metadata.fragments[0] != nil {
             metadata.totalFragments = 1
             print("PacketReassembler: Single-fragment packet \(metadata.packetId) detected")
-            DebugLogger.shared.log("PacketReassembler: Single-fragment packet \(metadata.packetId) detected")
+            // DebugLogger.shared.log("PacketReassembler: Single-fragment packet \(metadata.packetId) detected")
         }
         
         // Check if packet is complete
         if metadata.isComplete {
             if let completePacket = metadata.assemblePacket() {
                 print("PacketReassembler: Complete packet \(metadata.packetId) assembled (\(completePacket.count) bytes)")
-                DebugLogger.shared.log("PacketReassembler: Complete packet \(metadata.packetId) assembled (\(completePacket.count) bytes)")
+                // DebugLogger.shared.log("PacketReassembler: Complete packet \(metadata.packetId) assembled (\(completePacket.count) bytes)")
                 
                 totalCompletePackets += 1
                 

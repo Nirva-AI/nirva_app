@@ -245,12 +245,6 @@ class VoiceActivityDetector {
             result = false
         }
         
-        // Log state changes
-        if result != prevSpeechState {
-            print("VAD: State change - Energy=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)), Speech=\(result)")
-            DebugLogger.shared.log("VAD: E=\(String(format: "%.6f", energy)), ZCR=\(String(format: "%.3f", zcr)), Speech=\(result)")
-        }
-        
         return result
     }
     

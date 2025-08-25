@@ -40,6 +40,7 @@ class OpusDecoder {
         
         if error != 0 || decoderPtr == nil {
             print("OpusDecoder: Failed to create decoder - error: \(error)")
+            // Keep critical error logging
             DebugLogger.shared.log("OpusDecoder: Failed to create decoder - error: \(error)")
             return nil
         }
@@ -50,7 +51,7 @@ class OpusDecoder {
         print("  Sample Rate: \(config.sampleRate) Hz")
         print("  Channels: \(config.channels)")
         print("  Frame Size: \(config.frameSize) samples")
-        DebugLogger.shared.log("OpusDecoder: Native libopus decoder initialized")
+        // DebugLogger.shared.log("OpusDecoder: Native libopus decoder initialized")
         isInitialized = true
     }
     
@@ -97,7 +98,7 @@ class OpusDecoder {
                 failedDecodes += 1
                 let errorCode = decodedSamples
                 print("OpusDecoder: Decode error: \(getOpusErrorString(errorCode))")
-                DebugLogger.shared.log("OpusDecoder: Decode error: \(getOpusErrorString(errorCode))")
+                // DebugLogger.shared.log("OpusDecoder: Decode error: \(getOpusErrorString(errorCode))")
                 
                 // Generate PLC frame for packet loss
                 return decodePLC()
@@ -117,7 +118,7 @@ class OpusDecoder {
             // Log only periodically to avoid spam
             if totalFramesDecoded % 100 == 1 {
                 print("OpusDecoder: Decoded \(opusData.count) bytes → \(pcmData.count) bytes PCM (\(actualSamples) samples)")
-                DebugLogger.shared.log("OpusDecoder: Decoded frame #\(totalFramesDecoded) - \(opusData.count) bytes → \(actualSamples) samples")
+                // DebugLogger.shared.log("OpusDecoder: Decoded frame #\(totalFramesDecoded) - \(opusData.count) bytes → \(actualSamples) samples")
             }
             
             return pcmData
@@ -198,7 +199,7 @@ class OpusDecoder {
             self.plcFrames = 0
             
             print("OpusDecoder: Decoder reset")
-            DebugLogger.shared.log("OpusDecoder: Decoder reset")
+            // DebugLogger.shared.log("OpusDecoder: Decoder reset")
         }
     }
     

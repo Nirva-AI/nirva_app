@@ -862,13 +862,14 @@ extension ConnectionOrchestrator: CBPeripheralDelegate {
         
         guard error == nil else {
             print("ConnectionOrchestrator: \(stateString) Error receiving data: \(error!)")
+            // Keep critical error logging
             DebugLogger.shared.log("ConnectionOrchestrator: \(stateString) Error receiving data: \(error!)")
             return
         }
         
         guard let data = characteristic.value else {
             print("ConnectionOrchestrator: \(stateString) Received empty data")
-            DebugLogger.shared.log("ConnectionOrchestrator: \(stateString) Received empty data")
+            // DebugLogger.shared.log("ConnectionOrchestrator: \(stateString) Received empty data")
             return
         }
         
@@ -886,11 +887,12 @@ extension ConnectionOrchestrator: CBPeripheralDelegate {
         // Log ALL packets in background - this is our wake event!
         if appState == .background || appState == .inactive {
             print("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT! Packet size: \(data.count) bytes")
-            DebugLogger.shared.log("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT! Packet size: \(data.count) bytes")
+            // Keep critical background wake event
+            DebugLogger.shared.log("ConnectionOrchestrator: \(stateString) BLE WAKE EVENT!")
             
             // We have ~10 seconds to process after wake
             print("ConnectionOrchestrator: Processing in BLE wake window...")
-            DebugLogger.shared.log("ConnectionOrchestrator: Processing in BLE wake window...")
+            // DebugLogger.shared.log("ConnectionOrchestrator: Processing in BLE wake window...")
         }
         
         // Refresh watchdog on packet received

@@ -4,7 +4,7 @@
 //
 
 #import "OpusWrapper.h"
-#import <opus/opus.h>
+#import <libopus-static/opus.h>
 
 @implementation OpusWrapper
 

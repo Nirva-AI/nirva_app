@@ -46,8 +46,9 @@ class S3BackgroundUploader: NSObject {
         config.sessionSendsLaunchEvents = true
         config.allowsCellularAccess = true
         config.shouldUseExtendedBackgroundIdleMode = true
-        config.timeoutIntervalForRequest = 60
-        config.timeoutIntervalForResource = 300
+        config.timeoutIntervalForRequest = 300  // Increased from 60
+        config.timeoutIntervalForResource = 86400  // 24 hours, increased from 300
+        config.waitsForConnectivity = true  // Wait for network if needed
         
         backgroundSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
     }
@@ -147,6 +148,10 @@ class S3BackgroundUploader: NSObject {
         do {
             let fileURL = URL(fileURLWithPath: upload.localPath)
             
+            // Get file size for Content-Length header
+            let fileAttributes = try FileManager.default.attributesOfItem(atPath: upload.localPath)
+            let fileSize = fileAttributes[.size] as? Int64 ?? 0
+            
             // Build S3 URL
             let s3URL = "https://\(creds.bucket).s3.\(creds.region).amazonaws.com/\(upload.s3Key)"
             guard let url = URL(string: s3URL) else {
@@ -157,6 +162,7 @@ class S3BackgroundUploader: NSObject {
             var request = URLRequest(url: url)
             request.httpMethod = "PUT"
             request.setValue("audio/wav", forHTTPHeaderField: "Content-Type")
+            request.setValue("\(fileSize)", forHTTPHeaderField: "Content-Length")
             
             // Add AWS v4 signature headers
             let headers = createAWSv4Headers(
@@ -202,25 +208,39 @@ class S3BackgroundUploader: NSObject {
         dateFormatter.dateFormat = "yyyyMMdd"
         let dateStamp = dateFormatter.string(from: date)
         
-        // Get file data for content hash
-        let fileData = (try? Data(contentsOf: fileURL)) ?? Data()
-        let payloadHash = sha256Hash(fileData)
+        // For background uploads, use UNSIGNED-PAYLOAD to avoid loading file into memory
+        // This is required for large files and background sessions
+        let payloadHash = "UNSIGNED-PAYLOAD"
         
         var headers: [String: String] = [:]
         headers["x-amz-date"] = amzDate
         headers["x-amz-content-sha256"] = payloadHash
-        headers["x-amz-security-token"] = credentials.sessionToken
+        if !credentials.sessionToken.isEmpty {
+            headers["x-amz-security-token"] = credentials.sessionToken
+        }
         
         // Create canonical request
-        let canonicalHeaders = """
-            content-type:audio/wav
-            host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
-            x-amz-content-sha256:\(payloadHash)
-            x-amz-date:\(amzDate)
-            x-amz-security-token:\(credentials.sessionToken)
-            """
+        let canonicalHeaders: String
+        let signedHeaders: String
         
-        let signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date;x-amz-security-token"
+        if !credentials.sessionToken.isEmpty {
+            canonicalHeaders = """
+                content-type:audio/wav
+                host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
+                x-amz-content-sha256:\(payloadHash)
+                x-amz-date:\(amzDate)
+                x-amz-security-token:\(credentials.sessionToken)
+                """
+            signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date;x-amz-security-token"
+        } else {
+            canonicalHeaders = """
+                content-type:audio/wav
+                host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
+                x-amz-content-sha256:\(payloadHash)
+                x-amz-date:\(amzDate)
+                """
+            signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date"
+        }
         
         let canonicalRequest = """
             PUT

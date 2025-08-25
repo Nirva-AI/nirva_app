@@ -112,12 +112,12 @@ class BleAudioServiceV2: NSObject {
         
         // Initialize audio processor with Opus decoder
         print("BleAudioServiceV2: Creating AudioProcessor...")
-        DebugLogger.shared.log("BleAudioServiceV2: Creating AudioProcessor...")
+        // DebugLogger.shared.log("BleAudioServiceV2: Creating AudioProcessor...")
         audioProcessor = AudioProcessor()
         
         if audioProcessor != nil {
             print("BleAudioServiceV2: AudioProcessor created successfully")
-            DebugLogger.shared.log("BleAudioServiceV2: AudioProcessor created successfully")
+            // DebugLogger.shared.log("BleAudioServiceV2: AudioProcessor created successfully")
             
             audioProcessor?.onSegmentReady = { [weak self] wavData, duration, filePath in
                 self?.handleAudioSegment(wavData, duration: duration, filePath: filePath)
@@ -359,7 +359,10 @@ class BleAudioServiceV2: NSObject {
             
             // ALWAYS log background packets - this is critical!
             print("BleAudioServiceV2: \(stateString) BACKGROUND PACKET #\(totalPacketsReceived + 1) (BG#\(backgroundPacketsReceived)), size: \(data.count) bytes")
-            DebugLogger.shared.log("BleAudioServiceV2: \(stateString) BACKGROUND PACKET #\(totalPacketsReceived + 1) (BG#\(backgroundPacketsReceived)), size: \(data.count) bytes")
+            // Log only first few background packets and periodically
+            if backgroundPacketsReceived <= 3 || backgroundPacketsReceived % 50 == 0 {
+                DebugLogger.shared.log("BleAudioServiceV2: \(stateString) BG packet #\(backgroundPacketsReceived)")
+            }
             
             // Mark background wake event
             if backgroundPacketsReceived == 1 {
@@ -368,7 +371,7 @@ class BleAudioServiceV2: NSObject {
         } else if totalPacketsReceived % 10 == 0 || totalPacketsReceived < 5 {
             // Log foreground packets periodically
             print("BleAudioServiceV2: \(stateString) Received packet #\(totalPacketsReceived + 1), size: \(data.count) bytes")
-            DebugLogger.shared.log("BleAudioServiceV2: \(stateString) Received packet #\(totalPacketsReceived + 1), size: \(data.count) bytes")
+            // Removed verbose foreground packet logging
         }
         
         // Update statistics
@@ -394,9 +397,6 @@ class BleAudioServiceV2: NSObject {
     }
     
     private func handleCompleteOpusPacket(_ opusData: Data) {
-        print("BleAudioServiceV2: Complete Opus packet received (\(opusData.count) bytes)")
-        DebugLogger.shared.log("BleAudioServiceV2: Complete Opus packet received (\(opusData.count) bytes)")
-        
         // Forward to audio processor for decoding and buffering
         if let processor = audioProcessor {
             print("BleAudioServiceV2: Forwarding to AudioProcessor")
@@ -416,7 +416,9 @@ class BleAudioServiceV2: NSObject {
     private func handleAudioSegment(_ wavData: Data, duration: TimeInterval, filePath: String) {
         print("BleAudioServiceV2: Audio segment ready - Duration: \(duration)s, Size: \(wavData.count) bytes")
         print("BleAudioServiceV2: Segment file path: \(filePath)")
-        DebugLogger.shared.log("BleAudioServiceV2: Audio segment ready at: \(filePath)")
+        // Keep segment creation for tracking
+        let fileName = URL(fileURLWithPath: filePath).lastPathComponent
+        DebugLogger.shared.log("BleAudioServiceV2: Segment ready: \(fileName)")
         
         // Phase 5: Queue for S3 upload via background URLSession
         // The AudioProcessor already saved the WAV file, we just need to queue it
@@ -425,7 +427,7 @@ class BleAudioServiceV2: NSObject {
         if FileManager.default.fileExists(atPath: filePath) {
             print("BleAudioServiceV2: Queueing segment for S3 upload: \(filePath)")
             let fileName = URL(fileURLWithPath: filePath).lastPathComponent
-            DebugLogger.shared.log("BleAudioServiceV2: Queueing segment for S3 upload: \(fileName)")
+            // DebugLogger.shared.log("BleAudioServiceV2: Queueing segment for S3 upload: \(fileName)")
             
             // Get user ID from UserDefaults (set by Flutter)
             let userId = UserDefaults.standard.string(forKey: "userId") ?? "default_user"
