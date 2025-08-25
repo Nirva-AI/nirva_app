@@ -11,6 +11,7 @@ import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/nirva_api.dart';
+import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/hive_helper.dart';
 import 'package:nirva_app/services/native_s3_bridge.dart';
 
@@ -33,6 +34,15 @@ class _SplashScreenState extends State<SplashScreen> {
     final Stopwatch stopwatch = Stopwatch()..start();
 
     try {
+      // Check if first launch by seeing if user token exists
+      final isFirstLaunch = HiveHelper.getUserToken().access_token.isEmpty;
+      
+      if (isFirstLaunch) {
+        // TEMPORARY FIX: Wait longer for iOS network to be ready on first launch
+        Logger().i('First launch detected - waiting for iOS network initialization...');
+        await Future.delayed(const Duration(seconds: 5));
+      }
+      
       // 检查网络状态 - 无网络时阻止启动
       final hasNetwork = await _checkNetworkStatus();
       if (!hasNetwork) {
@@ -137,8 +147,25 @@ class _SplashScreenState extends State<SplashScreen> {
       // 在异步操作前获取 UserProvider，避免跨异步使用 context
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final user = userProvider.user;
-
-      final urlConfig = await NirvaAPI.getUrlConfig();
+      // Retry logic for first network call
+      URLConfigurationResponse? urlConfig;
+      int retryCount = 0;
+      const maxRetries = 3;
+      
+      while (retryCount < maxRetries) {
+        try {
+          urlConfig = await NirvaAPI.getUrlConfig();
+          break; // Success, exit loop
+        } catch (e) {
+          retryCount++;
+          if (retryCount < maxRetries) {
+            await Future.delayed(const Duration(seconds: 2));
+          } else {
+            rethrow; // All retries failed
+          }
+        }
+      }
+      
       if (urlConfig == null) {
         throw Exception('获取 URL 配置失败');
       }
