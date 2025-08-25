@@ -96,6 +96,16 @@ class NativeS3Bridge {
       final result = await _channel.invokeMethod('setS3Credentials', credentialsMap);
       
       _logger.i('S3 credentials updated on native side');
+      
+      // After sending credentials, trigger processing of any queued uploads
+      // This is important for first launch when uploads may have been queued before credentials were available
+      try {
+        await processQueuedUploads();
+        _logger.i('Triggered processing of queued uploads after credentials update');
+      } catch (e) {
+        _logger.w('Failed to trigger queued uploads processing: $e');
+      }
+      
       return result == true;
       
     } catch (e) {

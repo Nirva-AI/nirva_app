@@ -126,11 +126,16 @@ import CoreBluetooth
     print("AppDelegate: Session identifier: \(identifier)")
     DebugLogger.shared.log("AppDelegate: Background URLSession event for: \(identifier)")
     
-    // Store the completion handler to be called when URLSession finishes
+    // CRITICAL: Recreate the session FIRST so iOS can deliver events
     if identifier == "com.nirva.s3upload" {
-      // Store the completion handler in S3BackgroundUploader so it can be called when all tasks complete
       if #available(iOS 13.0, *) {
+        // Force recreation of session with same identifier BEFORE storing handler
+        DebugLogger.shared.log("AppDelegate: Recreating S3BackgroundUploader session for background events")
+        S3BackgroundUploader.shared.recreateSessionIfNeeded()
+        
+        // NOW store the completion handler
         S3BackgroundUploader.shared.backgroundCompletionHandler = completionHandler
+        DebugLogger.shared.log("AppDelegate: Stored background completion handler")
       } else {
         completionHandler()
       }
@@ -150,6 +155,9 @@ import CoreBluetooth
       let connectionInfo = BleAudioServiceV2.shared.getConnectionInfo()
       print("AppDelegate: BLE Connection state when backgrounding: \(connectionInfo)")
       DebugLogger.shared.log("AppDelegate: BLE Connection state when backgrounding: \(connectionInfo)")
+      
+      // Ensure S3 uploads continue in background
+      S3BackgroundUploader.shared.handleAppBackground()
     }
     
     // Request background time to ensure BLE operations complete

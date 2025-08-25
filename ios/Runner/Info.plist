@@ -71,6 +71,7 @@
 		<string>bluetooth-central</string>
 		<string>fetch</string>
 		<string>processing</string>
+		<string>remote-notification</string>
 	</array>
 	
 	<!-- Microphone Usage for Audio Processing -->
