@@ -311,12 +311,18 @@ class S3BackgroundUploader: NSObject {
                 request.setValue("audio/wav", forHTTPHeaderField: "Content-Type")
                 request.setValue("\(fileSize)", forHTTPHeaderField: "Content-Length")
                 
+                // Add custom metadata as x-amz-meta-* headers
+                for (key, value) in upload.metadata {
+                    request.setValue(value, forHTTPHeaderField: "x-amz-meta-\(key.lowercased())")
+                }
+                
                 // Add AWS v4 signature headers
                 let headers = self.createAWSv4Headers(
                     for: request,
                     credentials: creds,
                     s3Key: upload.s3Key,
-                    fileURL: fileURL
+                    fileURL: fileURL,
+                    metadata: upload.metadata
                 )
                 
                 for (key, value) in headers {
@@ -378,7 +384,8 @@ class S3BackgroundUploader: NSObject {
         for request: URLRequest,
         credentials: S3Credentials,
         s3Key: String,
-        fileURL: URL
+        fileURL: URL,
+        metadata: [String: String] = [:]
     ) -> [String: String] {
         let date = Date()
         let dateFormatter = DateFormatter()
@@ -404,23 +411,54 @@ class S3BackgroundUploader: NSObject {
         let canonicalHeaders: String
         let signedHeaders: String
         
+        // Sort metadata keys for consistent ordering in canonical request
+        let sortedMetadataKeys = metadata.keys.sorted()
+        let metadataHeaders = sortedMetadataKeys.map { key in
+            "x-amz-meta-\(key.lowercased()):\(metadata[key] ?? "")"
+        }.joined(separator: "\n")
+        
+        let metadataSignedHeaders = sortedMetadataKeys.map { key in "x-amz-meta-\(key.lowercased())" }.joined(separator: ";")
+        
         if !credentials.sessionToken.isEmpty {
-            canonicalHeaders = """
-                content-type:audio/wav
-                host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
-                x-amz-content-sha256:\(payloadHash)
-                x-amz-date:\(amzDate)
-                x-amz-security-token:\(credentials.sessionToken)
-                """
-            signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date;x-amz-security-token"
+            if !metadata.isEmpty {
+                canonicalHeaders = """
+                    content-type:audio/wav
+                    host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
+                    x-amz-content-sha256:\(payloadHash)
+                    x-amz-date:\(amzDate)
+                    \(metadataHeaders)
+                    x-amz-security-token:\(credentials.sessionToken)
+                    """
+                signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date;\(metadataSignedHeaders);x-amz-security-token"
+            } else {
+                canonicalHeaders = """
+                    content-type:audio/wav
+                    host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
+                    x-amz-content-sha256:\(payloadHash)
+                    x-amz-date:\(amzDate)
+                    x-amz-security-token:\(credentials.sessionToken)
+                    """
+                signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date;x-amz-security-token"
+            }
         } else {
-            canonicalHeaders = """
-                content-type:audio/wav
-                host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
-                x-amz-content-sha256:\(payloadHash)
-                x-amz-date:\(amzDate)
-                """
-            signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date"
+            if !metadata.isEmpty {
+                canonicalHeaders = """
+                    content-type:audio/wav
+                    host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
+                    x-amz-content-sha256:\(payloadHash)
+                    x-amz-date:\(amzDate)
+                    \(metadataHeaders)
+                    """
+                signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date;\(metadataSignedHeaders)"
+            } else {
+                canonicalHeaders = """
+                    content-type:audio/wav
+                    host:\(credentials.bucket).s3.\(credentials.region).amazonaws.com
+                    x-amz-content-sha256:\(payloadHash)
+                    x-amz-date:\(amzDate)
+                    """
+                signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date"
+            }
         }
         
         let canonicalRequest = """

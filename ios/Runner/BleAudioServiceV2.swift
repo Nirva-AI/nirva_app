@@ -439,7 +439,8 @@ class BleAudioServiceV2: NSObject {
                 metadata: [
                     "duration": String(duration),
                     "segmentNumber": String(totalSegments),
-                    "deviceId": connectionOrchestrator.getConnectionInfo()["deviceId"] as? String ?? "unknown"
+                    "deviceId": connectionOrchestrator.getConnectionInfo()["deviceId"] as? String ?? "unknown",
+                    "capturedAt": String(Date().timeIntervalSince1970 * 1000) // Timestamp in milliseconds when audio was captured
                 ]
             )
             
