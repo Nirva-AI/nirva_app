@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -187,11 +189,46 @@ class NativeS3Bridge {
       if (parts.length != 3) return 'default_user';
       
       // Decode the payload (second part)
-      // Note: This is a simplified extraction, you might need to properly decode the JWT
-      // For now, we'll use the token as a unique identifier
-      return token.substring(0, 8); // Use first 8 chars as user ID
+      final payload = parts[1];
       
+      // Add padding if needed for base64 decoding
+      final padding = (4 - payload.length % 4) % 4;
+      final paddedPayload = payload + ('=' * padding);
+      
+      // Decode base64
+      final decodedBytes = base64Url.decode(paddedPayload);
+      final decodedString = utf8.decode(decodedBytes);
+      
+      // Parse JSON
+      final Map<String, dynamic> payloadMap = json.decode(decodedString);
+      
+      // Extract username from 'sub' field (standard JWT claim for subject/username)
+      final username = payloadMap['sub'] as String?;
+      
+      if (username != null && username.isNotEmpty) {
+        // Hash the username for consistent S3 paths
+        final hashedUsername = _hashUsername(username);
+        _logger.i('Extracted username from JWT: $username -> hash: $hashedUsername');
+        return hashedUsername;
+      }
+      
+      return 'default_user';
     } catch (e) {
+      _logger.e('Failed to extract username from JWT: $e');
+      return 'default_user';
+    }
+  }
+  
+  /// Hash username using SHA-256 for consistent S3 paths
+  String _hashUsername(String username) {
+    try {
+      final bytes = utf8.encode(username);
+      final digest = sha256.convert(bytes);
+      
+      // Take first 16 characters of hex digest for reasonable length
+      return digest.toString().substring(0, 16);
+    } catch (e) {
+      _logger.e('Failed to hash username: $e');
       return 'default_user';
     }
   }

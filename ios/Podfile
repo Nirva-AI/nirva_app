@@ -33,6 +33,7 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   
   # Add libopus for audio decoding
+  # Note: libopus-static doesn't support simulator architectures
   pod 'libopus-static', '~> 1.3'
   
   target 'RunnerTests' do
@@ -43,5 +44,17 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    
+    # Exclude arm64 for simulator builds for pods that don't support it
+    if target.name == 'libopus-static'
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      end
+    end
+  end
+  
+  # Also exclude arm64 from the main project for simulator
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
   end
 end

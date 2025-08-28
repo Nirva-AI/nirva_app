@@ -105,7 +105,7 @@ class UserProfilePage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            NirvaAPI.dio.options.baseUrl,
+                            NirvaAPI.dioInstance.options.baseUrl,
                             style: TextStyle(color: Colors.grey),
                           ),
                           Icon(

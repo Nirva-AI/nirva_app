@@ -14,7 +14,9 @@ import 'package:nirva_app/url_configuration.dart';
 
 class NirvaAPI {
   // 服务器地址 localNetworkServerAddress
+  // static const String localNetworkServerAddress = '192.168.50.18';
   static const String localNetworkServerAddress = '192.168.192.104';
+
   static const String devAWSServerAddress = '52.73.87.226';
 
   // 基础端口号
@@ -31,15 +33,15 @@ class NirvaAPI {
   // url 配置
   static final URLConfiguration _urlConfig = URLConfiguration();
 
-  // 静态 Dio 实例
+  // 静态 Dio 实例 (exposed for debugging)
+  static Dio get dioInstance => _dio;
   static final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: devAwsServerHttpUrl,
-        connectTimeout: const Duration(seconds: 5),
+        baseUrl: devAwsServerHttpUrl,  // Use AWS server
+        connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 30),
       ),
-    )
-    ..interceptors.addAll([
+    )..interceptors.addAll([
       LogInterceptor(request: true, requestHeader: true, responseHeader: true),
       InterceptorsWrapper(
         onError: (error, handler) {
@@ -605,5 +607,59 @@ class NirvaAPI {
     final taskStatus = response.data!;
     Logger().d('Task status response: ${jsonEncode(taskStatus)}');
     return taskStatus;
+  }
+
+  // Get transcriptions with pagination
+  static Future<TranscriptionsResponse?> getTranscriptions({
+    int page = 1,
+    int pageSize = 50,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      final userToken = HiveHelper.getUserToken();
+      if (userToken.access_token.isEmpty) {
+        Logger().e('No valid access token for fetching transcriptions');
+        return null;
+      }
+
+      // Build query parameters
+      final queryParams = <String, dynamic>{
+        'page': page,
+        'page_size': pageSize,
+      };
+
+      // Add optional date filters if provided
+      if (startDate != null) {
+        queryParams['start_date'] = startDate.toIso8601String();
+      }
+      if (endDate != null) {
+        queryParams['end_date'] = endDate.toIso8601String();
+      }
+
+      Logger().d('Fetching transcriptions - Page: $page, PageSize: $pageSize');
+      Logger().d('Using base URL: ${_dio.options.baseUrl}');
+      Logger().d('Full URL will be: ${_dio.options.baseUrl}/api/v1/transcriptions');
+
+      final response = await safeGet<Map<String, dynamic>>(
+        _dio,
+        '/api/v1/transcriptions',
+        query: queryParams,
+        receiveTimeout: 30,
+      );
+
+      if (response == null || response.data == null) {
+        Logger().e('Failed to fetch transcriptions: No response data');
+        return null;
+      }
+
+      final transcriptionsResponse = TranscriptionsResponse.fromJson(response.data!);
+      Logger().d('Fetched ${transcriptionsResponse.items.length} transcriptions');
+      
+      return transcriptionsResponse;
+    } catch (e) {
+      Logger().e('Error fetching transcriptions: $e');
+      return null;
+    }
   }
 }

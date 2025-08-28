@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:opus_dart/opus_dart.dart';
-import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
+// import 'package:opus_flutter/opus_flutter.dart' as opus_flutter; // Removed - using native implementation
 
 /// Service for decoding Opus audio data from OMI device
 /// 
@@ -52,18 +52,9 @@ class OpusDecoderService extends ChangeNotifier {
       debugPrint('OpusDecoderService: Initializing Opus decoder...');
       
       // Initialize the opus library first
-      debugPrint('OpusDecoderService: Initializing opus library...');
-      try {
-        // Use opus_flutter to load the native Opus library
-        debugPrint('OpusDecoderService: Loading native Opus library via opus_flutter...');
-        final opusLib = await opus_flutter.load();
-        initOpus(opusLib);
-        debugPrint('OpusDecoderService: Opus library initialized successfully via opus_flutter');
-      } catch (e) {
-        debugPrint('OpusDecoderService: Failed to initialize opus library: $e');
-        debugPrint('  - Error details: $e');
-        return false;
-      }
+      // Note: Native implementation is being used via iOS native code
+      // opus_flutter dependency has been removed in favor of native libopus-static
+      debugPrint('OpusDecoderService: Using native Opus implementation...');
       
       // Create Opus decoder with OMI firmware parameters
       _decoder = SimpleOpusDecoder(

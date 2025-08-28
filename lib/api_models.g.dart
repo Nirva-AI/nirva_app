@@ -129,3 +129,43 @@ Map<String, dynamic> _$$BackgroundTaskResponseImplToJson(
       'task_id': instance.task_id,
       'message': instance.message,
     };
+
+_$TranscriptionItemImpl _$$TranscriptionItemImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TranscriptionItemImpl(
+      id: json['id'] as String?,
+      text: json['text'] as String,
+      start_time: json['start_time'] as String,
+      end_time: json['end_time'] as String,
+    );
+
+Map<String, dynamic> _$$TranscriptionItemImplToJson(
+        _$TranscriptionItemImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'text': instance.text,
+      'start_time': instance.start_time,
+      'end_time': instance.end_time,
+    };
+
+_$TranscriptionsResponseImpl _$$TranscriptionsResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TranscriptionsResponseImpl(
+      items: (json['transcriptions'] as List<dynamic>)
+          .map((e) => TranscriptionItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      total: (json['total'] as num).toInt(),
+      page: (json['page'] as num).toInt(),
+      page_size: (json['page_size'] as num).toInt(),
+      has_more: json['has_more'] as bool,
+    );
+
+Map<String, dynamic> _$$TranscriptionsResponseImplToJson(
+        _$TranscriptionsResponseImpl instance) =>
+    <String, dynamic>{
+      'transcriptions': instance.items,
+      'total': instance.total,
+      'page': instance.page,
+      'page_size': instance.page_size,
+      'has_more': instance.has_more,
+    };

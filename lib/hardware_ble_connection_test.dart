@@ -4,6 +4,9 @@ import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/models/hardware_device.dart';
+import 'package:nirva_app/nirva_api.dart';
+import 'package:nirva_app/api_models.dart';
+import 'package:intl/intl.dart';
 
 /// Test page for the new background-first BLE connection system
 class HardwareBleConnectionTest extends StatefulWidget {
@@ -33,6 +36,13 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   final List<String> _eventLog = [];
   final Map<String, Map<String, dynamic>> _discoveredDevices = {};
   
+  // Transcription state
+  final List<TranscriptionItem> _transcriptions = [];
+  bool _isLoadingTranscriptions = false;
+  bool _hasMoreTranscriptions = false;
+  int _currentPage = 1;  // API uses 1-based pagination
+  String? _transcriptionsError;
+  
   // Stream subscriptions
   StreamSubscription? _connectionEventsSub;
   StreamSubscription? _streamingEventsSub;
@@ -47,6 +57,8 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
     Future.delayed(const Duration(milliseconds: 500), () {
       print('HardwareBleConnectionTest: Getting initial connection info...');
       _getConnectionInfo();
+      // Load transcriptions on page load
+      _loadTranscriptions();
     });
   }
   
@@ -320,6 +332,89 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
     }
   }
   
+  // Transcription methods
+  Future<void> _loadTranscriptions({bool loadMore = false}) async {
+    print('_loadTranscriptions called, loadMore: $loadMore, isLoading: $_isLoadingTranscriptions');
+    _addLog('_loadTranscriptions called, isLoading: $_isLoadingTranscriptions');
+    
+    if (_isLoadingTranscriptions) {
+      print('Already loading, returning early');
+      return;
+    }
+    
+    setState(() {
+      _isLoadingTranscriptions = true;
+      _transcriptionsError = null;
+      
+      if (!loadMore) {
+        _currentPage = 1;
+        _transcriptions.clear();
+      } else {
+        _currentPage++;
+      }
+    });
+    
+    try {
+      
+      final response = await NirvaAPI.getTranscriptions(
+        page: _currentPage,
+        pageSize: 50,
+      );
+      
+      if (response != null) {
+        setState(() {
+          _transcriptions.addAll(response.items);
+          _hasMoreTranscriptions = response.has_more;
+          _isLoadingTranscriptions = false;
+        });
+        
+        _addLog('Loaded ${response.items.length} transcriptions (page $_currentPage)');
+      } else {
+        setState(() {
+          _transcriptionsError = 'Failed to load transcriptions';
+          _isLoadingTranscriptions = false;
+          // Reset page on error if we were loading more
+          if (loadMore) _currentPage--;
+        });
+        _addLog('Error loading transcriptions');
+      }
+    } catch (e) {
+      setState(() {
+        _transcriptionsError = 'Error: $e';
+        _isLoadingTranscriptions = false;
+        // Reset page on error if we were loading more
+        if (loadMore) _currentPage--;
+      });
+      _addLog('Exception loading transcriptions: $e');
+    }
+  }
+  
+  // Helper method to format relative time
+  String _formatRelativeTime(String isoTime) {
+    try {
+      final dateTime = DateTime.parse(isoTime);
+      final now = DateTime.now();
+      final difference = now.difference(dateTime);
+      
+      if (difference.inSeconds < 60) {
+        return 'Just now';
+      } else if (difference.inMinutes < 60) {
+        final minutes = difference.inMinutes;
+        return '$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago';
+      } else if (difference.inHours < 24) {
+        final hours = difference.inHours;
+        return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
+      } else if (difference.inDays < 7) {
+        final days = difference.inDays;
+        return '$days ${days == 1 ? 'day' : 'days'} ago';
+      } else {
+        return DateFormat('MMM d, y').format(dateTime);
+      }
+    } catch (e) {
+      return isoTime;
+    }
+  }
+  
   Future<void> _getDebugLog() async {
     try {
       final log = await _methodChannel.invokeMethod('getDebugLog');
@@ -575,6 +670,153 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
               ),
               const SizedBox(height: 8),
             ],
+            
+            // Transcriptions Section
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Transcriptions', style: Theme.of(context).textTheme.titleMedium),
+                        IconButton(
+                          icon: const Icon(Icons.refresh),
+                          onPressed: _isLoadingTranscriptions ? null : () => _loadTranscriptions(),
+                          tooltip: 'Refresh transcriptions',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    // Error message
+                    if (_transcriptionsError != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _transcriptionsError!,
+                                style: const TextStyle(color: Colors.red, fontSize: 12),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                print('RETRY BUTTON PRESSED');
+                                _addLog('Retry button pressed');
+                                _loadTranscriptions();
+                              },
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    
+                    // Transcriptions list
+                    Container(
+                      constraints: const BoxConstraints(maxHeight: 400),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          // List of transcriptions
+                          Expanded(
+                            child: _transcriptions.isEmpty && !_isLoadingTranscriptions
+                                ? Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24.0),
+                                      child: Text(
+                                        _transcriptionsError != null 
+                                            ? 'Failed to load transcriptions'
+                                            : 'No transcriptions yet',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: _transcriptions.length + (_isLoadingTranscriptions && _transcriptions.isNotEmpty ? 1 : 0),
+                                    itemBuilder: (context, index) {
+                                      if (index == _transcriptions.length) {
+                                        // Loading indicator at the bottom
+                                        return const Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(16.0),
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        );
+                                      }
+                                      
+                                      final transcription = _transcriptions[index];
+                                      final isEven = index % 2 == 0;
+                                      
+                                      return Container(
+                                        color: isEven ? Colors.grey.shade50 : Colors.white,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _formatRelativeTime(transcription.start_time),
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.grey.shade600,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              transcription.text,
+                                              style: const TextStyle(fontSize: 13),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                          
+                          // Loading indicator for initial load
+                          if (_isLoadingTranscriptions && _transcriptions.isEmpty)
+                            const LinearProgressIndicator(),
+                          
+                          // Load more button
+                          if (_hasMoreTranscriptions && !_isLoadingTranscriptions)
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  top: BorderSide(color: Colors.grey.shade300),
+                                ),
+                              ),
+                              child: TextButton(
+                                onPressed: () => _loadTranscriptions(loadMore: true),
+                                child: const Text('Load More'),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
             
             // Event Log
             Card(

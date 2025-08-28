@@ -1589,3 +1589,472 @@ abstract class _BackgroundTaskResponse implements BackgroundTaskResponse {
   _$$BackgroundTaskResponseImplCopyWith<_$BackgroundTaskResponseImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
+
+TranscriptionItem _$TranscriptionItemFromJson(Map<String, dynamic> json) {
+  return _TranscriptionItem.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TranscriptionItem {
+  String? get id => throw _privateConstructorUsedError;
+  String get text => throw _privateConstructorUsedError;
+  String get start_time =>
+      throw _privateConstructorUsedError; // ISO format timestamp from server
+  String get end_time => throw _privateConstructorUsedError;
+
+  /// Serializes this TranscriptionItem to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TranscriptionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TranscriptionItemCopyWith<TranscriptionItem> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TranscriptionItemCopyWith<$Res> {
+  factory $TranscriptionItemCopyWith(
+          TranscriptionItem value, $Res Function(TranscriptionItem) then) =
+      _$TranscriptionItemCopyWithImpl<$Res, TranscriptionItem>;
+  @useResult
+  $Res call({String? id, String text, String start_time, String end_time});
+}
+
+/// @nodoc
+class _$TranscriptionItemCopyWithImpl<$Res, $Val extends TranscriptionItem>
+    implements $TranscriptionItemCopyWith<$Res> {
+  _$TranscriptionItemCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TranscriptionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = freezed,
+    Object? text = null,
+    Object? start_time = null,
+    Object? end_time = null,
+  }) {
+    return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      text: null == text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+      start_time: null == start_time
+          ? _value.start_time
+          : start_time // ignore: cast_nullable_to_non_nullable
+              as String,
+      end_time: null == end_time
+          ? _value.end_time
+          : end_time // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$TranscriptionItemImplCopyWith<$Res>
+    implements $TranscriptionItemCopyWith<$Res> {
+  factory _$$TranscriptionItemImplCopyWith(_$TranscriptionItemImpl value,
+          $Res Function(_$TranscriptionItemImpl) then) =
+      __$$TranscriptionItemImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? id, String text, String start_time, String end_time});
+}
+
+/// @nodoc
+class __$$TranscriptionItemImplCopyWithImpl<$Res>
+    extends _$TranscriptionItemCopyWithImpl<$Res, _$TranscriptionItemImpl>
+    implements _$$TranscriptionItemImplCopyWith<$Res> {
+  __$$TranscriptionItemImplCopyWithImpl(_$TranscriptionItemImpl _value,
+      $Res Function(_$TranscriptionItemImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TranscriptionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = freezed,
+    Object? text = null,
+    Object? start_time = null,
+    Object? end_time = null,
+  }) {
+    return _then(_$TranscriptionItemImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      text: null == text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
+              as String,
+      start_time: null == start_time
+          ? _value.start_time
+          : start_time // ignore: cast_nullable_to_non_nullable
+              as String,
+      end_time: null == end_time
+          ? _value.end_time
+          : end_time // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TranscriptionItemImpl implements _TranscriptionItem {
+  const _$TranscriptionItemImpl(
+      {this.id,
+      required this.text,
+      required this.start_time,
+      required this.end_time});
+
+  factory _$TranscriptionItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TranscriptionItemImplFromJson(json);
+
+  @override
+  final String? id;
+  @override
+  final String text;
+  @override
+  final String start_time;
+// ISO format timestamp from server
+  @override
+  final String end_time;
+
+  @override
+  String toString() {
+    return 'TranscriptionItem(id: $id, text: $text, start_time: $start_time, end_time: $end_time)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TranscriptionItemImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.text, text) || other.text == text) &&
+            (identical(other.start_time, start_time) ||
+                other.start_time == start_time) &&
+            (identical(other.end_time, end_time) ||
+                other.end_time == end_time));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, text, start_time, end_time);
+
+  /// Create a copy of TranscriptionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TranscriptionItemImplCopyWith<_$TranscriptionItemImpl> get copyWith =>
+      __$$TranscriptionItemImplCopyWithImpl<_$TranscriptionItemImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TranscriptionItemImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _TranscriptionItem implements TranscriptionItem {
+  const factory _TranscriptionItem(
+      {final String? id,
+      required final String text,
+      required final String start_time,
+      required final String end_time}) = _$TranscriptionItemImpl;
+
+  factory _TranscriptionItem.fromJson(Map<String, dynamic> json) =
+      _$TranscriptionItemImpl.fromJson;
+
+  @override
+  String? get id;
+  @override
+  String get text;
+  @override
+  String get start_time; // ISO format timestamp from server
+  @override
+  String get end_time;
+
+  /// Create a copy of TranscriptionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TranscriptionItemImplCopyWith<_$TranscriptionItemImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+TranscriptionsResponse _$TranscriptionsResponseFromJson(
+    Map<String, dynamic> json) {
+  return _TranscriptionsResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TranscriptionsResponse {
+  @JsonKey(name: 'transcriptions')
+  List<TranscriptionItem> get items => throw _privateConstructorUsedError;
+  int get total => throw _privateConstructorUsedError;
+  int get page => throw _privateConstructorUsedError;
+  int get page_size => throw _privateConstructorUsedError;
+  bool get has_more => throw _privateConstructorUsedError;
+
+  /// Serializes this TranscriptionsResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TranscriptionsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TranscriptionsResponseCopyWith<TranscriptionsResponse> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TranscriptionsResponseCopyWith<$Res> {
+  factory $TranscriptionsResponseCopyWith(TranscriptionsResponse value,
+          $Res Function(TranscriptionsResponse) then) =
+      _$TranscriptionsResponseCopyWithImpl<$Res, TranscriptionsResponse>;
+  @useResult
+  $Res call(
+      {@JsonKey(name: 'transcriptions') List<TranscriptionItem> items,
+      int total,
+      int page,
+      int page_size,
+      bool has_more});
+}
+
+/// @nodoc
+class _$TranscriptionsResponseCopyWithImpl<$Res,
+        $Val extends TranscriptionsResponse>
+    implements $TranscriptionsResponseCopyWith<$Res> {
+  _$TranscriptionsResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TranscriptionsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? total = null,
+    Object? page = null,
+    Object? page_size = null,
+    Object? has_more = null,
+  }) {
+    return _then(_value.copyWith(
+      items: null == items
+          ? _value.items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<TranscriptionItem>,
+      total: null == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int,
+      page: null == page
+          ? _value.page
+          : page // ignore: cast_nullable_to_non_nullable
+              as int,
+      page_size: null == page_size
+          ? _value.page_size
+          : page_size // ignore: cast_nullable_to_non_nullable
+              as int,
+      has_more: null == has_more
+          ? _value.has_more
+          : has_more // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$TranscriptionsResponseImplCopyWith<$Res>
+    implements $TranscriptionsResponseCopyWith<$Res> {
+  factory _$$TranscriptionsResponseImplCopyWith(
+          _$TranscriptionsResponseImpl value,
+          $Res Function(_$TranscriptionsResponseImpl) then) =
+      __$$TranscriptionsResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@JsonKey(name: 'transcriptions') List<TranscriptionItem> items,
+      int total,
+      int page,
+      int page_size,
+      bool has_more});
+}
+
+/// @nodoc
+class __$$TranscriptionsResponseImplCopyWithImpl<$Res>
+    extends _$TranscriptionsResponseCopyWithImpl<$Res,
+        _$TranscriptionsResponseImpl>
+    implements _$$TranscriptionsResponseImplCopyWith<$Res> {
+  __$$TranscriptionsResponseImplCopyWithImpl(
+      _$TranscriptionsResponseImpl _value,
+      $Res Function(_$TranscriptionsResponseImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TranscriptionsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? total = null,
+    Object? page = null,
+    Object? page_size = null,
+    Object? has_more = null,
+  }) {
+    return _then(_$TranscriptionsResponseImpl(
+      items: null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<TranscriptionItem>,
+      total: null == total
+          ? _value.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int,
+      page: null == page
+          ? _value.page
+          : page // ignore: cast_nullable_to_non_nullable
+              as int,
+      page_size: null == page_size
+          ? _value.page_size
+          : page_size // ignore: cast_nullable_to_non_nullable
+              as int,
+      has_more: null == has_more
+          ? _value.has_more
+          : has_more // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TranscriptionsResponseImpl implements _TranscriptionsResponse {
+  const _$TranscriptionsResponseImpl(
+      {@JsonKey(name: 'transcriptions')
+      required final List<TranscriptionItem> items,
+      required this.total,
+      required this.page,
+      required this.page_size,
+      required this.has_more})
+      : _items = items;
+
+  factory _$TranscriptionsResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TranscriptionsResponseImplFromJson(json);
+
+  final List<TranscriptionItem> _items;
+  @override
+  @JsonKey(name: 'transcriptions')
+  List<TranscriptionItem> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  @override
+  final int total;
+  @override
+  final int page;
+  @override
+  final int page_size;
+  @override
+  final bool has_more;
+
+  @override
+  String toString() {
+    return 'TranscriptionsResponse(items: $items, total: $total, page: $page, page_size: $page_size, has_more: $has_more)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TranscriptionsResponseImpl &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.total, total) || other.total == total) &&
+            (identical(other.page, page) || other.page == page) &&
+            (identical(other.page_size, page_size) ||
+                other.page_size == page_size) &&
+            (identical(other.has_more, has_more) ||
+                other.has_more == has_more));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_items),
+      total,
+      page,
+      page_size,
+      has_more);
+
+  /// Create a copy of TranscriptionsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TranscriptionsResponseImplCopyWith<_$TranscriptionsResponseImpl>
+      get copyWith => __$$TranscriptionsResponseImplCopyWithImpl<
+          _$TranscriptionsResponseImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TranscriptionsResponseImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _TranscriptionsResponse implements TranscriptionsResponse {
+  const factory _TranscriptionsResponse(
+      {@JsonKey(name: 'transcriptions')
+      required final List<TranscriptionItem> items,
+      required final int total,
+      required final int page,
+      required final int page_size,
+      required final bool has_more}) = _$TranscriptionsResponseImpl;
+
+  factory _TranscriptionsResponse.fromJson(Map<String, dynamic> json) =
+      _$TranscriptionsResponseImpl.fromJson;
+
+  @override
+  @JsonKey(name: 'transcriptions')
+  List<TranscriptionItem> get items;
+  @override
+  int get total;
+  @override
+  int get page;
+  @override
+  int get page_size;
+  @override
+  bool get has_more;
+
+  /// Create a copy of TranscriptionsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TranscriptionsResponseImplCopyWith<_$TranscriptionsResponseImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

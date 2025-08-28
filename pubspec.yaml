@@ -65,7 +65,6 @@ dependencies:
   audioplayers: ^5.2.1
   flutter_blue_plus: ^1.33.6
   opus_dart: ^3.0.1
-  opus_flutter: ^3.0.3
   sherpa_onnx: ^1.9.0
 
 dev_dependencies:

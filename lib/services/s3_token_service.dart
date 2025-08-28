@@ -118,7 +118,7 @@ class S3TokenService {
       _logger.i('S3TokenService: JWT token available, calling S3 upload token endpoint...');
       
       // Call S3 upload token endpoint
-      final response = await NirvaAPI.dio.post(
+      final response = await NirvaAPI.dioInstance.post(
         '/action/auth/s3-upload-token/v1/',
         options: Options(
           headers: {

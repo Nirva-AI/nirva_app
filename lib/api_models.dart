@@ -119,3 +119,35 @@ class BackgroundTaskResponse with _$BackgroundTaskResponse {
   @override
   Map<String, dynamic> toJson() => (this as _BackgroundTaskResponse).toJson();
 }
+
+// Transcription models for fetching transcriptions from server
+@freezed
+class TranscriptionItem with _$TranscriptionItem {
+  const factory TranscriptionItem({
+    String? id,
+    required String text,
+    required String start_time, // ISO format timestamp from server
+    required String end_time,   // ISO format timestamp from server
+  }) = _TranscriptionItem;
+
+  factory TranscriptionItem.fromJson(Map<String, dynamic> json) =>
+      _$TranscriptionItemFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _TranscriptionItem).toJson();
+}
+
+@freezed
+class TranscriptionsResponse with _$TranscriptionsResponse {
+  const factory TranscriptionsResponse({
+    @JsonKey(name: 'transcriptions') required List<TranscriptionItem> items,
+    required int total,
+    required int page,
+    required int page_size,
+    required bool has_more,
+  }) = _TranscriptionsResponse;
+
+  factory TranscriptionsResponse.fromJson(Map<String, dynamic> json) =>
+      _$TranscriptionsResponseFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => (this as _TranscriptionsResponse).toJson();
+}
