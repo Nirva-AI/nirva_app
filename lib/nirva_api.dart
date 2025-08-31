@@ -662,4 +662,33 @@ class NirvaAPI {
       return null;
     }
   }
+
+  // Get detailed transcription information
+  Future<Map<String, dynamic>> getTranscriptionDetails(String transcriptionId) async {
+    try {
+      Logger().d('Fetching transcription details for ID: $transcriptionId');
+      
+      final token = await getStoredJWT();
+      if (token == null || token.isEmpty) {
+        throw Exception('No authentication token available');
+      }
+
+      final response = await simpleGet<Map<String, dynamic>>(
+        _dio,
+        '/api/v1/transcriptions/$transcriptionId/details',
+        token,
+        receiveTimeout: const Duration(seconds: 10),
+      );
+
+      if (response == null || response.data == null) {
+        throw Exception('Failed to fetch transcription details');
+      }
+
+      Logger().d('Successfully fetched transcription details');
+      return response.data!;
+    } catch (e) {
+      Logger().e('Error fetching transcription details: $e');
+      rethrow;
+    }
+  }
 }

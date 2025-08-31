@@ -7,6 +7,7 @@ import 'package:nirva_app/models/hardware_device.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:intl/intl.dart';
+import 'package:nirva_app/transcription_detail_page.dart';
 
 /// Test page for the new background-first BLE connection system
 class HardwareBleConnectionTest extends StatefulWidget {
@@ -765,26 +766,51 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
                                       final transcription = _transcriptions[index];
                                       final isEven = index % 2 == 0;
                                       
-                                      return Container(
-                                        color: isEven ? Colors.grey.shade50 : Colors.white,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              _formatRelativeTime(transcription.start_time),
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: Colors.grey.shade600,
-                                                fontWeight: FontWeight.w500,
+                                      return InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => TranscriptionDetailPage(
+                                                transcription: transcription,
                                               ),
                                             ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              transcription.text,
-                                              style: const TextStyle(fontSize: 13),
-                                            ),
-                                          ],
+                                          );
+                                        },
+                                        child: Container(
+                                          color: isEven ? Colors.grey.shade50 : Colors.white,
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      _formatRelativeTime(transcription.start_time),
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color: Colors.grey.shade600,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      transcription.text,
+                                                      style: const TextStyle(fontSize: 13),
+                                                      maxLines: 3,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const Icon(
+                                                Icons.chevron_right,
+                                                color: Colors.grey,
+                                                size: 20,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       );
                                     },
