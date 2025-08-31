@@ -352,10 +352,25 @@ class S3BackgroundUploader: NSObject {
                 
                 // CRITICAL: Force immediate flush in background
                 if appState == .background {
+                    // Ensure we have enough time to flush
+                    beginBackgroundTask()
+                    
                     if #available(iOS 13.0, *) {
-                        Task {
+                        Task { @MainActor in
                             await session.flush()  // Force the session to process pending tasks immediately
                             DebugLogger.shared.log("S3BackgroundUploader: 🔥 Forced session flush in BACKGROUND")
+                            
+                            // Verify tasks are actually running after flush
+                            session.getAllTasks { tasks in
+                                DebugLogger.shared.log("S3BackgroundUploader: After flush - \(tasks.count) tasks")
+                                for (index, task) in tasks.enumerated() {
+                                    DebugLogger.shared.log("S3BackgroundUploader: Task \(task.taskIdentifier) state: \(task.state.rawValue), bytes sent: \(task.countOfBytesSent)")
+                                    if index < 3 && task.state == .suspended {
+                                        task.resume()
+                                        DebugLogger.shared.log("S3BackgroundUploader: Force resumed task \(task.taskIdentifier)")
+                                    }
+                                }
+                            }
                         }
                     } else {
                         // For iOS < 13, try to force processing by getting all tasks
@@ -599,7 +614,21 @@ class S3BackgroundUploader: NSObject {
         DebugLogger.shared.log("S3BackgroundUploader: Handling failure for: \(upload.s3Key)")
         DebugLogger.shared.log("S3BackgroundUploader: Retry count: \(upload.retryCount)/unlimited")
         
-        // NEVER give up - keep retrying with exponential backoff
+        // Check if the file still exists before retrying
+        if !FileManager.default.fileExists(atPath: upload.localPath) {
+            DebugLogger.shared.log("S3BackgroundUploader: File no longer exists, removing from queue: \(upload.localPath)")
+            print("S3BackgroundUploader: File no longer exists, removing from queue: \(upload.localPath)")
+            
+            // Remove from queue since file doesn't exist
+            uploadQueue.removeAll { $0.localPath == upload.localPath }
+            saveUploadQueue()
+            
+            // Notify failure and don't retry
+            onUploadFailed?(upload.localPath, UploadError.fileNotFound)
+            return
+        }
+        
+        // NEVER give up - keep retrying with exponential backoff (only for existing files)
         var retryUpload = upload
         retryUpload.retryCount += 1
         

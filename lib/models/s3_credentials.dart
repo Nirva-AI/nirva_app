@@ -54,9 +54,11 @@ class S3Credentials extends HiveObject {
   }
   
   /// Check if we should refresh (12-hour cooldown)
+  // COMMENTED OUT: Removing 12-hour cooldown to refresh credentials on every app foreground
   bool get shouldRefresh {
-    final twelveHoursAgo = DateTime.now().subtract(const Duration(hours: 12));
-    return fetchedAt.isBefore(twelveHoursAgo);
+    // final twelveHoursAgo = DateTime.now().subtract(const Duration(hours: 12));
+    // return fetchedAt.isBefore(twelveHoursAgo);
+    return true; // Always refresh when app comes to foreground
   }
   
   /// Get remaining validity in hours

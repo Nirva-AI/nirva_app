@@ -66,17 +66,24 @@ class S3TokenService {
         debugPrint('S3TokenService: No stored credentials found');
       }
       
+      // COMMENTED OUT: Removing 12-hour cooldown check to always refresh credentials on app foreground
+      // if (!forceRefresh && storedCredentials != null && !storedCredentials.isExpired) {
+      //   // Check 12-hour cooldown
+      //   if (!storedCredentials.shouldRefresh) {
+      //     debugPrint('S3TokenService: Using stored S3 credentials (remaining: ${storedCredentials.remainingHours.toStringAsFixed(1)} hours)');
+      //     _logger.i('Using stored S3 credentials (remaining: ${storedCredentials.remainingHours.toStringAsFixed(1)} hours)');
+      //     _cachedCredentials = storedCredentials;
+      //     return storedCredentials;
+      //   }
+      //   
+      //   // Credentials are valid but older than 12 hours, optionally refresh
+      //   _logger.i('S3 credentials are ${DateTime.now().difference(storedCredentials.fetchedAt).inHours} hours old, considering refresh');
+      // }
+      
+      // Always refresh unless explicitly told not to
       if (!forceRefresh && storedCredentials != null && !storedCredentials.isExpired) {
-        // Check 12-hour cooldown
-        if (!storedCredentials.shouldRefresh) {
-          debugPrint('S3TokenService: Using stored S3 credentials (remaining: ${storedCredentials.remainingHours.toStringAsFixed(1)} hours)');
-          _logger.i('Using stored S3 credentials (remaining: ${storedCredentials.remainingHours.toStringAsFixed(1)} hours)');
-          _cachedCredentials = storedCredentials;
-          return storedCredentials;
-        }
-        
-        // Credentials are valid but older than 12 hours, optionally refresh
-        _logger.i('S3 credentials are ${DateTime.now().difference(storedCredentials.fetchedAt).inHours} hours old, considering refresh');
+        debugPrint('S3TokenService: Stored credentials exist but refreshing anyway (cooldown disabled)');
+        _logger.i('Refreshing credentials even though stored ones are valid (cooldown disabled)');
       }
       
       // Fetch new credentials

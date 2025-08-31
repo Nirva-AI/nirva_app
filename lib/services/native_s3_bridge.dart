@@ -142,14 +142,9 @@ class NativeS3Bridge {
     try {
       _logger.i('NativeS3Bridge: Refreshing credentials after login...');
       
-      // First try to get existing credentials
-      var credentials = await S3TokenService.instance.getCredentials();
-      
-      // If no credentials exist or they're expired, force fetch new ones
-      if (credentials == null || credentials.isExpired) {
-        _logger.i('NativeS3Bridge: No valid credentials, fetching new ones...');
-        credentials = await S3TokenService.instance.getCredentials(forceRefresh: true);
-      }
+      // MODIFIED: Always force refresh when app comes to foreground (cooldown disabled)
+      _logger.i('NativeS3Bridge: Force refreshing credentials (cooldown disabled)...');
+      final credentials = await S3TokenService.instance.getCredentials(forceRefresh: true);
       
       if (credentials != null) {
         await sendCredentialsToNative(credentials);

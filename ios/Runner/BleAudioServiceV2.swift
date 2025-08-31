@@ -357,10 +357,8 @@ class BleAudioServiceV2: NSObject {
             backgroundPacketsReceived += 1
             lastBackgroundPacketTime = Date()
             
-            // ALWAYS log background packets - this is critical!
-            print("BleAudioServiceV2: \(stateString) BACKGROUND PACKET #\(totalPacketsReceived + 1) (BG#\(backgroundPacketsReceived)), size: \(data.count) bytes")
             // Log only first few background packets and periodically
-            if backgroundPacketsReceived <= 3 || backgroundPacketsReceived % 50 == 0 {
+            if backgroundPacketsReceived <= 3 || backgroundPacketsReceived % 1000 == 0 {
                 DebugLogger.shared.log("BleAudioServiceV2: \(stateString) BG packet #\(backgroundPacketsReceived)")
             }
             
