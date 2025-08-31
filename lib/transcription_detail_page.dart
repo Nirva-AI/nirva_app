@@ -39,8 +39,8 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
         throw Exception('Transcription ID is null');
       }
       
-      // Use the NirvaApi to get authenticated request
-      final api = NirvaApi();
+      // Use the NirvaAPI to get authenticated request
+      final api = NirvaAPI();
       final detailedData = await api.getTranscriptionDetails(widget.transcription.id!);
       
       setState(() {

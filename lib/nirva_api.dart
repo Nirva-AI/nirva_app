@@ -668,16 +668,16 @@ class NirvaAPI {
     try {
       Logger().d('Fetching transcription details for ID: $transcriptionId');
       
-      final token = await getStoredJWT();
-      if (token == null || token.isEmpty) {
+      final userToken = HiveHelper.getUserToken();
+      if (userToken.access_token.isEmpty) {
         throw Exception('No authentication token available');
       }
 
       final response = await simpleGet<Map<String, dynamic>>(
         _dio,
         '/api/v1/transcriptions/$transcriptionId/details',
-        token,
-        receiveTimeout: const Duration(seconds: 10),
+        userToken,
+        receiveTimeout: 10,
       );
 
       if (response == null || response.data == null) {
