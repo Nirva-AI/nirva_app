@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
@@ -16,10 +17,23 @@ class JournalsPage extends StatefulWidget {
   State<JournalsPage> createState() => _JournalsPageState();
 }
 
-class _JournalsPageState extends State<JournalsPage> {
+class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClientMixin {
   DateTime _selectedDate = DateTime.now();
   final TextEditingController _reflectionController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   int _currentQuestionIndex = 1;
+  double _lastScrollPosition = 0.0;
+  
+  // Cache for events to check which dates have events
+  Map<String, List<EventAnalysis>> _eventsCache = {};
+  bool _isLoadingEvents = false;
+  
+  // Store the future to prevent rebuilding
+  Future<List<EventAnalysis>>? _eventsFuture;
+  String? _currentDateKey;
+  
+  @override
+  bool get wantKeepAlive => true;
 
   // Sample questions for the picker wheel - matching Lounge slideshow content
   final List<Map<String, String>> _reflectionQuestions = [
@@ -46,55 +60,153 @@ class _JournalsPageState extends State<JournalsPage> {
     super.initState();
     // Set initial date to a date that has data
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeSelectedDate();
+      _initializeData();
     });
+  }
+  
+  Future<void> _initializeData() async {
+    await _initializeSelectedDate();
+    await _loadEventsForVisibleDates();
+    _loadEventsForSelectedDate();
+    
+    // Restore scroll position if we have one saved
+    if (_lastScrollPosition > 0 && _scrollController.hasClients) {
+      _scrollController.jumpTo(_lastScrollPosition);
+    }
+  }
+  
+  void _loadEventsForSelectedDate() {
+    final dateKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    if (_currentDateKey != dateKey) {
+      _currentDateKey = dateKey;
+      final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+      _eventsFuture = eventsProvider.getEventsForDate(dateKey);
+    }
   }
 
   @override
   void dispose() {
     _reflectionController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _initializeSelectedDate() {
+  Future<void> _initializeSelectedDate() async {
     final journalProvider = Provider.of<JournalFilesProvider>(context, listen: false);
+    final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
     final availableFiles = journalProvider.journalFiles;
     
-    if (availableFiles.isNotEmpty) {
-      // Find the most recent date with data
-      DateTime? mostRecentDate;
-      for (var file in availableFiles) {
-        try {
-          final fileDate = DateTime.parse(file.time_stamp);
-          if (mostRecentDate == null || fileDate.isAfter(mostRecentDate)) {
-            mostRecentDate = fileDate;
+    // Find the most recent date with data from local files
+    DateTime? mostRecentLocalDate;
+    for (var file in availableFiles) {
+      try {
+        final fileDate = DateTime.parse(file.time_stamp);
+        if (mostRecentLocalDate == null || fileDate.isAfter(mostRecentLocalDate)) {
+          mostRecentLocalDate = fileDate;
+        }
+      } catch (e) {
+        debugPrint('Error parsing date: ${file.time_stamp}');
+      }
+    }
+    
+    // Check recent dates for server events (last 30 days)
+    DateTime? mostRecentEventDate;
+    final today = DateTime.now();
+    final thirtyDaysAgo = today.subtract(const Duration(days: 30));
+    
+    try {
+      // Get events for the past 30 days
+      final eventsMap = await eventsProvider.getEventsForDateRange(thirtyDaysAgo, today);
+      
+      // Find the most recent date with events
+      for (var entry in eventsMap.entries) {
+        if (entry.value.isNotEmpty) {
+          final date = DateTime.parse(entry.key);
+          if (mostRecentEventDate == null || date.isAfter(mostRecentEventDate)) {
+            mostRecentEventDate = date;
           }
-        } catch (e) {
-          debugPrint('Error parsing date: ${file.time_stamp}');
         }
       }
+    } catch (e) {
+      debugPrint('Error loading events for date selection: $e');
+    }
+    
+    // Choose the most recent date between local and server data
+    DateTime selectedDate = DateTime.now();
+    if (mostRecentLocalDate != null && mostRecentEventDate != null) {
+      selectedDate = mostRecentLocalDate.isAfter(mostRecentEventDate) 
+        ? mostRecentLocalDate 
+        : mostRecentEventDate;
+    } else if (mostRecentLocalDate != null) {
+      selectedDate = mostRecentLocalDate;
+    } else if (mostRecentEventDate != null) {
+      selectedDate = mostRecentEventDate;
+    }
+    
+    setState(() {
+      _selectedDate = selectedDate;
+    });
+    
+    debugPrint('Selected date initialized to: ${DateFormat('yyyy-MM-dd').format(selectedDate)}');
+    debugPrint('Most recent local date: ${mostRecentLocalDate != null ? DateFormat('yyyy-MM-dd').format(mostRecentLocalDate) : 'none'}');
+    debugPrint('Most recent event date: ${mostRecentEventDate != null ? DateFormat('yyyy-MM-dd').format(mostRecentEventDate) : 'none'}');
+  }
+  
+  // Load events for the visible dates in the date picker
+  Future<void> _loadEventsForVisibleDates() async {
+    if (_isLoadingEvents) return;
+    
+    setState(() {
+      _isLoadingEvents = true;
+    });
+    
+    try {
+      final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+      final dates = <String>[];
+      
+      // Get the 7 visible dates in the picker
+      for (int i = -3; i <= 3; i++) {
+        final date = _selectedDate.add(Duration(days: i));
+        dates.add(DateFormat('yyyy-MM-dd').format(date));
+      }
+      
+      // Fetch events for all dates
+      final eventsMap = await eventsProvider.getEventsForDates(dates);
       
       setState(() {
-        _selectedDate = mostRecentDate ?? DateTime.now();
+        _eventsCache = eventsMap;
+        _isLoadingEvents = false;
       });
-      if (mostRecentDate == null) {
-        debugPrint('No journal files found, using current date');
-      }
+    } catch (e) {
+      debugPrint('Error loading events for dates: $e');
+      setState(() {
+        _isLoadingEvents = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
+    // Get providers without listening to prevent automatic rebuilds
+    final journalProvider = context.read<JournalFilesProvider>();
+    final eventsProvider = context.read<EventsProvider>();
+    final dateKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    
     return Scaffold(
       backgroundColor: const Color(0xFFfaf9f5),
-      body: Consumer2<JournalFilesProvider, EventsProvider>(
-        builder: (context, journalProvider, eventsProvider, child) {
-          final journalFile = journalProvider.getJournalFileByDate(_selectedDate);
-          final dateKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
+      body: Builder(
+        builder: (context) {
+          
+          // Initialize the future if needed (but don't recreate on every build)
+          if (_eventsFuture == null || _currentDateKey != dateKey) {
+            _loadEventsForSelectedDate();
+          }
           
           // Use FutureBuilder to get merged events from backend and local sources
           return FutureBuilder<List<EventAnalysis>>(
-            future: eventsProvider.getEventsForDate(dateKey),
+            future: _eventsFuture ?? eventsProvider.getEventsForDate(dateKey),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(
@@ -123,6 +235,8 @@ class _JournalsPageState extends State<JournalsPage> {
           return Stack(
             children: [
               SingleChildScrollView(
+                key: const PageStorageKey('journals_scroll'),
+                controller: _scrollController,
                 child: Column(
                   children: [
                     // Daily Reflection Section - extends to top of screen
@@ -380,7 +494,7 @@ class _JournalsPageState extends State<JournalsPage> {
                       if (index == 2) {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
+                          CupertinoPageRoute(
                             builder: (context) => const DailyReflectionPage(),
                           ),
                         );
@@ -447,6 +561,9 @@ class _JournalsPageState extends State<JournalsPage> {
                   setState(() {
                     _selectedDate = date;
                   });
+                  // Reload events for new visible dates
+                  _loadEventsForVisibleDates();
+                  _loadEventsForSelectedDate();
                 },
                 child: Container(
                   width: 50,
@@ -587,9 +704,10 @@ class _JournalsPageState extends State<JournalsPage> {
         Expanded(
           child: GestureDetector(
             onTap: () {
+              // Use CupertinoPageRoute for iOS-style swipe back gesture
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                CupertinoPageRoute(
                   builder: (context) => JournalDetailsPage(eventData: event),
                 ),
               );
@@ -855,7 +973,15 @@ class _JournalsPageState extends State<JournalsPage> {
   }
 
   bool _hasJournalEntries(DateTime date, JournalFilesProvider provider) {
-    return provider.getJournalFileByDate(date) != null;
+    // Check if there's a local journal file
+    if (provider.getJournalFileByDate(date) != null) {
+      return true;
+    }
+    
+    // Check if there are events from backend
+    final dateKey = DateFormat('yyyy-MM-dd').format(date);
+    final events = _eventsCache[dateKey];
+    return events != null && events.isNotEmpty;
   }
 
   Color _getCategoryColor(String activityType) {

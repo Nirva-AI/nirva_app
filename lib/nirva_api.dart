@@ -455,7 +455,7 @@ class NirvaAPI {
       }
 
       Logger().d('Get events response received');
-      Logger().d('Response status: ${response.response?.statusCode}');
+      Logger().d('Response status: ${response?.statusCode}');
       Logger().d('Response data: ${jsonEncode(response.data!)}');
       return response.data!;
       
