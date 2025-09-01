@@ -356,11 +356,16 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
     });
     
     try {
+      print('Calling NirvaAPI.getTranscriptions with page: $_currentPage');
+      _addLog('Calling NirvaAPI.getTranscriptions with page: $_currentPage');
       
       final response = await NirvaAPI.getTranscriptions(
         page: _currentPage,
         pageSize: 50,
       );
+      
+      print('NirvaAPI.getTranscriptions response: ${response != null ? "Got response with ${response.items.length} items" : "null response"}');
+      _addLog('API response: ${response != null ? "Got ${response.items.length} items" : "null"}');
       
       if (response != null) {
         setState(() {
@@ -372,12 +377,12 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
         _addLog('Loaded ${response.items.length} transcriptions (page $_currentPage)');
       } else {
         setState(() {
-          _transcriptionsError = 'Failed to load transcriptions';
+          _transcriptionsError = 'Failed to load transcriptions - Authentication may have failed';
           _isLoadingTranscriptions = false;
           // Reset page on error if we were loading more
           if (loadMore) _currentPage--;
         });
-        _addLog('Error loading transcriptions');
+        _addLog('Error loading transcriptions - null response');
       }
     } catch (e) {
       setState(() {

@@ -454,7 +454,9 @@ class NirvaAPI {
         return null;
       }
 
-      // Logger().d('Get events response: ${jsonEncode(response.data!)}');
+      Logger().d('Get events response received');
+      Logger().d('Response status: ${response.response?.statusCode}');
+      Logger().d('Response data: ${jsonEncode(response.data!)}');
       return response.data!;
       
     } catch (e) {
@@ -617,11 +619,14 @@ class NirvaAPI {
     DateTime? endDate,
   }) async {
     try {
+      Logger().i('getTranscriptions called - page: $page, pageSize: $pageSize');
       final userToken = HiveHelper.getUserToken();
       if (userToken.access_token.isEmpty) {
         Logger().e('No valid access token for fetching transcriptions');
         return null;
       }
+      
+      Logger().d('Access token present, length: ${userToken.access_token.length}');
 
       // Build query parameters
       final queryParams = <String, dynamic>{
@@ -640,6 +645,7 @@ class NirvaAPI {
       Logger().d('Fetching transcriptions - Page: $page, PageSize: $pageSize');
       Logger().d('Using base URL: ${_dio.options.baseUrl}');
       Logger().d('Full URL will be: ${_dio.options.baseUrl}/api/v1/transcriptions');
+      Logger().d('Query params: $queryParams');
 
       final response = await safeGet<Map<String, dynamic>>(
         _dio,
@@ -650,6 +656,28 @@ class NirvaAPI {
 
       if (response == null || response.data == null) {
         Logger().e('Failed to fetch transcriptions: No response data');
+        Logger().e('This usually means authentication failed - token may be expired');
+        Logger().e('Attempting to refresh token and retry...');
+        
+        // Try to refresh token and retry once
+        final newToken = await refreshToken();
+        if (newToken != null) {
+          Logger().i('Token refreshed successfully, retrying transcriptions fetch...');
+          final retryResponse = await safeGet<Map<String, dynamic>>(
+            _dio,
+            '/api/v1/transcriptions',
+            query: queryParams,
+            receiveTimeout: 30,
+          );
+          
+          if (retryResponse != null && retryResponse.data != null) {
+            final transcriptionsResponse = TranscriptionsResponse.fromJson(retryResponse.data!);
+            Logger().d('Retry successful - fetched ${transcriptionsResponse.items.length} transcriptions');
+            return transcriptionsResponse;
+          }
+        }
+        
+        Logger().e('Failed to fetch transcriptions even after token refresh');
         return null;
       }
 

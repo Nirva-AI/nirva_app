@@ -26,7 +26,7 @@ class EventsService extends ChangeNotifier {
   /// Get events for a specific date, merging backend and local sources
   Future<List<EventAnalysis>> getEventsForDate(String dateKey) async {
     try {
-      // _logger.d('EventsService: Getting events for date: $dateKey');
+      _logger.d('EventsService: Getting events for date: $dateKey');
       
       // Check cache first
       if (_mergedEventsCache.containsKey(dateKey)) {
@@ -36,11 +36,11 @@ class EventsService extends ChangeNotifier {
       
       // Get local events from Hive
       final localEvents = await _getLocalEvents(dateKey);
-      // _logger.d('EventsService: Found ${localEvents.length} local events for $dateKey');
+      _logger.d('EventsService: Found ${localEvents.length} local events for $dateKey');
       
       // Get backend events
       final backendEvents = await _getBackendEvents(dateKey);
-      // _logger.d('EventsService: Found ${backendEvents.length} backend events for $dateKey');
+      _logger.d('EventsService: Found ${backendEvents.length} backend events for $dateKey');
       
       // Merge events (backend events take precedence for duplicates)
       final mergedEvents = _mergeEvents(localEvents, backendEvents);
@@ -96,8 +96,12 @@ class EventsService extends ChangeNotifier {
       final response = await NirvaAPI.getEvents(dateKey);
       if (response == null) {
         _logger.w('EventsService: No response from backend for $dateKey');
+        _logger.w('EventsService: This likely means authentication failed or endpoint not found');
         return [];
       }
+      
+      _logger.d('EventsService: Backend response received for $dateKey');
+      _logger.d('EventsService: Response keys: ${response.keys.toList()}');
       
       // Parse backend events
       final events = _parseBackendEvents(response);
@@ -153,7 +157,7 @@ class EventsService extends ChangeNotifier {
         }
       }
       
-      // _logger.d('EventsService: Successfully parsed ${events.length} backend events');
+      _logger.d('EventsService: Successfully parsed ${events.length} backend events');
       return events;
       
     } catch (e) {
