@@ -15,8 +15,9 @@ class ConnectionOrchestrator: NSObject {
     }
     
     // MARK: - Properties
-    private var centralManager: CBCentralManager!
+    private var centralManager: CBCentralManager?
     private let bleQueue = DispatchQueue(label: "com.nirva.ble.orchestrator", qos: .userInitiated)
+    private var isBluetoothInitialized = false
     
     // State management
     private var currentState: ConnectionState = .idle {
@@ -78,13 +79,18 @@ class ConnectionOrchestrator: NSObject {
         super.init()
         print("ConnectionOrchestrator: init() called")
         DebugLogger.shared.log("ConnectionOrchestrator: init() called")
-        setupCentralManager()
+        // Delay CBCentralManager initialization until actually needed
         loadRememberedDevice()
     }
     
     private func setupCentralManager() {
-        print("ConnectionOrchestrator: setupCentralManager() called")
-        DebugLogger.shared.log("ConnectionOrchestrator: setupCentralManager() called")
+        guard centralManager == nil else {
+            print("ConnectionOrchestrator: CBCentralManager already initialized")
+            return
+        }
+        
+        print("ConnectionOrchestrator: setupCentralManager() called - initializing CBCentralManager")
+        DebugLogger.shared.log("ConnectionOrchestrator: setupCentralManager() called - initializing CBCentralManager")
         let options: [String: Any] = [
             CBCentralManagerOptionShowPowerAlertKey: true,
             CBCentralManagerOptionRestoreIdentifierKey: "com.nirva.ble.orchestrator.restoration"
@@ -93,8 +99,16 @@ class ConnectionOrchestrator: NSObject {
         // CRITICAL: Use nil for queue to use main queue for delegate callbacks
         // This is required for background BLE to work properly on iOS
         centralManager = CBCentralManager(delegate: self, queue: nil, options: options)
+        isBluetoothInitialized = true
         print("ConnectionOrchestrator: CBCentralManager created with main queue for background support")
         DebugLogger.shared.log("ConnectionOrchestrator: CBCentralManager created with main queue for background support")
+    }
+    
+    /// Ensure CBCentralManager is initialized when needed
+    private func ensureCentralManagerInitialized() {
+        if centralManager == nil {
+            setupCentralManager()
+        }
     }
     
     private func loadRememberedDevice() {
@@ -117,6 +131,11 @@ class ConnectionOrchestrator: NSObject {
     
     // MARK: - Public API
     
+    /// Check if CBCentralManager has been initialized (permission has been requested)
+    func isBluetoothPermissionRequested() -> Bool {
+        return isBluetoothInitialized
+    }
+    
     /// Set the connection intent (true to connect, false to disconnect)
     func setConnectIntent(_ intent: Bool) {
         bleQueue.async { [weak self] in
@@ -124,10 +143,12 @@ class ConnectionOrchestrator: NSObject {
             
             print("ConnectionOrchestrator: Setting connect intent to \(intent)")
             DebugLogger.shared.log("ConnectionOrchestrator: Setting connect intent to \(intent)")
-            print("ConnectionOrchestrator: Current state = \(self.currentState), BT state = \(self.centralManager.state.rawValue)")
             self.connectIntent = intent
             
             if intent {
+                // Initialize CBCentralManager when actually needed
+                self.ensureCentralManagerInitialized()
+                print("ConnectionOrchestrator: Current state = \(self.currentState), BT state = \(self.centralManager?.state.rawValue ?? -1)")
                 self.startConnectionFlow()
             } else {
                 self.stopConnectionFlow()
@@ -146,8 +167,11 @@ class ConnectionOrchestrator: NSObject {
             // Remember this device for future auto-reconnect
             self.rememberDevice(uuid: uuid, serviceUUIDs: [self.audioServiceUUID])
             
+            // Initialize CBCentralManager when connecting to device
+            self.ensureCentralManagerInitialized()
+            
             // Try to retrieve the peripheral
-            let peripherals = self.centralManager.retrievePeripherals(withIdentifiers: [uuid])
+            let peripherals = self.centralManager?.retrievePeripherals(withIdentifiers: [uuid]) ?? []
             if let peripheral = peripherals.first {
                 print("ConnectionOrchestrator: Found peripheral to connect: \(peripheral.name ?? "unknown")")
                 self.targetPeripheral = peripheral
@@ -193,7 +217,7 @@ class ConnectionOrchestrator: NSObject {
             
             // Disconnect if connected
             if let peripheral = self.targetPeripheral {
-                self.centralManager.cancelPeripheralConnection(peripheral)
+                self.centralManager?.cancelPeripheralConnection(peripheral)
             }
             
             self.setConnectIntent(false)
@@ -211,7 +235,10 @@ class ConnectionOrchestrator: NSObject {
                 return
             }
             
-            guard self.centralManager.state == .poweredOn else {
+            // Initialize CBCentralManager for auto-connect
+            self.ensureCentralManagerInitialized()
+            
+            guard self.centralManager?.state == .poweredOn else {
                 print("ConnectionOrchestrator: Bluetooth not ready for auto-connect")
                 DebugLogger.shared.log("ConnectionOrchestrator: Bluetooth not ready for auto-connect")
                 return
@@ -274,9 +301,9 @@ class ConnectionOrchestrator: NSObject {
             DebugLogger.shared.log("ConnectionOrchestrator: No connect intent, aborting flow")
             return 
         }
-        guard centralManager.state == .poweredOn else {
-            print("ConnectionOrchestrator: Bluetooth not powered on, state = \(centralManager.state.rawValue)")
-            DebugLogger.shared.log("ConnectionOrchestrator: Bluetooth not powered on, state = \(centralManager.state.rawValue)")
+        guard let manager = centralManager, manager.state == .poweredOn else {
+            print("ConnectionOrchestrator: Bluetooth not powered on or not initialized")
+            DebugLogger.shared.log("ConnectionOrchestrator: Bluetooth not powered on or not initialized")
             return
         }
         
@@ -294,7 +321,7 @@ class ConnectionOrchestrator: NSObject {
         
         // Disconnect if connected
         if let peripheral = targetPeripheral {
-            centralManager.cancelPeripheralConnection(peripheral)
+            centralManager?.cancelPeripheralConnection(peripheral)
         }
         
         currentState = .idle
@@ -303,10 +330,15 @@ class ConnectionOrchestrator: NSObject {
     // MARK: - State Transitions
     
     private func transitionToDiscovering() {
+        guard let manager = centralManager else {
+            print("ConnectionOrchestrator: CBCentralManager not initialized")
+            return
+        }
+        
         print("ConnectionOrchestrator: Transitioning to discovering")
-        print("ConnectionOrchestrator: Central manager state: \(centralManager.state.rawValue)")
+        print("ConnectionOrchestrator: Central manager state: \(manager.state.rawValue)")
         DebugLogger.shared.log("ConnectionOrchestrator: Transitioning to discovering")
-        DebugLogger.shared.log("ConnectionOrchestrator: Central manager state: \(centralManager.state.rawValue)")
+        DebugLogger.shared.log("ConnectionOrchestrator: Central manager state: \(manager.state.rawValue)")
         currentState = .discovering
         connectionAttempts += 1
         
@@ -329,7 +361,7 @@ class ConnectionOrchestrator: NSObject {
         
         // Try to retrieve known peripheral
         if let deviceUUID = rememberedDeviceUUID {
-            let peripherals = centralManager.retrievePeripherals(withIdentifiers: [deviceUUID])
+            let peripherals = manager.retrievePeripherals(withIdentifiers: [deviceUUID])
             if let peripheral = peripherals.first {
                 print("ConnectionOrchestrator: Found remembered peripheral: \(peripheral.name ?? "unknown")")
                 targetPeripheral = peripheral
@@ -343,7 +375,7 @@ class ConnectionOrchestrator: NSObject {
         // Try to find connected peripherals with our service
         // Check both audio and button services
         let serviceUUIDs = [audioServiceUUID, buttonServiceUUID]
-        let connectedPeripherals = centralManager.retrieveConnectedPeripherals(withServices: serviceUUIDs)
+        let connectedPeripherals = manager.retrieveConnectedPeripherals(withServices: serviceUUIDs)
         if let peripheral = connectedPeripherals.first {
             print("ConnectionOrchestrator: Found already connected peripheral: \(peripheral.name ?? "unknown")")
             targetPeripheral = peripheral
@@ -360,14 +392,14 @@ class ConnectionOrchestrator: NSObject {
         print("ConnectionOrchestrator: Audio service UUID: \(audioServiceUUID)")
         
         // Stop any existing scan first
-        centralManager.stopScan()
+        manager.stopScan()
         
         // CRITICAL: Must scan with specific service UUIDs for iOS background wake
         // iOS will NOT wake the app in background if scanning with nil services
         print("ConnectionOrchestrator: Starting scan with service UUIDs for background wake: \(scanServiceUUIDs)")
         DebugLogger.shared.log("ConnectionOrchestrator: Scanning with services: \(scanServiceUUIDs)")
         
-        centralManager.scanForPeripherals(withServices: scanServiceUUIDs, options: [
+        manager.scanForPeripherals(withServices: scanServiceUUIDs, options: [
             CBCentralManagerScanOptionAllowDuplicatesKey: false  // Don't need duplicates
         ])
         print("ConnectionOrchestrator: Scan started with background-compatible service filtering")
@@ -397,7 +429,7 @@ class ConnectionOrchestrator: NSObject {
         onStateChanged?("connecting")
         
         // Stop scanning if active
-        centralManager.stopScan()
+        centralManager?.stopScan()
         
         // Connect with background options - CRITICAL for wake events
         let options: [String: Any] = [
@@ -407,7 +439,7 @@ class ConnectionOrchestrator: NSObject {
             // This is CRITICAL - tells iOS to preserve this connection for background
             CBConnectPeripheralOptionStartDelayKey: 0
         ]
-        centralManager.connect(peripheral, options: options)
+        centralManager?.connect(peripheral, options: options)
         
         print("ConnectionOrchestrator: Connecting with background wake options")
         DebugLogger.shared.log("ConnectionOrchestrator: Connecting with background wake options")
@@ -476,7 +508,7 @@ class ConnectionOrchestrator: NSObject {
         print("ConnectionOrchestrator: Backoff retry triggered")
         
         guard connectIntent else { return }
-        guard centralManager.state == .poweredOn else { return }
+        guard centralManager?.state == .poweredOn else { return }
         
         transitionToDiscovering()
     }
@@ -508,7 +540,7 @@ class ConnectionOrchestrator: NSObject {
             
             // Force disconnect and retry
             if let peripheral = targetPeripheral {
-                centralManager.cancelPeripheralConnection(peripheral)
+                centralManager?.cancelPeripheralConnection(peripheral)
             }
             transitionToBackoff(error: "Stream timeout")
         }
@@ -669,7 +701,7 @@ extension ConnectionOrchestrator: CBCentralManagerDelegate {
             // Resume scanning with the same services
             print("ConnectionOrchestrator: Resuming scan after restoration")
             DebugLogger.shared.log("ConnectionOrchestrator: Resuming scan after restoration")
-            centralManager.scanForPeripherals(withServices: scanServices, options: nil)
+            centralManager?.scanForPeripherals(withServices: scanServices, options: nil)
         }
         if let _ = dict[CBCentralManagerRestoredStateScanOptionsKey] {
             print("ConnectionOrchestrator: Was scanning before restoration")

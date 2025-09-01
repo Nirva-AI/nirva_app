@@ -15,6 +15,7 @@ import CoreBluetooth
   
   // Bluetooth wake event handling
   private var centralManager: CBCentralManager?
+  private var isBluetoothManagerInitialized = false
   
   // Track if app was woken from background
   private var wasWokenFromBackground = false
@@ -68,8 +69,9 @@ import CoreBluetooth
     // Configure audio session for background processing
     configureAudioSession()
     
-    // Initialize Bluetooth manager for wake events
-    initializeBluetoothManager()
+    // Don't initialize Bluetooth manager immediately - wait for background restoration
+    // This prevents permission request on app launch
+    // initializeBluetoothManager()
     
     // Force initialize BleAudioServiceV2 and start auto-connect
     if #available(iOS 13.0, *) {
@@ -212,11 +214,17 @@ import CoreBluetooth
   // MARK: - Bluetooth Manager Setup
   
   private func initializeBluetoothManager() {
+    guard centralManager == nil else {
+      print("AppDelegate: Bluetooth manager already initialized")
+      return
+    }
+    
     let options: [String: Any] = [
-      CBCentralManagerOptionShowPowerAlertKey: true,
+      CBCentralManagerOptionShowPowerAlertKey: false,  // Don't show power alert from AppDelegate
       CBCentralManagerOptionRestoreIdentifierKey: "com.nirva.appdelegate.ble.restoration"
     ]
     centralManager = CBCentralManager(delegate: self, queue: nil, options: options)
+    isBluetoothManagerInitialized = true
     print("AppDelegate: Bluetooth manager initialized with state restoration")
   }
   
@@ -322,6 +330,13 @@ import CoreBluetooth
     print("AppDelegate: ============ BLE BACKGROUND RESTORATION ============")
     DebugLogger.shared.log("AppDelegate: ============ BLE BACKGROUND RESTORATION ============")
     DebugLogger.shared.markBackgroundWake() // Mark this critical event
+    
+    // Initialize Bluetooth manager only when we have background restoration
+    // This ensures we only request permissions when actually needed
+    if centralManager == nil {
+      print("AppDelegate: Initializing Bluetooth manager due to background restoration")
+      initializeBluetoothManager()
+    }
     
     // Mark that app was woken from background
     wasWokenFromBackground = true

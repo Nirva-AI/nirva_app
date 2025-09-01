@@ -34,15 +34,6 @@ class _SplashScreenState extends State<SplashScreen> {
     final Stopwatch stopwatch = Stopwatch()..start();
 
     try {
-      // Check if first launch by seeing if user token exists
-      final isFirstLaunch = HiveHelper.getUserToken().access_token.isEmpty;
-      
-      if (isFirstLaunch) {
-        // TEMPORARY FIX: Wait longer for iOS network to be ready on first launch
-        Logger().i('First launch detected - waiting for iOS network initialization...');
-        await Future.delayed(const Duration(seconds: 5));
-      }
-      
       // 检查网络状态 - 无网络时阻止启动
       final hasNetwork = await _checkNetworkStatus();
       if (!hasNetwork) {

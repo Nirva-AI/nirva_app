@@ -10,7 +10,7 @@ class BleAudioServiceV2: NSObject {
     static let shared = BleAudioServiceV2()
     
     // MARK: - Properties
-    private var connectionOrchestrator: ConnectionOrchestrator!
+    private var connectionOrchestrator: ConnectionOrchestrator?
     private var packetReassembler: PacketReassembler?
     private var audioProcessor: AudioProcessor?
     
@@ -39,9 +39,15 @@ class BleAudioServiceV2: NSObject {
         print("BleAudioServiceV2: init() called")
         DebugLogger.shared.log("BleAudioServiceV2: init() called")
         
-        // Create ConnectionOrchestrator instance
-        print("BleAudioServiceV2: Creating ConnectionOrchestrator...")
-        DebugLogger.shared.log("BleAudioServiceV2: Creating ConnectionOrchestrator...")
+        // Delay ConnectionOrchestrator creation until actually needed
+        // This prevents immediate Bluetooth permission request
+    }
+    
+    private func ensureOrchestratorInitialized() {
+        guard connectionOrchestrator == nil else { return }
+        
+        print("BleAudioServiceV2: Creating ConnectionOrchestrator on first use...")
+        DebugLogger.shared.log("BleAudioServiceV2: Creating ConnectionOrchestrator on first use...")
         connectionOrchestrator = ConnectionOrchestrator()
         print("BleAudioServiceV2: ConnectionOrchestrator created")
         DebugLogger.shared.log("BleAudioServiceV2: ConnectionOrchestrator created")
@@ -50,34 +56,36 @@ class BleAudioServiceV2: NSObject {
     }
     
     private func setupOrchestrator() {
+        guard let orchestrator = connectionOrchestrator else { return }
+        
         print("BleAudioServiceV2: Setting up orchestrator callbacks...")
         
         // Set up connection orchestrator callbacks
-        connectionOrchestrator.onStateChanged = { [weak self] state in
+        orchestrator.onStateChanged = { [weak self] state in
             print("BleAudioServiceV2: State changed callback - \(state)")
             self?.handleConnectionStateChange(state)
         }
         
-        connectionOrchestrator.onDeviceDiscovered = { [weak self] deviceInfo in
+        orchestrator.onDeviceDiscovered = { [weak self] deviceInfo in
             print("BleAudioServiceV2: Device discovered callback")
             self?.onDeviceDiscovered?(deviceInfo)
         }
         
-        connectionOrchestrator.onDeviceConnected = { [weak self] deviceId in
+        orchestrator.onDeviceConnected = { [weak self] deviceId in
             print("BleAudioServiceV2: Device connected callback - \(deviceId)")
             self?.handleDeviceConnected(deviceId)
         }
         
-        connectionOrchestrator.onDeviceDisconnected = { [weak self] deviceId, error in
+        orchestrator.onDeviceDisconnected = { [weak self] deviceId, error in
             print("BleAudioServiceV2: Device disconnected callback")
             self?.handleDeviceDisconnected(deviceId: deviceId, error: error)
         }
         
-        connectionOrchestrator.onPacketReceived = { [weak self] data in
+        orchestrator.onPacketReceived = { [weak self] data in
             self?.handleIncomingPacket(data)
         }
         
-        connectionOrchestrator.onError = { [weak self] error in
+        orchestrator.onError = { [weak self] error in
             print("BleAudioServiceV2: Error callback - \(error)")
             self?.onError?(error)
         }
@@ -95,8 +103,10 @@ class BleAudioServiceV2: NSObject {
             print("BleAudioServiceV2: Already initialized")
             DebugLogger.shared.log("BleAudioServiceV2: Already initialized")
             
-            // Attempt auto-connect if already initialized
-            attemptAutoConnect()
+            // Only attempt auto-connect if orchestrator exists
+            if connectionOrchestrator != nil {
+                attemptAutoConnect()
+            }
             return true
         }
         
@@ -134,17 +144,38 @@ class BleAudioServiceV2: NSObject {
         print("BleAudioServiceV2: Initialization complete")
         DebugLogger.shared.log("BleAudioServiceV2: Initialization complete")
         
-        // Attempt auto-connect to remembered device
-        attemptAutoConnect()
+        // Check if we have a saved device to auto-connect to
+        // This won't trigger permission dialog if no device is saved (first launch)
+        // But will auto-connect on subsequent launches
+        if hasRememberedDevice() {
+            print("BleAudioServiceV2: Found remembered device, attempting auto-connect")
+            DebugLogger.shared.log("BleAudioServiceV2: Found remembered device, attempting auto-connect")
+            attemptAutoConnect()
+        } else {
+            print("BleAudioServiceV2: No remembered device, waiting for user action")
+            DebugLogger.shared.log("BleAudioServiceV2: No remembered device, waiting for user action")
+        }
         
         return true
+    }
+    
+    /// Check if we have a remembered device (without triggering permission)
+    private func hasRememberedDevice() -> Bool {
+        // Check UserDefaults for saved device without initializing ConnectionOrchestrator
+        if let _ = UserDefaults.standard.string(forKey: "com.nirva.ble.rememberedDevice") {
+            return true
+        }
+        return false
     }
     
     /// Attempt to auto-connect to remembered device
     func attemptAutoConnect() {
         print("BleAudioServiceV2: Attempting auto-connect to remembered device")
         DebugLogger.shared.log("BleAudioServiceV2: Attempting auto-connect to remembered device")
-        connectionOrchestrator.attemptAutoConnect()
+        
+        // Ensure orchestrator is initialized for auto-connect
+        ensureOrchestratorInitialized()
+        connectionOrchestrator?.attemptAutoConnect()
     }
     
     /// Start scanning for BLE devices
@@ -155,12 +186,16 @@ class BleAudioServiceV2: NSObject {
         }
         
         print("BleAudioServiceV2: Starting scan...")
-        print("BleAudioServiceV2: ConnectionOrchestrator instance: \(connectionOrchestrator)")
+        
+        // Initialize orchestrator on first scan (this will trigger permission request)
+        ensureOrchestratorInitialized()
+        
+        print("BleAudioServiceV2: ConnectionOrchestrator instance: \(String(describing: connectionOrchestrator))")
         
         // For now, just set connect intent to start discovery
         // In production, this would be triggered by user action
         print("BleAudioServiceV2: About to call setConnectIntent(true)")
-        connectionOrchestrator.setConnectIntent(true)
+        connectionOrchestrator?.setConnectIntent(true)
         print("BleAudioServiceV2: Called setConnectIntent(true)")
         return true
     }
@@ -168,7 +203,7 @@ class BleAudioServiceV2: NSObject {
     /// Stop scanning
     func stopScanning() {
         print("BleAudioServiceV2: Stopping scan...")
-        connectionOrchestrator.setConnectIntent(false)
+        connectionOrchestrator?.setConnectIntent(false)
     }
     
     /// Connect to a specific device
@@ -180,8 +215,11 @@ class BleAudioServiceV2: NSObject {
         
         print("BleAudioServiceV2: Connecting to device \(deviceId)")
         
+        // Ensure orchestrator is initialized for connection
+        ensureOrchestratorInitialized()
+        
         // Use the new connectToDevice method for user-initiated connection
-        connectionOrchestrator.connectToDevice(uuid: uuid)
+        connectionOrchestrator?.connectToDevice(uuid: uuid)
         
         return true
     }
@@ -189,14 +227,14 @@ class BleAudioServiceV2: NSObject {
     /// Disconnect from current device
     func disconnect() {
         print("BleAudioServiceV2: Disconnecting...")
-        connectionOrchestrator.setConnectIntent(false)
+        connectionOrchestrator?.setConnectIntent(false)
         stopStreaming()
     }
     
     /// Forget a paired device
     func forgetDevice() {
         print("BleAudioServiceV2: Forgetting device...")
-        connectionOrchestrator.forgetDevice()
+        connectionOrchestrator?.forgetDevice()
         stopStreaming()
     }
     
@@ -240,7 +278,7 @@ class BleAudioServiceV2: NSObject {
     
     /// Get current connection info
     func getConnectionInfo() -> [String: Any] {
-        var info = connectionOrchestrator.getConnectionInfo()
+        var info = connectionOrchestrator?.getConnectionInfo() ?? [:]
         info["isInitialized"] = isInitialized
         info["isStreaming"] = isStreaming
         info["totalPacketsReceived"] = totalPacketsReceived
@@ -437,7 +475,7 @@ class BleAudioServiceV2: NSObject {
                 metadata: [
                     "duration": String(duration),
                     "segmentNumber": String(totalSegments),
-                    "deviceId": connectionOrchestrator.getConnectionInfo()["deviceId"] as? String ?? "unknown",
+                    "deviceId": connectionOrchestrator?.getConnectionInfo()["deviceId"] as? String ?? "unknown",
                     "capturedAt": String(Date().timeIntervalSince1970 * 1000) // Timestamp in milliseconds when audio was captured
                 ]
             )
@@ -477,7 +515,7 @@ class BleAudioServiceV2: NSObject {
     
     /// Get battery level from connected device
     func getBatteryLevel() -> Int? {
-        return connectionOrchestrator.getBatteryLevel()
+        return connectionOrchestrator?.getBatteryLevel()
     }
 }
 
