@@ -6,8 +6,15 @@ import 'package:nirva_app/services/hardware_service.dart';
 import 'package:nirva_app/models/hardware_device.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/api_models.dart';
-import 'package:intl/intl.dart';
-import 'package:nirva_app/transcription_detail_page.dart';
+
+// Import widget components
+import 'widgets/ble_test/status_section.dart';
+import 'widgets/ble_test/device_controls_section.dart';
+import 'widgets/ble_test/discovered_devices_section.dart';
+import 'widgets/ble_test/transcriptions_section.dart';
+import 'widgets/ble_test/event_log_section.dart';
+import 'widgets/ble_test/connection_info_section.dart';
+import 'widgets/ble_test/streaming_stats_section.dart';
 
 /// Test page for the new background-first BLE connection system
 class HardwareBleConnectionTest extends StatefulWidget {
@@ -41,7 +48,7 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   final List<TranscriptionItem> _transcriptions = [];
   bool _isLoadingTranscriptions = false;
   bool _hasMoreTranscriptions = false;
-  int _currentPage = 1;  // API uses 1-based pagination
+  int _currentPage = 1;
   String? _transcriptionsError;
   
   // Stream subscriptions
@@ -56,7 +63,6 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
     _setupEventListeners();
     // Get initial connection info after a short delay
     Future.delayed(const Duration(milliseconds: 500), () {
-      print('HardwareBleConnectionTest: Getting initial connection info...');
       _getConnectionInfo();
       // Load transcriptions on page load
       _loadTranscriptions();
@@ -73,15 +79,13 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   
   Future<void> _initializeService() async {
     try {
-      print('HardwareBleConnectionTest: Calling initialize on native side...');
       final result = await _methodChannel.invokeMethod('initialize');
-      print('HardwareBleConnectionTest: Initialize result: $result');
       setState(() {
         _isInitialized = result == true;
         _addLog('Service initialized: $_isInitialized');
       });
     } catch (e) {
-      print('HardwareBleConnectionTest: Error initializing: $e');
+      debugPrint('ERROR: Failed to initialize BLE service: $e');
       _addLog('Error initializing: $e');
     }
   }
@@ -97,60 +101,28 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
           setState(() {
             _connectionState = event['state'];
           });
-          
-          // Update HardwareService when connection state changes
-          final hardwareService = context.read<HardwareService>();
-          // The native side sends "subscribed" when fully connected and streaming
-          if (event['state'] == 'subscribed') {
-            print('HardwareBleConnectionTest: Device subscribed, updating HardwareService');
-            
-            // Use device info from the event if available
-            final deviceId = event['deviceId'] ?? _connectionInfo['deviceId'] ?? '';
-            final deviceName = event['name'] ?? event['deviceName'] ?? 'OMI Device';
-            final batteryLevel = event['batteryLevel'] ?? 0;
-            final rssi = event['rssi'] ?? 0;
-            
-            if (deviceId.isNotEmpty) {
-              print('HardwareBleConnectionTest: Device info - name: $deviceName, battery: $batteryLevel%');
-              
-              // Create a HardwareDevice with the info from the event
-              final device = HardwareDevice(
-                id: deviceId,
-                name: deviceName,
-                address: event['address'] ?? deviceId,  // Use deviceId as fallback
-                rssi: rssi,
-                batteryLevel: batteryLevel,
-                isConnected: true,
-                discoveredAt: DateTime.now(),
-                connectedAt: DateTime.now(),
-              );
-              hardwareService.updateConnectedDeviceFromBle(device);
-              
-              // Still fetch additional info but with shorter delay since we have basic info
-              Future.delayed(const Duration(milliseconds: 200), () {
-                print('HardwareBleConnectionTest: Fetching additional device info');
-                _getConnectionInfo();  // This will fetch any additional device info
-              });
-            } else {
-              print('HardwareBleConnectionTest: No device ID in subscribed event, fetching info...');
-              // Fallback: fetch info immediately if not provided in event
-              _getConnectionInfo();
-            }
-          } else if (event['state'] == 'disconnected' || event['state'] == 'idle' || event['state'] == 'backoff') {
-            print('HardwareBleConnectionTest: Device disconnected/idle, clearing HardwareService');
-            // Clear connected device when disconnected
-            hardwareService.updateConnectedDeviceFromBle(null);
-          }
         }
-        // Handle device discovery
-        if (event['event'] == 'deviceDiscovered') {
-          setState(() {
-            _discoveredDevices[event['deviceId']] = {
-              'name': event['name'] ?? 'Unknown Device',
-              'rssi': event['rssi'] ?? 0,
-              'lastSeen': DateTime.now(),
-            };
-          });
+        // Refresh connection info after state changes
+        if (event['event'] == 'connected' || event['event'] == 'disconnected') {
+          Future.delayed(const Duration(milliseconds: 500), _getConnectionInfo);
+        }
+      }
+    });
+    
+    // Discovery events - capture discovered devices
+    _connectionEventsSub = _connectionEventChannel
+        .receiveBroadcastStream()
+        .listen((event) {
+      if (event is Map) {
+        if (event['event'] == 'discoveredDevice' && event['device'] != null) {
+          final device = event['device'] as Map;
+          final deviceId = device['id'] ?? device['deviceId'];
+          if (deviceId != null) {
+            setState(() {
+              _discoveredDevices[deviceId] = Map<String, dynamic>.from(device);
+            });
+            _addLog('Discovered: ${device['name']} (${device['rssi']} dBm)');
+          }
         }
       }
     });
@@ -160,10 +132,12 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
         .receiveBroadcastStream()
         .listen((event) {
       if (event is Map) {
-        setState(() {
-          _streamingStats = Map<String, dynamic>.from(event);
-          _isStreaming = event['isStreaming'] == true;
-        });
+        if (event['isStreaming'] != null) {
+          setState(() {
+            _isStreaming = event['isStreaming'];
+          });
+        }
+        _addLog('Streaming Event: $event');
       }
     });
     
@@ -179,24 +153,24 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   
   void _addLog(String message) {
     setState(() {
-      _eventLog.insert(0, '${DateTime.now().toString().substring(11, 19)}: $message');
+      final timestamp = DateTime.now().toString().split('.')[0].split(' ')[1];
+      _eventLog.add('[$timestamp] $message');
+      // Keep only last 100 log entries
       if (_eventLog.length > 100) {
-        _eventLog.removeLast();
+        _eventLog.removeAt(0);
       }
     });
   }
   
   Future<void> _startScanning() async {
     try {
-      print('HardwareBleConnectionTest: _startScanning called');
-      _addLog('Starting scan...');
-      setState(() => _isScanning = true);
-      print('HardwareBleConnectionTest: Calling native startScanning method');
-      final result = await _methodChannel.invokeMethod('startScanning');
-      print('HardwareBleConnectionTest: Native startScanning returned: $result');
-      _addLog('Start scanning result: $result');
+      setState(() {
+        _isScanning = true;
+        _discoveredDevices.clear();  // Clear previous scan results
+      });
+      await _methodChannel.invokeMethod('startScanning');
+      _addLog('Started scanning');
     } catch (e) {
-      print('HardwareBleConnectionTest: Error in _startScanning: $e');
       _addLog('Error starting scan: $e');
       setState(() => _isScanning = false);
     }
@@ -207,7 +181,7 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
       await _methodChannel.invokeMethod('stopScanning');
       setState(() {
         _isScanning = false;
-        _discoveredDevices.clear();  // Clear discovered devices when stopping scan
+        _discoveredDevices.clear();
       });
       _addLog('Stopped scanning');
     } catch (e) {
@@ -245,21 +219,18 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   
   Future<void> _getConnectionInfo() async {
     try {
-      print('HardwareBleConnectionTest: Invoking getConnectionInfo...');
       final info = await _methodChannel.invokeMethod('getConnectionInfo');
-      print('HardwareBleConnectionTest: Connection info received: $info');
       
       setState(() {
         _connectionInfo = Map<String, dynamic>.from(info as Map);
       });
-      _addLog('Got connection info: ${_connectionInfo}');
+      _addLog('Got connection info');
       
       // Update HardwareService with connection info
+      if (!mounted) return;
       final hardwareService = context.read<HardwareService>();
       if (_connectionInfo['isConnected'] == true && _connectionInfo['deviceId'] != null) {
-        print('HardwareBleConnectionTest: Device is connected, updating HardwareService');
-        
-        // Extract battery level - could be under different keys
+        // Extract battery level
         int batteryLevel = 0;
         if (_connectionInfo['batteryLevel'] != null) {
           batteryLevel = _connectionInfo['batteryLevel'] as int;
@@ -268,8 +239,6 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
         } else if (_connectionInfo['batteryPercentage'] != null) {
           batteryLevel = _connectionInfo['batteryPercentage'] as int;
         }
-        
-        print('HardwareBleConnectionTest: Battery level: $batteryLevel%');
         
         // Create a HardwareDevice with the connection info
         final device = HardwareDevice(
@@ -283,42 +252,13 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
           connectedAt: DateTime.now(),
         );
         
-        print('HardwareBleConnectionTest: Updating HardwareService with device: ${device.name}, battery: ${device.batteryLevel}%');
         hardwareService.updateConnectedDeviceFromBle(device);
       } else {
-        print('HardwareBleConnectionTest: No device connected');
         hardwareService.updateConnectedDeviceFromBle(null);
       }
     } catch (e) {
-      print('HardwareBleConnectionTest: Error getting connection info: $e');
+      debugPrint('ERROR: Failed to get connection info: $e');
       _addLog('Error getting info: $e');
-    }
-  }
-  
-  Future<void> _getBatteryLevel() async {
-    try {
-      // Try to get battery level from a dedicated method if available
-      try {
-        final batteryLevel = await _methodChannel.invokeMethod('getBatteryLevel');
-        if (batteryLevel != null && batteryLevel is int) {
-          print('HardwareBleConnectionTest: Got battery level: $batteryLevel%');
-          final hardwareService = context.read<HardwareService>();
-          hardwareService.updateBatteryLevel(batteryLevel);
-          return;
-        }
-      } catch (e) {
-        // getBatteryLevel method might not exist yet
-        print('HardwareBleConnectionTest: getBatteryLevel not available: $e');
-      }
-      
-      // Fallback to getting from connection info
-      final info = await _methodChannel.invokeMethod('getConnectionInfo');
-      if (info is Map && info['batteryLevel'] != null) {
-        final hardwareService = context.read<HardwareService>();
-        hardwareService.updateBatteryLevel(info['batteryLevel'] as int);
-      }
-    } catch (e) {
-      _addLog('Error getting battery level: $e');
     }
   }
   
@@ -335,89 +275,51 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   
   // Transcription methods
   Future<void> _loadTranscriptions({bool loadMore = false}) async {
-    print('_loadTranscriptions called, loadMore: $loadMore, isLoading: $_isLoadingTranscriptions');
-    _addLog('_loadTranscriptions called, isLoading: $_isLoadingTranscriptions');
-    
     if (_isLoadingTranscriptions) {
-      print('Already loading, returning early');
       return;
     }
     
     setState(() {
       _isLoadingTranscriptions = true;
       _transcriptionsError = null;
-      
       if (!loadMore) {
         _currentPage = 1;
-        _transcriptions.clear();
-      } else {
-        _currentPage++;
+        _hasMoreTranscriptions = false;
       }
     });
     
     try {
-      print('Calling NirvaAPI.getTranscriptions with page: $_currentPage');
-      _addLog('Calling NirvaAPI.getTranscriptions with page: $_currentPage');
+      final response = await NirvaAPI.getTranscriptions(page: _currentPage);
       
-      final response = await NirvaAPI.getTranscriptions(
-        page: _currentPage,
-        pageSize: 50,
-      );
-      
-      print('NirvaAPI.getTranscriptions response: ${response != null ? "Got response with ${response.items.length} items" : "null response"}');
-      _addLog('API response: ${response != null ? "Got ${response.items.length} items" : "null"}');
-      
-      if (response != null) {
+      if (response != null && response.items.isNotEmpty) {
         setState(() {
-          _transcriptions.addAll(response.items);
-          _hasMoreTranscriptions = response.has_more;
+          if (loadMore) {
+            _transcriptions.addAll(response.items);
+          } else {
+            _transcriptions.clear();
+            _transcriptions.addAll(response.items);
+          }
+          _hasMoreTranscriptions = response.items.length >= 20;
+          if (_hasMoreTranscriptions) {
+            _currentPage++;
+          }
           _isLoadingTranscriptions = false;
         });
-        
-        _addLog('Loaded ${response.items.length} transcriptions (page $_currentPage)');
+        _addLog('Loaded ${response.items.length} transcriptions');
       } else {
         setState(() {
-          _transcriptionsError = 'Failed to load transcriptions - Authentication may have failed';
+          _hasMoreTranscriptions = false;
           _isLoadingTranscriptions = false;
-          // Reset page on error if we were loading more
-          if (loadMore) _currentPage--;
         });
-        _addLog('Error loading transcriptions - null response');
       }
     } catch (e) {
+      debugPrint('ERROR: Failed to load transcriptions: $e');
       setState(() {
-        _transcriptionsError = 'Error: $e';
+        _transcriptionsError = 'Failed to load: $e';
         _isLoadingTranscriptions = false;
-        // Reset page on error if we were loading more
-        if (loadMore) _currentPage--;
+        _hasMoreTranscriptions = false;
       });
-      _addLog('Exception loading transcriptions: $e');
-    }
-  }
-  
-  // Helper method to format relative time
-  String _formatRelativeTime(String isoTime) {
-    try {
-      final dateTime = DateTime.parse(isoTime);
-      final now = DateTime.now();
-      final difference = now.difference(dateTime);
-      
-      if (difference.inSeconds < 60) {
-        return 'Just now';
-      } else if (difference.inMinutes < 60) {
-        final minutes = difference.inMinutes;
-        return '$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago';
-      } else if (difference.inHours < 24) {
-        final hours = difference.inHours;
-        return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
-      } else if (difference.inDays < 7) {
-        final days = difference.inDays;
-        return '$days ${days == 1 ? 'day' : 'days'} ago';
-      } else {
-        return DateFormat('MMM d, y').format(dateTime);
-      }
-    } catch (e) {
-      return isoTime;
+      _addLog('Error loading transcriptions: $e');
     }
   }
   
@@ -429,7 +331,7 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
       // Parse the log to get all lines
       final allLines = logString.split('\n');
       
-      // Extract critical info from the beginning (state summary)
+      // Extract critical info from the beginning
       final criticalLines = <String>[];
       final s3Lines = <String>[];
       var foundLogStart = false;
@@ -469,57 +371,75 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
           : logLines;
       
       // Print to console
-      print('\n' + '=' * 80);
-      print('NATIVE DEBUG LOG - CRITICAL INFO');
-      print('=' * 80);
+      debugPrint('\n${'=' * 80}');
+      debugPrint('NATIVE DEBUG LOG - CRITICAL INFO');
+      debugPrint('=' * 80);
       for (final line in criticalLines) {
         if (line.trim().isNotEmpty) {
-          print(line);
+          debugPrint(line);
         }
       }
       
-      print('\n' + '=' * 80);
-      print('S3 UPLOAD RELATED LOGS (${s3Lines.length} lines found)');
-      print('=' * 80);
+      debugPrint('\n${'=' * 80}');
+      debugPrint('S3 UPLOAD RELATED LOGS (${s3Lines.length} lines found)');
+      debugPrint('=' * 80);
       if (s3Lines.isEmpty) {
-        print('No S3-related logs found!');
-        print('This means segments are NOT being queued for upload.');
+        debugPrint('No S3-related logs found!');
+        debugPrint('This means segments are NOT being queued for upload.');
       } else {
         // Show last 50 S3 lines
         final s3ToShow = s3Lines.length > 50 
             ? s3Lines.sublist(s3Lines.length - 50)
             : s3Lines;
         for (final line in s3ToShow) {
-          print(line);
+          debugPrint(line);
         }
         if (s3Lines.length > 50) {
-          print('... (${s3Lines.length - 50} more S3 lines omitted)');
+          debugPrint('... (${s3Lines.length - 50} more S3 lines omitted)');
         }
       }
       
-      print('\n' + '=' * 80);
-      print('LAST 300 LINES OF DEBUG LOG');
-      print('=' * 80);
+      debugPrint('\n${'=' * 80}');
+      debugPrint('LAST 300 LINES OF DEBUG LOG');
+      debugPrint('=' * 80);
       for (final line in last300Lines) {
-        print(line);
+        debugPrint(line);
       }
-      print('=' * 80);
-      print('END OF DEBUG LOG');
-      print('=' * 80 + '\n');
+      debugPrint('=' * 80);
+      debugPrint('END OF DEBUG LOG');
+      debugPrint('${'=' * 80}\n');
       
-      _addLog('Debug log printed to console (${allLines.length} total lines)');
+      _addLog('Debug log printed (${allLines.length} lines)');
     } catch (e) {
       _addLog('Error getting debug log: $e');
-      print('Error getting debug log: $e');
+      debugPrint('Error getting debug log: $e');
     }
   }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('BLE Connection Test'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      backgroundColor: const Color(0xFFfaf9f5),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56.0),
+        child: AppBar(
+          backgroundColor: const Color(0xFFfaf9f5),
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFF0E3C26)),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const Text(
+            'Hardware Connection',
+            style: TextStyle(
+              color: Color(0xFF0E3C26),
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Georgia',
+            ),
+          ),
+          centerTitle: true,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -527,360 +447,70 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Status Section
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Status', style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 8),
-                    Text('Initialized: $_isInitialized'),
-                    Text('Connection State: $_connectionState'),
-                    Text('Scanning: $_isScanning'),
-                    Text('Streaming: $_isStreaming'),
-                    const Divider(),
-                    Consumer<HardwareService>(
-                      builder: (context, hardwareService, child) {
-                        final device = hardwareService.connectedDevice;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('HardwareService Status:', 
-                              style: Theme.of(context).textTheme.titleSmall),
-                            Text('Connected: ${hardwareService.isConnected}'),
-                            if (device != null) ...[
-                              Text('Device: ${device.name}'),
-                              Text('Battery: ${device.batteryLevel}%'),
-                              Text('ID: ${device.id}'),
-                            ],
-                          ],
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
+            StatusSection(
+              isInitialized: _isInitialized,
+              connectionState: _connectionState,
+              isScanning: _isScanning,
+              isStreaming: _isStreaming,
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             
-            // Control Buttons
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ElevatedButton(
-                  onPressed: !_isInitialized ? null : (_isScanning ? _stopScanning : _startScanning),
-                  child: Text(_isScanning ? 'Stop Scan' : 'Start Scan'),
-                ),
-                ElevatedButton(
-                  onPressed: _connectionState == 'idle' ? null : _disconnect,
-                  child: const Text('Disconnect'),
-                ),
-                ElevatedButton(
-                  onPressed: _forgetDevice,
-                  child: const Text('Forget Device'),
-                ),
-                ElevatedButton(
-                  onPressed: _getConnectionInfo,
-                  child: const Text('Get Info'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _getConnectionInfo();
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Updated HardwareService')),
-                      );
-                    }
-                  },
-                  child: const Text('Update HW Service'),
-                ),
-                ElevatedButton(
-                  onPressed: _getStreamingStats,
-                  child: const Text('Get Stats'),
-                ),
-                ElevatedButton(
-                  onPressed: _getDebugLog,
-                  child: const Text('Debug Log'),
-                ),
-              ],
+            // Device Controls Section
+            DeviceControlsSection(
+              isInitialized: _isInitialized,
+              isScanning: _isScanning,
+              connectionState: _connectionState,
+              onStartScan: _startScanning,
+              onStopScan: _stopScanning,
+              onDisconnect: _disconnect,
+              onForgetDevice: _forgetDevice,
+              onGetInfo: _getConnectionInfo,
+              onGetStats: _getStreamingStats,
+              onDebugLog: _getDebugLog,
             ),
             
-            const SizedBox(height: 16),
-            
-            // Discovered Devices
-            if (_isScanning && _discoveredDevices.isNotEmpty) ...[  
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Discovered Devices', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      ..._discoveredDevices.entries.map((entry) {
-                        final deviceId = entry.key;
-                        final deviceInfo = entry.value;
-                        return ListTile(
-                          title: Text(deviceInfo['name']),
-                          subtitle: Text('ID: $deviceId\nRSSI: ${deviceInfo['rssi']}'),
-                          trailing: ElevatedButton(
-                            onPressed: () => _connectToDevice(deviceId),
-                            child: const Text('Connect'),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
+            // Discovered Devices (only show when scanning and devices found)
+            if (_isScanning && _discoveredDevices.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              DiscoveredDevicesSection(
+                discoveredDevices: _discoveredDevices,
+                onConnectDevice: _connectToDevice,
               ),
-              const SizedBox(height: 8),
             ],
             
-            // Connection Info
+            // Connection Info (only show when available)
             if (_connectionInfo.isNotEmpty) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Connection Info', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      ..._connectionInfo.entries.map((e) => 
-                        Text('${e.key}: ${e.value}', style: const TextStyle(fontSize: 12))),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
+              ConnectionInfoSection(connectionInfo: _connectionInfo),
             ],
             
-            // Streaming Stats
+            // Streaming Stats (only show when available)
             if (_streamingStats.isNotEmpty) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Streaming Stats', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      ..._streamingStats.entries.map((e) => 
-                        Text('${e.key}: ${e.value}', style: const TextStyle(fontSize: 12))),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
+              StreamingStatsSection(streamingStats: _streamingStats),
             ],
             
             // Transcriptions Section
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Transcriptions', style: Theme.of(context).textTheme.titleMedium),
-                        IconButton(
-                          icon: const Icon(Icons.refresh),
-                          onPressed: _isLoadingTranscriptions ? null : () => _loadTranscriptions(),
-                          tooltip: 'Refresh transcriptions',
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    
-                    // Error message
-                    if (_transcriptionsError != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.error_outline, color: Colors.red, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _transcriptionsError!,
-                                style: const TextStyle(color: Colors.red, fontSize: 12),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                print('RETRY BUTTON PRESSED');
-                                _addLog('Retry button pressed');
-                                _loadTranscriptions();
-                              },
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                    
-                    // Transcriptions list
-                    Container(
-                      constraints: const BoxConstraints(maxHeight: 400),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: [
-                          // List of transcriptions
-                          Expanded(
-                            child: _transcriptions.isEmpty && !_isLoadingTranscriptions
-                                ? Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(24.0),
-                                      child: Text(
-                                        _transcriptionsError != null 
-                                            ? 'Failed to load transcriptions'
-                                            : 'No transcriptions yet',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    itemCount: _transcriptions.length + (_isLoadingTranscriptions && _transcriptions.isNotEmpty ? 1 : 0),
-                                    itemBuilder: (context, index) {
-                                      if (index == _transcriptions.length) {
-                                        // Loading indicator at the bottom
-                                        return const Center(
-                                          child: Padding(
-                                            padding: EdgeInsets.all(16.0),
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
-                                      }
-                                      
-                                      final transcription = _transcriptions[index];
-                                      final isEven = index % 2 == 0;
-                                      
-                                      return InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => TranscriptionDetailPage(
-                                                transcription: transcription,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          color: isEven ? Colors.grey.shade50 : Colors.white,
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      _formatRelativeTime(transcription.start_time),
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: Colors.grey.shade600,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      transcription.text,
-                                                      style: const TextStyle(fontSize: 13),
-                                                      maxLines: 3,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const Icon(
-                                                Icons.chevron_right,
-                                                color: Colors.grey,
-                                                size: 20,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                          ),
-                          
-                          // Loading indicator for initial load
-                          if (_isLoadingTranscriptions && _transcriptions.isEmpty)
-                            const LinearProgressIndicator(),
-                          
-                          // Load more button
-                          if (_hasMoreTranscriptions && !_isLoadingTranscriptions)
-                            Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  top: BorderSide(color: Colors.grey.shade300),
-                                ),
-                              ),
-                              child: TextButton(
-                                onPressed: () => _loadTranscriptions(loadMore: true),
-                                child: const Text('Load More'),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 24),
+            TranscriptionsSection(
+              transcriptions: _transcriptions,
+              isLoadingTranscriptions: _isLoadingTranscriptions,
+              hasMoreTranscriptions: _hasMoreTranscriptions,
+              transcriptionsError: _transcriptionsError,
+              onRefresh: () => _loadTranscriptions(),
+              onLoadMore: () => _loadTranscriptions(loadMore: true),
+              onRetry: () {
+                _loadTranscriptions();
+              },
             ),
-            const SizedBox(height: 8),
             
             // Event Log
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Event Log', style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    Container(
-                      height: 200,  // Fixed height for event log
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: ListView.builder(
-                        itemCount: _eventLog.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                            child: Text(
-                              _eventLog[index],
-                              style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            const SizedBox(height: 24),
+            EventLogSection(eventLog: _eventLog),
+            
+            // Bottom padding
+            const SizedBox(height: 40),
           ],
         ),
       ),

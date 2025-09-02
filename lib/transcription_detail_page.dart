@@ -56,25 +56,35 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
   }
   
   Widget _buildSection(String title, Widget content) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0E3C26),
+              fontFamily: 'Georgia',
             ),
-            const SizedBox(height: 12),
-            content,
-          ],
-        ),
+          ),
+          const SizedBox(height: 16),
+          content,
+        ],
       ),
     );
   }
@@ -83,7 +93,7 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
     final displayValue = value?.toString() ?? 'N/A';
     
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -91,9 +101,10 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
             width: 140,
             child: Text(
               '$key:',
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+                fontFamily: 'Georgia',
               ),
             ),
           ),
@@ -103,9 +114,13 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: displayValue));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Copied to clipboard'),
-                          duration: Duration(seconds: 1),
+                        SnackBar(
+                          backgroundColor: const Color(0xFF0E3C26),
+                          content: const Text(
+                            'Copied to clipboard',
+                            style: TextStyle(fontFamily: 'Georgia'),
+                          ),
+                          duration: const Duration(seconds: 1),
                         ),
                       );
                     },
@@ -114,16 +129,27 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
                         Expanded(
                           child: Text(
                             displayValue,
-                            style: const TextStyle(fontSize: 13),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF0E3C26),
+                              fontFamily: 'Georgia',
+                            ),
                           ),
                         ),
-                        const Icon(Icons.copy, size: 14, color: Colors.grey),
+                        const SizedBox(width: 8),
+                        Icon(Icons.copy, size: 16, color: Colors.grey.shade400),
                       ],
                     ),
                   )
                 : Text(
                     displayValue,
-                    style: const TextStyle(fontSize: 13),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF0E3C26),
+                      fontFamily: 'Georgia',
+                    ),
                   ),
           ),
         ],
@@ -135,7 +161,13 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
     if (jsonData == null) {
       return _buildSection(
         title,
-        const Text('No data available', style: TextStyle(color: Colors.grey)),
+        Text(
+          'No data available',
+          style: TextStyle(
+            color: Colors.grey.shade600,
+            fontFamily: 'Georgia',
+          ),
+        ),
       );
     }
     
@@ -147,9 +179,9 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade300),
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
         ),
         child: Stack(
           children: [
@@ -157,26 +189,43 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
               scrollDirection: Axis.horizontal,
               child: SelectableText(
                 prettyJson,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'monospace',
-                  fontSize: 11,
+                  fontSize: 12,
+                  color: Colors.grey.shade700,
                 ),
               ),
             ),
             Positioned(
               top: 0,
               right: 0,
-              child: IconButton(
-                icon: const Icon(Icons.copy, size: 18),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: prettyJson));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('JSON copied to clipboard'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
-                },
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.copy,
+                    size: 18,
+                    color: Colors.grey.shade600,
+                  ),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: prettyJson));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: const Color(0xFF0E3C26),
+                        content: const Text(
+                          'JSON copied to clipboard',
+                          style: TextStyle(fontFamily: 'Georgia'),
+                        ),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -189,7 +238,7 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
     if (isoString == null) return 'N/A';
     try {
       final dt = DateTime.parse(isoString);
-      return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+      return DateFormat('MMM d, yyyy • h:mm a').format(dt.toLocal());
     } catch (e) {
       return isoString;
     }
@@ -201,7 +250,12 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
       final startDt = DateTime.parse(start);
       final endDt = DateTime.parse(end);
       final duration = endDt.difference(startDt);
-      return '${duration.inSeconds}.${duration.inMilliseconds % 1000} seconds';
+      
+      if (duration.inMinutes > 0) {
+        return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')} minutes';
+      } else {
+        return '${duration.inSeconds}.${(duration.inMilliseconds % 1000 ~/ 100)} seconds';
+      }
     } catch (e) {
       return 'N/A';
     }
@@ -210,41 +264,129 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Transcription Details'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadDetailedData,
+      backgroundColor: const Color(0xFFfaf9f5),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56.0),
+        child: AppBar(
+          backgroundColor: const Color(0xFFfaf9f5),
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFF0E3C26)),
+            onPressed: () => Navigator.pop(context),
           ),
-        ],
+          title: const Text(
+            'Transcription Details',
+            style: TextStyle(
+              color: Color(0xFF0E3C26),
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Georgia',
+            ),
+          ),
+          centerTitle: true,
+          actions: [
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.refresh,
+                  color: Colors.grey.shade600,
+                  size: 18,
+                ),
+                onPressed: _loadDetailedData,
+                tooltip: 'Refresh data',
+              ),
+            ),
+          ],
+        ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(
+                    color: Color(0xFFe7bf57),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Loading details...',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 16,
+                      fontFamily: 'Georgia',
+                    ),
+                  ),
+                ],
+              ),
+            )
           : _error != null
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error loading details',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _error!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadDetailedData,
-                        child: const Text('Retry'),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.error_outline,
+                            size: 40,
+                            color: Colors.red,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Error loading details',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0E3C26),
+                            fontFamily: 'Georgia',
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          _error!,
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 14,
+                            fontFamily: 'Georgia',
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: _loadDetailedData,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFe7bf57),
+                            foregroundColor: const Color(0xFF0E3C26),
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Retry',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Georgia',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               : SingleChildScrollView(
@@ -252,6 +394,71 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Transcription Text - Featured Section
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFFe7bf57).withOpacity(0.1),
+                              const Color(0xFFe7bf57).withOpacity(0.05),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: const Color(0xFFe7bf57).withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFe7bf57).withOpacity(0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.mic,
+                                    color: Color(0xFFe7bf57),
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'Transcription',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF0E3C26),
+                                    fontFamily: 'Georgia',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            SelectableText(
+                              widget.transcription.text,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF0E3C26),
+                                fontFamily: 'Georgia',
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
                       // Basic Information
                       _buildSection(
                         'Basic Information',
@@ -265,79 +472,98 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
                         ),
                       ),
                       
-                      // Transcription Text
-                      _buildSection(
-                        'Transcription Text',
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.blue.shade200),
-                          ),
-                          child: SelectableText(
-                            widget.transcription.text,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      
-                      // Deepgram Analysis (if available)
+                      // Detailed Data Sections
                       if (_detailedData != null) ...[
                         // Language Detection
-                        if (_detailedData!['detected_language'] != null)
+                        if (_detailedData!['detected_language'] != null) ...[
+                          const SizedBox(height: 24),
                           _buildSection(
                             'Language Detection',
                             Column(
                               children: [
                                 _buildKeyValue('Detected Language', _detailedData!['detected_language']),
-                                _buildKeyValue('Confidence', _detailedData!['transcription_confidence']),
+                                _buildKeyValue('Confidence', '${((_detailedData!['transcription_confidence'] ?? 0) * 100).toStringAsFixed(1)}%'),
                               ],
                             ),
                           ),
+                        ],
                         
-                        // Audio File Information
-                        if (_detailedData!['audio_files'] != null)
+                        // Audio Files
+                        if (_detailedData!['audio_files'] != null && (_detailedData!['audio_files'] as List).isNotEmpty) ...[
+                          const SizedBox(height: 24),
                           _buildSection(
                             'Audio Files',
                             Column(
                               children: [
                                 for (var file in (_detailedData!['audio_files'] as List? ?? []))
-                                  Card(
-                                    margin: const EdgeInsets.only(bottom: 8),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          _buildKeyValue('S3 Key', file['s3_key']),
-                                          _buildKeyValue('Size', '${file['file_size'] ?? 0} bytes'),
-                                          _buildKeyValue('Duration', '${file['duration_seconds'] ?? 0} seconds'),
-                                          _buildKeyValue('Speech Segments', file['num_speech_segments']),
-                                          _buildKeyValue('Speech Ratio', '${((file['speech_ratio'] ?? 0) * 100).toStringAsFixed(1)}%'),
-                                          _buildKeyValue('Status', file['status']),
-                                        ],
-                                      ),
+                                  Container(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade50,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: Colors.grey.shade200),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.audio_file,
+                                              size: 18,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                file['s3_key']?.toString().split('/').last ?? 'Audio File',
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xFF0E3C26),
+                                                  fontFamily: 'Georgia',
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        _buildKeyValue('Size', '${((file['file_size'] ?? 0) / 1024).toStringAsFixed(1)} KB'),
+                                        _buildKeyValue('Duration', '${file['duration_seconds'] ?? 0} seconds'),
+                                        _buildKeyValue('Speech Segments', file['num_speech_segments']),
+                                        _buildKeyValue('Speech Ratio', '${((file['speech_ratio'] ?? 0) * 100).toStringAsFixed(1)}%'),
+                                        _buildKeyValue('Status', file['status']),
+                                      ],
                                     ),
                                   ),
                               ],
                             ),
                           ),
+                        ],
                         
                         // Sentiment Analysis
-                        if (_detailedData!['sentiment_data'] != null)
+                        if (_detailedData!['sentiment_data'] != null) ...[
+                          const SizedBox(height: 24),
                           _buildJsonSection('Sentiment Analysis', _detailedData!['sentiment_data']),
+                        ],
                         
                         // Topics
-                        if (_detailedData!['topics_data'] != null)
+                        if (_detailedData!['topics_data'] != null) ...[
+                          const SizedBox(height: 24),
                           _buildJsonSection('Topics Detection', _detailedData!['topics_data']),
+                        ],
                         
                         // Intents
-                        if (_detailedData!['intents_data'] != null)
+                        if (_detailedData!['intents_data'] != null) ...[
+                          const SizedBox(height: 24),
                           _buildJsonSection('Intent Recognition', _detailedData!['intents_data']),
+                        ],
                         
                         // Batch Information
-                        if (_detailedData!['batch_id'] != null)
+                        if (_detailedData!['batch_id'] != null) ...[
+                          const SizedBox(height: 24),
                           _buildSection(
                             'Batch Information',
                             Column(
@@ -347,26 +573,116 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
                               ],
                             ),
                           ),
+                        ],
                         
                         // Raw Deepgram Response (collapsed by default)
-                        if (_detailedData!['raw_response'] != null)
-                          ExpansionTile(
-                            title: const Text(
-                              'Raw Deepgram Response',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange,
+                        if (_detailedData!['raw_response'] != null) ...[
+                          const SizedBox(height: 24),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                dividerColor: Colors.transparent,
+                              ),
+                              child: ExpansionTile(
+                                tilePadding: const EdgeInsets.all(20),
+                                childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                                title: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.code,
+                                      size: 20,
+                                      color: Colors.orange.shade600,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'Raw Deepgram Response',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange.shade600,
+                                        fontFamily: 'Georgia',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade50,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: Colors.grey.shade200),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: SelectableText(
+                                            const JsonEncoder.withIndent('  ').convert(_detailedData!['raw_response']),
+                                            style: TextStyle(
+                                              fontFamily: 'monospace',
+                                              fontSize: 12,
+                                              color: Colors.grey.shade700,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            width: 36,
+                                            height: 36,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade100,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: IconButton(
+                                              icon: Icon(
+                                                Icons.copy,
+                                                size: 18,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                              onPressed: () {
+                                                Clipboard.setData(ClipboardData(
+                                                  text: const JsonEncoder.withIndent('  ').convert(_detailedData!['raw_response']),
+                                                ));
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(
+                                                    backgroundColor: const Color(0xFF0E3C26),
+                                                    content: const Text(
+                                                      'JSON copied to clipboard',
+                                                      style: TextStyle(fontFamily: 'Georgia'),
+                                                    ),
+                                                    duration: const Duration(seconds: 1),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: _buildJsonSection('', _detailedData!['raw_response']),
-                              ),
-                            ],
                           ),
+                        ],
                       ],
+                      
+                      // Bottom padding
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
