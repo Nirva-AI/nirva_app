@@ -98,10 +98,10 @@ void main() async {
         ChangeNotifierProvider(
           create:
               (_) => UserProvider(
-                id: "1eaade33-f351-461a-8f73-59a11cba04f9", // 这个ID是测试用的，必须和服务器对上。
-                username: 'weilyupku@gmail.com',
-                password: 'secret',
-                displayName: 'wei',
+                id: "", // Will be populated after login
+                username: '',
+                password: '',
+                displayName: '',
               ),
         ),
         ChangeNotifierProvider(create: (_) => JournalFilesProvider()),

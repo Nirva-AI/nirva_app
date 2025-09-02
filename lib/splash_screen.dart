@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/home_page.dart';
+import 'package:nirva_app/screens/login_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/tasks_provider.dart';
@@ -135,9 +136,6 @@ class _SplashScreenState extends State<SplashScreen> {
   // API初始化方法
   Future<void> _initializeAPIs() async {
     try {
-      // 在异步操作前获取 UserProvider，避免跨异步使用 context
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final user = userProvider.user;
       // Retry logic for first network call
       URLConfigurationResponse? urlConfig;
       int retryCount = 0;
@@ -163,24 +161,70 @@ class _SplashScreenState extends State<SplashScreen> {
 
       Logger().i('API 配置获取成功');
 
-      final token = await NirvaAPI.login(user);
-      if (token == null) {
-        throw Exception('登录失败，未获取到 token');
+      // Check if we have an existing token
+      final existingToken = HiveHelper.getUserToken();
+      if (existingToken.access_token.isEmpty) {
+        // No token, need to navigate to login screen
+        Logger().i('No existing token found, navigating to login screen');
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const LoginScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+            ),
+          );
+        }
+        return; // Exit early, don't continue initialization
       }
 
-      Logger().i('用户登录成功');
+      // We have a token, try to validate/refresh it
+      Logger().i('Found existing token, attempting to validate/refresh');
       
-      // Fetch S3 credentials after successful login
       try {
-        Logger().i('Fetching S3 upload credentials...');
-        await NativeS3Bridge.instance.refreshCredentialsIfNeeded();
-        Logger().i('S3 credentials fetch initiated');
+        // Try to refresh the token to ensure it's still valid
+        final refreshedToken = await NirvaAPI.refreshToken();
+        if (refreshedToken != null) {
+          Logger().i('Token refreshed successfully');
+        } else {
+          Logger().i('Token still valid');
+        }
+        
+        // Fetch S3 credentials after successful validation
+        try {
+          Logger().i('Fetching S3 upload credentials...');
+          await NativeS3Bridge.instance.refreshCredentialsIfNeeded();
+          Logger().i('S3 credentials fetch initiated');
+        } catch (e) {
+          Logger().w('Failed to fetch S3 credentials: $e');
+          // Don't fail the process if S3 credentials fail
+        }
       } catch (e) {
-        Logger().w('Failed to fetch S3 credentials on login: $e');
-        // Don't fail the login process if S3 credentials fail
+        // Token is invalid or refresh failed, navigate to login
+        Logger().w('Token validation/refresh failed: $e');
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const LoginScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+            ),
+          );
+        }
+        return; // Exit early
       }
     } catch (e) {
-      Logger().e('API初始化或登录失败: $e');
+      Logger().e('API初始化失败: $e');
       rethrow; // 重新抛出异常，让上层处理
     }
   }

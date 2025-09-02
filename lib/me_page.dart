@@ -11,6 +11,9 @@ import 'package:nirva_app/hardware_ble_connection_test.dart';
 import 'package:flutter/services.dart';
 import 'package:nirva_app/services/native_s3_bridge.dart';
 import 'package:nirva_app/services/s3_token_service.dart';
+import 'package:nirva_app/nirva_api.dart';
+import 'package:nirva_app/screens/login_screen.dart';
+import 'package:logger/logger.dart';
 
 class MePage extends StatefulWidget {
   const MePage({super.key});
@@ -449,8 +452,10 @@ class _MePageState extends State<MePage> {
                 onTap: () {
                   debugPrint('Nirva Settings tapped');
                 },
-                showDivider: false,
               ),
+              _buildDivider(),
+              // Logout button at the bottom
+              _buildLogoutItem(),
             ],
           ),
         ),
@@ -536,5 +541,176 @@ class _MePageState extends State<MePage> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       color: Colors.grey.shade200,
     );
+  }
+
+  Widget _buildLogoutItem() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _handleLogout,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFe7bf57).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.logout,
+                  size: 20,
+                  color: Color(0xFF0E3C26),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Sign Out',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0E3C26),
+                        fontFamily: 'Georgia',
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Sign out of your account',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                        fontFamily: 'Georgia',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Color(0xFF0E3C26),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleLogout() async {
+    // Show confirmation dialog
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Sign Out',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Georgia',
+            ),
+          ),
+          content: const Text(
+            'Are you sure you want to sign out?',
+            style: TextStyle(
+              fontFamily: 'Georgia',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontFamily: 'Georgia',
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF0E3C26),
+              ),
+              child: const Text(
+                'Sign Out',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Georgia',
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldLogout != true) {
+      return;
+    }
+
+    // Perform logout
+    try {
+      final logger = Logger();
+      logger.i('User initiated logout');
+      
+      // Call logout API
+      await NirvaAPI.logout();
+      
+      // Clear user data
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.clearUser();
+      
+      logger.i('Logout successful, navigating to login screen');
+      
+      // Navigate to login screen
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+          (route) => false, // Remove all routes
+        );
+      }
+    } catch (e) {
+      final logger = Logger();
+      logger.e('Logout failed: $e');
+      
+      // Even if logout API fails, still navigate to login screen
+      // and clear local data
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Logout failed, but clearing local session'),
+            backgroundColor: Colors.orange.shade600,
+          ),
+        );
+        
+        // Clear user data and navigate to login
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.clearUser();
+        
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+          (route) => false,
+        );
+      }
+    }
   }
 }

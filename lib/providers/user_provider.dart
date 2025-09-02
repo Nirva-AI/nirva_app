@@ -23,6 +23,12 @@ class UserProvider extends ChangeNotifier {
   
   // 获取用户ID
   String get id => _user.id;
+  
+  // 更新用户信息（登录后使用）
+  void updateUser(User newUser) {
+    _user = newUser;
+    notifyListeners();
+  }
 
   // 清空用户信息（如果需要的话）
   void clearUser() {
