@@ -653,8 +653,9 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   }
 
   Widget _buildTimelineEvent(EventAnalysis event, TimeOfDay time, bool isLast) {
-    // Parse end time
+    // Parse end time and check if it exists
     final endTime = _parseEndTime(event.time_range);
+    final hasEndTime = _hasEndTime(event.time_range);
     
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -664,16 +665,27 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
           width: 50,
           child: Column(
             children: [
-              // End time
-              Text(
-                '${endTime.hour.toString().padLeft(2, '0')}.${endTime.minute.toString().padLeft(2, '0')}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade600,
-                  fontFamily: 'Georgia',
+              // End time (only show if there's actually an end time)
+              if (hasEndTime)
+                Text(
+                  '${endTime.hour.toString().padLeft(2, '0')}.${endTime.minute.toString().padLeft(2, '0')}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade600,
+                    fontFamily: 'Georgia',
+                  ),
+                )
+              else
+                Text(
+                  '•', // Show a dot for single timestamp events
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade400,
+                    fontFamily: 'Georgia',
+                  ),
                 ),
-              ),
               const SizedBox(height: 4),
               // Dashed line with fixed height
               SizedBox(
@@ -937,33 +949,129 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   }
 
   TimeOfDay _parseTimeRange(String timeRange) {
-    // Parse time range like "08:00-08:30" and return start time
-    final parts = timeRange.split('-');
-    if (parts.isNotEmpty) {
-      final timeParts = parts[0].split(':');
-      if (timeParts.length == 2) {
-        return TimeOfDay(
-          hour: int.parse(timeParts[0]),
-          minute: int.parse(timeParts[1]),
-        );
+    try {
+      // Handle multiple formats
+      if (timeRange.contains(' - ')) {
+        // Format: "2:30 PM - 4:15 PM"
+        final parts = timeRange.split(' - ');
+        if (parts.isNotEmpty) {
+          return _parseTimeString(parts[0].trim());
+        }
+      } else if (timeRange.contains('-')) {
+        // Format: "08:00-08:30" or "8:00-8:30"
+        final parts = timeRange.split('-');
+        if (parts.isNotEmpty) {
+          return _parseTimeString(parts[0].trim());
+        }
+      } else {
+        // Single time format
+        return _parseTimeString(timeRange.trim());
       }
+    } catch (e) {
+      // Silent failure, return default
     }
+    
     return const TimeOfDay(hour: 0, minute: 0);
   }
 
   TimeOfDay _parseEndTime(String timeRange) {
-    // Parse time range like "08:00-08:30" and return end time
-    final parts = timeRange.split('-');
-    if (parts.length > 1) {
-      final timeParts = parts[1].split(':');
-      if (timeParts.length == 2) {
-        return TimeOfDay(
-          hour: int.parse(timeParts[0]),
-          minute: int.parse(timeParts[1]),
-        );
+    try {
+      // Handle multiple formats
+      if (timeRange.contains(' - ')) {
+        // Format: "2:30 PM - 4:15 PM"
+        final parts = timeRange.split(' - ');
+        if (parts.length > 1) {
+          return _parseTimeString(parts[1].trim());
+        }
+      } else if (timeRange.contains('-')) {
+        // Format: "08:00-08:30" or "8:00-8:30"
+        final parts = timeRange.split('-');
+        if (parts.length > 1) {
+          return _parseTimeString(parts[1].trim());
+        }
       }
+    } catch (e) {
+      // Silent failure, return default
     }
+    
     return const TimeOfDay(hour: 0, minute: 0);
+  }
+
+  /// Check if a time range has an end time
+  bool _hasEndTime(String timeRange) {
+    return timeRange.contains(' - ') || timeRange.contains('-');
+  }
+
+  /// Parse individual time string handling multiple formats and timezone conversion
+  TimeOfDay _parseTimeString(String timeStr) {
+    try {
+      // Remove extra whitespace
+      timeStr = timeStr.trim();
+      
+      // Handle AM/PM format (12-hour)
+      if (timeStr.toUpperCase().contains('AM') || timeStr.toUpperCase().contains('PM')) {
+        final isPM = timeStr.toUpperCase().contains('PM');
+        
+        // Remove AM/PM and parse the time part
+        final timePart = timeStr.replaceAll(RegExp(r'\s*(AM|PM)', caseSensitive: false), '');
+        final timeParts = timePart.split(':');
+        
+        if (timeParts.length == 2) {
+          int hour = int.parse(timeParts[0]);
+          final minute = int.parse(timeParts[1]);
+          
+          // Convert 12-hour to 24-hour format
+          if (isPM && hour != 12) {
+            hour += 12;
+          } else if (!isPM && hour == 12) {
+            hour = 0;
+          }
+          
+          // Apply timezone conversion (assuming server times are in a different timezone)
+          return _convertToUserTimezone(TimeOfDay(hour: hour, minute: minute));
+        }
+      } else {
+        // Handle 24-hour format or simple format without AM/PM
+        final timeParts = timeStr.split(':');
+        if (timeParts.length == 2) {
+          final hour = int.parse(timeParts[0]);
+          final minute = int.parse(timeParts[1]);
+          
+          // Apply timezone conversion
+          return _convertToUserTimezone(TimeOfDay(hour: hour, minute: minute));
+        }
+      }
+    } catch (e) {
+      // Silent failure, return default
+    }
+    
+    return const TimeOfDay(hour: 0, minute: 0);
+  }
+
+  /// Convert server time to user's local timezone
+  /// This is a simplified conversion - in a real app you'd want to know the server's timezone
+  TimeOfDay _convertToUserTimezone(TimeOfDay serverTime) {
+    try {
+      // Create a DateTime for today with the server time
+      final now = DateTime.now();
+      
+      // For now, we'll assume server times are in UTC and convert to local time
+      // In a production app, you'd want to know the server's actual timezone
+      final utcDateTime = DateTime.utc(
+        now.year,
+        now.month,
+        now.day,
+        serverTime.hour,
+        serverTime.minute,
+      );
+      
+      final localDateTime = utcDateTime.toLocal();
+      
+      return TimeOfDay.fromDateTime(localDateTime);
+      
+    } catch (e) {
+      return serverTime; // Return original time if conversion fails
+    }
   }
 
   bool _isSameDay(DateTime date1, DateTime date2) {

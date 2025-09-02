@@ -128,10 +128,13 @@ class EventsService extends ChangeNotifier {
         for (final eventData in eventsList) {
           try {
             // Convert backend event format to EventAnalysis
+            final timeRange = eventData['time_range'] ?? 'Unknown Time';
+            
+            // Convert backend event format to EventAnalysis
             final event = EventAnalysis(
               event_id: eventData['event_id'] ?? '',
               event_title: eventData['title'] ?? eventData['event_title'] ?? 'Untitled Event',
-              time_range: eventData['time_range'] ?? 'Unknown Time',
+              time_range: timeRange,
               duration_minutes: eventData['duration_minutes'] ?? 0,
               location: eventData['location'] ?? 'Unknown Location',
               mood_labels: _parseStringList(eventData['mood_labels']),
