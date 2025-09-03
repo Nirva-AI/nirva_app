@@ -132,6 +132,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
           seedColor: const Color(0xFF0E3C26),
         ),
         fontFamily: 'Georgia',
+        appBarTheme: const AppBarTheme(
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+        ),
         textTheme: const TextTheme(
           displayLarge: TextStyle(fontFamily: 'Georgia'),
           displayMedium: TextStyle(fontFamily: 'Georgia'),
