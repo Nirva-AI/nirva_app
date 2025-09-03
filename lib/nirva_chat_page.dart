@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:nirva_app/providers/call_provider.dart';
 import 'package:nirva_app/api_models.dart';
+import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/nirva_call_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:nirva_app/mini_call_bar.dart';
@@ -50,174 +51,25 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
   final ScrollController _scrollController = ScrollController();
   bool _isRecording = false;
   bool _isLoadingMore = false;
-  bool _showLoadMore = true;
+  bool _showLoadMore = false; // Changed to false - will be determined by actual history
+  bool _isWaitingForResponse = false; // Track if we're waiting for AI response
   int _previousMessageCount = 0;
-
-  // Mock chat messages
-  final List<ChatMessage> _mockMessages = [
-    // Yesterday's conversation
-    ChatMessage(
-      id: '1',
-      role: MessageRole.ai,
-      content: 'Good morning! 🌅 How are you feeling today? I noticed you had a late night yesterday.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 9)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '2',
-      role: MessageRole.human,
-      content: 'Morning! Actually feeling pretty good despite the late night. That meditation session you suggested really helped me unwind.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 8, minutes: 45)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '3',
-      role: MessageRole.ai,
-      content: 'I\'m so glad it helped! Sometimes we just need to slow down and breathe. What\'s on your agenda today?',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 8, minutes: 30)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '4',
-      role: MessageRole.human,
-      content: '📸 Photo message',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 14)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '5',
-      role: MessageRole.human,
-      content: 'Just had the most amazing lunch! 🍜 This ramen place downtown is incredible. You have to try it sometime.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 55)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '6',
-      role: MessageRole.ai,
-      content: 'That looks absolutely delicious! I\'m so jealous. What kind of ramen did you get? The broth looks rich and flavorful.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 40)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '7',
-      role: MessageRole.human,
-      content: 'Tonkotsu with extra chashu! It was perfect comfort food. I was thinking about what you said yesterday about treating myself better.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 25)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '8',
-      role: MessageRole.ai,
-      content: 'That\'s exactly what I mean! You deserve to enjoy the little moments. How did it make you feel?',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 13, minutes: 10)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '9',
-      role: MessageRole.human,
-      content: 'Really grateful and present. I actually put my phone away and just savored every bite. It\'s been a while since I did that.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 12, minutes: 55)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '10',
-      role: MessageRole.ai,
-      content: 'That\'s beautiful! Mindful eating is such a powerful practice. I\'m proud of you for being so intentional about it.',
-      time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 12, minutes: 40)).toIso8601String(),
-    ),
-    // Today's conversation
-    ChatMessage(
-      id: '11',
-      role: MessageRole.human,
-      content: 'Thanks! It felt really good. I\'ve been thinking about our conversation about boundaries too. I said no to that extra project at work.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 8)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '12',
-      role: MessageRole.ai,
-      content: 'That\'s a huge step! How did it feel to prioritize yourself? I know that wasn\'t easy for you.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 7, minutes: 55)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '13',
-      role: MessageRole.human,
-      content: 'Scary at first, but really empowering. My boss was actually understanding about it. I think I\'ve been overthinking these situations.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 7, minutes: 40)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '14',
-      role: MessageRole.ai,
-      content: 'You absolutely have been! It\'s amazing how our fears often don\'t match reality. This is such great progress. 🌟',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 7, minutes: 25)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '15',
-      role: MessageRole.human,
-      content: 'I finished that book you recommended last night. The ending was unexpected but perfect.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 6)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '16',
-      role: MessageRole.ai,
-      content: 'Right?! I was shocked too. What did you think of the main character\'s decision?',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 5, minutes: 45)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '17',
-      role: MessageRole.human,
-      content: 'I think she made the right choice, even though it was hard. Sometimes you have to put yourself first, just like we talked about.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 5, minutes: 30)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '18',
-      role: MessageRole.ai,
-      content: 'Exactly! That\'s what I loved about it. It felt so real and relatable. The author really captured that internal struggle.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 5, minutes: 15)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '19',
-      role: MessageRole.human,
-      content: 'I\'ve been journaling about it too. It\'s helping me process some of my own decisions lately.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 5)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '20',
-      role: MessageRole.ai,
-      content: 'That\'s wonderful! Journaling is such a powerful tool for self-reflection. I\'d love to hear your thoughts if you want to share.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 4, minutes: 45)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '21',
-      role: MessageRole.human,
-      content: 'Maybe later. Right now I should focus on this project deadline. It\'s stressing me out a bit.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 3)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '22',
-      role: MessageRole.ai,
-      content: 'You\'ve got this! Remember to take breaks and breathe. Want to grab coffee later?',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 2, minutes: 55)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '23',
-      role: MessageRole.human,
-      content: 'That sounds perfect. I\'ll text you when I\'m done.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 2, minutes: 50)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '24',
-      role: MessageRole.human,
-      content: '🎤 Audio message (0:03)',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 1, minutes: 30)).toIso8601String(),
-    ),
-    ChatMessage(
-      id: '25',
-      role: MessageRole.ai,
-      content: 'Haha, I can hear how excited you are about finishing that project! We should definitely celebrate together.',
-      time_stamp: DateTime.now().subtract(const Duration(hours: 1, minutes: 25)).toIso8601String(),
-    ),
-  ];
 
   @override
   void initState() {
     super.initState();
-    // Initialize with mock data
+    // Load existing chat history from provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final chatProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
-      chatProvider.setupChatHistory(_mockMessages);
-      // Scroll to bottom after initializing chat history with multiple frames
-      _scrollToBottomWithDelay();
+      // Chat history is already loaded from Hive by the provider
+      // Just scroll to bottom if there are messages
+      if (chatProvider.chatHistory.isNotEmpty) {
+        _scrollToBottomWithDelay();
+      }
+      // Check if we should show "load more" based on message count
+      setState(() {
+        _showLoadMore = chatProvider.chatHistory.length >= 20; // Show if we have many messages
+      });
     });
   }
 
@@ -236,6 +88,19 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
+  }
+
+  void _scrollToBottom() {
+    // Immediate scroll to bottom with single frame callback
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   Widget _buildAudioMessageContent(ChatMessage message) {
@@ -368,6 +233,44 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: const Color(0xFFf0efea),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade600),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Nirva is typing...',
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 14,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDateDivider(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -431,63 +334,85 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
       _isLoadingMore = true;
     });
 
-    // Simulate loading delay
-    await Future.delayed(const Duration(seconds: 1));
+    // Simulate loading delay for UX
+    await Future.delayed(const Duration(milliseconds: 500));
 
-    // Add more mock messages
-    final moreMessages = [
-      ChatMessage(
-        id: '16',
-        role: MessageRole.human,
-        content: 'How did you know I needed to talk about this?',
-        time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 2)).toIso8601String(),
-      ),
-      ChatMessage(
-        id: '17',
-        role: MessageRole.ai,
-        content: 'I noticed from your recent journal entries that you\'ve been mentioning work stress more frequently. I wanted to check in and see how you\'re doing.',
-        time_stamp: DateTime.now().subtract(const Duration(days: 1, hours: 1, minutes: 55)).toIso8601String(),
-      ),
-    ];
-
+    // In a real implementation, you would:
+    // 1. Load older messages from local storage (Hive)
+    // 2. Or fetch message history from the server if implemented
+    // For now, we just work with what's in the ChatHistoryProvider
+    
     if (mounted) {
       final chatProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
-      chatProvider.addChatMessages(moreMessages);
-
+      
+      // Check if we have enough messages to warrant "load more"
+      // In the future, this could paginate through older messages
+      final totalMessages = chatProvider.chatHistory.length;
+      
       setState(() {
         _isLoadingMore = false;
-        _showLoadMore = false; // Hide after loading more
+        // Hide load more if we don't have many messages
+        _showLoadMore = totalMessages > 50; // Only show if we have lots of messages
       });
     }
   }
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     final message = _textController.text.trim();
     if (message.isEmpty) return;
 
-    final chatProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
-    final userMessage = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      role: MessageRole.human,
-      content: message,
-      time_stamp: DateTime.now().toIso8601String(),
-    );
-
-    chatProvider.addMessage(userMessage);
+    // Clear text field immediately for better UX
     _textController.clear();
+    
+    // NirvaAPI.chat now adds the user message immediately before sending request
+    // So user sees their message right away
+    
+    // Scroll to show the new message
+    _scrollToBottom();
 
-    // Simulate Nirva response
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        final response = ChatMessage(
-          id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
-          role: MessageRole.ai,
-          content: 'Thanks for sharing that with me. I\'m here to listen and support you. Is there anything specific you\'d like to explore together?',
-          time_stamp: DateTime.now().toIso8601String(),
-        );
-        chatProvider.addMessage(response);
-      }
+    // Show that we're waiting for a response (but don't block sending)
+    setState(() {
+      _isWaitingForResponse = true;
     });
+
+    // Send to server asynchronously without blocking UI
+    try {
+      // Call the API - it will add user message immediately, then wait for response
+      final response = await NirvaAPI.chat(message, context);
+      
+      if (response == null) {
+        // Show error if response is null
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to get response from Nirva'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        // AI response has been added by NirvaAPI, just scroll
+        _scrollToBottom();
+      }
+    } catch (e) {
+      // Handle any errors
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isWaitingForResponse = false;
+        });
+      }
+    }
   }
 
   void _toggleRecording() {
@@ -496,23 +421,32 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
     });
 
     if (_isRecording) {
-      // Simulate recording
+      // TODO: Implement actual audio recording
+      // 1. Start recording audio
+      // 2. Save audio file locally
+      // 3. Upload to S3 if needed
+      // 4. Transcribe audio to text
+      // 5. Send transcribed text via NirvaAPI.chat()
+      
+      // For now, just simulate with a delayed stop
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
           setState(() {
             _isRecording = false;
           });
-          // Add audio message
-          final chatProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
-          final audioMessage = ChatMessage(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            role: MessageRole.human,
-            content: '🎤 Audio message (0:03)',
-            time_stamp: DateTime.now().toIso8601String(),
+          // TODO: Once audio is transcribed, send it as a regular message
+          // For now, show a placeholder message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Audio recording feature coming soon!'),
+              backgroundColor: Colors.orange,
+            ),
           );
-          chatProvider.addMessage(audioMessage);
         }
       });
+    } else {
+      // Stop recording
+      // TODO: Stop audio recording and process the audio
     }
   }
 
@@ -778,6 +712,11 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
                         items.add(_buildMessageBubble(message));
                       }
                       
+                      // Add a loading indicator at the bottom if waiting for response
+                      if (_isWaitingForResponse) {
+                        items.add(_buildLoadingIndicator());
+                      }
+                      
                       return ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.only(top: 16, bottom: 8),
@@ -858,10 +797,11 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
                   Expanded(
                     child: TextField(
                       controller: _textController,
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message...',
+                      // Never disable - user can send multiple messages
+                      decoration: InputDecoration(
+                        hintText: _isWaitingForResponse ? 'Waiting for Nirva...' : 'Type a message...',
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
                         ),
@@ -891,7 +831,7 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
               ),
               child: IconButton(
                 icon: const Icon(Icons.send_outlined, color: Colors.white, size: 18),
-                onPressed: _sendMessage,
+                onPressed: _sendMessage, // Never disabled - user can send anytime
                 padding: EdgeInsets.zero,
               ),
             ),

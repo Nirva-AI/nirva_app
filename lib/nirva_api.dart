@@ -331,14 +331,27 @@ class NirvaAPI {
       );
     }
 
+    // Create the user message
+    final userMessage = ChatMessage(
+      id: uuid.v4(), // 使用uuid生成唯一ID
+      role: MessageRole.human,
+      content: content,
+      time_stamp: JournalFile.dateTimeToKey(DateTime.now()),
+    );
+
+    // Add user message to chat history immediately (before sending request)
+    if (chatHistoryProvider != null) {
+      chatHistoryProvider.addMessage(userMessage);
+      // Save immediately so user sees their message even if request fails
+      HiveHelper.saveChatHistory(chatHistoryProvider.chatHistory);
+    }
+
+    // Create request with the updated chat history (including the new user message)
     final chatActionRequest = ChatActionRequest(
-      human_message: ChatMessage(
-        id: uuid.v4(), // 使用uuid生成唯一ID
-        role: MessageRole.human,
-        content: content,
-        time_stamp: JournalFile.dateTimeToKey(DateTime.now()),
-      ),
-      chat_history: chatHistoryProvider?.chatHistory ?? [],
+      human_message: userMessage,
+      chat_history: chatHistoryProvider?.chatHistory.where((msg) => 
+        msg.id != userMessage.id  // Exclude the current message from history
+      ).toList() ?? [],
     );
 
     // 添加详细日志，查看完整请求体
@@ -360,15 +373,13 @@ class NirvaAPI {
     Logger().d('Chat action response: ${jsonEncode(chatResponse.toJson())}');
 
     if (chatHistoryProvider != null) {
-      chatHistoryProvider.addChatMessages([
-        chatActionRequest.human_message,
-        chatResponse.ai_message,
-      ]);
-
-      // _saveMessages 会通过监听器自动调用
+      // Only add the AI response (user message was already added above)
+      chatHistoryProvider.addMessage(chatResponse.ai_message);
+      
+      // Save the updated history
       HiveHelper.saveChatHistory(chatHistoryProvider.chatHistory);
     }
-    return chatResponse; // 这里返回null是因为没有实现具体的聊天逻辑
+    return chatResponse;
   }
 
   // 上传转录文本, 故意不抓留给外面抓。
