@@ -468,6 +468,15 @@ class BleAudioServiceV2: NSObject {
             // Get user ID from UserDefaults (set by Flutter)
             let userId = UserDefaults.standard.string(forKey: "userId") ?? "default_user"
             
+            // Get current date and timezone info
+            let now = Date()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            formatter.timeZone = TimeZone.current
+            let localDateString = formatter.string(from: now)
+            
+            let timezoneOffset = TimeZone.current.secondsFromGMT(for: now)
+            
             // Queue for S3 upload with metadata
             S3BackgroundUploader.shared.queueUpload(
                 localPath: filePath,
@@ -476,7 +485,10 @@ class BleAudioServiceV2: NSObject {
                     "duration": String(duration),
                     "segmentNumber": String(totalSegments),
                     "deviceId": connectionOrchestrator?.getConnectionInfo()["deviceId"] as? String ?? "unknown",
-                    "capturedAt": String(Date().timeIntervalSince1970 * 1000) // Timestamp in milliseconds when audio was captured
+                    "capturedAt": String(Date().timeIntervalSince1970 * 1000), // Timestamp in milliseconds when audio was captured
+                    "localDate": localDateString, // Local date in YYYY-MM-DD format
+                    "timezoneOffset": String(timezoneOffset), // Timezone offset in seconds from UTC
+                    "timezoneName": TimeZone.current.identifier // Timezone identifier (e.g., "America/Los_Angeles")
                 ]
             )
             
