@@ -66,4 +66,10 @@ class FavoritesProvider extends ChangeNotifier {
 
   /// 检查收藏列表是否不为空
   bool get isNotEmpty => _favoriteIds.isNotEmpty;
+
+  /// Clear all favorites data (used on logout)
+  void clearData() {
+    _favoriteIds = [];
+    notifyListeners();
+  }
 }

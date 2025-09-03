@@ -103,4 +103,10 @@ class TasksProvider extends ChangeNotifier {
     _tasks.clear();
     notifyListeners();
   }
+
+  /// Clear all tasks data (used on logout)
+  void clearData() {
+    _tasks = [];
+    notifyListeners();
+  }
 }

@@ -123,4 +123,10 @@ class ChatHistoryProvider extends ChangeNotifier {
     }
     return null;
   }
+
+  /// Clear all chat history data (used on logout)
+  void clearData() {
+    _chatHistory = [];
+    notifyListeners();
+  }
 }

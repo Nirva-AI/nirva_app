@@ -131,4 +131,13 @@ class JournalFilesProvider extends ChangeNotifier {
       }
     }
   }
+
+  /// Clear all journal files data (used on logout)
+  void clearData() {
+    _journalFiles = [];
+    _dashboards.clear();
+    _currentJournalFile = null;
+    _selectedDateTime = DateTime.now();
+    notifyListeners();
+  }
 }

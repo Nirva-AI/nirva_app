@@ -667,6 +667,93 @@ class HiveHelper {
     return storage?.toConstructorData();
   }
 
+  /// Clear all user-specific data from Hive boxes
+  /// This should be called on logout to ensure data isolation between users
+  static Future<void> clearUserData() async {
+    try {
+      debugPrint('HiveHelper: Clearing all user-specific data...');
+      
+      // Clear all user-specific boxes in parallel
+      await Future.wait([
+        // Clear journal files
+        () async {
+          if (Hive.isBoxOpen(_journalFilesBox)) {
+            final box = Hive.box<JournalFileStorage>(_journalFilesBox);
+            await box.clear();
+            debugPrint('HiveHelper: Cleared journal files');
+          }
+        }(),
+        
+        // Clear tasks
+        () async {
+          if (Hive.isBoxOpen(_tasksBox)) {
+            final box = Hive.box<TasksStorage>(_tasksBox);
+            await box.clear();
+            debugPrint('HiveHelper: Cleared tasks');
+          }
+        }(),
+        
+        // Clear notes
+        () async {
+          if (Hive.isBoxOpen(_notesBox)) {
+            final box = Hive.box<NotesStorage>(_notesBox);
+            await box.clear();
+            debugPrint('HiveHelper: Cleared notes');
+          }
+        }(),
+        
+        // Clear chat history
+        clearChatHistory(),
+        
+        // Clear favorites - save empty list
+        saveFavoriteIds([]),
+        
+        // Clear cloud ASR results
+        () async {
+          if (Hive.isBoxOpen('cloudAsrResultsBox')) {
+            final box = Hive.box<CloudAsrResultStorage>('cloudAsrResultsBox');
+            await box.clear();
+            debugPrint('HiveHelper: Cleared cloud ASR results');
+          }
+        }(),
+        
+        // Clear cloud ASR sessions
+        () async {
+          if (Hive.isBoxOpen('cloudAsrSessionsBox')) {
+            final box = Hive.box<CloudAsrSessionStorage>('cloudAsrSessionsBox');
+            await box.clear();
+            debugPrint('HiveHelper: Cleared cloud ASR sessions');
+          }
+        }(),
+        
+        // Clear mixed storage box (transcriptions, etc.)
+        () async {
+          if (Hive.isBoxOpen('mixedStorageBox')) {
+            final box = Hive.box('mixedStorageBox');
+            await box.clear();
+            debugPrint('HiveHelper: Cleared mixed storage');
+          }
+        }(),
+        
+        // Clear update data tasks
+        deleteUpdateDataTask(),
+        
+        // Clear journal index
+        () async {
+          if (Hive.isBoxOpen(_journalIndexBox)) {
+            final box = Hive.box<JournalFileIndex>(_journalIndexBox);
+            await box.clear();
+            debugPrint('HiveHelper: Cleared journal index');
+          }
+        }(),
+      ]);
+      
+      debugPrint('HiveHelper: Successfully cleared all user-specific data');
+    } catch (e) {
+      debugPrint('HiveHelper: Error clearing user data: $e');
+    }
+  }
+
   // ===============================================================================
   // Cloud ASR Storage 相关管理方法
   // ===============================================================================

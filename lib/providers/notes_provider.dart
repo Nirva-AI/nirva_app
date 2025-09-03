@@ -91,4 +91,10 @@ class NotesProvider extends ChangeNotifier {
         )
         .toList();
   }
+
+  /// Clear all notes data (used on logout)
+  void clearData() {
+    _notes = [];
+    notifyListeners();
+  }
 }

@@ -3,6 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:nirva_app/user_profile_page.dart';
 import 'package:nirva_app/update_data_page.dart';
 import 'package:nirva_app/providers/user_provider.dart';
+import 'package:nirva_app/providers/events_provider.dart';
+import 'package:nirva_app/providers/journal_files_provider.dart';
+import 'package:nirva_app/providers/tasks_provider.dart';
+import 'package:nirva_app/providers/notes_provider.dart';
+import 'package:nirva_app/providers/chat_history_provider.dart';
+import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/hive_data_viewer_page.dart';
 import 'package:nirva_app/mini_call_bar.dart';
 import 'package:nirva_app/lifecycle_logs_page.dart';
@@ -13,6 +19,7 @@ import 'package:nirva_app/services/native_s3_bridge.dart';
 import 'package:nirva_app/services/s3_token_service.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/screens/login_screen.dart';
+import 'package:nirva_app/hive_helper.dart';
 import 'package:logger/logger.dart';
 
 class MePage extends StatefulWidget {
@@ -671,11 +678,36 @@ class _MePageState extends State<MePage> {
       // Call logout API
       await NirvaAPI.logout();
       
-      // Clear user data
+      // Clear all user data and provider caches
+      logger.i('Clearing all user data and provider caches...');
+      
+      // Clear Hive user data
+      await HiveHelper.clearUserData();
+      
+      // Clear all provider caches
+      final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+      eventsProvider.clearAllCaches();
+      
+      final journalFilesProvider = Provider.of<JournalFilesProvider>(context, listen: false);
+      journalFilesProvider.clearData();
+      
+      final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
+      tasksProvider.clearData();
+      
+      final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+      notesProvider.clearData();
+      
+      final chatHistoryProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
+      chatHistoryProvider.clearData();
+      
+      final favoritesProvider = Provider.of<FavoritesProvider>(context, listen: false);
+      favoritesProvider.clearData();
+      
+      // Clear user data last
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       userProvider.clearUser();
       
-      logger.i('Logout successful, navigating to login screen');
+      logger.i('Logout successful, all data cleared, navigating to login screen');
       
       // Navigate to login screen
       if (mounted) {
@@ -699,6 +731,28 @@ class _MePageState extends State<MePage> {
             backgroundColor: Colors.orange.shade600,
           ),
         );
+        
+        // Clear all user data and provider caches even on API failure
+        await HiveHelper.clearUserData();
+        
+        // Clear all provider caches
+        final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+        eventsProvider.clearAllCaches();
+        
+        final journalFilesProvider = Provider.of<JournalFilesProvider>(context, listen: false);
+        journalFilesProvider.clearData();
+        
+        final tasksProvider = Provider.of<TasksProvider>(context, listen: false);
+        tasksProvider.clearData();
+        
+        final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+        notesProvider.clearData();
+        
+        final chatHistoryProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
+        chatHistoryProvider.clearData();
+        
+        final favoritesProvider = Provider.of<FavoritesProvider>(context, listen: false);
+        favoritesProvider.clearData();
         
         // Clear user data and navigate to login
         final userProvider = Provider.of<UserProvider>(context, listen: false);
