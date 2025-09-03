@@ -201,10 +201,10 @@ class NativeS3Bridge {
       final username = payloadMap['sub'] as String?;
       
       if (username != null && username.isNotEmpty) {
-        // Hash the username for consistent S3 paths
-        final hashedUsername = _hashUsername(username);
-        _logger.i('Extracted username from JWT: $username -> hash: $hashedUsername');
-        return hashedUsername;
+        // Return actual username without hashing
+        // This ensures the backend can properly associate uploads with user accounts
+        _logger.i('Extracted username from JWT: $username');
+        return username;
       }
       
       return 'default_user';
@@ -214,19 +214,21 @@ class NativeS3Bridge {
     }
   }
   
-  /// Hash username using SHA-256 for consistent S3 paths
-  String _hashUsername(String username) {
-    try {
-      final bytes = utf8.encode(username);
-      final digest = sha256.convert(bytes);
-      
-      // Take first 16 characters of hex digest for reasonable length
-      return digest.toString().substring(0, 16);
-    } catch (e) {
-      _logger.e('Failed to hash username: $e');
-      return 'default_user';
-    }
-  }
+  // Commenting out hashing function - now using actual usernames for S3 uploads
+  // This ensures proper association with user accounts in the backend
+  // /// Hash username using SHA-256 for consistent S3 paths
+  // String _hashUsername(String username) {
+  //   try {
+  //     final bytes = utf8.encode(username);
+  //     final digest = sha256.convert(bytes);
+  //     
+  //     // Take first 16 characters of hex digest for reasonable length
+  //     return digest.toString().substring(0, 16);
+  //   } catch (e) {
+  //     _logger.e('Failed to hash username: $e');
+  //     return 'default_user';
+  //   }
+  // }
 }
 
 /// App lifecycle observer to refresh credentials on resume
