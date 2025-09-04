@@ -4,6 +4,9 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/nirva_api.dart';
+import 'package:nirva_app/services/audio_player_service.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:logger/logger.dart';
 
 class TranscriptionDetailPage extends StatefulWidget {
   final TranscriptionItem transcription;
@@ -21,11 +24,52 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
   Map<String, dynamic>? _detailedData;
   bool _isLoading = true;
   String? _error;
+  final _logger = Logger();
+  
+  // Audio player state
+  final AudioPlayerService _audioService = AudioPlayerService();
+  String? _currentlyPlayingFile;
+  Map<String, PlayerState> _playerStates = {};
+  Map<String, Duration> _durations = {};
+  Map<String, Duration> _positions = {};
+  Map<String, bool> _loadingStates = {};
   
   @override
   void initState() {
     super.initState();
     _loadDetailedData();
+    _initAudioPlayer();
+  }
+  
+  Future<void> _initAudioPlayer() async {
+    await _audioService.init();
+    
+    // Listen to player state changes
+    _audioService.player.onPlayerStateChanged.listen((state) {
+      if (_currentlyPlayingFile != null) {
+        setState(() {
+          _playerStates[_currentlyPlayingFile!] = state;
+        });
+      }
+    });
+    
+    // Listen to duration changes
+    _audioService.player.onDurationChanged.listen((duration) {
+      if (_currentlyPlayingFile != null) {
+        setState(() {
+          _durations[_currentlyPlayingFile!] = duration;
+        });
+      }
+    });
+    
+    // Listen to position changes
+    _audioService.player.onPositionChanged.listen((position) {
+      if (_currentlyPlayingFile != null) {
+        setState(() {
+          _positions[_currentlyPlayingFile!] = position;
+        });
+      }
+    });
   }
   
   Future<void> _loadDetailedData() async {
@@ -244,6 +288,14 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
     }
   }
   
+  @override
+  void dispose() {
+    // Don't dispose the singleton audio service
+    // Just stop any playing audio
+    _audioService.stop();
+    super.dispose();
+  }
+  
   String _formatDuration(String? start, String? end) {
     if (start == null || end == null) return 'N/A';
     try {
@@ -258,6 +310,191 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
       }
     } catch (e) {
       return 'N/A';
+    }
+  }
+  
+  String _formatAudioDuration(Duration? duration) {
+    if (duration == null) return '0:00';
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
+  }
+  
+  Widget _buildAudioPlayer(Map<String, dynamic> file) {
+    final s3Key = file['s3_key']?.toString() ?? '';
+    final isPlaying = _playerStates[s3Key] == PlayerState.playing;
+    final isLoading = _loadingStates[s3Key] ?? false;
+    final duration = _durations[s3Key];
+    final position = _positions[s3Key];
+    final hasBeenPlayed = duration != null && position != null;
+    
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFfaf9f5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              // Play/Pause button - always yellow
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFe7bf57),
+                  shape: BoxShape.circle,
+                ),
+                child: isLoading
+                  ? const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    )
+                  : IconButton(
+                      icon: Icon(
+                        isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => _togglePlayPause(s3Key),
+                    ),
+              ),
+              const SizedBox(width: 16),
+              // Progress and time
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Progress bar container with fixed height
+                    SizedBox(
+                      height: 48, // Fixed height for slider area
+                      child: hasBeenPlayed
+                        ? SliderTheme(
+                            data: SliderThemeData(
+                              activeTrackColor: const Color(0xFFe7bf57),
+                              inactiveTrackColor: Colors.grey.shade300,
+                              thumbColor: const Color(0xFFe7bf57),
+                              overlayColor: const Color(0xFFe7bf57).withOpacity(0.2),
+                              trackHeight: 4,
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 6,
+                              ),
+                            ),
+                            child: Slider(
+                              value: position.inSeconds.toDouble(),
+                              min: 0,
+                              max: duration.inSeconds.toDouble(),
+                              onChanged: (value) {
+                                _audioService.player.seek(
+                                  Duration(seconds: value.toInt()),
+                                );
+                              },
+                            ),
+                          )
+                        : Center(
+                            // Center the static bar vertically
+                            child: Container(
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+                    ),
+                    // Time labels
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _formatAudioDuration(position),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            fontFamily: 'Georgia',
+                          ),
+                        ),
+                        Text(
+                          _formatAudioDuration(duration),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            fontFamily: 'Georgia',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Future<void> _togglePlayPause(String s3Key) async {
+    final currentState = _playerStates[s3Key] ?? PlayerState.stopped;
+    
+    if (currentState == PlayerState.playing) {
+      // Pause
+      await _audioService.pause();
+    } else {
+      // Stop any other playing file
+      if (_currentlyPlayingFile != null && _currentlyPlayingFile != s3Key) {
+        try {
+          await _audioService.stop();
+        } catch (e) {
+          _logger.e('Error stopping previous audio: $e');
+        }
+      }
+      
+      // Play this file
+      setState(() {
+        _loadingStates[s3Key] = true;
+        _currentlyPlayingFile = s3Key;
+      });
+      
+      // Get presigned URL
+      final presignedData = await NirvaAPI.getAudioPresignedUrl(s3Key);
+      
+      if (presignedData != null && presignedData['presigned_url'] != null) {
+        final success = await _audioService.playFromUrl(
+          presignedData['presigned_url'],
+          s3Key,
+        );
+        
+        if (!success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to play audio'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to get audio URL'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      
+      setState(() {
+        _loadingStates[s3Key] = false;
+      });
     }
   }
   
@@ -535,6 +772,8 @@ class _TranscriptionDetailPageState extends State<TranscriptionDetailPage> {
                                         _buildKeyValue('Speech Segments', file['num_speech_segments']),
                                         _buildKeyValue('Speech Ratio', '${((file['speech_ratio'] ?? 0) * 100).toStringAsFixed(1)}%'),
                                         _buildKeyValue('Status', file['status']),
+                                        const SizedBox(height: 16),
+                                        _buildAudioPlayer(file),
                                       ],
                                     ),
                                   ),

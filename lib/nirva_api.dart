@@ -417,6 +417,33 @@ class NirvaAPI {
     return uploadResponse;
   }
 
+  // 获取音频文件的预签名URL
+  static Future<Map<String, dynamic>?> getAudioPresignedUrl(
+    String s3Key, {
+    String? audioFileId,
+  }) async {
+    try {
+      final response = await safeGet<Map<String, dynamic>>(
+        _dio,
+        '/action/audio/presigned-url/v1/',
+        query: {
+          's3_key': s3Key,
+          if (audioFileId != null) 'audio_file_id': audioFileId,
+        },
+      );
+      
+      if (response == null || response.data == null) {
+        Logger().e('Failed to get presigned URL: No response data');
+        return null;
+      }
+      
+      return response.data;
+    } catch (e) {
+      Logger().e('Error getting presigned URL: $e');
+      return null;
+    }
+  }
+
   // 批量上传转录文本到后端 (使用正确的API格式)
   static Future<UploadTranscriptActionResponse?> uploadTranscriptBatch(
     List<Map<String, String>> transcripts,
