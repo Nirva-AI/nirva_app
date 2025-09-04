@@ -477,20 +477,35 @@ class BleAudioServiceV2: NSObject {
             
             let timezoneOffset = TimeZone.current.secondsFromGMT(for: now)
             
-            // Queue for S3 upload with metadata
-            S3BackgroundUploader.shared.queueUpload(
-                localPath: filePath,
-                userId: userId,
-                metadata: [
-                    "duration": String(duration),
-                    "segmentNumber": String(totalSegments),
-                    "deviceId": connectionOrchestrator?.getConnectionInfo()["deviceId"] as? String ?? "unknown",
-                    "capturedAt": String(Date().timeIntervalSince1970 * 1000), // Timestamp in milliseconds when audio was captured
-                    "localDate": localDateString, // Local date in YYYY-MM-DD format
-                    "timezoneOffset": String(timezoneOffset), // Timezone offset in seconds from UTC
-                    "timezoneName": TimeZone.current.identifier // Timezone identifier (e.g., "America/Los_Angeles")
-                ]
-            )
+            // Save metadata alongside the audio file
+            let metadata: [String: String] = [
+                "duration": String(duration),
+                "segmentNumber": String(totalSegments),
+                "deviceId": connectionOrchestrator?.getConnectionInfo()["deviceId"] as? String ?? "unknown",
+                "capturedAt": String(Date().timeIntervalSince1970 * 1000),
+                "localDate": localDateString,
+                "timezoneOffset": String(timezoneOffset),
+                "timezoneName": TimeZone.current.identifier,
+                "userId": userId
+            ]
+            
+            // Save metadata to a companion JSON file
+            let metadataFileName = fileName.replacingOccurrences(of: ".wav", with: ".json")
+            let metadataPath = (filePath as NSString).deletingLastPathComponent.appending("/\(metadataFileName)")
+            
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: metadata, options: .prettyPrinted)
+                try jsonData.write(to: URL(fileURLWithPath: metadataPath))
+                print("BleAudioServiceV2: Metadata saved to \(metadataFileName)")
+            } catch {
+                print("BleAudioServiceV2: Failed to save metadata: \(error)")
+            }
+            
+            // File saved - S3BackgroundUploader will automatically sync it
+            print("BleAudioServiceV2: WAV saved with metadata, will be uploaded automatically: \(fileName)")
+            
+            // Trigger sync to upload this file
+            S3BackgroundUploader.shared.syncAllAudioFiles()
             
             totalSegments += 1
         } else {

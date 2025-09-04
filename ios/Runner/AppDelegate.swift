@@ -100,13 +100,13 @@ import CoreBluetooth
     print("AppDelegate: ============ BACKGROUND FETCH TRIGGERED ============")
     DebugLogger.shared.log("AppDelegate: ============ BACKGROUND FETCH TRIGGERED ============")
     
-    // Process queued S3 uploads
+    // Sync all audio files for upload
     if #available(iOS 13.0, *) {
-      S3BackgroundUploader.shared.processQueuedUploads()
+      S3BackgroundUploader.shared.syncAllAudioFiles()
       
-      // Check if there are pending uploads
+      // Check if there are local files
       let stats = S3BackgroundUploader.shared.getStatistics()
-      let pendingCount = stats["pendingUploads"] as? Int ?? 0
+      let pendingCount = stats["localWavFiles"] as? Int ?? 0
       
       if pendingCount > 0 {
         print("AppDelegate: Processing \(pendingCount) pending uploads")

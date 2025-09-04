@@ -285,7 +285,7 @@ class BleAudioPluginV2: NSObject, FlutterPlugin {
             result(stats)
             
         case "processQueuedUploads":
-            S3BackgroundUploader.shared.processQueuedUploads()
+            S3BackgroundUploader.shared.syncAllAudioFiles()
             result(true)
             
         default:

@@ -16,17 +16,16 @@ class S3BackgroundUploader: NSObject {
     // AWS Credentials (stored securely)
     private var credentials: S3Credentials?
     
-    // Upload queue management
-    private var uploadQueue: [PendingS3Upload] = []
-    private let queueFile = "s3_upload_queue.json"
+    // Simplified configuration
+    private let maxConcurrentUploads = 5  // Process 5 files at once
+    private var lastSyncTime: Date?
+    private let syncInterval: TimeInterval = 10.0  // Check for new files every 10 seconds
     
-    // Batch upload configuration
-    private let maxConcurrentUploads = 5  // Process 5 files at once to reduce wake frequency (increased from 3)
-    private var lastBatchTime: Date?
-    private let minBackgroundUploadInterval: TimeInterval = 30.0  // Only applies in FOREGROUND mode to prevent network overload
-    
-    // Tracking
-    private var activeUploads: [URLSessionTask: PendingS3Upload] = [:]
+    // Directory to monitor
+    private var audioDirectory: String {
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        return (documentsPath as NSString).appendingPathComponent("ble_audio_segments")
+    }
     
     // Background task management
     private var backgroundTaskId: UIBackgroundTaskIdentifier = .invalid
@@ -43,10 +42,14 @@ class S3BackgroundUploader: NSObject {
     private override init() {
         super.init()
         setupBackgroundSession()
-        loadUploadQueue()
         
-        print("S3BackgroundUploader: Initialized")
-        DebugLogger.shared.log("S3BackgroundUploader: Initialized with background session")
+        print("S3BackgroundUploader: Initialized (Simplified)")
+        DebugLogger.shared.log("S3BackgroundUploader: Initialized with simplified directory sync")
+        
+        // Start syncing immediately if we have credentials
+        if credentials != nil {
+            syncAllAudioFiles()
+        }
     }
     
     // Public method to recreate session when app is woken for background events
@@ -85,20 +88,19 @@ class S3BackgroundUploader: NSObject {
         
         backgroundSession = URLSession(configuration: config, delegate: self, delegateQueue: delegateQueue)
         
-        // Immediately check for existing tasks from previous app session
+        // Check for existing tasks and resume them
         backgroundSession?.getAllTasks { [weak self] tasks in
             guard let self = self else { return }
             if !tasks.isEmpty {
-                DebugLogger.shared.log("S3BackgroundUploader: Found \(tasks.count) existing tasks from previous session")
+                DebugLogger.shared.log("S3BackgroundUploader: Found \(tasks.count) existing tasks")
                 for task in tasks {
-                    DebugLogger.shared.log("S3BackgroundUploader: Existing task \(task.taskIdentifier) state: \(task.state.rawValue)")
-                    // Ensure task is resumed if suspended
                     if task.state == .suspended {
                         task.resume()
-                        DebugLogger.shared.log("S3BackgroundUploader: Resumed suspended task \(task.taskIdentifier)")
                     }
                 }
             }
+            // Always try to sync after checking existing tasks
+            self.syncAllAudioFiles()
         }
     }
     
@@ -120,276 +122,196 @@ class S3BackgroundUploader: NSObject {
         print("S3BackgroundUploader: Credentials updated in \(stateString)")
         DebugLogger.shared.log("S3BackgroundUploader: ✅ Credentials updated for bucket: \(credentials?.bucket ?? "") in \(stateString)")
         
-        // Log current state
-        DebugLogger.shared.log("S3BackgroundUploader: Active uploads: \(activeUploads.count), Queued: \(uploadQueue.count)")
-        
-        // CRITICAL: Process queued uploads immediately in background
-        if appState == .background && !uploadQueue.isEmpty {
-            DebugLogger.shared.log("S3BackgroundUploader: 🚀 BACKGROUND - Processing \(uploadQueue.count) queued uploads immediately after credentials")
-            processQueuedUploads()
+        // Immediately sync all audio files
+        syncAllAudioFiles()
+    }
+    
+    // MARK: - Simplified Directory Sync
+    
+    func syncAllAudioFiles() {
+        guard let creds = credentials else {
+            DebugLogger.shared.log("S3BackgroundUploader: No credentials, skipping sync")
+            return
         }
         
-        // Reconnect to existing tasks
+        // Check if enough time has passed since last sync
+        if let lastSync = lastSyncTime {
+            let timeSinceSync = Date().timeIntervalSince(lastSync)
+            if timeSinceSync < syncInterval {
+                return
+            }
+        }
+        
+        lastSyncTime = Date()
+        
+        // Get all wav files in the audio directory
+        guard let files = try? FileManager.default.contentsOfDirectory(atPath: audioDirectory) else {
+            DebugLogger.shared.log("S3BackgroundUploader: Could not read audio directory")
+            return
+        }
+        
+        let wavFiles = files.filter { $0.hasSuffix(".wav") }
+        
+        if wavFiles.isEmpty {
+            return
+        }
+        
+        DebugLogger.shared.log("S3BackgroundUploader: Found \(wavFiles.count) wav files to sync")
+        
+        // Check what's already uploading
         backgroundSession?.getAllTasks { [weak self] tasks in
             guard let self = self else { return }
             
-            DebugLogger.shared.log("S3BackgroundUploader: Background session has \(tasks.count) tasks")
+            // Get list of files currently uploading
+            let uploadingFiles = Set(tasks.compactMap { task -> String? in
+                guard let url = task.originalRequest?.url?.absoluteString else { return nil }
+                // Extract filename from S3 URL
+                return url.components(separatedBy: "/").last
+            })
             
-            // Log and handle orphaned tasks
-            for task in tasks {
-                DebugLogger.shared.log("S3BackgroundUploader: Task \(task.taskIdentifier): state=\(task.state.rawValue), progress=\(task.progress.fractionCompleted)")
-                
-                if self.activeUploads[task] == nil {
-                    DebugLogger.shared.log("S3BackgroundUploader: Found orphaned task \(task.taskIdentifier), state: \(task.state.rawValue)")
-                    // Don't cancel - let it complete and handle in delegate
-                }
+            // Find files not yet uploading
+            let filesToUpload = wavFiles.filter { !uploadingFiles.contains($0) }
+            
+            if filesToUpload.isEmpty {
+                DebugLogger.shared.log("S3BackgroundUploader: All files already uploading")
+                return
             }
             
-            // Process new uploads if no active tasks running
-            let hasActiveTasks = tasks.contains { $0.state == .running }
-            if !hasActiveTasks && !self.uploadQueue.isEmpty {
-                DebugLogger.shared.log("S3BackgroundUploader: No active tasks, processing \(self.uploadQueue.count) queued uploads")
-                self.processQueuedUploads()
-            } else if hasActiveTasks {
-                DebugLogger.shared.log("S3BackgroundUploader: \(tasks.filter { $0.state == .running }.count) tasks still running, waiting for completion")
+            DebugLogger.shared.log("S3BackgroundUploader: Starting upload for \(filesToUpload.count) new files")
+            
+            // Upload files in batches
+            let batch = Array(filesToUpload.prefix(self.maxConcurrentUploads))
+            for fileName in batch {
+                self.uploadFile(fileName: fileName, credentials: creds)
             }
         }
     }
     
-    // MARK: - Upload Management
-    
-    func queueUpload(localPath: String, userId: String, metadata: [String: String] = [:]) {
-        guard FileManager.default.fileExists(atPath: localPath) else {
-            print("S3BackgroundUploader: File not found: \(localPath)")
-            onUploadFailed?(localPath, UploadError.fileNotFound)
+    private func uploadFile(fileName: String, credentials: S3Credentials) {
+        let filePath = (audioDirectory as NSString).appendingPathComponent(fileName)
+        
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            DebugLogger.shared.log("S3BackgroundUploader: File no longer exists: \(fileName)")
             return
         }
         
-        let fileName = URL(fileURLWithPath: localPath).lastPathComponent
-        // Simplified path: native-audio/{userId}/{filename}
+        // Load metadata from companion JSON file if it exists
+        var metadata: [String: String] = [:]
+        let metadataFileName = fileName.replacingOccurrences(of: ".wav", with: ".json")
+        let metadataPath = (audioDirectory as NSString).appendingPathComponent(metadataFileName)
+        
+        if FileManager.default.fileExists(atPath: metadataPath) {
+            do {
+                let jsonData = try Data(contentsOf: URL(fileURLWithPath: metadataPath))
+                if let jsonDict = try JSONSerialization.jsonObject(with: jsonData) as? [String: String] {
+                    metadata = jsonDict
+                    DebugLogger.shared.log("S3BackgroundUploader: Loaded metadata for \(fileName)")
+                }
+            } catch {
+                DebugLogger.shared.log("S3BackgroundUploader: Failed to load metadata: \(error)")
+            }
+        }
+        
+        // Get user ID from metadata or UserDefaults
+        let userId = metadata["userId"] ?? UserDefaults.standard.string(forKey: "userId") ?? "default_user"
+        
         let s3Key = "native-audio/\(userId)/\(fileName)"
         
-        let upload = PendingS3Upload(
-            localPath: localPath,
+        // Remove userId from metadata since it's already in the path
+        metadata.removeValue(forKey: "userId")
+        
+        // Create and start upload task with metadata
+        startUploadTask(
+            localPath: filePath,
             s3Key: s3Key,
-            userId: userId,
-            metadata: metadata,
-            retryCount: 0,
-            createdAt: Date()
+            credentials: credentials,
+            metadata: metadata
         )
-        
-        uploadQueue.append(upload)
-        saveUploadQueue()
-        
-        let appState = UIApplication.shared.applicationState
-        let stateString = appState == .background ? "BACKGROUND" : appState == .inactive ? "INACTIVE" : "FOREGROUND"
-        
-        print("S3BackgroundUploader: Queued upload: \(fileName)")
-        DebugLogger.shared.log("S3BackgroundUploader: Queued upload: \(s3Key) in \(stateString)")
-        
-        // Try to process immediately if we have credentials
-        if let creds = credentials {
-            DebugLogger.shared.log("S3BackgroundUploader: Have credentials, processing immediately")
-            processQueuedUploads()
-        } else {
-            DebugLogger.shared.log("S3BackgroundUploader: ⚠️ No credentials yet, upload queued for later when credentials arrive")
-        }
     }
     
-    func processQueuedUploads() {
-        guard let creds = credentials else {
-            print("S3BackgroundUploader: No credentials available")
-            DebugLogger.shared.log("S3BackgroundUploader: No credentials available")
-            return
-        }
-        
-        guard !uploadQueue.isEmpty else {
-            return
-        }
-        
-        // Check if there are already active uploads for these files
-        let activeFiles = Set(activeUploads.values.map { $0.localPath })
-        let queuedFiles = uploadQueue.filter { !activeFiles.contains($0.localPath) }
-        
-        guard !queuedFiles.isEmpty else {
-            print("S3BackgroundUploader: All queued files are already being uploaded")
-            DebugLogger.shared.log("S3BackgroundUploader: All queued files already uploading")
-            return
-        }
-        
-        let appState = UIApplication.shared.applicationState
-        let stateString = appState == .background ? "BACKGROUND" : appState == .inactive ? "INACTIVE" : "FOREGROUND"
-        
-        // NO THROTTLING IN BACKGROUND - iOS gives us limited time, must process immediately
-        if appState == .background || appState == .inactive {
-            // Process immediately without any delay in background
-            DebugLogger.shared.log("S3BackgroundUploader: ⚡ BACKGROUND MODE - Processing uploads immediately (no throttling)")
-            lastBatchTime = Date()
-        } else {
-            // Only throttle in foreground to prevent network overload
-            if let lastTime = lastBatchTime {
-                let timeSinceLastBatch = Date().timeIntervalSince(lastTime)
-                if timeSinceLastBatch < minBackgroundUploadInterval {
-                    let remainingDelay = minBackgroundUploadInterval - timeSinceLastBatch
-                    DebugLogger.shared.log("S3BackgroundUploader: FOREGROUND - Delaying batch by \(remainingDelay)s to prevent network overload")
-                    DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + remainingDelay) { [weak self] in
-                        self?.processQueuedUploads()
-                    }
-                    return
-                }
-            }
-            lastBatchTime = Date()
-            DebugLogger.shared.log("S3BackgroundUploader: Processing foreground batch (30s rate limit)")
-        }
-        
-        // Limit batch size to prevent too many wake events
-        let batchSize = min(queuedFiles.count, maxConcurrentUploads)
-        let batch = Array(queuedFiles.prefix(batchSize))
-        
-        print("S3BackgroundUploader: Processing batch of \(batch.count) from \(queuedFiles.count) queued uploads (App State: \(stateString))")
-        DebugLogger.shared.log("S3BackgroundUploader: Processing batch of \(batch.count) uploads in \(stateString)")
-        
-        // Request background task if we're in background
-        if appState == .background || appState == .inactive {
-            beginBackgroundTask()
-        }
-        
-        // Process batch of uploads
-        for upload in batch {
-            // Verify file still exists before trying to upload
-            guard FileManager.default.fileExists(atPath: upload.localPath) else {
-                print("S3BackgroundUploader: File no longer exists, removing from queue: \(upload.localPath)")
-                DebugLogger.shared.log("S3BackgroundUploader: File no longer exists: \(upload.localPath)")
-                uploadQueue.removeAll { $0.localPath == upload.localPath }
-                saveUploadQueue()
-                continue
-            }
-            startUpload(upload, with: creds)
-        }
-    }
-    
-    private func startUpload(_ upload: PendingS3Upload, with creds: S3Credentials) {
+    private func startUploadTask(localPath: String, s3Key: String, credentials: S3Credentials, metadata: [String: String]) {
         // CRITICAL: Begin background task to ensure upload has time to start
         let appState = UIApplication.shared.applicationState  
         if appState == .background {
             beginBackgroundTask()
         }
         
-        // Check if this file is already being uploaded
-        backgroundSession?.getAllTasks { [weak self] tasks in
-            guard let self = self else { return }
+        do {
+            let fileURL = URL(fileURLWithPath: localPath)
             
-            let isAlreadyUploading = tasks.contains { task in
-                if let url = task.originalRequest?.url?.absoluteString {
-                    return url.contains(upload.s3Key) && task.state == .running
-                }
-                return false
+            // Get file size for Content-Length header
+            let fileAttributes = try FileManager.default.attributesOfItem(atPath: localPath)
+            let fileSize = fileAttributes[.size] as? Int64 ?? 0
+            
+            // Build S3 URL
+            let s3URL = "https://\(credentials.bucket).s3.\(credentials.region).amazonaws.com/\(s3Key)"
+            guard let url = URL(string: s3URL) else {
+                throw UploadError.invalidURL
             }
             
-            if isAlreadyUploading {
-                DebugLogger.shared.log("S3BackgroundUploader: Skipping duplicate upload: \(upload.s3Key)")
+            // Create request with AWS v4 signature
+            var request = URLRequest(url: url)
+            request.httpMethod = "PUT"
+            request.setValue("audio/wav", forHTTPHeaderField: "Content-Type")
+            request.setValue("\(fileSize)", forHTTPHeaderField: "Content-Length")
+            
+            // Add custom metadata as x-amz-meta-* headers
+            for (key, value) in metadata {
+                request.setValue(value, forHTTPHeaderField: "x-amz-meta-\(key.lowercased())")
+            }
+            
+            // Add AWS v4 signature headers
+            let headers = self.createAWSv4Headers(
+                for: request,
+                credentials: credentials,
+                s3Key: s3Key,
+                fileURL: fileURL,
+                metadata: metadata
+            )
+            
+            for (key, value) in headers {
+                request.setValue(value, forHTTPHeaderField: key)
+            }
+            
+            // Create upload task (ensure session exists)
+            guard let session = self.backgroundSession else {
+                DebugLogger.shared.log("S3BackgroundUploader: ERROR - Session is nil, recreating...")
+                self.setupBackgroundSession()
                 return
             }
+            let task = session.uploadTask(with: request, fromFile: fileURL)
             
-            // Proceed with upload
-            do {
-                let fileURL = URL(fileURLWithPath: upload.localPath)
+            // CRITICAL: Set task priority for immediate execution
+            if #available(iOS 11.0, *) {
+                task.priority = URLSessionTask.highPriority  // Use high priority for immediate upload
+            } else {
+                task.priority = 1.0  // Maximum priority for iOS 10
+            }
+            
+            task.resume()
+            
+            let stateString = appState == .background ? "BACKGROUND" : appState == .inactive ? "INACTIVE" : "FOREGROUND"
+            
+            // CRITICAL: Force immediate flush in background
+            if appState == .background {
+                // Ensure we have enough time to flush
+                beginBackgroundTask()
                 
-                // Get file size for Content-Length header
-                let fileAttributes = try FileManager.default.attributesOfItem(atPath: upload.localPath)
-                let fileSize = fileAttributes[.size] as? Int64 ?? 0
-                
-                // Build S3 URL
-                let s3URL = "https://\(creds.bucket).s3.\(creds.region).amazonaws.com/\(upload.s3Key)"
-                guard let url = URL(string: s3URL) else {
-                    throw UploadError.invalidURL
-                }
-                
-                // Create request with AWS v4 signature
-                var request = URLRequest(url: url)
-                request.httpMethod = "PUT"
-                request.setValue("audio/wav", forHTTPHeaderField: "Content-Type")
-                request.setValue("\(fileSize)", forHTTPHeaderField: "Content-Length")
-                
-                // Add custom metadata as x-amz-meta-* headers
-                for (key, value) in upload.metadata {
-                    request.setValue(value, forHTTPHeaderField: "x-amz-meta-\(key.lowercased())")
-                }
-                
-                // Add AWS v4 signature headers
-                let headers = self.createAWSv4Headers(
-                    for: request,
-                    credentials: creds,
-                    s3Key: upload.s3Key,
-                    fileURL: fileURL,
-                    metadata: upload.metadata
-                )
-                
-                for (key, value) in headers {
-                    request.setValue(value, forHTTPHeaderField: key)
-                }
-                
-                // Create upload task (ensure session exists)
-                guard let session = self.backgroundSession else {
-                    DebugLogger.shared.log("S3BackgroundUploader: ERROR - Session is nil, recreating...")
-                    self.setupBackgroundSession()
-                    return
-                }
-                let task = session.uploadTask(with: request, fromFile: fileURL)
-                self.activeUploads[task] = upload
-                
-                // CRITICAL: Set task priority for immediate execution
-                if #available(iOS 11.0, *) {
-                    task.priority = URLSessionTask.highPriority  // Use high priority for immediate upload
-                } else {
-                    task.priority = 1.0  // Maximum priority for iOS 10
-                }
-                
-                task.resume()
-                
-                let appState = UIApplication.shared.applicationState
-                let stateString = appState == .background ? "BACKGROUND" : appState == .inactive ? "INACTIVE" : "FOREGROUND"
-                
-                // CRITICAL: Force immediate flush in background
-                if appState == .background {
-                    // Ensure we have enough time to flush
-                    beginBackgroundTask()
-                    
-                    if #available(iOS 13.0, *) {
-                        Task { @MainActor in
-                            await session.flush()  // Force the session to process pending tasks immediately
-                            DebugLogger.shared.log("S3BackgroundUploader: 🔥 Forced session flush in BACKGROUND")
-                            
-                            // Verify tasks are actually running after flush
-                            session.getAllTasks { tasks in
-                                DebugLogger.shared.log("S3BackgroundUploader: After flush - \(tasks.count) tasks")
-                                for (index, task) in tasks.enumerated() {
-                                    DebugLogger.shared.log("S3BackgroundUploader: Task \(task.taskIdentifier) state: \(task.state.rawValue), bytes sent: \(task.countOfBytesSent)")
-                                    if index < 3 && task.state == .suspended {
-                                        task.resume()
-                                        DebugLogger.shared.log("S3BackgroundUploader: Force resumed task \(task.taskIdentifier)")
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        // For iOS < 13, try to force processing by getting all tasks
-                        session.getAllTasks { tasks in
-                            DebugLogger.shared.log("S3BackgroundUploader: 🔥 Background has \(tasks.count) tasks queued")
-                        }
+                if #available(iOS 13.0, *) {
+                    Task { @MainActor in
+                        await session.flush()  // Force the session to process pending tasks immediately
+                        DebugLogger.shared.log("S3BackgroundUploader: 🔥 Forced session flush in BACKGROUND")
                     }
                 }
-                
-                print("S3BackgroundUploader: Started upload for: \(upload.localPath)")
-                DebugLogger.shared.log("S3BackgroundUploader: Started upload task \(task.taskIdentifier) for: \(upload.s3Key)")
-                DebugLogger.shared.log("S3BackgroundUploader: Upload task \(task.taskIdentifier) started in \(stateString): \(upload.s3Key)")
-                DebugLogger.shared.log("S3BackgroundUploader: Task state after resume: \(task.state.rawValue), priority: \(task.priority)")
-                
-            } catch {
-                print("S3BackgroundUploader: Failed to start upload: \(error)")
-                DebugLogger.shared.log("S3BackgroundUploader: Failed to start upload: \(error.localizedDescription)")
-                self.handleUploadFailure(upload, error: error)
             }
+            
+            print("S3BackgroundUploader: Started upload for: \(localPath)")
+            DebugLogger.shared.log("S3BackgroundUploader: Started upload task \(task.taskIdentifier) for: \(s3Key) in \(stateString)")
+            
+        } catch {
+            print("S3BackgroundUploader: Failed to start upload: \(error)")
+            DebugLogger.shared.log("S3BackgroundUploader: Failed to start upload for \(localPath): \(error.localizedDescription)")
+            onUploadFailed?(localPath, error)
         }
     }
     
@@ -546,131 +468,22 @@ class S3BackgroundUploader: NSObject {
         return signature.map { String(format: "%02x", $0) }.joined()
     }
     
-    // MARK: - Queue Persistence
-    
-    private func saveUploadQueue() {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let queueURL = documentsPath.appendingPathComponent(queueFile)
-        
-        do {
-            let encoder = JSONEncoder()
-            let data = try encoder.encode(uploadQueue)
-            try data.write(to: queueURL)
-        } catch {
-            print("S3BackgroundUploader: Failed to save queue: \(error)")
-            DebugLogger.shared.log("S3BackgroundUploader: Failed to save queue: \(error.localizedDescription)")
-        }
-    }
-    
-    private func loadUploadQueue() {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let queueURL = documentsPath.appendingPathComponent(queueFile)
-        
-        do {
-            let data = try Data(contentsOf: queueURL)
-            let decoder = JSONDecoder()
-            uploadQueue = try decoder.decode([PendingS3Upload].self, from: data)
-            
-            // Filter out any invalid entries
-            uploadQueue = uploadQueue.filter { upload in
-                let exists = FileManager.default.fileExists(atPath: upload.localPath)
-                if !exists {
-                    print("S3BackgroundUploader: Removing non-existent file from queue: \(upload.localPath)")
-                    DebugLogger.shared.log("S3BackgroundUploader: Removing non-existent file from queue: \(upload.localPath)")
-                }
-                return exists
-            }
-            
-            // Remove duplicates from queue but keep all unique files
-            var seen = Set<String>()
-            uploadQueue = uploadQueue.filter { upload in
-                if seen.contains(upload.s3Key) {
-                    DebugLogger.shared.log("S3BackgroundUploader: Removing duplicate from queue: \(upload.s3Key)")
-                    return false
-                }
-                seen.insert(upload.s3Key)
-                return true
-            }
-            
-            print("S3BackgroundUploader: Loaded \(uploadQueue.count) unique valid pending uploads")
-            DebugLogger.shared.log("S3BackgroundUploader: Loaded \(uploadQueue.count) unique valid pending uploads from disk")
-            DebugLogger.shared.log("S3BackgroundUploader: Loaded \(uploadQueue.count) unique pending uploads")
-            
-            // Save cleaned queue
-            if uploadQueue.count > 0 {
-                saveUploadQueue()
-            }
-            
-        } catch {
-            // No saved queue or error loading
-            print("S3BackgroundUploader: No saved queue or error loading: \(error)")
-            DebugLogger.shared.log("S3BackgroundUploader: No saved queue or error loading: \(error.localizedDescription)")
-            uploadQueue = []
-        }
-    }
-    
-    private func handleUploadFailure(_ upload: PendingS3Upload, error: Error) {
-        // Log detailed error information
-        DebugLogger.shared.log("S3BackgroundUploader: Handling failure for: \(upload.s3Key)")
-        DebugLogger.shared.log("S3BackgroundUploader: Retry count: \(upload.retryCount)/unlimited")
-        
-        // Check if the file still exists before retrying
-        if !FileManager.default.fileExists(atPath: upload.localPath) {
-            DebugLogger.shared.log("S3BackgroundUploader: File no longer exists, removing from queue: \(upload.localPath)")
-            print("S3BackgroundUploader: File no longer exists, removing from queue: \(upload.localPath)")
-            
-            // Remove from queue since file doesn't exist
-            uploadQueue.removeAll { $0.localPath == upload.localPath }
-            saveUploadQueue()
-            
-            // Notify failure and don't retry
-            onUploadFailed?(upload.localPath, UploadError.fileNotFound)
-            return
-        }
-        
-        // NEVER give up - keep retrying with exponential backoff (only for existing files)
-        var retryUpload = upload
-        retryUpload.retryCount += 1
-        
-        // Don't remove from queue, just update retry count
-        if let index = uploadQueue.firstIndex(where: { $0.localPath == upload.localPath }) {
-            uploadQueue[index] = retryUpload
-        } else {
-            uploadQueue.insert(retryUpload, at: 0)
-        }
-        saveUploadQueue()
-        
-        // Exponential backoff: 2s, 4s, 8s, 16s, then cap at 30s
-        let backoffDelay = min(pow(2.0, Double(retryUpload.retryCount)), 30.0)
-        
-        print("S3BackgroundUploader: Will retry upload (attempt \(retryUpload.retryCount)) after \(backoffDelay)s")
-        DebugLogger.shared.log("S3BackgroundUploader: Will retry upload \(retryUpload.s3Key) (attempt \(retryUpload.retryCount)) after \(backoffDelay)s")
-        DebugLogger.shared.log("S3BackgroundUploader: Will retry upload (attempt \(retryUpload.retryCount)) after \(backoffDelay)s")
-        
-        // Retry after backoff delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + backoffDelay) { [weak self] in
-            guard let self = self, let creds = self.credentials else { 
-                DebugLogger.shared.log("S3BackgroundUploader: No credentials for retry")
-                return 
-            }
-            self.startUpload(retryUpload, with: creds)
-        }
-        
-        // Notify failure (but we're retrying)
-        onUploadFailed?(upload.localPath, error)
-        
-        // NEVER delete the local file on failure
-        DebugLogger.shared.log("S3BackgroundUploader: Keeping local file for retry: \(upload.localPath)")
-    }
     
     // MARK: - Status
     
     func getStatistics() -> [String: Any] {
-        return [
-            "pendingUploads": uploadQueue.count,
-            "activeUploads": activeUploads.count,
-            "hasCredentials": credentials != nil
+        var stats: [String: Any] = [
+            "hasCredentials": credentials != nil,
+            "audioDirectory": audioDirectory
         ]
+        
+        // Count files in audio directory
+        if let files = try? FileManager.default.contentsOfDirectory(atPath: audioDirectory) {
+            let wavFiles = files.filter { $0.hasSuffix(".wav") }
+            stats["localWavFiles"] = wavFiles.count
+        }
+        
+        return stats
     }
     
     // MARK: - Background Task Management
@@ -698,10 +511,12 @@ class S3BackgroundUploader: NSObject {
     // Called when app enters background
     func handleAppBackground() {
         DebugLogger.shared.log("S3BackgroundUploader: App entering background, ensuring uploads continue")
-        DebugLogger.shared.log("S3BackgroundUploader: Active uploads: \(activeUploads.count), Queued: \(uploadQueue.count)")
         
         // Ensure session exists
         recreateSessionIfNeeded()
+        
+        // Sync any pending files
+        syncAllAudioFiles()
         
         // Begin background task to ensure we have time
         beginBackgroundTask()
@@ -722,10 +537,6 @@ class S3BackgroundUploader: NSObject {
                 }
             }
             
-            // Process any queued uploads
-            if !self.uploadQueue.isEmpty {
-                self.processQueuedUploads()
-            }
         }
         
         // Don't block - let iOS handle the delegate callbacks asynchronously
@@ -833,168 +644,68 @@ extension S3BackgroundUploader: URLSessionDelegate, URLSessionTaskDelegate, URLS
         let appState = UIApplication.shared.applicationState
         let stateString = appState == .background ? "BACKGROUND" : appState == .inactive ? "INACTIVE" : "FOREGROUND"
         
-        // CRITICAL: Log whether error is nil or present
-        if error == nil {
-            DebugLogger.shared.log("S3BackgroundUploader: ✅ didCompleteWithError called with SUCCESS (error is nil) in \(stateString) - task \(task.taskIdentifier)")
-        } else {
-            DebugLogger.shared.log("S3BackgroundUploader: ❌ didCompleteWithError called with ERROR in \(stateString) - task \(task.taskIdentifier)")
+        // Extract file info from the task URL
+        guard let url = task.originalRequest?.url?.absoluteString else {
+            DebugLogger.shared.log("S3BackgroundUploader: Task completed but no URL found")
+            return
         }
         
-        // Try to get upload from activeUploads first
-        if let upload = activeUploads[task] {
-            activeUploads.removeValue(forKey: task)
+        // Extract filename from S3 URL
+        let fileName = url.components(separatedBy: "/").last ?? "unknown"
+        let localPath = (audioDirectory as NSString).appendingPathComponent(fileName)
             
-            if let error = error {
-                // COMPREHENSIVE ERROR LOGGING
-                let nsError = error as NSError
-                print("S3BackgroundUploader: Upload failed: \(error)")
-                DebugLogger.shared.log("S3BackgroundUploader: ❌ ERROR DETAILS for \(upload.s3Key):")
-                DebugLogger.shared.log("  - Error Description: \(error.localizedDescription)")
-                DebugLogger.shared.log("  - Error Domain: \(nsError.domain)")
-                DebugLogger.shared.log("  - Error Code: \(nsError.code)")
-                DebugLogger.shared.log("  - User Info: \(nsError.userInfo)")
+        
+        if let error = error {
+            // Error occurred
+            let nsError = error as NSError
+            print("S3BackgroundUploader: Upload failed for \(fileName): \(error)")
+            DebugLogger.shared.log("S3BackgroundUploader: ❌ Upload failed for \(fileName) in \(stateString):")
+            DebugLogger.shared.log("  - Error: \(error.localizedDescription)")
+            onUploadFailed?(localPath, error)
+            
+            // File will be retried on next sync
+        } else if let response = task.response as? HTTPURLResponse {
+            if response.statusCode == 200 || response.statusCode == 204 {
+                // Success
+                print("S3BackgroundUploader: Upload successful: \(fileName)")
+                DebugLogger.shared.log("S3BackgroundUploader: ✅ Upload successful for \(fileName) - HTTP \(response.statusCode)")
                 
-                // Log specific error types
-                if nsError.domain == NSURLErrorDomain {
-                    DebugLogger.shared.log("  - Network Error Type: \(self.getURLErrorDescription(code: nsError.code))")
+                // Notify success
+                let s3URL = url
+                onUploadComplete?(localPath, s3URL)
+                
+                // Delete local file after successful upload
+                try? FileManager.default.removeItem(atPath: localPath)
+                
+                // Also delete the companion metadata JSON file if it exists
+                let metadataFileName = fileName.replacingOccurrences(of: ".wav", with: ".json")
+                let metadataPath = (audioDirectory as NSString).appendingPathComponent(metadataFileName)
+                if FileManager.default.fileExists(atPath: metadataPath) {
+                    try? FileManager.default.removeItem(atPath: metadataPath)
+                    DebugLogger.shared.log("S3BackgroundUploader: Deleted metadata file: \(metadataFileName)")
                 }
                 
-                // Log recovery suggestion if available
-                if let recoverySuggestion = nsError.localizedRecoverySuggestion {
-                    DebugLogger.shared.log("  - Recovery Suggestion: \(recoverySuggestion)")
-                }
-                
-                // Always retry - never drop files
-                handleUploadFailure(upload, error: error)
-            } else if let response = task.response as? HTTPURLResponse {
-                if response.statusCode == 200 || response.statusCode == 204 {
-                    print("S3BackgroundUploader: Upload successful: \(upload.s3Key)")
-                    DebugLogger.shared.log("S3BackgroundUploader: ✅ SUCCESS - HTTP \(response.statusCode) for: \(upload.s3Key)")
-                    
-                    // Log response headers for debugging
-                    if let headers = response.allHeaderFields as? [String: String] {
-                        DebugLogger.shared.log("  - Response Headers: \(headers)")
-                    }
-                    
-                    // Remove from queue
-                    uploadQueue.removeAll { $0.localPath == upload.localPath }
-                    saveUploadQueue()
-                    
-                    // Notify success
-                    let s3URL = "https://\(credentials?.bucket ?? "").s3.\(credentials?.region ?? "").amazonaws.com/\(upload.s3Key)"
-                    onUploadComplete?(upload.localPath, s3URL)
-                    
-                    // Delete local file after successful upload
-                    try? FileManager.default.removeItem(atPath: upload.localPath)
-                    
-                    // Process any remaining queued uploads
-                    if !uploadQueue.isEmpty {
-                        print("S3BackgroundUploader: Processing remaining \(uploadQueue.count) queued uploads")
-                        DebugLogger.shared.log("S3BackgroundUploader: Processing remaining \(uploadQueue.count) queued uploads after success")
-                        processQueuedUploads()
-                    }
-                } else {
-                    // HTTP ERROR - DETAILED LOGGING
-                    print("S3BackgroundUploader: Upload failed with status: \(response.statusCode)")
-                    DebugLogger.shared.log("S3BackgroundUploader: ❌ HTTP ERROR \(response.statusCode) for: \(upload.s3Key)")
-                    
-                    // Log response headers for debugging HTTP errors
-                    if let headers = response.allHeaderFields as? [String: String] {
-                        DebugLogger.shared.log("  - Error Response Headers: \(headers)")
-                    }
-                    
-                    handleUploadFailure(upload, error: UploadError.httpError(response.statusCode))
-                }
+                // Sync again to upload any remaining files
+                syncAllAudioFiles()
             } else {
-                // CRITICAL: No error but also no HTTP response - this is the mystery case!
-                DebugLogger.shared.log("S3BackgroundUploader: ⚠️ UNUSUAL: didCompleteWithError called with nil error but NO HTTP response!")
-                DebugLogger.shared.log("  - Upload: \(upload.s3Key)")
-                DebugLogger.shared.log("  - Task State: \(task.state.rawValue)")
-                DebugLogger.shared.log("  - Task Response: \(String(describing: task.response))")
-                DebugLogger.shared.log("  - Original Request: \(String(describing: task.originalRequest?.url))")
+                // HTTP error
+                print("S3BackgroundUploader: Upload failed with status \(response.statusCode) for \(fileName)")
+                DebugLogger.shared.log("S3BackgroundUploader: ❌ HTTP error \(response.statusCode) for \(fileName)")
+                onUploadFailed?(localPath, UploadError.httpError(response.statusCode))
                 
-                // Treat as failure and retry
-                handleUploadFailure(upload, error: UploadError.unknown)
-            }
-        } else {
-            // CRITICAL: Handle orphaned task
-            
-            // Log whether error is nil or present for orphaned task
-            if error == nil {
-                DebugLogger.shared.log("S3BackgroundUploader: ⚠️ Orphaned task \(task.taskIdentifier) completed with SUCCESS (error is nil) in \(stateString)")
-            } else {
-                DebugLogger.shared.log("S3BackgroundUploader: ⚠️ Orphaned task \(task.taskIdentifier) completed with ERROR in \(stateString)")
-            }
-            
-            DebugLogger.shared.log("S3BackgroundUploader: Task URL: \(task.originalRequest?.url?.absoluteString ?? "nil")")
-            
-            // Try to identify the upload from the task's URL
-            if let url = task.originalRequest?.url?.absoluteString,
-               let index = uploadQueue.firstIndex(where: { url.contains($0.s3Key) }) {
-                let orphanedUpload = uploadQueue[index]
-                DebugLogger.shared.log("S3BackgroundUploader: Identified orphaned upload: \(orphanedUpload.s3Key)")
-                
-                if let error = error {
-                    // COMPREHENSIVE ERROR LOGGING for orphaned task
-                    let nsError = error as NSError
-                    DebugLogger.shared.log("S3BackgroundUploader: ❌ ORPHANED TASK ERROR DETAILS:")
-                    DebugLogger.shared.log("  - Error Description: \(error.localizedDescription)")
-                    DebugLogger.shared.log("  - Error Domain: \(nsError.domain)")
-                    DebugLogger.shared.log("  - Error Code: \(nsError.code)")
-                    DebugLogger.shared.log("  - User Info: \(nsError.userInfo)")
-                    
-                    if nsError.domain == NSURLErrorDomain {
-                        DebugLogger.shared.log("  - Network Error Type: \(self.getURLErrorDescription(code: nsError.code))")
-                    }
-                    
-                    // Retry - don't remove from queue
-                    handleUploadFailure(orphanedUpload, error: error)
-                } else if let response = task.response as? HTTPURLResponse {
-                    if response.statusCode == 200 || response.statusCode == 204 {
-                        // Success - remove from queue
-                        uploadQueue.remove(at: index)
-                        saveUploadQueue()
-                        DebugLogger.shared.log("S3BackgroundUploader: ✅ ORPHANED SUCCESS - HTTP \(response.statusCode) for: \(orphanedUpload.s3Key)")
-                        
-                        // Delete local file only after successful upload
-                        try? FileManager.default.removeItem(atPath: orphanedUpload.localPath)
-                    } else {
-                        // HTTP error for orphaned task
-                        DebugLogger.shared.log("S3BackgroundUploader: ❌ ORPHANED HTTP ERROR \(response.statusCode)")
-                        
-                        // Log response headers for debugging
-                        if let headers = response.allHeaderFields as? [String: String] {
-                            DebugLogger.shared.log("  - Error Response Headers: \(headers)")
-                        }
-                        
-                        handleUploadFailure(orphanedUpload, error: UploadError.httpError(response.statusCode))
-                    }
-                } else {
-                    // CRITICAL: Orphaned task with no error and no response
-                    DebugLogger.shared.log("S3BackgroundUploader: ⚠️ UNUSUAL ORPHANED: nil error but NO HTTP response!")
-                    DebugLogger.shared.log("  - Task State: \(task.state.rawValue)")
-                    DebugLogger.shared.log("  - Task Response: \(String(describing: task.response))")
-                    
-                    // Treat as failure and retry
-                    handleUploadFailure(orphanedUpload, error: UploadError.unknown)
-                }
-            } else {
-                DebugLogger.shared.log("S3BackgroundUploader: ⚠️ Could not identify orphaned task from URL")
-                DebugLogger.shared.log("S3BackgroundUploader: Queue has \(uploadQueue.count) items, activeUploads has \(activeUploads.count) items")
-            }
-            
-            // Always process next uploads
-            if !uploadQueue.isEmpty {
-                processQueuedUploads()
+                // File will be retried on next sync
             }
         }
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-        guard let upload = activeUploads[task] else { return }
-        
-        let progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
-        onUploadProgress?(upload.localPath, progress)
+        // Extract filename from task URL
+        if let url = task.originalRequest?.url?.absoluteString {
+            let fileName = url.components(separatedBy: "/").last ?? "unknown"
+            let localPath = (audioDirectory as NSString).appendingPathComponent(fileName)
+            let progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
+            onUploadProgress?(localPath, progress)
+        }
     }
     
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
@@ -1003,8 +714,6 @@ extension S3BackgroundUploader: URLSessionDelegate, URLSessionTaskDelegate, URLS
         
         print("S3BackgroundUploader: Background session finished events (App State: \(stateString))")
         DebugLogger.shared.log("S3BackgroundUploader: 🏁 urlSessionDidFinishEvents called in \(stateString)")
-        DebugLogger.shared.log("S3BackgroundUploader: Active uploads: \(activeUploads.count), Queued: \(uploadQueue.count)")
-        DebugLogger.shared.log("S3BackgroundUploader: Background session finished in \(stateString) state")
         
         // End our background task if we have one
         endBackgroundTask()
@@ -1019,11 +728,8 @@ extension S3BackgroundUploader: URLSessionDelegate, URLSessionTaskDelegate, URLS
             backgroundCompletionHandler = nil
         }
         
-        // Process any remaining queued uploads
-        if !uploadQueue.isEmpty {
-            print("S3BackgroundUploader: Processing remaining queued uploads after session finish")
-            processQueuedUploads()
-        }
+        // Sync again to upload any remaining files
+        syncAllAudioFiles()
     }
 }
 
@@ -1038,15 +744,6 @@ struct S3Credentials {
     let prefix: String
 }
 
-struct PendingS3Upload: Codable {
-    let localPath: String
-    let s3Key: String
-    let userId: String
-    let metadata: [String: String]
-    var retryCount: Int
-    let createdAt: Date
-}
-
 enum UploadError: LocalizedError {
     case fileNotFound
     case invalidURL
@@ -1059,13 +756,14 @@ enum UploadError: LocalizedError {
         case .fileNotFound:
             return "File not found"
         case .invalidURL:
-            return "Invalid S3 URL"
+            return "Invalid URL"
         case .httpError(let code):
             return "HTTP error: \(code)"
         case .noCredentials:
-            return "No S3 credentials available"
+            return "No credentials available"
         case .unknown:
-            return "Unknown error occurred"
+            return "Unknown error"
         }
     }
 }
+
