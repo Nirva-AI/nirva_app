@@ -85,14 +85,17 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
   }
 
   void _scrollToBottomImmediate() {
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    }
+    // Use a small delay for immediate scroll to ensure content is laid out
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
   }
 
   void _scrollToBottom() {
-    // Immediate scroll to bottom with single frame callback
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Delay to ensure layout is complete, especially for long messages
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
@@ -582,7 +585,7 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
                   ],
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('HH:mm').format(DateTime.parse(message.time_stamp)),
+                    DateFormat('HH:mm').format(DateTime.parse(message.time_stamp).toLocal()),
                     style: TextStyle(
                       color: isUser ? Colors.grey.shade600 : Colors.grey.shade600,
                       fontSize: 12,
@@ -696,7 +699,7 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
                       
                       for (int i = 0; i < chatProvider.chatHistory.length; i++) {
                         final message = chatProvider.chatHistory[i];
-                        final messageDate = DateTime.parse(message.time_stamp);
+                        final messageDate = DateTime.parse(message.time_stamp).toLocal();
                         final currentMessageDate = DateTime(messageDate.year, messageDate.month, messageDate.day);
                         
                         // Add date divider if this is a new day, but not if it's the first message
@@ -717,13 +720,23 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
                         items.add(_buildLoadingIndicator());
                       }
                       
-                      return ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.only(top: 16, bottom: 8),
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          return items[index];
+                      return GestureDetector(
+                        onTap: () {
+                          // Dismiss keyboard when tapping in chat area
+                          FocusScope.of(context).unfocus();
                         },
+                        onVerticalDragStart: (_) {
+                          // Dismiss keyboard when starting to scroll/drag
+                          FocusScope.of(context).unfocus();
+                        },
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.only(top: 16, bottom: 8),
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            return items[index];
+                          },
+                        ),
                       );
                     },
                   ),
@@ -767,8 +780,12 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
   }
 
   Widget _buildInputArea() {
+    // Check if keyboard is visible
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final isKeyboardVisible = keyboardHeight > 0;
+    
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 24, 24),
+      padding: EdgeInsets.fromLTRB(16, 12, 24, isKeyboardVisible ? 12 : 24),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -806,6 +823,10 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
                           vertical: 12,
                         ),
                       ),
+                      onTap: () {
+                        // Auto-scroll to bottom when focusing the input
+                        _scrollToBottom();
+                      },
                       maxLines: null,
                       textCapitalization: TextCapitalization.sentences,
                     ),

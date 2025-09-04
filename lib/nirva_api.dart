@@ -331,12 +331,12 @@ class NirvaAPI {
       );
     }
 
-    // Create the user message
+    // Create the user message with current timestamp
     final userMessage = ChatMessage(
       id: uuid.v4(), // 使用uuid生成唯一ID
       role: MessageRole.human,
       content: content,
-      time_stamp: JournalFile.dateTimeToKey(DateTime.now()),
+      time_stamp: DateTime.now().toIso8601String(), // Use ISO8601 with timezone
     );
 
     // Add user message to chat history immediately (before sending request)
