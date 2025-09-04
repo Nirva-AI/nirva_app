@@ -27,6 +27,7 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   // Cache for events to check which dates have events
   Map<String, List<EventAnalysis>> _eventsCache = {};
   bool _isLoadingEvents = false;
+  bool _isRefreshing = false;  // Track refresh state
   
   // Store the future to prevent rebuilding
   Future<List<EventAnalysis>>? _eventsFuture;
@@ -81,6 +82,48 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
       _currentDateKey = dateKey;
       final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
       _eventsFuture = eventsProvider.getEventsForDate(dateKey);
+    }
+  }
+  
+  /// Refresh events for current date ±7 days (15 days total)
+  Future<void> _refreshEvents() async {
+    if (_isRefreshing) return;
+    
+    setState(() {
+      _isRefreshing = true;
+    });
+    
+    try {
+      final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+      final dates = <String>[];
+      
+      // Clear cache and collect dates for ±7 days from selected date
+      for (int i = -7; i <= 7; i++) {
+        final date = _selectedDate.add(Duration(days: i));
+        final dateKey = DateFormat('yyyy-MM-dd').format(date);
+        eventsProvider.clearCache(dateKey);
+        dates.add(dateKey);
+      }
+      
+      debugPrint('Refreshing events for ${dates.length} days around ${DateFormat('yyyy-MM-dd').format(_selectedDate)}');
+      
+      // Fetch fresh data for all dates
+      final eventsMap = await eventsProvider.getEventsForDates(dates);
+      
+      setState(() {
+        _eventsCache = eventsMap;
+        _isRefreshing = false;
+      });
+      
+      // Reload the current selected date as well
+      _currentDateKey = null;  // Force reload
+      _loadEventsForSelectedDate();
+      
+    } catch (e) {
+      debugPrint('Error refreshing events: $e');
+      setState(() {
+        _isRefreshing = false;
+      });
     }
   }
 
@@ -270,15 +313,25 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
-                              onPressed: () {
-                                eventsProvider.clearCache(dateKey);
-                                setState(() {});
+                              onPressed: _isRefreshing ? null : () async {
+                                await _refreshEvents();
                               },
-                              icon: Icon(
-                                Icons.refresh,
-                                color: Colors.grey.shade600,
-                                size: 20,
-                              ),
+                              icon: _isRefreshing
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.refresh,
+                                      color: Colors.grey.shade600,
+                                      size: 20,
+                                    ),
                             ),
                           ),
                           const SizedBox(width: 12),
