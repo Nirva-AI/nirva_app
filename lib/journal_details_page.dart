@@ -8,6 +8,8 @@ import 'package:nirva_app/hive_helper.dart';
 import 'package:nirva_app/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:nirva_app/mini_call_bar.dart';
+import 'package:nirva_app/transcription_detail_page.dart';
+import 'package:nirva_app/api_models.dart';
 
 class JournalDetailsPage extends StatefulWidget {
   final EventAnalysis eventData;
@@ -136,6 +138,11 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
                 
                 // Personal Notes Section
                 _buildPersonalNotesSection(),
+                
+                const SizedBox(height: 24),
+                
+                // Transcriptions Section
+                _buildTranscriptionsSection(),
                 
                 const SizedBox(height: 24),
                 
@@ -469,6 +476,187 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
               fontFamily: 'Georgia',
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTranscriptionsSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.mic,
+                  size: 18,
+                  color: Colors.blue.shade700,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Related Transcriptions",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade700,
+                  fontFamily: 'Georgia',
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Transcriptions or empty state
+          if (widget.eventData.transcriptions != null && 
+              widget.eventData.transcriptions!.isNotEmpty) ...[
+            // Show transcriptions
+            ...widget.eventData.transcriptions!.map((transcript) {
+              final startTime = DateTime.tryParse(
+                  transcript['start_time'] ?? '') ?? DateTime.now();
+              final timeStr = DateFormat('HH:mm').format(startTime);
+              final text = transcript['transcription_text'] ?? '';
+              final truncatedText = text.length > 150 
+                  ? '${text.substring(0, 150)}...' 
+                  : text;
+              
+              // Create TranscriptionItem for navigation
+              final transcriptionItem = TranscriptionItem(
+                id: transcript['id'],
+                text: transcript['transcription_text'] ?? '',
+                start_time: transcript['start_time'] ?? '',
+                end_time: transcript['end_time'] ?? '',
+              );
+              
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TranscriptionDetailPage(
+                        transcription: transcriptionItem,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.grey.shade200,
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule,
+                            size: 14,
+                            color: Colors.blue.shade600,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            timeStr,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade600,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${transcript['duration_seconds'] ?? 0}s',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const Spacer(),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 12,
+                            color: Colors.grey.shade400,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        truncatedText,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade800,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ] else ...[
+            // Empty state
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.mic_none,
+                      size: 48,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No transcriptions available',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Audio transcriptions for this event period\nwill appear here when available',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade500,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

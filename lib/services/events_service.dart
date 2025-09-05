@@ -130,6 +130,12 @@ class EventsService extends ChangeNotifier {
             // Convert backend event format to EventAnalysis
             final timeRange = eventData['time_range'] ?? 'Unknown Time';
             
+            // Check if transcriptions exist in the backend data
+            final transcriptionsRaw = eventData['transcriptions'];
+            final List<Map<String, dynamic>>? transcriptions = transcriptionsRaw != null
+                ? (transcriptionsRaw as List).map((item) => item as Map<String, dynamic>).toList()
+                : null;
+            
             // Convert backend event format to EventAnalysis
             final event = EventAnalysis(
               event_id: eventData['event_id'] ?? '',
@@ -146,9 +152,10 @@ class EventsService extends ChangeNotifier {
               interaction_dynamic: eventData['interaction_dynamic'] ?? 'Unknown',
               inferred_impact_on_user_name: eventData['inferred_impact_on_user_name'] ?? 'Unknown',
               topic_labels: _parseStringList(eventData['topic_labels']),
-              one_sentence_summary: eventData['one_sentence_summary'] ?? 'No summary available',
-              first_person_narrative: eventData['first_person_narrative'] ?? 'No narrative available',
+              one_sentence_summary: eventData['one_sentence_summary'] ?? eventData['event_summary'] ?? 'No summary available',
+              first_person_narrative: eventData['first_person_narrative'] ?? eventData['event_story'] ?? 'No narrative available',
               action_item: eventData['action_item'] ?? 'No action items',
+              transcriptions: transcriptions,
             );
             
             events.add(event);

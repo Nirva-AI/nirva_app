@@ -23,6 +23,7 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   final TextEditingController _reflectionController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final EasyInfiniteDateTimelineController _dateTimelineController = EasyInfiniteDateTimelineController();
+  late PageController _pageController;
   int _currentQuestionIndex = 1;
   
   // Cache for events to check which dates have events
@@ -60,6 +61,10 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(
+      viewportFraction: 0.85,
+      initialPage: _currentQuestionIndex,
+    );
     // Set initial date to a date that has data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeData();
@@ -132,6 +137,7 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   void dispose() {
     _reflectionController.dispose();
     _scrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -458,10 +464,7 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
     return Container(
       height: 200,
       child: PageView.builder(
-        controller: PageController(
-          viewportFraction: 0.85,
-          initialPage: 1,
-        ),
+        controller: _pageController,
         onPageChanged: (index) {
           setState(() {
             _currentQuestionIndex = index;

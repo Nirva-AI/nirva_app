@@ -241,6 +241,8 @@ mixin _$EventAnalysis {
   String get one_sentence_summary => throw _privateConstructorUsedError;
   String get first_person_narrative => throw _privateConstructorUsedError;
   String get action_item => throw _privateConstructorUsedError;
+  List<Map<String, dynamic>>? get transcriptions =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this EventAnalysis to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -275,7 +277,8 @@ abstract class $EventAnalysisCopyWith<$Res> {
       List<String> topic_labels,
       String one_sentence_summary,
       String first_person_narrative,
-      String action_item});
+      String action_item,
+      List<Map<String, dynamic>>? transcriptions});
 }
 
 /// @nodoc
@@ -310,6 +313,7 @@ class _$EventAnalysisCopyWithImpl<$Res, $Val extends EventAnalysis>
     Object? one_sentence_summary = null,
     Object? first_person_narrative = null,
     Object? action_item = null,
+    Object? transcriptions = freezed,
   }) {
     return _then(_value.copyWith(
       event_id: null == event_id
@@ -380,6 +384,10 @@ class _$EventAnalysisCopyWithImpl<$Res, $Val extends EventAnalysis>
           ? _value.action_item
           : action_item // ignore: cast_nullable_to_non_nullable
               as String,
+      transcriptions: freezed == transcriptions
+          ? _value.transcriptions
+          : transcriptions // ignore: cast_nullable_to_non_nullable
+              as List<Map<String, dynamic>>?,
     ) as $Val);
   }
 }
@@ -409,7 +417,8 @@ abstract class _$$EventAnalysisImplCopyWith<$Res>
       List<String> topic_labels,
       String one_sentence_summary,
       String first_person_narrative,
-      String action_item});
+      String action_item,
+      List<Map<String, dynamic>>? transcriptions});
 }
 
 /// @nodoc
@@ -442,6 +451,7 @@ class __$$EventAnalysisImplCopyWithImpl<$Res>
     Object? one_sentence_summary = null,
     Object? first_person_narrative = null,
     Object? action_item = null,
+    Object? transcriptions = freezed,
   }) {
     return _then(_$EventAnalysisImpl(
       event_id: null == event_id
@@ -512,6 +522,10 @@ class __$$EventAnalysisImplCopyWithImpl<$Res>
           ? _value.action_item
           : action_item // ignore: cast_nullable_to_non_nullable
               as String,
+      transcriptions: freezed == transcriptions
+          ? _value._transcriptions
+          : transcriptions // ignore: cast_nullable_to_non_nullable
+              as List<Map<String, dynamic>>?,
     ));
   }
 }
@@ -536,10 +550,12 @@ class _$EventAnalysisImpl implements _EventAnalysis {
       required final List<String> topic_labels,
       required this.one_sentence_summary,
       required this.first_person_narrative,
-      required this.action_item})
+      required this.action_item,
+      final List<Map<String, dynamic>>? transcriptions})
       : _mood_labels = mood_labels,
         _people_involved = people_involved,
-        _topic_labels = topic_labels;
+        _topic_labels = topic_labels,
+        _transcriptions = transcriptions;
 
   factory _$EventAnalysisImpl.fromJson(Map<String, dynamic> json) =>
       _$$EventAnalysisImplFromJson(json);
@@ -596,10 +612,19 @@ class _$EventAnalysisImpl implements _EventAnalysis {
   final String first_person_narrative;
   @override
   final String action_item;
+  final List<Map<String, dynamic>>? _transcriptions;
+  @override
+  List<Map<String, dynamic>>? get transcriptions {
+    final value = _transcriptions;
+    if (value == null) return null;
+    if (_transcriptions is EqualUnmodifiableListView) return _transcriptions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'EventAnalysis(event_id: $event_id, event_title: $event_title, time_range: $time_range, duration_minutes: $duration_minutes, location: $location, mood_labels: $mood_labels, mood_score: $mood_score, stress_level: $stress_level, energy_level: $energy_level, activity_type: $activity_type, people_involved: $people_involved, interaction_dynamic: $interaction_dynamic, inferred_impact_on_user_name: $inferred_impact_on_user_name, topic_labels: $topic_labels, one_sentence_summary: $one_sentence_summary, first_person_narrative: $first_person_narrative, action_item: $action_item)';
+    return 'EventAnalysis(event_id: $event_id, event_title: $event_title, time_range: $time_range, duration_minutes: $duration_minutes, location: $location, mood_labels: $mood_labels, mood_score: $mood_score, stress_level: $stress_level, energy_level: $energy_level, activity_type: $activity_type, people_involved: $people_involved, interaction_dynamic: $interaction_dynamic, inferred_impact_on_user_name: $inferred_impact_on_user_name, topic_labels: $topic_labels, one_sentence_summary: $one_sentence_summary, first_person_narrative: $first_person_narrative, action_item: $action_item, transcriptions: $transcriptions)';
   }
 
   @override
@@ -642,7 +667,9 @@ class _$EventAnalysisImpl implements _EventAnalysis {
             (identical(other.first_person_narrative, first_person_narrative) ||
                 other.first_person_narrative == first_person_narrative) &&
             (identical(other.action_item, action_item) ||
-                other.action_item == action_item));
+                other.action_item == action_item) &&
+            const DeepCollectionEquality()
+                .equals(other._transcriptions, _transcriptions));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -665,7 +692,8 @@ class _$EventAnalysisImpl implements _EventAnalysis {
       const DeepCollectionEquality().hash(_topic_labels),
       one_sentence_summary,
       first_person_narrative,
-      action_item);
+      action_item,
+      const DeepCollectionEquality().hash(_transcriptions));
 
   /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.
@@ -701,7 +729,8 @@ abstract class _EventAnalysis implements EventAnalysis {
       required final List<String> topic_labels,
       required final String one_sentence_summary,
       required final String first_person_narrative,
-      required final String action_item}) = _$EventAnalysisImpl;
+      required final String action_item,
+      final List<Map<String, dynamic>>? transcriptions}) = _$EventAnalysisImpl;
 
   factory _EventAnalysis.fromJson(Map<String, dynamic> json) =
       _$EventAnalysisImpl.fromJson;
@@ -740,6 +769,8 @@ abstract class _EventAnalysis implements EventAnalysis {
   String get first_person_narrative;
   @override
   String get action_item;
+  @override
+  List<Map<String, dynamic>>? get transcriptions;
 
   /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.

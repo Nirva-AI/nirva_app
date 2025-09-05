@@ -47,6 +47,9 @@ _$EventAnalysisImpl _$$EventAnalysisImplFromJson(Map<String, dynamic> json) =>
       one_sentence_summary: json['one_sentence_summary'] as String,
       first_person_narrative: json['first_person_narrative'] as String,
       action_item: json['action_item'] as String,
+      transcriptions: (json['transcriptions'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList(),
     );
 
 Map<String, dynamic> _$$EventAnalysisImplToJson(_$EventAnalysisImpl instance) =>
@@ -68,6 +71,7 @@ Map<String, dynamic> _$$EventAnalysisImplToJson(_$EventAnalysisImpl instance) =>
       'one_sentence_summary': instance.one_sentence_summary,
       'first_person_narrative': instance.first_person_narrative,
       'action_item': instance.action_item,
+      'transcriptions': instance.transcriptions,
     };
 
 _$GratitudeImpl _$$GratitudeImplFromJson(Map<String, dynamic> json) =>

@@ -149,13 +149,12 @@ class TranscriptionSyncService extends ChangeNotifier {
       final transcriptItems = transcriptions
           .where((t) => t.transcription != null && t.transcription!.isNotEmpty)
           .map((t) {
-            // Use individual timestamps for each transcription
-            final startTime = DateTime.parse(t.startTimeIso);
-            final timeKey = '${startTime.year}-${startTime.month.toString().padLeft(2, '0')}-${startTime.day.toString().padLeft(2, '0')} ${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
-            
+            // Send ISO timestamp with timezone information
             return {
-              'time_stamp': timeKey,
+              'time_stamp': t.startTimeIso,  // Already in ISO format with timezone
               'content': t.transcription!,
+              'start_time': t.startTimeIso,
+              'end_time': t.endTimeIso,
             };
           })
           .toList();
@@ -227,13 +226,12 @@ class TranscriptionSyncService extends ChangeNotifier {
       final transcriptItems = allTranscriptions
           .where((t) => t.transcription != null && t.transcription!.isNotEmpty)
           .map((t) {
-            // Use individual timestamps for each transcription
-            final startTime = DateTime.parse(t.startTimeIso);
-            final timeKey = '${startTime.year}-${startTime.month.toString().padLeft(2, '0')}-${startTime.day.toString().padLeft(2, '0')} ${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
-            
+            // Send ISO timestamp with timezone information
             return {
-              'time_stamp': timeKey,
+              'time_stamp': t.startTimeIso,  // Already in ISO format with timezone
               'content': t.transcription!,
+              'start_time': t.startTimeIso,
+              'end_time': t.endTimeIso,
             };
           })
           .toList();
