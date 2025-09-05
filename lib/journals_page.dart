@@ -306,14 +306,7 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
                           ),
                           const Spacer(),
                           // Refresh button
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
+                          IconButton(
                               onPressed: _isRefreshing ? null : () async {
                                 await _refreshEvents();
                               },
@@ -333,33 +326,24 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
                                       color: Colors.grey.shade600,
                                       size: 20,
                                     ),
-                            ),
                           ),
-                          const SizedBox(width: 12),
                           // Create new event button
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
+                          IconButton(
+                            onPressed: () {
+                              // TODO: Add create new event functionality
+                            },
+                            icon: Icon(
                               Icons.add,
                               color: Colors.grey.shade600,
                               size: 20,
                             ),
                           ),
-                          const SizedBox(width: 12),
                           // Search button
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
+                          IconButton(
+                            onPressed: () {
+                              // TODO: Add search functionality
+                            },
+                            icon: Icon(
                               Icons.search,
                               color: Colors.grey.shade600,
                               size: 20,
@@ -583,28 +567,53 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Month and year selector (clickable)
-        GestureDetector(
-          onTap: () => _showMonthYearPicker(context),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  DateFormat('MMMM yyyy').format(_selectedDate),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF0E3C26),
-                    fontFamily: 'Georgia',
-                  ),
+        // Month/year selector and Today button row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Month and year selector (clickable)
+            GestureDetector(
+              onTap: () => _showMonthYearPicker(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      DateFormat('MMMM yyyy').format(_selectedDate),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0E3C26),
+                        fontFamily: 'Georgia',
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0E3C26), size: 20),
+                  ],
                 ),
-                const SizedBox(width: 4),
-                const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0E3C26), size: 20),
-              ],
+              ),
             ),
-          ),
+            // Today button
+            IconButton(
+              onPressed: () {
+                final today = DateTime.now();
+                setState(() {
+                  _selectedDate = today;
+                });
+                // Animate the date picker to today
+                _dateTimelineController.animateToDate(today);
+                // Reload events for today
+                _loadEventsForVisibleDates();
+                _loadEventsForSelectedDate();
+              },
+              icon: Icon(
+                Icons.today,
+                color: Colors.grey.shade600,
+                size: 20,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         
