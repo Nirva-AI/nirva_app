@@ -8,6 +8,7 @@ import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/daily_reflection_page.dart';
 import 'package:nirva_app/providers/events_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 // import 'package:nirva_app/mini_call_bar.dart'; // No longer needed
 
 class JournalsPage extends StatefulWidget {
@@ -21,8 +22,8 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   DateTime _selectedDate = DateTime.now();
   final TextEditingController _reflectionController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final EasyInfiniteDateTimelineController _dateTimelineController = EasyInfiniteDateTimelineController();
   int _currentQuestionIndex = 1;
-  double _lastScrollPosition = 0.0;
   
   // Cache for events to check which dates have events
   Map<String, List<EventAnalysis>> _eventsCache = {};
@@ -70,9 +71,9 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
     await _loadEventsForVisibleDates();
     _loadEventsForSelectedDate();
     
-    // Restore scroll position if we have one saved
-    if (_lastScrollPosition > 0 && _scrollController.hasClients) {
-      _scrollController.jumpTo(_lastScrollPosition);
+    // Initialize scroll position if available
+    if (_scrollController.hasClients) {
+      // Can add scroll restoration here if needed in the future
     }
   }
   
@@ -582,50 +583,129 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Month and year selector
-        Row(
-          children: [
-            Text(
-              DateFormat('MMMM yyyy').format(_selectedDate),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF0E3C26),
-                fontFamily: 'Georgia',
-              ),
+        // Month and year selector (clickable)
+        GestureDetector(
+          onTap: () => _showMonthYearPicker(context),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  DateFormat('MMMM yyyy').format(_selectedDate),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0E3C26),
+                    fontFamily: 'Georgia',
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0E3C26), size: 20),
+              ],
             ),
-            const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0E3C26)),
-          ],
+          ),
         ),
         const SizedBox(height: 16),
         
-        // Day selector
+        // Infinite scrolling day selector
         SizedBox(
-          height: 60,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 7,
-            itemBuilder: (context, index) {
-              final date = _selectedDate.subtract(Duration(days: 3 - index));
-              final isSelected = _isSameDay(date, _selectedDate);
+          height: 70,
+          child: EasyInfiniteDateTimeLine(
+            controller: _dateTimelineController,
+            firstDate: DateTime.now().subtract(const Duration(days: 365 * 2)), // 2 years back
+            focusDate: _selectedDate,
+            lastDate: DateTime.now().add(const Duration(days: 365)), // 1 year forward
+            onDateChange: (newDate) {
+              setState(() {
+                _selectedDate = newDate;
+              });
+              
+              // Reload events for new visible dates
+              _loadEventsForVisibleDates();
+              _loadEventsForSelectedDate();
+            },
+            showTimelineHeader: false,
+            dayProps: EasyDayProps(
+              width: 52,  // Reduced from 58
+              height: 60,
+              dayStructure: DayStructure.dayStrDayNum,
+              activeDayStyle: DayStyle(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0E3C26),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                dayNumStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  fontFamily: 'Georgia',
+                ),
+                dayStrStyle: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.white70,
+                  fontFamily: 'Georgia',
+                ),
+              ),
+              inactiveDayStyle: DayStyle(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+                dayNumStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0E3C26),
+                  fontFamily: 'Georgia',
+                ),
+                dayStrStyle: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                  fontFamily: 'Georgia',
+                ),
+              ),
+              todayStyle: DayStyle(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.grey.shade400,  // Slightly darker for visibility
+                    width: 2,  // Bold border for today
+                  ),
+                ),
+                dayNumStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,  // Normal weight like other days
+                  color: Color(0xFF0E3C26),
+                  fontFamily: 'Georgia',
+                ),
+                dayStrStyle: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,  // Same as other days
+                  fontFamily: 'Georgia',
+                ),
+              ),
+            ),
+            itemBuilder: (context, date, isSelected, onDateTap) {
+              final hasEntries = _hasJournalEntries(date, journalProvider);
+              final isToday = _isSameDay(date, DateTime.now());
               
               return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                  // Reload events for new visible dates
-                  _loadEventsForVisibleDates();
-                  _loadEventsForSelectedDate();
-                },
+                onTap: onDateTap,
                 child: Container(
-                  width: 50,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: 52,  // Reduced from 58
+                  margin: const EdgeInsets.symmetric(horizontal: 2),  // Reduced from 4
                   decoration: BoxDecoration(
                     color: isSelected ? const Color(0xFF0E3C26) : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected ? const Color(0xFF0E3C26) : Colors.grey.shade300,
+                      color: isSelected 
+                        ? const Color(0xFF0E3C26) 
+                        : (isToday ? Colors.grey.shade400 : Colors.grey.shade300),
+                      width: isToday && !isSelected ? 2 : 1,  // Bold border for today
                     ),
                   ),
                   child: Column(
@@ -635,7 +715,7 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
                         date.day.toString(),
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w600,  // Same weight for all days
                           color: isSelected ? Colors.white : const Color(0xFF0E3C26),
                           fontFamily: 'Georgia',
                         ),
@@ -649,7 +729,7 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
                         ),
                       ),
                       // Show indicator for dates with journal entries
-                      if (_hasJournalEntries(date, journalProvider))
+                      if (hasEntries)
                         Container(
                           width: 4,
                           height: 4,
@@ -658,7 +738,9 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
                             color: isSelected ? Colors.white : const Color(0xFF0E3C26),
                             shape: BoxShape.circle,
                           ),
-                        ),
+                        )
+                      else
+                        const SizedBox(height: 6), // Placeholder to maintain consistent height
                     ],
                   ),
                 ),
@@ -1143,6 +1225,217 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
     final dateKey = DateFormat('yyyy-MM-dd').format(date);
     final events = _eventsCache[dateKey];
     return events != null && events.isNotEmpty;
+  }
+  
+  Future<void> _showMonthYearPicker(BuildContext context) async {
+    final now = DateTime.now();
+    
+    // Controllers for the picker wheels
+    final monthController = FixedExtentScrollController(
+      initialItem: _selectedDate.month - 1,
+    );
+    final yearController = FixedExtentScrollController(
+      initialItem: _selectedDate.year - (now.year - 2),
+    );
+    
+    int selectedMonth = _selectedDate.month;
+    int selectedYear = _selectedDate.year;
+    
+    // Show month/year picker dialog with dual wheels
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.35,
+          decoration: const BoxDecoration(
+            color: Color(0xFFfaf9f5),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Title and Done button
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      'Select Date',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0E3C26),
+                        fontFamily: 'Georgia',
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to 1st of selected month
+                        final newDate = DateTime(selectedYear, selectedMonth, 1);
+                        setState(() {
+                          _selectedDate = newDate;
+                        });
+                        
+                        // Animate the date picker to the new date
+                        _dateTimelineController.animateToDate(newDate);
+                        
+                        // Close the modal
+                        Navigator.pop(context);
+                        
+                        // Reload events
+                        _loadEventsForVisibleDates();
+                        _loadEventsForSelectedDate();
+                      },
+                      child: const Text(
+                        'Done',
+                        style: TextStyle(
+                          color: Color(0xFFe7bf57),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Dual picker wheels
+              Expanded(
+                child: Row(
+                  children: [
+                    // Month wheel
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            'Month',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                              fontFamily: 'Georgia',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: CupertinoPicker(
+                              scrollController: monthController,
+                              itemExtent: 40,
+                              onSelectedItemChanged: (index) {
+                                selectedMonth = index + 1;
+                              },
+                              selectionOverlay: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(color: Colors.grey.shade300, width: 1),
+                                    bottom: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  ),
+                                ),
+                              ),
+                              children: List<Widget>.generate(12, (index) {
+                                final monthName = DateFormat('MMMM').format(DateTime(2024, index + 1));
+                                return Center(
+                                  child: Text(
+                                    monthName,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Color(0xFF0E3C26),
+                                      fontFamily: 'Georgia',
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Year wheel
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            'Year',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                              fontFamily: 'Georgia',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: CupertinoPicker(
+                              scrollController: yearController,
+                              itemExtent: 40,
+                              onSelectedItemChanged: (index) {
+                                selectedYear = now.year - 2 + index;
+                              },
+                              selectionOverlay: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(color: Colors.grey.shade300, width: 1),
+                                    bottom: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  ),
+                                ),
+                              ),
+                              children: List<Widget>.generate(4, (index) {
+                                final year = now.year - 2 + index;
+                                return Center(
+                                  child: Text(
+                                    year.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Color(0xFF0E3C26),
+                                      fontFamily: 'Georgia',
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+    
+    // Dispose controllers
+    monthController.dispose();
+    yearController.dispose();
   }
 
   Color _getCategoryColor(String activityType) {
