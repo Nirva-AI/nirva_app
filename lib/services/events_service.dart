@@ -155,6 +155,7 @@ class EventsService extends ChangeNotifier {
               one_sentence_summary: eventData['one_sentence_summary'] ?? eventData['event_summary'] ?? 'No summary available',
               first_person_narrative: eventData['first_person_narrative'] ?? eventData['event_story'] ?? 'No narrative available',
               action_item: eventData['action_item'] ?? 'No action items',
+              event_status: eventData['event_status'],
               transcriptions: transcriptions,
             );
             

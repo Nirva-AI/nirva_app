@@ -241,6 +241,7 @@ mixin _$EventAnalysis {
   String get one_sentence_summary => throw _privateConstructorUsedError;
   String get first_person_narrative => throw _privateConstructorUsedError;
   String get action_item => throw _privateConstructorUsedError;
+  String? get event_status => throw _privateConstructorUsedError;
   List<Map<String, dynamic>>? get transcriptions =>
       throw _privateConstructorUsedError;
 
@@ -278,6 +279,7 @@ abstract class $EventAnalysisCopyWith<$Res> {
       String one_sentence_summary,
       String first_person_narrative,
       String action_item,
+      String? event_status,
       List<Map<String, dynamic>>? transcriptions});
 }
 
@@ -313,6 +315,7 @@ class _$EventAnalysisCopyWithImpl<$Res, $Val extends EventAnalysis>
     Object? one_sentence_summary = null,
     Object? first_person_narrative = null,
     Object? action_item = null,
+    Object? event_status = freezed,
     Object? transcriptions = freezed,
   }) {
     return _then(_value.copyWith(
@@ -384,6 +387,10 @@ class _$EventAnalysisCopyWithImpl<$Res, $Val extends EventAnalysis>
           ? _value.action_item
           : action_item // ignore: cast_nullable_to_non_nullable
               as String,
+      event_status: freezed == event_status
+          ? _value.event_status
+          : event_status // ignore: cast_nullable_to_non_nullable
+              as String?,
       transcriptions: freezed == transcriptions
           ? _value.transcriptions
           : transcriptions // ignore: cast_nullable_to_non_nullable
@@ -418,6 +425,7 @@ abstract class _$$EventAnalysisImplCopyWith<$Res>
       String one_sentence_summary,
       String first_person_narrative,
       String action_item,
+      String? event_status,
       List<Map<String, dynamic>>? transcriptions});
 }
 
@@ -451,6 +459,7 @@ class __$$EventAnalysisImplCopyWithImpl<$Res>
     Object? one_sentence_summary = null,
     Object? first_person_narrative = null,
     Object? action_item = null,
+    Object? event_status = freezed,
     Object? transcriptions = freezed,
   }) {
     return _then(_$EventAnalysisImpl(
@@ -522,6 +531,10 @@ class __$$EventAnalysisImplCopyWithImpl<$Res>
           ? _value.action_item
           : action_item // ignore: cast_nullable_to_non_nullable
               as String,
+      event_status: freezed == event_status
+          ? _value.event_status
+          : event_status // ignore: cast_nullable_to_non_nullable
+              as String?,
       transcriptions: freezed == transcriptions
           ? _value._transcriptions
           : transcriptions // ignore: cast_nullable_to_non_nullable
@@ -551,6 +564,7 @@ class _$EventAnalysisImpl implements _EventAnalysis {
       required this.one_sentence_summary,
       required this.first_person_narrative,
       required this.action_item,
+      this.event_status,
       final List<Map<String, dynamic>>? transcriptions})
       : _mood_labels = mood_labels,
         _people_involved = people_involved,
@@ -612,6 +626,8 @@ class _$EventAnalysisImpl implements _EventAnalysis {
   final String first_person_narrative;
   @override
   final String action_item;
+  @override
+  final String? event_status;
   final List<Map<String, dynamic>>? _transcriptions;
   @override
   List<Map<String, dynamic>>? get transcriptions {
@@ -624,7 +640,7 @@ class _$EventAnalysisImpl implements _EventAnalysis {
 
   @override
   String toString() {
-    return 'EventAnalysis(event_id: $event_id, event_title: $event_title, time_range: $time_range, duration_minutes: $duration_minutes, location: $location, mood_labels: $mood_labels, mood_score: $mood_score, stress_level: $stress_level, energy_level: $energy_level, activity_type: $activity_type, people_involved: $people_involved, interaction_dynamic: $interaction_dynamic, inferred_impact_on_user_name: $inferred_impact_on_user_name, topic_labels: $topic_labels, one_sentence_summary: $one_sentence_summary, first_person_narrative: $first_person_narrative, action_item: $action_item, transcriptions: $transcriptions)';
+    return 'EventAnalysis(event_id: $event_id, event_title: $event_title, time_range: $time_range, duration_minutes: $duration_minutes, location: $location, mood_labels: $mood_labels, mood_score: $mood_score, stress_level: $stress_level, energy_level: $energy_level, activity_type: $activity_type, people_involved: $people_involved, interaction_dynamic: $interaction_dynamic, inferred_impact_on_user_name: $inferred_impact_on_user_name, topic_labels: $topic_labels, one_sentence_summary: $one_sentence_summary, first_person_narrative: $first_person_narrative, action_item: $action_item, event_status: $event_status, transcriptions: $transcriptions)';
   }
 
   @override
@@ -668,32 +684,36 @@ class _$EventAnalysisImpl implements _EventAnalysis {
                 other.first_person_narrative == first_person_narrative) &&
             (identical(other.action_item, action_item) ||
                 other.action_item == action_item) &&
+            (identical(other.event_status, event_status) ||
+                other.event_status == event_status) &&
             const DeepCollectionEquality()
                 .equals(other._transcriptions, _transcriptions));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      event_id,
-      event_title,
-      time_range,
-      duration_minutes,
-      location,
-      const DeepCollectionEquality().hash(_mood_labels),
-      mood_score,
-      stress_level,
-      energy_level,
-      activity_type,
-      const DeepCollectionEquality().hash(_people_involved),
-      interaction_dynamic,
-      inferred_impact_on_user_name,
-      const DeepCollectionEquality().hash(_topic_labels),
-      one_sentence_summary,
-      first_person_narrative,
-      action_item,
-      const DeepCollectionEquality().hash(_transcriptions));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        event_id,
+        event_title,
+        time_range,
+        duration_minutes,
+        location,
+        const DeepCollectionEquality().hash(_mood_labels),
+        mood_score,
+        stress_level,
+        energy_level,
+        activity_type,
+        const DeepCollectionEquality().hash(_people_involved),
+        interaction_dynamic,
+        inferred_impact_on_user_name,
+        const DeepCollectionEquality().hash(_topic_labels),
+        one_sentence_summary,
+        first_person_narrative,
+        action_item,
+        event_status,
+        const DeepCollectionEquality().hash(_transcriptions)
+      ]);
 
   /// Create a copy of EventAnalysis
   /// with the given fields replaced by the non-null parameter values.
@@ -730,6 +750,7 @@ abstract class _EventAnalysis implements EventAnalysis {
       required final String one_sentence_summary,
       required final String first_person_narrative,
       required final String action_item,
+      final String? event_status,
       final List<Map<String, dynamic>>? transcriptions}) = _$EventAnalysisImpl;
 
   factory _EventAnalysis.fromJson(Map<String, dynamic> json) =
@@ -769,6 +790,8 @@ abstract class _EventAnalysis implements EventAnalysis {
   String get first_person_narrative;
   @override
   String get action_item;
+  @override
+  String? get event_status;
   @override
   List<Map<String, dynamic>>? get transcriptions;
 

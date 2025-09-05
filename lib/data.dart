@@ -39,6 +39,7 @@ class EventAnalysis with _$EventAnalysis {
     required String one_sentence_summary,
     required String first_person_narrative,
     required String action_item,
+    String? event_status,
     List<Map<String, dynamic>>? transcriptions,
   }) = _EventAnalysis;
 
