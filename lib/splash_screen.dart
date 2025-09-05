@@ -9,7 +9,6 @@ import 'package:nirva_app/providers/favorites_provider.dart';
 import 'package:nirva_app/providers/notes_provider.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:nirva_app/providers/user_provider.dart';
-import 'package:nirva_app/my_test.dart';
 import 'package:logger/logger.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/api_models.dart';
@@ -63,9 +62,6 @@ class _SplashScreenState extends State<SplashScreen> {
       );
       final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      // 填充测试数据。
-      await MyTest.setupTestData(notesProvider, userProvider);
-
       // 执行数据初始化
       await _setupHiveStorage(
         tasksProvider,
@@ -75,11 +71,16 @@ class _SplashScreenState extends State<SplashScreen> {
         userProvider,
       );
 
-      // 设置初始选中日期 - 使用有测试数据的日期
-      journalFilesProvider.selectDateTime(DateTime(2025, 7, 28));
+      // 设置初始选中日期为今天
+      journalFilesProvider.selectDateTime(DateTime.now());
 
-      // API初始化和登录
-      await _initializeAPIs();
+      // API初始化和登录 - 检查认证状态
+      final bool authSuccess = await _initializeAPIs();
+      
+      // 如果认证失败（已经导航到登录页面），直接返回
+      if (!authSuccess) {
+        return;
+      }
 
       // 确保最小显示时间
       final int elapsed = stopwatch.elapsedMilliseconds;
@@ -88,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen> {
         await Future.delayed(Duration(milliseconds: remainingTime));
       }
 
-      // 跳转到主页面
+      // 只有认证成功才跳转到主页面
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
@@ -133,8 +134,8 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  // API初始化方法
-  Future<void> _initializeAPIs() async {
+  // API初始化方法 - 返回true表示认证成功，false表示需要登录
+  Future<bool> _initializeAPIs() async {
     try {
       // Retry logic for first network call
       URLConfigurationResponse? urlConfig;
@@ -180,7 +181,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           );
         }
-        return; // Exit early, don't continue initialization
+        return false; // Return false to indicate auth failed
       }
 
       // We have a token, try to validate/refresh it
@@ -221,8 +222,11 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           );
         }
-        return; // Exit early
+        return false; // Return false to indicate auth failed
       }
+      
+      // Authentication successful
+      return true;
     } catch (e) {
       Logger().e('API初始化失败: $e');
       rethrow; // 重新抛出异常，让上层处理
