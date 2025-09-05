@@ -113,8 +113,31 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
     _connectionEventsSub = _connectionEventChannel
         .receiveBroadcastStream()
         .listen((event) {
+      // Debug: Log all connection events
+      _addLog('Connection Event: ${event.toString()}');
+      debugPrint('BLE Connection Event: $event');
+      
       if (event is Map) {
-        if (event['event'] == 'discoveredDevice' && event['device'] != null) {
+        // Handle the actual event format from ConnectionOrchestrator
+        if (event['event'] == 'deviceDiscovered') {
+          final deviceId = event['deviceId'] ?? event['id'];
+          final deviceName = event['name'] ?? 'Unknown Device';
+          final rssi = event['rssi'] ?? 0;
+          
+          if (deviceId != null) {
+            setState(() {
+              _discoveredDevices[deviceId] = {
+                'id': deviceId,
+                'name': deviceName,
+                'rssi': rssi,
+                'deviceId': deviceId,
+              };
+            });
+            _addLog('Discovered: $deviceName (RSSI: $rssi dBm)');
+          }
+        }
+        // Keep backward compatibility
+        else if (event['event'] == 'discoveredDevice' && event['device'] != null) {
           final device = event['device'] as Map;
           final deviceId = device['id'] ?? device['deviceId'];
           if (deviceId != null) {
@@ -470,13 +493,46 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
               onDebugLog: _getDebugLog,
             ),
             
-            // Discovered Devices (only show when scanning and devices found)
-            if (_isScanning && _discoveredDevices.isNotEmpty) ...[
+            // Discovered Devices section
+            if (_isScanning) ...[
               const SizedBox(height: 24),
-              DiscoveredDevicesSection(
-                discoveredDevices: _discoveredDevices,
-                onConnectDevice: _connectToDevice,
-              ),
+              if (_discoveredDevices.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      const CircularProgressIndicator(
+                        color: Color(0xFFe7bf57),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Scanning for devices...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                DiscoveredDevicesSection(
+                  discoveredDevices: _discoveredDevices,
+                  onConnectDevice: _connectToDevice,
+                ),
             ],
             
             // Connection Info (only show when available)
