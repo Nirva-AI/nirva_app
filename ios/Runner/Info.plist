@@ -74,6 +74,14 @@
 		<string>remote-notification</string>
 	</array>
 	
+	<!-- Background Task Identifiers -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.nirva.life.refresh</string>
+		<string>com.nirva.life.cleanup</string>
+		<string>com.nirva.life.upload</string>
+	</array>
+	
 	<!-- Microphone Usage for Audio Processing -->
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs microphone access for continuous audio processing and wellness tracking</string>
