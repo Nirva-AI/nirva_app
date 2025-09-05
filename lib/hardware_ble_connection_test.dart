@@ -91,25 +91,7 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
   }
   
   void _setupEventListeners() {
-    // Connection events
-    _connectionEventsSub = _connectionEventChannel
-        .receiveBroadcastStream()
-        .listen((event) {
-      if (event is Map) {
-        _addLog('Connection Event: ${event['event']}');
-        if (event['state'] != null) {
-          setState(() {
-            _connectionState = event['state'];
-          });
-        }
-        // Refresh connection info after state changes
-        if (event['event'] == 'connected' || event['event'] == 'disconnected') {
-          Future.delayed(const Duration(milliseconds: 500), _getConnectionInfo);
-        }
-      }
-    });
-    
-    // Discovery events - capture discovered devices
+    // Single unified connection event listener for all events
     _connectionEventsSub = _connectionEventChannel
         .receiveBroadcastStream()
         .listen((event) {
@@ -118,7 +100,83 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
       debugPrint('BLE Connection Event: $event');
       
       if (event is Map) {
-        // Handle the actual event format from ConnectionOrchestrator
+        // Handle connection state changes with auto-refresh
+        if (event['state'] != null) {
+          setState(() {
+            _connectionState = event['state'];
+          });
+          
+          // Update HardwareService when connection state changes
+          if (!mounted) return;
+          final hardwareService = context.read<HardwareService>();
+          
+          // The native side sends "subscribed" when fully connected and streaming
+          if (event['state'] == 'subscribed') {
+            debugPrint('HardwareBleConnectionTest: Device subscribed, updating HardwareService');
+            
+            // Use device info from the event if available
+            final deviceId = event['deviceId'] ?? _connectionInfo['deviceId'] ?? '';
+            final deviceName = event['name'] ?? event['deviceName'] ?? 'OMI Device';
+            final batteryLevel = event['batteryLevel'] ?? 0;
+            final rssi = event['rssi'] ?? 0;
+            
+            if (deviceId.isNotEmpty) {
+              debugPrint('HardwareBleConnectionTest: Device info - name: $deviceName, battery: $batteryLevel%');
+              
+              // Create a HardwareDevice with the info from the event
+              final device = HardwareDevice(
+                id: deviceId,
+                name: deviceName,
+                address: event['address'] ?? deviceId,  // Use deviceId as fallback
+                rssi: rssi,
+                batteryLevel: batteryLevel,
+                isConnected: true,
+                discoveredAt: DateTime.now(),
+                connectedAt: DateTime.now(),
+              );
+              hardwareService.updateConnectedDeviceFromBle(device);
+              
+              // Update connection info state
+              setState(() {
+                _connectionInfo = {
+                  'deviceId': deviceId,
+                  'deviceName': deviceName,
+                  'name': deviceName,
+                  'batteryLevel': batteryLevel,
+                  'battery': batteryLevel,
+                  'batteryPercentage': batteryLevel,
+                  'rssi': rssi,
+                  'isConnected': true,
+                };
+              });
+              
+              // Still fetch additional info but with shorter delay since we have basic info
+              Future.delayed(const Duration(milliseconds: 200), () {
+                debugPrint('HardwareBleConnectionTest: Fetching additional device info');
+                _getConnectionInfo();  // This will fetch any additional device info
+              });
+            } else {
+              debugPrint('HardwareBleConnectionTest: No device ID in subscribed event, fetching info...');
+              // Fallback: fetch info immediately if not provided in event
+              _getConnectionInfo();
+              _getBatteryLevel();
+            }
+          } else if (event['state'] == 'connected') {
+            // Initial connection - fetch info
+            Future.delayed(const Duration(milliseconds: 200), () {
+              _getConnectionInfo();
+            });
+          } else if (event['state'] == 'disconnected' || event['state'] == 'idle' || event['state'] == 'backoff') {
+            debugPrint('HardwareBleConnectionTest: Device disconnected/idle, clearing HardwareService');
+            // Clear connected device when disconnected
+            hardwareService.updateConnectedDeviceFromBle(null);
+            setState(() {
+              _connectionInfo = {};
+            });
+          }
+        }
+        
+        // Handle device discovery events
         if (event['event'] == 'deviceDiscovered') {
           final deviceId = event['deviceId'] ?? event['id'];
           final deviceName = event['name'] ?? 'Unknown Device';
@@ -217,6 +275,14 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
       _addLog('Connecting to device: $deviceId');
       final result = await _methodChannel.invokeMethod('connectToDevice', {'deviceId': deviceId});
       _addLog('Connect result: $result');
+      
+      // Auto-refresh connection info after successful connection
+      if (result == true || result == 'success' || result == 'connected') {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          _getConnectionInfo();
+          _getBatteryLevel();
+        });
+      }
     } catch (e) {
       _addLog('Error connecting to device: $e');
     }
@@ -282,6 +348,43 @@ class _HardwareBleConnectionTestState extends State<HardwareBleConnectionTest> {
     } catch (e) {
       debugPrint('ERROR: Failed to get connection info: $e');
       _addLog('Error getting info: $e');
+    }
+  }
+  
+  Future<void> _getBatteryLevel() async {
+    try {
+      final battery = await _methodChannel.invokeMethod('getBatteryLevel');
+      if (battery != null) {
+        _addLog('Battery level: $battery%');
+        
+        // Update connection info with battery level if we have it
+        if (_connectionInfo.isNotEmpty) {
+          setState(() {
+            _connectionInfo['batteryLevel'] = battery;
+            _connectionInfo['battery'] = battery;
+            _connectionInfo['batteryPercentage'] = battery;
+          });
+          
+          // Update HardwareService with new battery level
+          if (!mounted) return;
+          final hardwareService = context.read<HardwareService>();
+          if (_connectionInfo['isConnected'] == true && _connectionInfo['deviceId'] != null) {
+            final device = HardwareDevice(
+              id: _connectionInfo['deviceId'] as String,
+              name: _connectionInfo['deviceName'] ?? _connectionInfo['name'] ?? 'OMI Device',
+              address: _connectionInfo['deviceAddress'] ?? _connectionInfo['address'] ?? _connectionInfo['deviceId'] as String,
+              rssi: _connectionInfo['rssi'] ?? 0,
+              batteryLevel: battery as int,
+              isConnected: true,
+              discoveredAt: DateTime.now(),
+              connectedAt: DateTime.now(),
+            );
+            hardwareService.updateConnectedDeviceFromBle(device);
+          }
+        }
+      }
+    } catch (e) {
+      _addLog('Error getting battery level: $e');
     }
   }
   
