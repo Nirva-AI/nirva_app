@@ -40,9 +40,9 @@ class MentalStateProvider extends ChangeNotifier {
   }
 
   Future<void> fetchInsights({DateTime? date}) async {
-    // Don't fetch if we recently fetched (within 5 minutes)
+    // Don't fetch if we recently fetched (within 30 seconds for testing)
     if (_lastFetchTime != null && 
-        DateTime.now().difference(_lastFetchTime!).inMinutes < 5) {
+        DateTime.now().difference(_lastFetchTime!).inSeconds < 30) {
       return;
     }
 

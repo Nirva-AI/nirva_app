@@ -93,11 +93,24 @@ class _TrendsCardState extends State<TrendsCard> {
         
         final List<MentalStatePoint> points;
         if (_selectedPeriod == 'Week') {
-          points = _aggregateWeekData(provider.timeline7d);
+          // Week view - sample every 3rd point to reduce density (hourly instead of every 30 min)
+          final allPoints = provider.timeline7d;
+          final sampledPoints = <MentalStatePoint>[];
+          for (int i = 0; i < allPoints.length; i += 3) {
+            sampledPoints.add(allPoints[i]);
+          }
+          points = sampledPoints;
         } else if (_selectedPeriod == 'Month') {
-          points = _aggregateMonthData(provider.timeline7d);
+          // Month view - sample every 6th point for even less density
+          final allPoints = provider.timeline7d;
+          final sampledPoints = <MentalStatePoint>[];
+          for (int i = 0; i < allPoints.length; i += 6) {
+            sampledPoints.add(allPoints[i]);
+          }
+          points = sampledPoints;
         } else {
-          points = provider.timeline24h.take(24).toList(); // Last 12 hours (24 30-min points)
+          // For day view, show all 24 hours of data
+          points = provider.timeline24h.toList();
         }
         
         if (points.isEmpty) {
@@ -109,6 +122,14 @@ class _TrendsCardState extends State<TrendsCard> {
         for (int i = 0; i < points.length; i++) {
           final stress = points[i].stressScore;
           stressSpots.add(FlSpot(i.toDouble(), stress));
+        }
+        
+        // Find current time index for highlighting (only in day view)
+        int? currentTimeIndex;
+        if (_selectedPeriod == 'Day' && points.isNotEmpty) {
+          // The last point should be the most recent (current time)
+          // Since server returns data up to current time
+          currentTimeIndex = points.length - 1;
         }
         
         return Stack(
@@ -147,46 +168,65 @@ class _TrendsCardState extends State<TrendsCard> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 30,
+                      interval: 1, // Check every point
                       getTitlesWidget: (value, meta) {
-                        if (_selectedPeriod == 'Week') {
-                          const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                          if (value.toInt() >= 0 && value.toInt() < points.length) {
-                            final dayOfWeek = points[value.toInt()].timestamp.weekday % 7;
-                            return Text(
-                              labels[dayOfWeek],
-                              style: const TextStyle(
-                                color: Color(0xFF0E3C26),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            );
-                          }
-                        } else if (_selectedPeriod == 'Month') {
-                          if (value.toInt() >= 0 && value.toInt() < points.length) {
-                            return Text(
-                              'W${value.toInt() + 1}',
-                              style: const TextStyle(
-                                color: Color(0xFF0E3C26),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            );
-                          }
-                        } else {
-                          // Show hours for day view
-                          if (value.toInt() % 4 == 0 && value.toInt() < points.length) {
-                            final hourIndex = value.toInt() ~/ 2; // Each point is 30 minutes
-                            return Text(
-                              '${hourIndex.toString().padLeft(2, '0')}:00',
-                              style: const TextStyle(
-                                color: Color(0xFF0E3C26),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            );
-                          }
+                        final index = value.toInt();
+                        if (index < 0 || index >= points.length) {
+                          return const Text('');
                         }
-                        return const Text('');
+                        
+                        if (_selectedPeriod == 'Week') {
+                          // Show labels at regular intervals for week view
+                          // With ~56 points over 7 days (after sampling), show every ~8 points (1 day)
+                          if (index % 8 != 0) {
+                            return const Text('');
+                          }
+                          
+                          const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                          final dayOfWeek = points[index].timestamp.weekday % 7;
+                          return Text(
+                            labels[dayOfWeek],
+                            style: const TextStyle(
+                              color: Color(0xFF0E3C26),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        } else if (_selectedPeriod == 'Month') {
+                          // Show labels at regular intervals for month view
+                          // With ~28 points over 7 days (after sampling every 6th), show every ~4 points
+                          if (index % 4 != 0) {
+                            return const Text('');
+                          }
+                          
+                          // Show day of month instead of week number
+                          final date = points[index].timestamp.toLocal();
+                          return Text(
+                            '${date.month}/${date.day}',
+                            style: const TextStyle(
+                              color: Color(0xFF0E3C26),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        } else {
+                          // Day view - show every 2 hours (4 points = 2 hours)
+                          // Only show label at specific intervals
+                          if (index % 4 != 0) {
+                            return const Text('');
+                          }
+                          
+                          final localTime = points[index].timestamp.toLocal();
+                          final hour = localTime.hour;
+                          return Text(
+                            hour.toString(),
+                            style: const TextStyle(
+                              color: Color(0xFF0E3C26),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),
@@ -198,13 +238,37 @@ class _TrendsCardState extends State<TrendsCard> {
                     isCurved: true,
                     color: const Color(0xFFe7bf57),
                 barWidth: 3,
-                dotData: FlDotData(show: false),
+                dotData: FlDotData(
+                  show: true,
+                  checkToShowDot: (spot, barData) {
+                    // Only show dot for current time
+                    return currentTimeIndex != null && spot.x.toInt() == currentTimeIndex;
+                  },
+                  getDotPainter: (spot, percent, barData, index) {
+                    return FlDotCirclePainter(
+                      radius: 4,
+                      color: const Color(0xFFe7bf57),
+                      strokeWidth: 2,
+                      strokeColor: Colors.white,
+                    );
+                  },
+                ),
                 belowBarData: BarAreaData(
                   show: true,
                   color: const Color(0xFFe7bf57).withOpacity(0.2),
                     ),
                   ),
                 ],
+                extraLinesData: ExtraLinesData(
+                  verticalLines: currentTimeIndex != null ? [
+                    VerticalLine(
+                      x: currentTimeIndex!.toDouble(),
+                      color: const Color(0xFF0E3C26).withOpacity(0.3),
+                      strokeWidth: 1,
+                      dashArray: [4, 4],
+                    ),
+                  ] : [],
+                ),
                 lineTouchData: LineTouchData(
                   touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {},
                   handleBuiltInTouches: false,

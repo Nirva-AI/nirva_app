@@ -13,6 +13,7 @@ class EnergyTrendCard extends StatefulWidget {
 
 class _EnergyTrendCardState extends State<EnergyTrendCard> {
   String _selectedPeriod = 'Day';
+  List<int> _dayBarHours = []; // Track which hours each bar represents
 
   @override
   Widget build(BuildContext context) {
@@ -137,12 +138,18 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
               getTitlesWidget: (value, meta) {
                 if (_selectedPeriod == 'Day') {
                   // Show hour labels for day view (every 2 hours)
-                  final hourIndex = value.toInt() * 2; // Each bar represents 2 hours
-                  if (value.toInt() >= 0 && value.toInt() < 12) {
+                  if (value.toInt() >= 0 && value.toInt() < barGroups.length) {
+                    // Use the tracked hours for correct labeling
+                    final hourIndex = value.toInt() < _dayBarHours.length 
+                        ? _dayBarHours[value.toInt()] 
+                        : (value.toInt() == _dayBarHours.length && _dayBarHours.isNotEmpty
+                            ? (_dayBarHours.last + 2) % 24  // Next 2-hour period for empty bar
+                            : 0);
+                    final isEmptyBar = value.toInt() == barGroups.length - 1 && barGroups[value.toInt()].barRods.first.toY == 0;
                     return Text(
-                      '${hourIndex.toString().padLeft(2, '0')}:00',
-                      style: const TextStyle(
-                        color: Color(0xFF0E3C26),
+                      hourIndex.toString(),
+                      style: TextStyle(
+                        color: isEmptyBar ? const Color(0xFF0E3C26).withOpacity(0.4) : const Color(0xFF0E3C26),
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
@@ -151,13 +158,27 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
                 } else if (_selectedPeriod == 'Week') {
                   // Show day labels for week view
                   const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                  if (value.toInt() >= 0 && value.toInt() < labels.length && value.toInt() < barGroups.length) {
+                  if (value.toInt() >= 0 && value.toInt() < barGroups.length) {
+                    // Calculate which day this bar represents
+                    final today = DateTime.now();
+                    final numBarsWithData = barGroups.where((bar) => bar.barRods.first.toY > 0).length;
+                    final isEmptyBar = value.toInt() >= numBarsWithData;
+                    
+                    // Calculate the date for this bar
+                    // The last bar with data is today, work backwards from there
+                    final daysFromToday = value.toInt() - (numBarsWithData - 1);
+                    final barDate = today.add(Duration(days: daysFromToday));
+                    final dayIndex = barDate.weekday % 7;
+                    
+                    // Check if this bar is the last one with data (today)
+                    final isToday = value.toInt() == numBarsWithData - 1;
+                    
                     return Column(
                       children: [
                         Text(
-                          labels[value.toInt()],
-                          style: const TextStyle(
-                            color: Color(0xFF0E3C26),
+                          labels[dayIndex],
+                          style: TextStyle(
+                            color: isEmptyBar ? const Color(0xFF0E3C26).withOpacity(0.4) : const Color(0xFF0E3C26),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -169,8 +190,8 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
                           height: 8,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: value.toInt() == 4 
-                                ? const Color(0xFFfdd78c) // Highlighted day (Wednesday)
+                            color: isToday 
+                                ? const Color(0xFFfdd78c) // Highlighted day (today)
                                 : const Color(0xFFC8D4B8).withOpacity(0.6), // Other days
                           ),
                         ),
@@ -225,21 +246,30 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
   List<BarChartGroupData> _createDayBars(List<MentalStatePoint> points) {
     // Group points by 2-hour intervals (4 points per bar for 30-min intervals)
     final bars = <BarChartGroupData>[];
-    for (int i = 0; i < points.length && i < 48; i += 4) {
+    final barHours = <int>[]; // Track which hours each bar represents
+    final tempBars = <BarChartGroupData>[];
+    final tempHours = <int>[];
+    
+    if (points.isEmpty) return bars;
+    
+    // First, create all bars from the actual data
+    for (int i = 0; i < points.length; i += 4) {
       final hourPoints = points.skip(i).take(4).toList();
       if (hourPoints.isNotEmpty) {
         final avgEnergy = hourPoints
             .map((p) => p.energyScore)
             .reduce((a, b) => a + b) / hourPoints.length;
         
-        bars.add(BarChartGroupData(
-          x: bars.length,
+        // Get the hour from the LAST point in this group (most recent)
+        final localTime = hourPoints.last.timestamp.toLocal();
+        final actualHour = localTime.hour;
+        
+        tempBars.add(BarChartGroupData(
+          x: tempBars.length,
           barRods: [
             BarChartRodData(
               toY: avgEnergy,
-              color: const Color(0xFFe7bf57).withOpacity(
-                bars.length == 6 ? 1.0 : 0.2  // Highlight current time
-              ),
+              color: const Color(0xFFe7bf57).withOpacity(0.2),
               width: 20,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(4),
@@ -248,25 +278,97 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
             ),
           ],
         ));
+        tempHours.add(actualHour);
       }
     }
+    
+    // Keep only the most recent 11 bars
+    int startIdx = tempBars.length > 11 ? tempBars.length - 11 : 0;
+    for (int i = startIdx; i < tempBars.length; i++) {
+      bars.add(BarChartGroupData(
+        x: bars.length,
+        barRods: tempBars[i].barRods,
+      ));
+      barHours.add(tempHours[i]);
+    }
+    
+    // Store the hours for label display
+    _dayBarHours = barHours;
+    
+    // Find and highlight the bar containing the current hour
+    if (bars.isNotEmpty && barHours.isNotEmpty) {
+      final now = DateTime.now();
+      final currentHour = now.hour;
+      
+      // Find which bar matches the current hour
+      int activeBarIndex = -1;
+      for (int i = 0; i < barHours.length; i++) {
+        if (barHours[i] == currentHour) {
+          activeBarIndex = i;
+          break;
+        }
+      }
+      
+      // If current hour not found (data is stale), use the last bar
+      if (activeBarIndex == -1) {
+        activeBarIndex = bars.length - 1;
+      }
+      
+      if (activeBarIndex >= 0 && activeBarIndex < bars.length) {
+        bars[activeBarIndex] = BarChartGroupData(
+          x: activeBarIndex,
+          barRods: [
+            BarChartRodData(
+              toY: bars[activeBarIndex].barRods.first.toY,
+              color: const Color(0xFFe7bf57), // Full opacity for current hour
+              width: 20,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(4),
+                topRight: Radius.circular(4),
+              ),
+            ),
+          ],
+        );
+      }
+    }
+    
+    // Always add one empty bar for the next 2-hour period
+    bars.add(BarChartGroupData(
+      x: bars.length,
+      barRods: [
+        BarChartRodData(
+          toY: 0, // No bar at all for future time
+          color: Colors.transparent,
+          width: 20,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(4),
+            topRight: Radius.circular(4),
+          ),
+        ),
+      ],
+    ));
+    
     return bars;
   }
   
   List<BarChartGroupData> _createWeekBars(List<MentalStatePoint> points) {
     // Already aggregated by day
     final bars = <BarChartGroupData>[];
-    for (int i = 0; i < points.length && i < 7; i++) {
+    final today = DateTime.now();
+    
+    // Skip the oldest day if we have 7 days to make room for tomorrow's empty bar
+    int startIndex = points.length > 6 ? points.length - 6 : 0;
+    
+    // Add bars for actual data (max 6 bars to leave room for tomorrow)
+    for (int i = startIndex; i < points.length; i++) {
       final dayEnergy = points[i].energyScore;
       
       bars.add(BarChartGroupData(
-        x: i,
+        x: bars.length,
         barRods: [
           BarChartRodData(
             toY: dayEnergy,
-            color: const Color(0xFFe7bf57).withOpacity(
-              i == 4 ? 1.0 : 0.2  // Highlight Wednesday (index 4)
-            ),
+            color: const Color(0xFFe7bf57).withOpacity(0.2), // Will update highlight below
             width: 20,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(4),
@@ -276,6 +378,44 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
         ],
       ));
     }
+    
+    // Highlight the last bar with data (should be today after server fix)
+    if (bars.isNotEmpty) {
+      final lastDataIndex = bars.length - 1; // Last bar before the empty one
+      if (lastDataIndex >= 0) {
+        bars[lastDataIndex] = BarChartGroupData(
+          x: lastDataIndex,
+          barRods: [
+            BarChartRodData(
+              toY: bars[lastDataIndex].barRods.first.toY,
+              color: const Color(0xFFe7bf57), // Full opacity for today
+              width: 20,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(4),
+                topRight: Radius.circular(4),
+              ),
+            ),
+          ],
+        );
+      }
+    }
+    
+    // Always add one empty bar for tomorrow
+    bars.add(BarChartGroupData(
+      x: bars.length,
+      barRods: [
+        BarChartRodData(
+          toY: 0, // No bar at all for future time
+          color: Colors.transparent,
+          width: 20,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(4),
+            topRight: Radius.circular(4),
+          ),
+        ),
+      ],
+    ));
+    
     return bars;
   }
   
@@ -284,10 +424,15 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
     if (timeline.isEmpty) return [];
     
     final Map<String, List<MentalStatePoint>> dailyPoints = {};
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     
-    // Group points by day
+    // Group points by day, but only include past and today's data
     for (final point in timeline) {
       final date = point.timestamp;
+      // Skip future data points
+      if (date.isAfter(now)) continue;
+      
       final dayKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
       
       if (!dailyPoints.containsKey(dayKey)) {
@@ -390,7 +535,7 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
           BarChartRodData(
             toY: weekEnergy,
             color: const Color(0xFFe7bf57).withOpacity(
-              i == points.length - 1 ? 1.0 : 0.2  // Highlight current week
+              i == points.length - 1 ? 1.0 : 0.2  // Highlight current week (last one)
             ),
             width: 20,
             borderRadius: const BorderRadius.only(
@@ -401,6 +546,25 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
         ],
       ));
     }
+    
+    // Always add one empty bar for next week if we have less than 4 weeks
+    if (bars.length < 4) {
+      bars.add(BarChartGroupData(
+        x: bars.length,
+        barRods: [
+          BarChartRodData(
+            toY: 0, // No bar at all for future time
+            color: Colors.transparent,
+            width: 20,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(4),
+              topRight: Radius.circular(4),
+            ),
+          ),
+        ],
+      ));
+    }
+    
     return bars;
   }
 

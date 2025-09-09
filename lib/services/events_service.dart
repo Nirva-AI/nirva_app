@@ -26,7 +26,7 @@ class EventsService extends ChangeNotifier {
   /// Get events for a specific date, merging backend and local sources
   Future<List<EventAnalysis>> getEventsForDate(String dateKey) async {
     try {
-      _logger.d('EventsService: Getting events for date: $dateKey');
+      // _logger.d('EventsService: Getting events for date: $dateKey');
       
       // Check cache first
       if (_mergedEventsCache.containsKey(dateKey)) {
@@ -36,11 +36,11 @@ class EventsService extends ChangeNotifier {
       
       // Get local events from Hive
       final localEvents = await _getLocalEvents(dateKey);
-      _logger.d('EventsService: Found ${localEvents.length} local events for $dateKey');
+      // _logger.d('EventsService: Found ${localEvents.length} local events for $dateKey');
       
       // Get backend events
       final backendEvents = await _getBackendEvents(dateKey);
-      _logger.d('EventsService: Found ${backendEvents.length} backend events for $dateKey');
+      // _logger.d('EventsService: Found ${backendEvents.length} backend events for $dateKey');
       
       // Merge events (backend events take precedence for duplicates)
       final mergedEvents = _mergeEvents(localEvents, backendEvents);
@@ -55,7 +55,7 @@ class EventsService extends ChangeNotifier {
       return mergedEvents;
       
     } catch (e) {
-      _logger.e('EventsService: Error getting events for $dateKey: $e');
+      // _logger.e('EventsService: Error getting events for $dateKey: $e');
       // Fallback to local events only
       final localEvents = await _getLocalEvents(dateKey);
       return localEvents;
@@ -100,8 +100,8 @@ class EventsService extends ChangeNotifier {
         return [];
       }
       
-      _logger.d('EventsService: Backend response received for $dateKey');
-      _logger.d('EventsService: Response keys: ${response.keys.toList()}');
+      // _logger.d('EventsService: Backend response received for $dateKey');
+      // _logger.d('EventsService: Response keys: ${response.keys.toList()}');
       
       // Parse backend events
       final events = _parseBackendEvents(response);
@@ -168,7 +168,7 @@ class EventsService extends ChangeNotifier {
         }
       }
       
-      _logger.d('EventsService: Successfully parsed ${events.length} backend events');
+      // _logger.d('EventsService: Successfully parsed ${events.length} backend events');
       return events;
       
     } catch (e) {
@@ -278,14 +278,14 @@ ${mergedEvents.map((e) => '  - ${e.event_title} (${e.time_range}) [${e.event_id}
   void clearCache(String dateKey) {
     _backendEventsCache.remove(dateKey);
     _mergedEventsCache.remove(dateKey);
-    _logger.d('EventsService: Cleared cache for $dateKey');
+    // _logger.d('EventsService: Cleared cache for $dateKey');
   }
   
   /// Clear all caches
   void clearAllCaches() {
     _backendEventsCache.clear();
     _mergedEventsCache.clear();
-    _logger.d('EventsService: Cleared all caches');
+    // _logger.d('EventsService: Cleared all caches');
   }
   
   /// Refresh events for a specific date
@@ -297,14 +297,14 @@ ${mergedEvents.map((e) => '  - ${e.event_title} (${e.time_range}) [${e.event_id}
   /// Manually trigger analysis for a specific date
   Future<void> triggerAnalysis(String dateKey) async {
     try {
-      _logger.d('EventsService: Manually triggering analysis for $dateKey');
+      // _logger.d('EventsService: Manually triggering analysis for $dateKey');
       
       // Start analysis with file_number = 1 (assuming single file per day)
       final analysisResponse = await NirvaAPI.startAnalysis(dateKey, 1);
       
       if (analysisResponse != null && analysisResponse.containsKey('task_id')) {
         final taskId = analysisResponse['task_id'];
-        _logger.d('EventsService: Analysis started with task_id: $taskId for $dateKey');
+        // _logger.d('EventsService: Analysis started with task_id: $taskId for $dateKey');
       } else {
         _logger.w('EventsService: Failed to start analysis for $dateKey');
       }
