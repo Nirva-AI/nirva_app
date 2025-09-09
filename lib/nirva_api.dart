@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/api_models.dart';
@@ -11,6 +12,7 @@ import 'package:uuid/uuid.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/hive_helper.dart';
 import 'package:nirva_app/url_configuration.dart';
+import 'package:intl/intl.dart';
 
 class NirvaAPI {
   // 服务器地址 localNetworkServerAddress
@@ -67,12 +69,20 @@ class NirvaAPI {
 
   // 登录方法
   static Future<UserToken?> login(User user) async {
+    // Get device timezone and locale
+    final String timezone = DateTime.now().timeZoneName;
+    final String locale = Platform.localeName;
+    
+    Logger().i('Device timezone: $timezone, locale: $locale');
+    
     final response = await _dio.post<Map<String, dynamic>>(
       _urlConfig.loginUrl,
       data: {
         'username': user.username,
         'password': user.password,
         'grant_type': 'password',
+        'timezone': timezone,
+        'locale': locale,
       },
       options: Options(
         contentType: Headers.formUrlEncodedContentType, // OAuth2默认表单格式
@@ -119,6 +129,42 @@ class NirvaAPI {
     await HiveHelper.deleteUserToken(); // 清除本地令牌
     Logger().i('登出成功！令牌已清除');
     return true;
+  }
+
+  // 更新用户上下文（时区和语言环境）
+  static Future<bool> updateContext() async {
+    try {
+      // Get device timezone and locale
+      final String timezone = DateTime.now().timeZoneName;
+      final String locale = Platform.localeName;
+      
+      Logger().i('Updating context - timezone: $timezone, locale: $locale');
+      
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/update_context/v1/',
+        data: {
+          'timezone': timezone,
+          'locale': locale,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${HiveHelper.getUserToken().access_token}',
+          },
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+      );
+      
+      if (response.statusCode == 200) {
+        Logger().i('Context updated successfully');
+        return true;
+      }
+      
+      Logger().e('Failed to update context: ${response.statusCode}');
+      return false;
+    } catch (e) {
+      Logger().e('Error updating context: $e');
+      return false;
+    }
   }
 
   // 刷新访问令牌，故意不抓留给外面抓。

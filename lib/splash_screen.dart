@@ -196,6 +196,16 @@ class _SplashScreenState extends State<SplashScreen> {
           Logger().i('Token still valid');
         }
         
+        // Update user context (timezone and locale) after successful validation
+        try {
+          Logger().i('Updating user context...');
+          await NirvaAPI.updateContext();
+          Logger().i('User context updated');
+        } catch (e) {
+          Logger().w('Failed to update user context: $e');
+          // Don't fail the process if context update fails
+        }
+        
         // Fetch S3 credentials after successful validation
         try {
           Logger().i('Fetching S3 upload credentials...');
