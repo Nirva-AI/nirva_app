@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/dashboard_score_component.dart';
 import 'package:nirva_app/trends_card.dart';
 import 'package:nirva_app/mood_trend_card.dart';
 import 'package:nirva_app/energy_trend_card.dart';
 import 'package:nirva_app/awake_time_allocation_trend_card.dart';
 import 'package:nirva_app/social_map_trend_card.dart';
+import 'package:nirva_app/providers/mental_state_provider.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch mental state data when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MentalStateProvider>().fetchInsights();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

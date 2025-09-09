@@ -16,6 +16,7 @@ import 'package:nirva_app/providers/local_audio_provider.dart';
 import 'package:nirva_app/providers/cloud_audio_provider.dart';
 import 'package:nirva_app/providers/transcription_sync_provider.dart';
 import 'package:nirva_app/providers/events_provider.dart';
+import 'package:nirva_app/providers/mental_state_provider.dart';
 import 'package:nirva_app/services/app_settings_service.dart';
 import 'package:nirva_app/services/ios_background_audio_manager.dart';
 import 'package:nirva_app/services/app_lifecycle_logging_service.dart';
@@ -170,6 +171,9 @@ void main() async {
         ),
         ChangeNotifierProvider<BleAudioService>(
           create: (context) => BleAudioService(),
+        ),
+        ChangeNotifierProvider<MentalStateProvider>(
+          create: (context) => MentalStateProvider(),
         ),
               ],
         child: Builder(

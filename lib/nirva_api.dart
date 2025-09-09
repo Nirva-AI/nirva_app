@@ -40,8 +40,8 @@ class NirvaAPI {
   static final Dio _dio = Dio(
       BaseOptions(
         baseUrl: devAwsServerHttpUrl,  // Use AWS server
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 30),
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 60),  // Increased for large mental state responses
       ),
     )..interceptors.addAll([
       LogInterceptor(request: true, requestHeader: true, responseHeader: true),
@@ -801,6 +801,72 @@ class NirvaAPI {
     } catch (e) {
       Logger().e('Error fetching transcription details: $e');
       rethrow;
+    }
+  }
+
+  // 获取心理状态洞察
+  static Future<dynamic> getMentalStateInsights({
+    String? date,
+    String? timezone,
+  }) async {
+    try {
+      final Map<String, dynamic> queryParams = {};
+      if (date != null) queryParams['date'] = date;
+      if (timezone != null) queryParams['timezone'] = timezone;
+
+      Logger().d('Fetching mental state insights with params: $queryParams');
+      
+      final response = await _dio.get(
+        '/api/insights/mental-state',
+        queryParameters: queryParams,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${HiveHelper.getUserToken().access_token}',
+          },
+          receiveTimeout: const Duration(seconds: 60), // Increase timeout for large response
+          responseType: ResponseType.json,
+        ),
+      );
+
+      Logger().d('Mental state response status: ${response.statusCode}');
+      Logger().d('Mental state response data type: ${response.data?.runtimeType}');
+      
+      if (response.statusCode == 200) {
+        if (response.data == null) {
+          Logger().e('Mental state response data is null');
+          return null;
+        }
+        
+        // Handle different response types
+        if (response.data is Map<String, dynamic>) {
+          Logger().d('Mental state response keys: ${(response.data as Map).keys.toList()}');
+          return response.data;
+        } else if (response.data is String) {
+          // Try to parse string as JSON
+          Logger().d('Mental state response is string, attempting to parse');
+          try {
+            final parsed = json.decode(response.data as String);
+            return parsed;
+          } catch (e) {
+            Logger().e('Failed to parse string response: $e');
+            return null;
+          }
+        } else {
+          Logger().e('Unexpected response type: ${response.data.runtimeType}');
+          return null;
+        }
+      }
+      return null;
+    } on DioException catch (e) {
+      Logger().e('DioException fetching mental state: ${e.type} - ${e.message}');
+      if (e.response != null) {
+        Logger().e('Response status: ${e.response?.statusCode}');
+        Logger().e('Response data: ${e.response?.data}');
+      }
+      return null;
+    } catch (e) {
+      Logger().e('Exception fetching mental state: $e');
+      return null;
     }
   }
 }
