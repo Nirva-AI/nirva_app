@@ -120,7 +120,7 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
         return BarChart(
           BarChartData(
             alignment: BarChartAlignment.spaceAround,
-            maxY: 10,
+            maxY: 100,  // Updated to 100 scale
             minY: 0,
             groupsSpace: 20,
             barTouchData: BarTouchData(enabled: false),
@@ -220,7 +220,7 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
-              interval: 2,
+              interval: 20,  // Show at 0, 20, 40, 60, 80, 100
               getTitlesWidget: (value, meta) {
                 return Text(
                   value.toInt().toString(),
@@ -575,9 +575,9 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
         
         if (provider.currentState != null) {
           final currentEnergy = provider.currentState!.energyScore;
-          if (currentEnergy >= 7) {
+          if (currentEnergy >= 70) {
             description = 'Your energy level is high. Great time for focused work!';
-          } else if (currentEnergy >= 4) {
+          } else if (currentEnergy >= 40) {
             description = 'Moderate energy levels. Consider a short break to recharge.';
           } else {
             description = 'Low energy detected. Time for rest or a refreshing activity.';

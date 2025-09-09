@@ -138,14 +138,14 @@ class _TrendsCardState extends State<TrendsCard> {
             LineChart(
               LineChartData(
                 minY: 0,
-                maxY: 10,
+                maxY: 100,  // Updated to 100 scale
                 gridData: FlGridData(show: false),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 30,
-                      interval: 2,
+                      interval: 20,  // Show at 0, 20, 40, 60, 80, 100
                       getTitlesWidget: (value, meta) {
                         return Text(
                           value.toInt().toString(),
@@ -387,9 +387,9 @@ class _TrendsCardState extends State<TrendsCard> {
         
         if (provider.currentState != null) {
           final currentStress = provider.currentState!.stressScore;
-          if (currentStress >= 7) {
+          if (currentStress >= 70) {
             description = 'High stress detected. Consider taking a break or practicing relaxation.';
-          } else if (currentStress >= 4) {
+          } else if (currentStress >= 40) {
             description = 'Moderate stress levels. Stay mindful of your workload.';
           } else {
             description = 'Low stress levels. You\'re managing well!';

@@ -114,13 +114,13 @@ class MentalStateProvider extends ChangeNotifier {
     final energy = currentState!.energyScore;
     final stress = currentState!.stressScore;
     
-    if (energy >= 7 && stress <= 3) {
+    if (energy >= 70 && stress <= 30) {
       return 'Optimal';
-    } else if (energy >= 7 && stress >= 7) {
+    } else if (energy >= 70 && stress >= 70) {
       return 'Wired';
-    } else if (energy <= 3 && stress <= 3) {
+    } else if (energy <= 30 && stress <= 30) {
       return 'Resting';
-    } else if (energy <= 3 && stress >= 7) {
+    } else if (energy <= 30 && stress >= 70) {
       return 'Burnout Risk';
     } else {
       return 'Functioning';
