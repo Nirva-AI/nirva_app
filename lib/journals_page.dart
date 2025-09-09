@@ -111,7 +111,6 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
         dates.add(dateKey);
       }
       
-      debugPrint('Refreshing events for ${dates.length} days around ${DateFormat('yyyy-MM-dd').format(_selectedDate)}');
       
       // Fetch fresh data for all dates
       final eventsMap = await eventsProvider.getEventsForDates(dates);
@@ -197,9 +196,6 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
       _selectedDate = selectedDate;
     });
     
-    debugPrint('Selected date initialized to: ${DateFormat('yyyy-MM-dd').format(selectedDate)}');
-    debugPrint('Most recent local date: ${mostRecentLocalDate != null ? DateFormat('yyyy-MM-dd').format(mostRecentLocalDate) : 'none'}');
-    debugPrint('Most recent event date: ${mostRecentEventDate != null ? DateFormat('yyyy-MM-dd').format(mostRecentEventDate) : 'none'}');
   }
   
   // Load events for the visible dates in the date picker

@@ -49,7 +49,6 @@ void main() async {
   
   // Initialize sherpa_onnx native bindings before any VAD/ASR objects are created
   initBindings();
-  debugPrint('Main: sherpa_onnx bindings initialized');
 
   // 这里必须一起调用。
   await _initializeApp(); // 执行异步操作，例如加载配置文件
@@ -60,7 +59,6 @@ void main() async {
   
   // Initialize device persistence and attempt reconnection
   await hardwareService.initializeDevicePersistence();
-  debugPrint('Main: HardwareService initialized successfully');
   
   // Create HardwareAudioCapture immediately to enable automatic recording
   final hardwareAudioCapture = HardwareAudioCapture(
@@ -72,23 +70,18 @@ void main() async {
   
   // Set the audio capture service in the hardware service for automatic recording
   hardwareService.setAudioCapture(hardwareAudioCapture);
-  debugPrint('Main: HardwareAudioCapture created and set for automatic recording');
   
   // Initialize AppSettingsService
   final appSettingsService = AppSettingsService();
   await appSettingsService.initialize();
-  debugPrint('Main: AppSettingsService initialized successfully');
   
   // Initialize AppLifecycleLoggingService
   final lifecycleLoggingService = AppLifecycleLoggingService();
   await lifecycleLoggingService.initialize();
-  debugPrint('Main: AppLifecycleLoggingService initialized successfully');
   
   // Initialize NativeS3Bridge for S3 upload credentials
-  debugPrint('Main: Starting NativeS3Bridge initialization...');
   try {
     await NativeS3Bridge.instance.initialize();
-    debugPrint('Main: NativeS3Bridge initialized successfully');
   } catch (e) {
     debugPrint('Main: Error initializing NativeS3Bridge: $e');
   }
@@ -229,11 +222,8 @@ Future<void> _initializeApp() async {
   // Load environment variables from assets
   try {
     await dotenv.load(fileName: '.env');
-    debugPrint('Main: Environment variables loaded successfully');
-    debugPrint('Main: DEEPGRAM_API_KEY available: ${dotenv.env['DEEPGRAM_API_KEY'] != null ? 'Yes' : 'No'}');
   } catch (e) {
     debugPrint('Main: Warning - Could not load .env file: $e');
-    debugPrint('Main: To use Deepgram API, ensure .env file is in assets and contains DEEPGRAM_API_KEY');
     // Initialize with empty values to prevent NotInitializedError
     await dotenv.load(fileName: '.env', mergeWith: {'DEEPGRAM_API_KEY': ''});
   }
@@ -246,23 +236,9 @@ Future<void> _initializeApp() async {
   // await HiveHelper.deleteFromDisk(); // 这句是测试用的。 COMMENTED OUT TO PRESERVE DATA
   await HiveHelper.initializeAdapters();
   
-  // Debug: Check if Cloud ASR boxes are properly opened and contain data
   try {
     final cloudAsrResultsBox = Hive.box<CloudAsrResultStorage>('cloudAsrResultsBox');
     final cloudAsrSessionsBox = Hive.box<CloudAsrSessionStorage>('cloudAsrSessionsBox');
-    debugPrint('Main: Cloud ASR boxes status after initialization:');
-    debugPrint('Main: - Results box length: ${cloudAsrResultsBox.length}');
-    debugPrint('Main: - Sessions box length: ${cloudAsrSessionsBox.length}');
-    
-    // Log some sample data if available
-    if (cloudAsrResultsBox.length > 0) {
-      final firstResult = cloudAsrResultsBox.getAt(0);
-      debugPrint('Main: - First result transcription: "${firstResult?.transcription}"');
-      debugPrint('Main: - First result audio path: ${firstResult?.audioFilePath}');
-    }
-    
-    // Additional detailed logging from HiveHelper
-    HiveHelper.logCloudAsrStatus();
   } catch (e) {
     debugPrint('Main: Error checking Cloud ASR boxes: $e');
   }

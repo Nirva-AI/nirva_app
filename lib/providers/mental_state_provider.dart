@@ -62,22 +62,17 @@ class MentalStateProvider extends ChangeNotifier {
         timezone: DateTime.now().timeZoneName,
       );
 
-      debugPrint('Mental state API response: ${response?.runtimeType}');
-      
       if (response != null) {
         try {
           _insights = MentalStateInsights.fromJson(response as Map<String, dynamic>);
           _lastFetchTime = DateTime.now();
           _error = null;
-          debugPrint('Mental state insights parsed successfully');
         } catch (parseError) {
           _error = 'Failed to parse mental state data';
           debugPrint('Error parsing mental state response: $parseError');
-          debugPrint('Response was: $response');
         }
       } else {
         _error = 'Failed to fetch mental state insights';
-        debugPrint('Mental state API returned null');
       }
     } catch (e) {
       _error = 'Error fetching insights: $e';

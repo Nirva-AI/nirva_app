@@ -44,7 +44,6 @@ class NirvaAPI {
         receiveTimeout: const Duration(seconds: 60),  // Increased for large mental state responses
       ),
     )..interceptors.addAll([
-      LogInterceptor(request: true, requestHeader: true, responseHeader: true),
       InterceptorsWrapper(
         onError: (error, handler) {
           Logger().e('Dio Error: ${error.message}');
@@ -538,9 +537,6 @@ class NirvaAPI {
         return null;
       }
 
-      Logger().d('Get events response received');
-      Logger().d('Response status: ${response?.statusCode}');
-      Logger().d('Response data: ${jsonEncode(response.data!)}');
       return response.data!;
       
     } catch (e) {
@@ -557,7 +553,6 @@ class NirvaAPI {
         'file_number': fileNumber,
       };
 
-      Logger().d('Starting analysis for $timeStamp, file $fileNumber');
 
       final response = await safePost<Map<String, dynamic>>(
         _dio,
@@ -570,7 +565,6 @@ class NirvaAPI {
         return null;
       }
 
-      Logger().d('Start analysis response: ${jsonEncode(response.data!)}');
       return response.data!;
       
     } catch (e) {

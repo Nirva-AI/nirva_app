@@ -31,28 +31,18 @@ class TranscriptionSyncService extends ChangeNotifier {
   /// Initialize the sync service
   Future<bool> initialize() async {
     if (_isInitialized) {
-      debugPrint('TranscriptionSyncService: Already initialized');
       return true;
     }
     
     try {
-      debugPrint('TranscriptionSyncService: Initializing sync service...');
-      
       // Load last sent timestamp from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final timestampString = prefs.getString(_lastSentTimestampKey);
       if (timestampString != null) {
         _lastSentTimestamp = DateTime.parse(timestampString);
-        debugPrint('TranscriptionSyncService: Loaded last sent timestamp: $_lastSentTimestamp');
-      } else {
-        debugPrint('TranscriptionSyncService: No previous sync timestamp found, will sync all transcriptions');
       }
       
-      // Timer will be started automatically when transcriptions are added
-      debugPrint('TranscriptionSyncService: Timer will start automatically when transcriptions are added');
-      
       _isInitialized = true;
-      debugPrint('TranscriptionSyncService: Initialization complete');
       notifyListeners();
       return true;
       
@@ -68,7 +58,6 @@ class TranscriptionSyncService extends ChangeNotifier {
       _batchTimer = Timer(_batchInterval, () {
         _processBatchSync();
       });
-      debugPrint('TranscriptionSyncService: Batch timer started - will sync in ${_batchInterval.inMinutes} minutes');
     }
   }
   
@@ -77,7 +66,6 @@ class TranscriptionSyncService extends ChangeNotifier {
     if (_batchTimer != null) {
       _batchTimer!.cancel();
       _batchTimer = null;
-      debugPrint('TranscriptionSyncService: Batch timer stopped - no pending transcriptions');
     }
   }
   
@@ -85,7 +73,6 @@ class TranscriptionSyncService extends ChangeNotifier {
   void addPendingTranscription(String transcriptionId) {
     if (!_pendingTranscriptionIds.contains(transcriptionId)) {
       _pendingTranscriptionIds.add(transcriptionId);
-      debugPrint('TranscriptionSyncService: Added transcription to pending queue: $transcriptionId');
       
       // Start timer if this is the first pending transcription
       _startBatchTimer();

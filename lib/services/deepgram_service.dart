@@ -184,9 +184,6 @@ class DeepgramService extends ChangeNotifier {
       // Set the request body directly
       request.bodyBytes = audioBytes;
       
-      debugPrint('DeepgramService: Sending request to Deepgram...');
-      debugPrint('DeepgramService: Request URL: ${request.url}');
-      debugPrint('DeepgramService: Request body size: ${request.bodyBytes?.length ?? 0} bytes');
       
       // Send request asynchronously to avoid blocking main thread
       final response = await request.send().timeout(
@@ -197,26 +194,9 @@ class DeepgramService extends ChangeNotifier {
       );
       
       final responseBody = await response.stream.bytesToString();
-      debugPrint('DeepgramService: Response status: ${response.statusCode}');
       
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(responseBody);
-        debugPrint('DeepgramService: Transcription successful');
-        
-        // Debug: Log the complete API response
-        debugPrint('DeepgramService: === FULL DEEPGRAM API RESPONSE ===');
-        debugPrint('DeepgramService: Response body length: ${responseBody.length} characters');
-        // debugPrint('DeepgramService: Raw response body:');
-        // debugPrint(responseBody);
-        debugPrint('DeepgramService: Response JSON keys: ${jsonResponse.keys.toList()}');
-        
-        // Log the complete response structure
-        _logCompleteApiResponse(jsonResponse);
-        
-        // Log sentiment, topic, and intent analysis if available
-        _logAnalysisData(jsonResponse);
-        
-        debugPrint('DeepgramService: === END FULL RESPONSE ===');
         
         // Parse the response
         final result = _parseDeepgramResponse(jsonResponse, startTime, endTime);
