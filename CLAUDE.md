@@ -99,3 +99,33 @@ The app uses AWS Amplify for backend services:
 - Storage via S3
 - APIs via API Gateway and Lambda
 - Requires proper AWS credentials configuration
+
+## Mental State Display
+
+### Dashboard Component
+- Shows energy and stress scores (0-100 scale)
+- Displays last non-zero values from timeline data
+- Location: `lib/dashboard_score_component.dart`
+- Workaround for AWS returning 0 values in last 4 timeline points
+
+### Mental State Timeline
+- Charts display 30-minute interval data
+- Energy and stress use 0-100 scale (updated from 1-10)
+- Timeline provider manages state updates
+- Real-time updates from backend API
+
+## API Configuration
+
+### Backend Endpoints
+- Authentication: OAuth2 with form data
+- Login endpoint: /login/v1/
+
+### Authentication Flow
+```dart
+// Login with OAuth2 format
+final response = await http.post(
+  Uri.parse('$baseUrl/login/v1/'),
+  headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+  body: 'username=$username&password=$password',
+);
+```

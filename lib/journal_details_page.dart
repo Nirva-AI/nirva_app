@@ -317,7 +317,7 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Mood: ${widget.eventData.mood_score}/10',
+                      'Mood: ${widget.eventData.mood_score}/100',
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -717,7 +717,7 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
               Expanded(
                 child: _buildMetricCard(
                   'Stress Level',
-                  '${widget.eventData.stress_level}/10',
+                  '${widget.eventData.stress_level}/100',
                   Icons.psychology,
                   const Color(0xFF616a7f),
                 ),
@@ -726,7 +726,7 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
               Expanded(
                 child: _buildMetricCard(
                   'Energy Level',
-                  '${widget.eventData.energy_level}/10',
+                  '${widget.eventData.energy_level}/100',
                   Icons.flash_on,
                   const Color(0xFFfdd78c),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
+import 'package:nirva_app/providers/mental_state_provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/energy_level_details_page.dart';
 import 'package:nirva_app/mood_score_details_page.dart';
@@ -153,16 +154,37 @@ class DashboardScoresRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final journalFilesProvider = Provider.of<JournalFilesProvider>(context);
-    final moodScore = journalFilesProvider.currentJournalFile.moodScoreAverage;
-    final energyLevel = journalFilesProvider.currentJournalFile.energyLevelAverage;
-    final stressLevel = journalFilesProvider.currentJournalFile.stressLevelAverage;
-
-    // Calculate scores based on requirements:
-    // Energy and mood use current data * 10
-    // Stress use (10 - current stress data) * 10
-    final energyScore = 41.0; // Hardcoded for now
-    final moodScoreCalculated = 91.0; // Hardcoded for now
-    final stressScore = ((10.0 - stressLevel) * 10.0).clamp(0.0, 100.0);
+    final mentalStateProvider = Provider.of<MentalStateProvider>(context);
+    
+    // Get current mental state scores from the latest valid timeline data point
+    // Skip any 0 values at the end (backend bug)
+    final timeline = mentalStateProvider.timeline24h;
+    double energyScore = 50.0;
+    double stressScore = 30.0;
+    
+    // Find the last non-zero data point
+    print('Dashboard - Checking timeline for non-zero values:');
+    for (int i = timeline.length - 1; i >= 0 && i >= timeline.length - 10; i--) {
+      print('  Point $i: energy=${timeline[i].energyScore}, stress=${timeline[i].stressScore}, time=${timeline[i].timestamp}');
+      if (timeline[i].energyScore != 0.0 || timeline[i].stressScore != 0.0) {
+        energyScore = timeline[i].energyScore;
+        stressScore = timeline[i].stressScore;
+        print('  --> Using this point!');
+        break;
+      }
+    }
+    
+    // Debug logging
+    print('Dashboard - timeline points: ${timeline.length}');
+    if (timeline.isNotEmpty) {
+      print('Dashboard - last point: ${timeline.last}');
+    }
+    print('Dashboard - energyScore: $energyScore, stressScore: $stressScore');
+    
+    // For mood, use journal average if available, otherwise default
+    final moodScoreCalculated = journalFilesProvider.currentJournalFile.moodScoreAverage > 0 
+        ? journalFilesProvider.currentJournalFile.moodScoreAverage 
+        : 70.0;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
