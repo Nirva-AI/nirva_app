@@ -62,6 +62,16 @@ class _LoginScreenState extends State<LoginScreen> {
         userProvider.updateUser(user);
       }
 
+      // Update user context (timezone and locale) after successful login
+      try {
+        _logger.i('Updating user context...');
+        await NirvaAPI.updateContext();
+        _logger.i('User context updated successfully');
+      } catch (e) {
+        _logger.w('Failed to update user context: $e');
+        // Don't fail the login process if context update fails
+      }
+
       // Fetch S3 credentials after successful login
       try {
         _logger.i('Fetching S3 upload credentials...');

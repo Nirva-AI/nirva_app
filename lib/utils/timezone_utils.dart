@@ -19,16 +19,13 @@ class TimezoneUtils {
       // Get the device's current timezone offset
       final DateTime now = DateTime.now();
       final Duration offset = now.timeZoneOffset;
-      
-      _logger.i('Device timezone offset: ${offset.inHours} hours');
+      final DateTime utcNow = now.toUtc();
       
       // Try to find the timezone by offset and DST rules
       final String timezoneName = _findTimezoneByOffset(offset, now);
-      
-      _logger.i('Device timezone: $timezoneName');
       return timezoneName;
     } catch (e) {
-      _logger.e('Error getting device timezone: $e');
+_logger.e('Error getting device timezone: $e');
       // Fallback to UTC if there's any issue
       return 'UTC';
     }
@@ -36,34 +33,76 @@ class TimezoneUtils {
   
   /// Find timezone name by offset and current time (to account for DST)
   static String _findTimezoneByOffset(Duration offset, DateTime now) {
-    // First, try to get the system timezone directly
+    // First, try to get the system timezone directly using multiple methods
     try {
+      // Method 1: tz.local.name
       final String systemTimezone = tz.local.name;
-      if (systemTimezone.isNotEmpty && systemTimezone != 'Local') {
-        _logger.i('Using system timezone: $systemTimezone');
-        return systemTimezone;
+      // Method 2: Try to get timezone from DateTime.now() zone name (if available)
+      try {
+        final String zoneName = now.timeZoneName;
+        
+        // If we get a proper IANA name from the system, use it
+        if (systemTimezone.isNotEmpty && 
+            systemTimezone != 'Local' && 
+            systemTimezone.contains('/')) {
+          return systemTimezone;
+        }
+        
+        // Try to convert timezone abbreviation to IANA name
+        if (zoneName.isNotEmpty) {
+          final String? convertedTz = _convertAbbreviationToIANA(zoneName, offset);
+          if (convertedTz != null) {
+            return convertedTz;
+          }
+        }
+      } catch (e) {
+_logger.w('Error getting timeZoneName: $e');
       }
+      
     } catch (e) {
-      _logger.w('Could not get system timezone: $e');
+_logger.w('Could not get system timezone: $e');
     }
     
     // If system timezone fails, fall back to offset-based detection
     final int offsetHours = offset.inHours;
     final bool isDST = _isDaylightSavingTime(now);
     
-    _logger.i('Falling back to offset-based detection: ${offsetHours}h, DST: $isDST');
     
-    // Comprehensive timezone mapping by offset
+    // Special handling for US timezones based on offset
+    // Pacific Time: PST (UTC-8) in winter, PDT (UTC-7) in summer
+    // Mountain Time: MST (UTC-7) in winter, MDT (UTC-6) in summer  
+    // Central Time: CST (UTC-6) in winter, CDT (UTC-5) in summer
+    // Eastern Time: EST (UTC-5) in winter, EDT (UTC-4) in summer
+    switch (offsetHours) {
+      case -8: // PST (Pacific Standard Time)
+        return 'America/Los_Angeles';
+      case -7: // PDT (Pacific Daylight Time) OR MST (Mountain Standard Time)
+        // If it's summer/DST season, -7 is likely PDT, otherwise MST
+        final String result = isDST ? 'America/Los_Angeles' : 'America/Denver';
+        return result;
+      case -6: // MDT (Mountain Daylight Time) OR CST (Central Standard Time)  
+        final String result = isDST ? 'America/Denver' : 'America/Chicago';
+        return result;
+      case -5: // CDT (Central Daylight Time) OR EST (Eastern Standard Time)
+        final String result = isDST ? 'America/Chicago' : 'America/New_York';
+        return result;
+      case -4: // EDT (Eastern Daylight Time)
+        return 'America/New_York';
+      default:
+        break;
+    }
+    
+    // Comprehensive timezone mapping by offset for non-US timezones
     final Map<int, List<String>> timezonesByOffset = {
       -12: ['Pacific/Kwajalein'],
       -11: ['Pacific/Midway', 'Pacific/Niue', 'Pacific/Pago_Pago'],
       -10: ['Pacific/Honolulu', 'Pacific/Tahiti'],
       -9: ['America/Anchorage', 'Pacific/Gambier'],
       -8: ['America/Los_Angeles', 'America/Tijuana', 'Pacific/Pitcairn'],
-      -7: isDST ? ['America/Los_Angeles'] : ['America/Denver', 'America/Phoenix'],
-      -6: isDST ? ['America/Denver'] : ['America/Chicago', 'America/Mexico_City'],
-      -5: isDST ? ['America/Chicago'] : ['America/New_York', 'America/Lima'],
-      -4: isDST ? ['America/New_York'] : ['America/Santiago', 'Atlantic/Bermuda'],
+      -7: ['America/Denver', 'America/Phoenix'],
+      -6: ['America/Chicago', 'America/Mexico_City'],
+      -5: ['America/New_York', 'America/Lima'],
+      -4: ['America/Santiago', 'Atlantic/Bermuda'],
       -3: ['America/Sao_Paulo', 'America/Argentina/Buenos_Aires'],
       -2: ['Atlantic/South_Georgia'],
       -1: ['Atlantic/Azores', 'Atlantic/Cape_Verde'],
@@ -90,7 +129,6 @@ class TimezoneUtils {
     if (possibleTimezones != null && possibleTimezones.isNotEmpty) {
       // Use the first (most common) timezone for this offset
       final String selectedTimezone = possibleTimezones.first;
-      _logger.i('Selected timezone: $selectedTimezone for offset ${offsetHours}h');
       return selectedTimezone;
     }
     
@@ -99,6 +137,32 @@ class TimezoneUtils {
     return 'UTC';
   }
   
+  /// Convert timezone abbreviation to IANA timezone name
+  static String? _convertAbbreviationToIANA(String abbreviation, Duration offset) {
+    final int offsetHours = offset.inHours;
+    
+    // Map common timezone abbreviations to IANA names based on offset
+    final Map<String, Map<int, String>> abbreviationMap = {
+      'PST': {-8: 'America/Los_Angeles'},
+      'PDT': {-7: 'America/Los_Angeles'},
+      'MST': {-7: 'America/Denver'},
+      'MDT': {-6: 'America/Denver'},
+      'CST': {-6: 'America/Chicago'},
+      'CDT': {-5: 'America/Chicago'},
+      'EST': {-5: 'America/New_York'},
+      'EDT': {-4: 'America/New_York'},
+      'GMT': {0: 'UTC'},
+      'UTC': {0: 'UTC'},
+    };
+    
+    final Map<int, String>? offsetMap = abbreviationMap[abbreviation];
+    if (offsetMap != null && offsetMap.containsKey(offsetHours)) {
+      return offsetMap[offsetHours];
+    }
+    
+    return null;
+  }
+
   /// Simple DST detection for US (not perfect but good enough)
   static bool _isDaylightSavingTime(DateTime now) {
     // In the US, DST typically runs from second Sunday in March to first Sunday in November

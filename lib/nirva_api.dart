@@ -142,10 +142,7 @@ class NirvaAPI {
       
       final response = await _dio.post<Map<String, dynamic>>(
         '/update_context/v1/',
-        data: {
-          'timezone': timezone,
-          'locale': locale,
-        },
+        data: 'timezone=$timezone&locale=$locale',
         options: Options(
           headers: {
             'Authorization': 'Bearer ${HiveHelper.getUserToken().access_token}',
