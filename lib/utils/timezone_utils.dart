@@ -68,67 +68,41 @@ _logger.w('Could not get system timezone: $e');
     final bool isDST = _isDaylightSavingTime(now);
     
     
-    // Special handling for US timezones based on offset
-    // Pacific Time: PST (UTC-8) in winter, PDT (UTC-7) in summer
-    // Mountain Time: MST (UTC-7) in winter, MDT (UTC-6) in summer  
-    // Central Time: CST (UTC-6) in winter, CDT (UTC-5) in summer
-    // Eastern Time: EST (UTC-5) in winter, EDT (UTC-4) in summer
-    switch (offsetHours) {
-      case -8: // PST (Pacific Standard Time)
-        return 'America/Los_Angeles';
-      case -7: // PDT (Pacific Daylight Time) OR MST (Mountain Standard Time)
-        // If it's summer/DST season, -7 is likely PDT, otherwise MST
-        final String result = isDST ? 'America/Los_Angeles' : 'America/Denver';
-        return result;
-      case -6: // MDT (Mountain Daylight Time) OR CST (Central Standard Time)  
-        final String result = isDST ? 'America/Denver' : 'America/Chicago';
-        return result;
-      case -5: // CDT (Central Daylight Time) OR EST (Eastern Standard Time)
-        final String result = isDST ? 'America/Chicago' : 'America/New_York';
-        return result;
-      case -4: // EDT (Eastern Daylight Time)
-        return 'America/New_York';
-      default:
-        break;
-    }
-    
-    // Comprehensive timezone mapping by offset for non-US timezones
-    final Map<int, List<String>> timezonesByOffset = {
-      -12: ['Pacific/Kwajalein'],
-      -11: ['Pacific/Midway', 'Pacific/Niue', 'Pacific/Pago_Pago'],
-      -10: ['Pacific/Honolulu', 'Pacific/Tahiti'],
-      -9: ['America/Anchorage', 'Pacific/Gambier'],
-      -8: ['America/Los_Angeles', 'America/Tijuana', 'Pacific/Pitcairn'],
-      -7: ['America/Denver', 'America/Phoenix'],
-      -6: ['America/Chicago', 'America/Mexico_City'],
-      -5: ['America/New_York', 'America/Lima'],
-      -4: ['America/Santiago', 'Atlantic/Bermuda'],
-      -3: ['America/Sao_Paulo', 'America/Argentina/Buenos_Aires'],
-      -2: ['Atlantic/South_Georgia'],
-      -1: ['Atlantic/Azores', 'Atlantic/Cape_Verde'],
-      0: ['UTC', 'Europe/London', 'Africa/Casablanca'],
-      1: ['Europe/Paris', 'Europe/Berlin', 'Africa/Lagos'],
-      2: ['Europe/Helsinki', 'Africa/Cairo', 'Asia/Jerusalem'],
-      3: ['Europe/Moscow', 'Asia/Baghdad', 'Africa/Nairobi'],
-      4: ['Asia/Dubai', 'Asia/Baku', 'Indian/Mauritius'],
-      5: ['Asia/Karachi', 'Asia/Tashkent'],
-      6: ['Asia/Dhaka', 'Asia/Almaty'],
-      7: ['Asia/Bangkok', 'Asia/Jakarta'],
-      8: ['Asia/Shanghai', 'Asia/Singapore', 'Australia/Perth'],
-      9: ['Asia/Tokyo', 'Asia/Seoul', 'Pacific/Palau'],
-      10: ['Australia/Sydney', 'Pacific/Guam'],
-      11: ['Pacific/Norfolk', 'Asia/Magadan'],
-      12: ['Pacific/Auckland', 'Pacific/Fiji'],
-      13: ['Pacific/Tongatapu'],
-      14: ['Pacific/Kiritimati'],
+    // Global timezone mapping by offset - one representative timezone per offset
+    final Map<int, String> timezonesByOffset = {
+      -12: 'Pacific/Kwajalein',
+      -11: 'Pacific/Midway',
+      -10: 'Pacific/Honolulu',
+      -9: 'America/Anchorage',
+      -8: 'America/Los_Angeles',
+      -7: 'America/Denver',
+      -6: 'America/Chicago',
+      -5: 'America/New_York',
+      -4: 'America/Santiago',
+      -3: 'America/Sao_Paulo',
+      -2: 'Atlantic/South_Georgia',
+      -1: 'Atlantic/Azores',
+      0: 'Europe/London',
+      1: 'Europe/Paris',
+      2: 'Europe/Helsinki',
+      3: 'Europe/Moscow',
+      4: 'Asia/Dubai',
+      5: 'Asia/Karachi',
+      6: 'Asia/Dhaka',
+      7: 'Asia/Bangkok',
+      8: 'Asia/Shanghai',
+      9: 'Asia/Tokyo',
+      10: 'Australia/Sydney',
+      11: 'Asia/Magadan',
+      12: 'Pacific/Auckland',
+      13: 'Pacific/Tongatapu',
+      14: 'Pacific/Kiritimati',
     };
     
-    // Get possible timezones for this offset
-    final List<String>? possibleTimezones = timezonesByOffset[offsetHours];
+    // Get timezone for this offset
+    final String? selectedTimezone = timezonesByOffset[offsetHours];
     
-    if (possibleTimezones != null && possibleTimezones.isNotEmpty) {
-      // Use the first (most common) timezone for this offset
-      final String selectedTimezone = possibleTimezones.first;
+    if (selectedTimezone != null) {
       return selectedTimezone;
     }
     
