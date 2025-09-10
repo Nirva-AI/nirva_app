@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/mental_state_provider.dart';
 import 'package:nirva_app/models/mental_state.dart';
+import 'package:nirva_app/stress_insights_page.dart';
 
 class TrendsCard extends StatefulWidget {
   const TrendsCard({super.key});
@@ -427,11 +428,10 @@ class _TrendsCardState extends State<TrendsCard> {
             // Detail button
             GestureDetector(
               onTap: () {
-                // TODO: Navigate to trends detail page
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Trends detail page coming soon!'),
-                    duration: Duration(seconds: 2),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StressInsightsPage(),
                   ),
                 );
               },
