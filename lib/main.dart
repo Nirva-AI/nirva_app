@@ -42,10 +42,14 @@ import 'package:nirva_app/hive_helper.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart'; // Import sherpa_onnx for initBindings
 import 'package:hive/hive.dart'; // Import hive for checking boxes
 import 'package:nirva_app/my_hive_objects.dart'; // Import my_hive_objects for CloudAsrResultStorage and CloudAsrSessionStorage
+import 'package:nirva_app/utils/timezone_utils.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 确保初始化完成
+  
+  // Initialize timezone data
+  TimezoneUtils.initialize();
   
   // Initialize sherpa_onnx native bindings before any VAD/ASR objects are created
   initBindings();

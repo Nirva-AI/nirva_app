@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
+import 'package:nirva_app/utils/timezone_utils.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/providers/chat_history_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -69,7 +70,7 @@ class NirvaAPI {
   // 登录方法
   static Future<UserToken?> login(User user) async {
     // Get device timezone and locale
-    final String timezone = DateTime.now().timeZoneName;
+    final String timezone = TimezoneUtils.getDeviceTimezone();
     final String locale = Platform.localeName;
     
     Logger().i('Device timezone: $timezone, locale: $locale');
@@ -134,7 +135,7 @@ class NirvaAPI {
   static Future<bool> updateContext() async {
     try {
       // Get device timezone and locale
-      final String timezone = DateTime.now().timeZoneName;
+      final String timezone = TimezoneUtils.getDeviceTimezone();
       final String locale = Platform.localeName;
       
       Logger().i('Updating context - timezone: $timezone, locale: $locale');

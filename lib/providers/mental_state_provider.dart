@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../models/mental_state.dart';
 import '../nirva_api.dart';
 import '../api_models.dart';
+import '../utils/timezone_utils.dart';
 
 class MentalStateProvider extends ChangeNotifier {
   MentalStateInsights? _insights;
@@ -59,7 +60,7 @@ class MentalStateProvider extends ChangeNotifier {
       // Call API
       final response = await NirvaAPI.getMentalStateInsights(
         date: dateStr,
-        timezone: DateTime.now().timeZoneName,
+        timezone: TimezoneUtils.getDeviceTimezone(),
       );
 
       if (response != null) {
