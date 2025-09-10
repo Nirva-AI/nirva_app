@@ -106,6 +106,45 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
               ),
               onPressed: _toggleFavorite,
             ),
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFe7bf57),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _chatWithNirva,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.chat_bubble_outline,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          const Text(
+                            'Chat with Nirva',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Georgia',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -178,58 +217,59 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title and Chat Button Row
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.eventData.event_title,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0E3C26),
-                    fontFamily: 'Georgia',
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFe7bf57),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _chatWithNirva,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.chat_bubble_outline,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            'Chat with Nirva',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Georgia',
-                            ),
-                          ),
-                        ],
-                      ),
+          // Event Title
+          Text(
+            widget.eventData.event_title,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0E3C26),
+              fontFamily: 'Georgia',
+            ),
+          ),
+          
+          // Event Status Badge (only show if ongoing)
+          if (widget.eventData.event_status == 'ongoing') ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.green.shade300,
+                      width: 1,
                     ),
                   ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'ONGOING',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green.shade700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
           
           const SizedBox(height: 12),
           
@@ -288,62 +328,6 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
                   fontSize: 14,
                   color: Colors.grey.shade600,
                   fontFamily: 'Georgia',
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Mood and Activity Tags
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              // Mood Score
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFfdd78c).withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.sentiment_satisfied,
-                      size: 16,
-                      color: const Color(0xFF0E3C26),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Mood: ${widget.eventData.mood_score}/100',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF0E3C26),
-                        fontFamily: 'Georgia',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Activity Type
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFdad5fd).withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  widget.eventData.activity_type,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF0E3C26),
-                    fontFamily: 'Georgia',
-                  ),
                 ),
               ),
             ],
@@ -716,24 +700,82 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
             children: [
               Expanded(
                 child: _buildMetricCard(
-                  'Stress Level',
-                  '${widget.eventData.stress_level}/100',
-                  Icons.psychology,
-                  const Color(0xFF616a7f),
+                  'Energy',
+                  '${widget.eventData.energy_level}',
+                  Icons.energy_savings_leaf_outlined,
+                  const Color(0xFFfdd78c),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
                 child: _buildMetricCard(
-                  'Energy Level',
-                  '${widget.eventData.energy_level}/100',
-                  Icons.flash_on,
-                  const Color(0xFFfdd78c),
+                  'Mood',
+                  '${widget.eventData.mood_score}',
+                  Icons.wb_sunny_outlined,
+                  const Color(0xFFe7bf57),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildMetricCard(
+                  'Stress',
+                  '${widget.eventData.stress_level}',
+                  Icons.spa_outlined,
+                  const Color(0xFF616a7f),
                 ),
               ),
             ],
           ),
           
+          const SizedBox(height: 16),
+          
+          // Mood Labels
+          if (widget.eventData.mood_labels.isNotEmpty) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.psychology_outlined,
+                  size: 16,
+                  color: Colors.grey.shade600,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mood Labels',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade600,
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.eventData.mood_labels.join(', '),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF0E3C26),
+                          fontFamily: 'Georgia',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+          
+          // Activity Type
+          _buildAnalysisItem(
+            'Activity Type',
+            widget.eventData.activity_type,
+            Icons.category,
+          ),
           const SizedBox(height: 16),
           
           // People Involved
@@ -1056,5 +1098,32 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
         ],
       ),
     );
+  }
+
+  Color _getMoodLabelColor(String moodLabel) {
+    switch (moodLabel.toLowerCase()) {
+      case 'happy':
+      case 'excited':
+      case 'energized':
+        return const Color(0xFFC8D4B8).withOpacity(0.4); // Light green
+      case 'peaceful':
+      case 'relaxed':
+      case 'content':
+        return const Color(0xFFe7bf57).withOpacity(0.3); // Light gold
+      case 'engaged':
+      case 'focused':
+        return const Color(0xFFdad5fd).withOpacity(0.4); // Light purple
+      case 'anxious':
+      case 'stressed':
+      case 'frustrated':
+        return const Color(0xFFfdd78c).withOpacity(0.4); // Light orange
+      case 'sad':
+      case 'bored':
+      case 'disengaged':
+        return const Color(0xFF616a7f).withOpacity(0.3); // Light gray
+      case 'neutral':
+      default:
+        return const Color(0xFFB8C4D4).withOpacity(0.3); // Light blue
+    }
   }
 } 
