@@ -3,6 +3,7 @@ import 'package:nirva_app/data.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/constants/mood_colors.dart';
 import 'package:nirva_app/constants/mood_chart_constants.dart';
+import 'package:nirva_app/mood_insights_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 
@@ -15,16 +16,33 @@ extension StringExtension on String {
 class MoodTrendCard extends StatefulWidget {
   const MoodTrendCard({super.key});
 
+  // Session-based cache - all events fetched once per session
+  static Map<String, List<EventAnalysis>>? _sessionEventsCache;
+  static DateTime? _lastFetchTime;
+
+  // Static methods to access session cache from other pages
+  static Map<String, List<EventAnalysis>>? getSessionEventsCache() {
+    return _sessionEventsCache;
+  }
+  
+  static DateTime? getLastFetchTime() {
+    return _lastFetchTime;
+  }
+  
+  static void setSessionEventsCache(Map<String, List<EventAnalysis>> cache) {
+    _sessionEventsCache = cache;
+  }
+  
+  static void setLastFetchTime(DateTime time) {
+    _lastFetchTime = time;
+  }
+
   @override
   State<MoodTrendCard> createState() => _MoodTrendCardState();
 }
 
 class _MoodTrendCardState extends State<MoodTrendCard> {
   String _selectedPeriod = 'Week';
-  
-  // Session-based cache - all events fetched once per session
-  static Map<String, List<EventAnalysis>>? _sessionEventsCache;
-  static DateTime? _lastFetchTime;
   bool _isLoading = false;
 
   @override
@@ -39,9 +57,9 @@ class _MoodTrendCardState extends State<MoodTrendCard> {
   // Ensure session data is loaded (like Energy charts do)
   Future<void> _ensureSessionDataLoaded() async {
     // If we have recent session data (within 5 minutes), use it
-    if (_sessionEventsCache != null && 
-        _lastFetchTime != null && 
-        DateTime.now().difference(_lastFetchTime!).inMinutes < 5) {
+    if (MoodTrendCard._sessionEventsCache != null && 
+        MoodTrendCard._lastFetchTime != null && 
+        DateTime.now().difference(MoodTrendCard._lastFetchTime!).inMinutes < 5) {
       return;
     }
     
@@ -51,8 +69,8 @@ class _MoodTrendCardState extends State<MoodTrendCard> {
     
     try {
       // Fetch events for last 30 days (covers all periods)
-      _sessionEventsCache = await _fetchAllEventsForSession();
-      _lastFetchTime = DateTime.now();
+      MoodTrendCard._sessionEventsCache = await _fetchAllEventsForSession();
+      MoodTrendCard._lastFetchTime = DateTime.now();
     } catch (e) {
       // Handle error silently
     } finally {
@@ -95,7 +113,7 @@ class _MoodTrendCardState extends State<MoodTrendCard> {
   
   // Calculate mood data from session cache for a specific period
   Map<String, double> _calculateMoodDataForPeriod(String period) {
-    if (_sessionEventsCache == null) return {};
+    if (MoodTrendCard._sessionEventsCache == null) return {};
     
     Map<String, double> moodDuration = {};
     double totalDuration = 0;
@@ -107,7 +125,7 @@ class _MoodTrendCardState extends State<MoodTrendCard> {
     // Use cached events for each date
     for (var date in dates) {
       final timeStamp = DateFormat("yyyy-MM-dd").format(date);
-      final events = _sessionEventsCache![timeStamp] ?? [];
+      final events = MoodTrendCard._sessionEventsCache![timeStamp] ?? [];
       
       for (var event in events) {
         for (var mood in event.mood_labels) {
@@ -459,11 +477,10 @@ class _MoodTrendCardState extends State<MoodTrendCard> {
         // Detail button
         GestureDetector(
           onTap: () {
-            // TODO: Navigate to mood trend detail page
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Mood trend detail page coming soon!'),
-                duration: Duration(seconds: 2),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MoodInsightsPage(),
               ),
             );
           },

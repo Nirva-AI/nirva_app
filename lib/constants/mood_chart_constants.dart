@@ -34,7 +34,7 @@ class MoodChartConstants {
   static const double defaultBubbleSize = 45.0;
   
   // Font size breakpoints based on bubble size
-  static const Map<double, double> fontSizeBreakpoints = {
+  static final Map<double, double> fontSizeBreakpoints = {
     100.0: 14.0, // Large bubbles
     80.0: 12.0,  // Medium bubbles
     60.0: 11.0,  // Small bubbles

@@ -4,7 +4,7 @@ import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/providers/mental_state_provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/energy_insights_page.dart';
-import 'package:nirva_app/mood_score_details_page.dart';
+import 'package:nirva_app/mood_insights_page.dart';
 import 'package:nirva_app/stress_insights_page.dart';
 
 class PartialRingPainter extends CustomPainter {
@@ -82,7 +82,7 @@ class DashboardScoreComponent extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const MoodScoreDetailsPage(),
+                builder: (context) => const MoodInsightsPage(),
               ),
             );
             break;
