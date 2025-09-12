@@ -115,10 +115,12 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
       // Fetch fresh data for all dates
       final eventsMap = await eventsProvider.getEventsForDates(dates);
       
-      setState(() {
-        _eventsCache = eventsMap;
-        _isRefreshing = false;
-      });
+      if (mounted) {
+        setState(() {
+          _eventsCache = eventsMap;
+          _isRefreshing = false;
+        });
+      }
       
       // Reload the current selected date as well
       _currentDateKey = null;  // Force reload
@@ -126,9 +128,11 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
       
     } catch (e) {
       debugPrint('Error refreshing events: $e');
-      setState(() {
-        _isRefreshing = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isRefreshing = false;
+        });
+      }
     }
   }
 
@@ -192,9 +196,11 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
       selectedDate = mostRecentEventDate;
     }
     
-    setState(() {
-      _selectedDate = selectedDate;
-    });
+    if (mounted) {
+      setState(() {
+        _selectedDate = selectedDate;
+      });
+    }
     
   }
   
@@ -202,9 +208,11 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
   Future<void> _loadEventsForVisibleDates() async {
     if (_isLoadingEvents) return;
     
-    setState(() {
-      _isLoadingEvents = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoadingEvents = true;
+      });
+    }
     
     try {
       final eventsProvider = Provider.of<EventsProvider>(context, listen: false);
@@ -219,15 +227,19 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
       // Fetch events for all dates
       final eventsMap = await eventsProvider.getEventsForDates(dates);
       
-      setState(() {
-        _eventsCache = eventsMap;
-        _isLoadingEvents = false;
-      });
+      if (mounted) {
+        setState(() {
+          _eventsCache = eventsMap;
+          _isLoadingEvents = false;
+        });
+      }
     } catch (e) {
       debugPrint('Error loading events for dates: $e');
-      setState(() {
-        _isLoadingEvents = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingEvents = false;
+        });
+      }
     }
   }
 

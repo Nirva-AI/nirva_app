@@ -25,6 +25,8 @@ mixin _$MentalStatePoint {
   double get energyScore => throw _privateConstructorUsedError;
   @JsonKey(name: 'stress_score')
   double get stressScore => throw _privateConstructorUsedError;
+  @JsonKey(name: 'mood_score')
+  double? get moodScore => throw _privateConstructorUsedError;
   double get confidence => throw _privateConstructorUsedError;
   @JsonKey(name: 'data_source')
   String get dataSource => throw _privateConstructorUsedError;
@@ -51,6 +53,7 @@ abstract class $MentalStatePointCopyWith<$Res> {
       {DateTime timestamp,
       @JsonKey(name: 'energy_score') double energyScore,
       @JsonKey(name: 'stress_score') double stressScore,
+      @JsonKey(name: 'mood_score') double? moodScore,
       double confidence,
       @JsonKey(name: 'data_source') String dataSource,
       @JsonKey(name: 'event_id') String? eventId});
@@ -74,6 +77,7 @@ class _$MentalStatePointCopyWithImpl<$Res, $Val extends MentalStatePoint>
     Object? timestamp = null,
     Object? energyScore = null,
     Object? stressScore = null,
+    Object? moodScore = freezed,
     Object? confidence = null,
     Object? dataSource = null,
     Object? eventId = freezed,
@@ -91,6 +95,10 @@ class _$MentalStatePointCopyWithImpl<$Res, $Val extends MentalStatePoint>
           ? _value.stressScore
           : stressScore // ignore: cast_nullable_to_non_nullable
               as double,
+      moodScore: freezed == moodScore
+          ? _value.moodScore
+          : moodScore // ignore: cast_nullable_to_non_nullable
+              as double?,
       confidence: null == confidence
           ? _value.confidence
           : confidence // ignore: cast_nullable_to_non_nullable
@@ -119,6 +127,7 @@ abstract class _$$MentalStatePointImplCopyWith<$Res>
       {DateTime timestamp,
       @JsonKey(name: 'energy_score') double energyScore,
       @JsonKey(name: 'stress_score') double stressScore,
+      @JsonKey(name: 'mood_score') double? moodScore,
       double confidence,
       @JsonKey(name: 'data_source') String dataSource,
       @JsonKey(name: 'event_id') String? eventId});
@@ -140,6 +149,7 @@ class __$$MentalStatePointImplCopyWithImpl<$Res>
     Object? timestamp = null,
     Object? energyScore = null,
     Object? stressScore = null,
+    Object? moodScore = freezed,
     Object? confidence = null,
     Object? dataSource = null,
     Object? eventId = freezed,
@@ -157,6 +167,10 @@ class __$$MentalStatePointImplCopyWithImpl<$Res>
           ? _value.stressScore
           : stressScore // ignore: cast_nullable_to_non_nullable
               as double,
+      moodScore: freezed == moodScore
+          ? _value.moodScore
+          : moodScore // ignore: cast_nullable_to_non_nullable
+              as double?,
       confidence: null == confidence
           ? _value.confidence
           : confidence // ignore: cast_nullable_to_non_nullable
@@ -180,6 +194,7 @@ class _$MentalStatePointImpl implements _MentalStatePoint {
       {required this.timestamp,
       @JsonKey(name: 'energy_score') required this.energyScore,
       @JsonKey(name: 'stress_score') required this.stressScore,
+      @JsonKey(name: 'mood_score') this.moodScore,
       required this.confidence,
       @JsonKey(name: 'data_source') required this.dataSource,
       @JsonKey(name: 'event_id') this.eventId});
@@ -196,6 +211,9 @@ class _$MentalStatePointImpl implements _MentalStatePoint {
   @JsonKey(name: 'stress_score')
   final double stressScore;
   @override
+  @JsonKey(name: 'mood_score')
+  final double? moodScore;
+  @override
   final double confidence;
   @override
   @JsonKey(name: 'data_source')
@@ -206,7 +224,7 @@ class _$MentalStatePointImpl implements _MentalStatePoint {
 
   @override
   String toString() {
-    return 'MentalStatePoint(timestamp: $timestamp, energyScore: $energyScore, stressScore: $stressScore, confidence: $confidence, dataSource: $dataSource, eventId: $eventId)';
+    return 'MentalStatePoint(timestamp: $timestamp, energyScore: $energyScore, stressScore: $stressScore, moodScore: $moodScore, confidence: $confidence, dataSource: $dataSource, eventId: $eventId)';
   }
 
   @override
@@ -220,6 +238,8 @@ class _$MentalStatePointImpl implements _MentalStatePoint {
                 other.energyScore == energyScore) &&
             (identical(other.stressScore, stressScore) ||
                 other.stressScore == stressScore) &&
+            (identical(other.moodScore, moodScore) ||
+                other.moodScore == moodScore) &&
             (identical(other.confidence, confidence) ||
                 other.confidence == confidence) &&
             (identical(other.dataSource, dataSource) ||
@@ -230,7 +250,7 @@ class _$MentalStatePointImpl implements _MentalStatePoint {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, timestamp, energyScore,
-      stressScore, confidence, dataSource, eventId);
+      stressScore, moodScore, confidence, dataSource, eventId);
 
   /// Create a copy of MentalStatePoint
   /// with the given fields replaced by the non-null parameter values.
@@ -254,6 +274,7 @@ abstract class _MentalStatePoint implements MentalStatePoint {
           {required final DateTime timestamp,
           @JsonKey(name: 'energy_score') required final double energyScore,
           @JsonKey(name: 'stress_score') required final double stressScore,
+          @JsonKey(name: 'mood_score') final double? moodScore,
           required final double confidence,
           @JsonKey(name: 'data_source') required final String dataSource,
           @JsonKey(name: 'event_id') final String? eventId}) =
@@ -270,6 +291,9 @@ abstract class _MentalStatePoint implements MentalStatePoint {
   @override
   @JsonKey(name: 'stress_score')
   double get stressScore;
+  @override
+  @JsonKey(name: 'mood_score')
+  double? get moodScore;
   @override
   double get confidence;
   @override
@@ -298,10 +322,14 @@ mixin _$DailyMentalStateStats {
   double get avgEnergy => throw _privateConstructorUsedError;
   @JsonKey(name: 'avg_stress')
   double get avgStress => throw _privateConstructorUsedError;
+  @JsonKey(name: 'avg_mood')
+  double? get avgMood => throw _privateConstructorUsedError;
   @JsonKey(name: 'peak_energy_time')
   String get peakEnergyTime => throw _privateConstructorUsedError;
   @JsonKey(name: 'peak_stress_time')
   String get peakStressTime => throw _privateConstructorUsedError;
+  @JsonKey(name: 'peak_mood_time')
+  String? get peakMoodTime => throw _privateConstructorUsedError;
   @JsonKey(name: 'optimal_state_minutes')
   int get optimalStateMinutes => throw _privateConstructorUsedError;
   @JsonKey(name: 'burnout_risk_minutes')
@@ -328,8 +356,10 @@ abstract class $DailyMentalStateStatsCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'avg_energy') double avgEnergy,
       @JsonKey(name: 'avg_stress') double avgStress,
+      @JsonKey(name: 'avg_mood') double? avgMood,
       @JsonKey(name: 'peak_energy_time') String peakEnergyTime,
       @JsonKey(name: 'peak_stress_time') String peakStressTime,
+      @JsonKey(name: 'peak_mood_time') String? peakMoodTime,
       @JsonKey(name: 'optimal_state_minutes') int optimalStateMinutes,
       @JsonKey(name: 'burnout_risk_minutes') int burnoutRiskMinutes,
       @JsonKey(name: 'recovery_periods') int recoveryPeriods});
@@ -353,8 +383,10 @@ class _$DailyMentalStateStatsCopyWithImpl<$Res,
   $Res call({
     Object? avgEnergy = null,
     Object? avgStress = null,
+    Object? avgMood = freezed,
     Object? peakEnergyTime = null,
     Object? peakStressTime = null,
+    Object? peakMoodTime = freezed,
     Object? optimalStateMinutes = null,
     Object? burnoutRiskMinutes = null,
     Object? recoveryPeriods = null,
@@ -368,6 +400,10 @@ class _$DailyMentalStateStatsCopyWithImpl<$Res,
           ? _value.avgStress
           : avgStress // ignore: cast_nullable_to_non_nullable
               as double,
+      avgMood: freezed == avgMood
+          ? _value.avgMood
+          : avgMood // ignore: cast_nullable_to_non_nullable
+              as double?,
       peakEnergyTime: null == peakEnergyTime
           ? _value.peakEnergyTime
           : peakEnergyTime // ignore: cast_nullable_to_non_nullable
@@ -376,6 +412,10 @@ class _$DailyMentalStateStatsCopyWithImpl<$Res,
           ? _value.peakStressTime
           : peakStressTime // ignore: cast_nullable_to_non_nullable
               as String,
+      peakMoodTime: freezed == peakMoodTime
+          ? _value.peakMoodTime
+          : peakMoodTime // ignore: cast_nullable_to_non_nullable
+              as String?,
       optimalStateMinutes: null == optimalStateMinutes
           ? _value.optimalStateMinutes
           : optimalStateMinutes // ignore: cast_nullable_to_non_nullable
@@ -404,8 +444,10 @@ abstract class _$$DailyMentalStateStatsImplCopyWith<$Res>
   $Res call(
       {@JsonKey(name: 'avg_energy') double avgEnergy,
       @JsonKey(name: 'avg_stress') double avgStress,
+      @JsonKey(name: 'avg_mood') double? avgMood,
       @JsonKey(name: 'peak_energy_time') String peakEnergyTime,
       @JsonKey(name: 'peak_stress_time') String peakStressTime,
+      @JsonKey(name: 'peak_mood_time') String? peakMoodTime,
       @JsonKey(name: 'optimal_state_minutes') int optimalStateMinutes,
       @JsonKey(name: 'burnout_risk_minutes') int burnoutRiskMinutes,
       @JsonKey(name: 'recovery_periods') int recoveryPeriods});
@@ -427,8 +469,10 @@ class __$$DailyMentalStateStatsImplCopyWithImpl<$Res>
   $Res call({
     Object? avgEnergy = null,
     Object? avgStress = null,
+    Object? avgMood = freezed,
     Object? peakEnergyTime = null,
     Object? peakStressTime = null,
+    Object? peakMoodTime = freezed,
     Object? optimalStateMinutes = null,
     Object? burnoutRiskMinutes = null,
     Object? recoveryPeriods = null,
@@ -442,6 +486,10 @@ class __$$DailyMentalStateStatsImplCopyWithImpl<$Res>
           ? _value.avgStress
           : avgStress // ignore: cast_nullable_to_non_nullable
               as double,
+      avgMood: freezed == avgMood
+          ? _value.avgMood
+          : avgMood // ignore: cast_nullable_to_non_nullable
+              as double?,
       peakEnergyTime: null == peakEnergyTime
           ? _value.peakEnergyTime
           : peakEnergyTime // ignore: cast_nullable_to_non_nullable
@@ -450,6 +498,10 @@ class __$$DailyMentalStateStatsImplCopyWithImpl<$Res>
           ? _value.peakStressTime
           : peakStressTime // ignore: cast_nullable_to_non_nullable
               as String,
+      peakMoodTime: freezed == peakMoodTime
+          ? _value.peakMoodTime
+          : peakMoodTime // ignore: cast_nullable_to_non_nullable
+              as String?,
       optimalStateMinutes: null == optimalStateMinutes
           ? _value.optimalStateMinutes
           : optimalStateMinutes // ignore: cast_nullable_to_non_nullable
@@ -472,8 +524,10 @@ class _$DailyMentalStateStatsImpl implements _DailyMentalStateStats {
   const _$DailyMentalStateStatsImpl(
       {@JsonKey(name: 'avg_energy') required this.avgEnergy,
       @JsonKey(name: 'avg_stress') required this.avgStress,
+      @JsonKey(name: 'avg_mood') this.avgMood,
       @JsonKey(name: 'peak_energy_time') required this.peakEnergyTime,
       @JsonKey(name: 'peak_stress_time') required this.peakStressTime,
+      @JsonKey(name: 'peak_mood_time') this.peakMoodTime,
       @JsonKey(name: 'optimal_state_minutes') required this.optimalStateMinutes,
       @JsonKey(name: 'burnout_risk_minutes') required this.burnoutRiskMinutes,
       @JsonKey(name: 'recovery_periods') required this.recoveryPeriods});
@@ -488,11 +542,17 @@ class _$DailyMentalStateStatsImpl implements _DailyMentalStateStats {
   @JsonKey(name: 'avg_stress')
   final double avgStress;
   @override
+  @JsonKey(name: 'avg_mood')
+  final double? avgMood;
+  @override
   @JsonKey(name: 'peak_energy_time')
   final String peakEnergyTime;
   @override
   @JsonKey(name: 'peak_stress_time')
   final String peakStressTime;
+  @override
+  @JsonKey(name: 'peak_mood_time')
+  final String? peakMoodTime;
   @override
   @JsonKey(name: 'optimal_state_minutes')
   final int optimalStateMinutes;
@@ -505,7 +565,7 @@ class _$DailyMentalStateStatsImpl implements _DailyMentalStateStats {
 
   @override
   String toString() {
-    return 'DailyMentalStateStats(avgEnergy: $avgEnergy, avgStress: $avgStress, peakEnergyTime: $peakEnergyTime, peakStressTime: $peakStressTime, optimalStateMinutes: $optimalStateMinutes, burnoutRiskMinutes: $burnoutRiskMinutes, recoveryPeriods: $recoveryPeriods)';
+    return 'DailyMentalStateStats(avgEnergy: $avgEnergy, avgStress: $avgStress, avgMood: $avgMood, peakEnergyTime: $peakEnergyTime, peakStressTime: $peakStressTime, peakMoodTime: $peakMoodTime, optimalStateMinutes: $optimalStateMinutes, burnoutRiskMinutes: $burnoutRiskMinutes, recoveryPeriods: $recoveryPeriods)';
   }
 
   @override
@@ -517,10 +577,13 @@ class _$DailyMentalStateStatsImpl implements _DailyMentalStateStats {
                 other.avgEnergy == avgEnergy) &&
             (identical(other.avgStress, avgStress) ||
                 other.avgStress == avgStress) &&
+            (identical(other.avgMood, avgMood) || other.avgMood == avgMood) &&
             (identical(other.peakEnergyTime, peakEnergyTime) ||
                 other.peakEnergyTime == peakEnergyTime) &&
             (identical(other.peakStressTime, peakStressTime) ||
                 other.peakStressTime == peakStressTime) &&
+            (identical(other.peakMoodTime, peakMoodTime) ||
+                other.peakMoodTime == peakMoodTime) &&
             (identical(other.optimalStateMinutes, optimalStateMinutes) ||
                 other.optimalStateMinutes == optimalStateMinutes) &&
             (identical(other.burnoutRiskMinutes, burnoutRiskMinutes) ||
@@ -535,8 +598,10 @@ class _$DailyMentalStateStatsImpl implements _DailyMentalStateStats {
       runtimeType,
       avgEnergy,
       avgStress,
+      avgMood,
       peakEnergyTime,
       peakStressTime,
+      peakMoodTime,
       optimalStateMinutes,
       burnoutRiskMinutes,
       recoveryPeriods);
@@ -562,8 +627,10 @@ abstract class _DailyMentalStateStats implements DailyMentalStateStats {
   const factory _DailyMentalStateStats(
       {@JsonKey(name: 'avg_energy') required final double avgEnergy,
       @JsonKey(name: 'avg_stress') required final double avgStress,
+      @JsonKey(name: 'avg_mood') final double? avgMood,
       @JsonKey(name: 'peak_energy_time') required final String peakEnergyTime,
       @JsonKey(name: 'peak_stress_time') required final String peakStressTime,
+      @JsonKey(name: 'peak_mood_time') final String? peakMoodTime,
       @JsonKey(name: 'optimal_state_minutes')
       required final int optimalStateMinutes,
       @JsonKey(name: 'burnout_risk_minutes')
@@ -581,11 +648,17 @@ abstract class _DailyMentalStateStats implements DailyMentalStateStats {
   @JsonKey(name: 'avg_stress')
   double get avgStress;
   @override
+  @JsonKey(name: 'avg_mood')
+  double? get avgMood;
+  @override
   @JsonKey(name: 'peak_energy_time')
   String get peakEnergyTime;
   @override
   @JsonKey(name: 'peak_stress_time')
   String get peakStressTime;
+  @override
+  @JsonKey(name: 'peak_mood_time')
+  String? get peakMoodTime;
   @override
   @JsonKey(name: 'optimal_state_minutes')
   int get optimalStateMinutes;

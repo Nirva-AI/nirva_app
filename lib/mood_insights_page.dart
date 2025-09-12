@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/nirva_api.dart';
 import 'package:nirva_app/constants/mood_colors.dart';
 import 'package:nirva_app/mood_trend_card.dart';
+import 'package:nirva_app/providers/mental_state_provider.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
@@ -16,6 +18,7 @@ class MoodInsightsPage extends StatefulWidget {
 
 class _MoodInsightsPageState extends State<MoodInsightsPage> {
   String _selectedPeriod = 'Week';
+  String _selectedTimelinePeriod = 'Day';
   bool _isLoading = false;
 
   @override
@@ -180,6 +183,10 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
             _buildChartSection(),
             const SizedBox(height: 32),
             
+            // Mood Timeline Section
+            _buildTimelineSection(),
+            const SizedBox(height: 32),
+            
             // Insights Section
             _buildInsightsSection(),
             const SizedBox(height: 32),
@@ -201,14 +208,14 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
       return _buildLoadingSummaryCards();
     }
 
-    final moodData = _calculateMoodDataForPeriod(_selectedPeriod);
-    final sortedMoods = moodData.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    
-    final dominantMood = sortedMoods.isNotEmpty ? sortedMoods.first : null;
-    final moodVariety = moodData.length;
+    // Use mood score data from timeline instead of mood labels
+    final moodScoreData = _getMoodScoreDataForPeriod();
+    final averageMoodScore = moodScoreData.isNotEmpty 
+        ? (moodScoreData.reduce((a, b) => a + b) / moodScoreData.length).toInt()
+        : 65;
+    final moodTrend = _calculateMoodTrend(moodScoreData);
+    final moodVariety = _calculateMoodDataForPeriod(_selectedPeriod).length;
     final totalEvents = _getTotalEventsCount();
-    final emotionalBalance = _calculateEmotionalBalance(moodData);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,10 +233,10 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
           children: [
             Expanded(
               child: _buildSummaryCard(
-                'Dominant Mood',
-                dominantMood != null ? dominantMood.key.capitalize() : 'None',
-                Icons.mood,
-                dominantMood != null ? MoodColors.getMoodColor(dominantMood.key) : const Color(0xFFD0D0D0),
+                'Average Score',
+                '$averageMoodScore',
+                Icons.sentiment_satisfied,
+                _getMoodScoreColor(averageMoodScore),
               ),
             ),
             const SizedBox(width: 12),
@@ -248,10 +255,10 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
           children: [
             Expanded(
               child: _buildSummaryCard(
-                'Emotional Balance',
-                emotionalBalance,
-                Icons.balance,
-                const Color(0xFFC8D4B8),
+                'Trend Score',
+                '${_getTrendScore(moodScoreData)}',
+                moodTrend['icon'] as IconData,
+                moodTrend['color'] as Color,
               ),
             ),
             const SizedBox(width: 12),
@@ -354,16 +361,12 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
                 ),
               ),
               const Spacer(),
-              Flexible(
-                child: Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0E3C26),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0E3C26),
                 ),
               ),
             ],
@@ -372,12 +375,10 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               color: Colors.grey.shade600,
               fontWeight: FontWeight.w500,
             ),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
           ),
         ],
       ),
@@ -388,18 +389,17 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Mood Distribution',
+              'Distribution',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF0E3C26),
               ),
             ),
-            const SizedBox(height: 12),
             _buildPeriodToggle(),
           ],
         ),
@@ -947,6 +947,363 @@ class _MoodInsightsPageState extends State<MoodInsightsPage> {
         {'period': 'Week 3', 'topMood': 'Calm', 'variety': 7, 'consistency': 65.0},
         {'period': 'Week 4', 'topMood': 'Content', 'variety': 9, 'consistency': 60.0},
       ];
+    }
+  }
+
+  Widget _buildTimelineSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Mood Timeline',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0E3C26),
+              ),
+            ),
+            _buildTimelinePeriodToggle(),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildTimelineChart(),
+      ],
+    );
+  }
+
+  Widget _buildTimelineChart() {
+    return Consumer<MentalStateProvider>(
+      builder: (context, mentalStateProvider, child) {
+        final timeline = _getTimelineForPeriod(mentalStateProvider);
+        
+        if (timeline.isEmpty) {
+          return Container(
+            height: 300,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Center(
+              child: Text(
+                'Loading mood timeline...',
+                style: TextStyle(
+                  color: Color(0xFF666666),
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          );
+        }
+
+        return Container(
+          height: 300,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 200,
+                child: LineChart(
+                  LineChartData(
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      horizontalInterval: 25,
+                      getDrawingHorizontalLine: (value) {
+                        return FlLine(
+                          color: Colors.grey.withOpacity(0.2),
+                          strokeWidth: 1,
+                        );
+                      },
+                    ),
+                    titlesData: FlTitlesData(
+                      rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          interval: timeline.length / 6,
+                          getTitlesWidget: (value, meta) {
+                            final index = value.toInt();
+                            if (index >= 0 && index < timeline.length) {
+                              String label = _getTimelineLabelForIndex(index, timeline);
+                              return Text(
+                                label,
+                                style: const TextStyle(
+                                  color: Color(0xFF666666),
+                                  fontSize: 12,
+                                ),
+                              );
+                            }
+                            return const Text('');
+                          },
+                        ),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: 25,
+                          reservedSize: 40,
+                          getTitlesWidget: (value, meta) {
+                            return Text(
+                              value.toInt().toString(),
+                              style: const TextStyle(
+                                color: Color(0xFF666666),
+                                fontSize: 12,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    borderData: FlBorderData(
+                      show: true,
+                      border: Border.all(
+                        color: Colors.grey.withOpacity(0.2),
+                        width: 1,
+                      ),
+                    ),
+                    minX: 0,
+                    maxX: timeline.length.toDouble() - 1,
+                    minY: 0,
+                    maxY: 100,
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: timeline.asMap().entries.map((entry) {
+                          return FlSpot(
+                            entry.key.toDouble(),
+                            entry.value.moodScore ?? 65.0,  // Default mood score if null
+                          );
+                        }).toList(),
+                        isCurved: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.withOpacity(0.8),
+                            Colors.blue.withOpacity(0.3),
+                          ],
+                        ),
+                        barWidth: 3,
+                        isStrokeCapRound: true,
+                        dotData: FlDotData(
+                          show: true,
+                          getDotPainter: (spot, percent, barData, index) {
+                            return FlDotCirclePainter(
+                              radius: 4,
+                              color: Colors.blue,
+                              strokeWidth: 2,
+                              strokeColor: Colors.white,
+                            );
+                          },
+                        ),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.blue.withOpacity(0.2),
+                              Colors.blue.withOpacity(0.05),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper method to get mood score data from timeline
+  List<double> _getMoodScoreDataForPeriod() {
+    final mentalStateProvider = Provider.of<MentalStateProvider>(context, listen: false);
+    List<double> moodData = [];
+    
+    switch (_selectedPeriod) {
+      case 'Day':
+        moodData = mentalStateProvider.moodData24h;
+        break;
+      case 'Week':
+        // Use 7-day timeline data
+        final timeline7d = mentalStateProvider.timeline7d;
+        moodData = timeline7d.map((point) => point.moodScore ?? 65.0).toList();
+        break;
+      case 'Month':
+        // For month, we'd need to aggregate more data - use 7-day for now
+        final timeline7d = mentalStateProvider.timeline7d;
+        moodData = timeline7d.map((point) => point.moodScore ?? 65.0).toList();
+        break;
+    }
+    
+    // Filter out zero values which are placeholder data
+    return moodData.where((score) => score > 0).toList();
+  }
+
+  // Helper method to get color based on mood score
+  Color _getMoodScoreColor(int score) {
+    if (score >= 80) return const Color(0xFF4CAF50); // Green - Great mood
+    if (score >= 65) return const Color(0xFF8BC34A); // Light Green - Good mood
+    if (score >= 50) return const Color(0xFFFFC107); // Amber - Neutral mood
+    if (score >= 35) return const Color(0xFFFF9800); // Orange - Low mood
+    return const Color(0xFFFF5722); // Deep Orange - Very low mood
+  }
+
+  // Helper method to get numeric trend score
+  int _getTrendScore(List<double> moodData) {
+    if (moodData.length < 2) return 0;
+
+    final midPoint = moodData.length ~/ 2;
+    final firstHalf = moodData.take(midPoint).toList();
+    final secondHalf = moodData.skip(midPoint).toList();
+    
+    final firstAvg = firstHalf.reduce((a, b) => a + b) / firstHalf.length;
+    final secondAvg = secondHalf.reduce((a, b) => a + b) / secondHalf.length;
+    final difference = secondAvg - firstAvg;
+    
+    return difference.round();
+  }
+
+  // Helper method to calculate mood trend
+  Map<String, dynamic> _calculateMoodTrend(List<double> moodData) {
+    if (moodData.length < 2) {
+      return {
+        'text': 'Stable',
+        'icon': Icons.trending_flat,
+        'color': const Color(0xFF9E9E9E),
+      };
+    }
+
+    // Calculate trend by comparing first half vs second half
+    final midPoint = moodData.length ~/ 2;
+    final firstHalf = moodData.take(midPoint).toList();
+    final secondHalf = moodData.skip(midPoint).toList();
+    
+    final firstAvg = firstHalf.reduce((a, b) => a + b) / firstHalf.length;
+    final secondAvg = secondHalf.reduce((a, b) => a + b) / secondHalf.length;
+    final difference = secondAvg - firstAvg;
+
+    if (difference > 5) {
+      return {
+        'text': 'Improving',
+        'icon': Icons.trending_up,
+        'color': const Color(0xFF4CAF50),
+      };
+    } else if (difference < -5) {
+      return {
+        'text': 'Declining',
+        'icon': Icons.trending_down,
+        'color': const Color(0xFFFF5722),
+      };
+    } else {
+      return {
+        'text': 'Stable',
+        'icon': Icons.trending_flat,
+        'color': const Color(0xFF2196F3),
+      };
+    }
+  }
+
+  Widget _buildTimelinePeriodToggle() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: ['Day', 'Week', 'Month'].map((period) {
+          final isSelected = period == _selectedTimelinePeriod;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedTimelinePeriod = period;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFFe7bf57) : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                period,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected ? Colors.white : const Color(0xFF0E3C26),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  List<dynamic> _getTimelineForPeriod(MentalStateProvider mentalStateProvider) {
+    switch (_selectedTimelinePeriod) {
+      case 'Day':
+        return mentalStateProvider.timeline24h;
+      case 'Week':
+        return mentalStateProvider.timeline7d;
+      case 'Month':
+        // For month, use 7-day timeline as placeholder
+        return mentalStateProvider.timeline7d;
+      default:
+        return mentalStateProvider.timeline24h;
+    }
+  }
+
+  String _getTimelineLabelForIndex(int index, List<dynamic> timeline) {
+    if (index < 0 || index >= timeline.length) return '';
+    
+    final timestamp = timeline[index].timestamp as DateTime;
+    
+    switch (_selectedTimelinePeriod) {
+      case 'Day':
+        // Show hours for day view
+        return DateFormat('HH:mm').format(timestamp);
+      case 'Week':
+        // Show day of week for week view
+        return DateFormat('E').format(timestamp); // Mon, Tue, etc.
+      case 'Month':
+        // Show date for month view
+        return DateFormat('M/d').format(timestamp); // 1/15, 2/3, etc.
+      default:
+        return DateFormat('HH:mm').format(timestamp);
     }
   }
 }

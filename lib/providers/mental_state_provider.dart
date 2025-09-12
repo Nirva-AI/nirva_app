@@ -25,11 +25,13 @@ class MentalStateProvider extends ChangeNotifier {
   DailyMentalStateStats? get dailyStats => _insights?.dailyStats;
   List<String> get recommendations => _insights?.recommendations ?? [];
   
-  // Get energy and stress for chart display
+  // Get energy, stress, and mood for chart display
   List<double> get energyData24h => 
       timeline24h.map((p) => p.energyScore).toList();
   List<double> get stressData24h => 
       timeline24h.map((p) => p.stressScore).toList();
+  List<double> get moodData24h => 
+      timeline24h.map((p) => p.moodScore ?? 65.0).toList();
   
   // Get timestamps for x-axis
   List<String> get timeLabels24h => 

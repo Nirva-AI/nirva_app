@@ -452,6 +452,9 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
         final avgStress = points
             .map((p) => p.stressScore)
             .reduce((a, b) => a + b) / points.length;
+        final avgMood = points
+            .map((p) => p.moodScore ?? 65.0)
+            .reduce((a, b) => a + b) / points.length;
         final avgConfidence = points
             .map((p) => p.confidence)
             .reduce((a, b) => a + b) / points.length;
@@ -461,6 +464,7 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
           timestamp: points.first.timestamp,
           energyScore: avgEnergy,
           stressScore: avgStress,
+          moodScore: avgMood,
           confidence: avgConfidence,
           dataSource: 'aggregated',
           eventId: null,
@@ -504,6 +508,9 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
         final avgStress = points
             .map((p) => p.stressScore)
             .reduce((a, b) => a + b) / points.length;
+        final avgMood = points
+            .map((p) => p.moodScore ?? 65.0)
+            .reduce((a, b) => a + b) / points.length;
         final avgConfidence = points
             .map((p) => p.confidence)
             .reduce((a, b) => a + b) / points.length;
@@ -512,6 +519,7 @@ class _EnergyTrendCardState extends State<EnergyTrendCard> {
           timestamp: points.first.timestamp,
           energyScore: avgEnergy,
           stressScore: avgStress,
+          moodScore: avgMood,
           confidence: avgConfidence,
           dataSource: 'aggregated',
           eventId: null,

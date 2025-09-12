@@ -161,14 +161,16 @@ class DashboardScoresRow extends StatelessWidget {
     final timeline = mentalStateProvider.timeline24h;
     double energyScore = 50.0;
     double stressScore = 30.0;
+    double moodScore = 65.0;
     
     // Find the last non-zero data point
     print('Dashboard - Checking timeline for non-zero values:');
     for (int i = timeline.length - 1; i >= 0 && i >= timeline.length - 10; i--) {
-      print('  Point $i: energy=${timeline[i].energyScore}, stress=${timeline[i].stressScore}, time=${timeline[i].timestamp}');
-      if (timeline[i].energyScore != 0.0 || timeline[i].stressScore != 0.0) {
+      print('  Point $i: energy=${timeline[i].energyScore}, stress=${timeline[i].stressScore}, mood=${timeline[i].moodScore}, time=${timeline[i].timestamp}');
+      if (timeline[i].energyScore != 0.0 || timeline[i].stressScore != 0.0 || (timeline[i].moodScore ?? 0.0) != 0.0) {
         energyScore = timeline[i].energyScore;
         stressScore = timeline[i].stressScore;
+        moodScore = timeline[i].moodScore ?? 65.0;  // Default mood score if null
         print('  --> Using this point!');
         break;
       }
@@ -179,12 +181,7 @@ class DashboardScoresRow extends StatelessWidget {
     if (timeline.isNotEmpty) {
       print('Dashboard - last point: ${timeline.last}');
     }
-    print('Dashboard - energyScore: $energyScore, stressScore: $stressScore');
-    
-    // For mood, use journal average if available, otherwise default
-    final moodScoreCalculated = journalFilesProvider.currentJournalFile.moodScoreAverage > 0 
-        ? journalFilesProvider.currentJournalFile.moodScoreAverage 
-        : 70.0;
+    print('Dashboard - energyScore: $energyScore, stressScore: $stressScore, moodScore: $moodScore');
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -199,7 +196,7 @@ class DashboardScoresRow extends StatelessWidget {
           ),
           DashboardScoreComponent(
             label: 'Mood',
-            score: moodScoreCalculated,
+            score: moodScore,
             icon: Icons.wb_sunny_outlined,
             color: Colors.blue,
           ),
