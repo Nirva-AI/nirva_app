@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'dart:math';
+import 'providers/mental_state_provider.dart';
 
 class EnergyInsightsPage extends StatefulWidget {
   const EnergyInsightsPage({super.key});
@@ -66,62 +69,72 @@ class _EnergyInsightsPageState extends State<EnergyInsightsPage> {
   }
 
   Widget _buildSummaryCards() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Summary',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF0E3C26),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Row(
+    return Consumer<MentalStateProvider>(
+      builder: (context, mentalStateProvider, child) {
+        final energyData = _getEnergyDataForPeriod(mentalStateProvider);
+        final avgEnergy = _calculateAverage(energyData);
+        final peakTime = _findPeakTime(mentalStateProvider);
+        final lowTime = _findLowTime(mentalStateProvider);
+        final consistency = _calculateConsistency(energyData);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: _buildSummaryCard(
-                'Avg Energy',
-                '72',
-                Icons.bolt,
-                const Color(0xFFe7bf57),
+            const Text(
+              'Summary',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0E3C26),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSummaryCard(
-                'Peak Time',
-                '10 AM',
-                Icons.trending_up,
-                const Color(0xFFC8D4B8),
-              ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSummaryCard(
+                    'Avg Energy',
+                    avgEnergy.toInt().toString(),
+                    Icons.bolt,
+                    const Color(0xFFe7bf57),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildSummaryCard(
+                    'Peak Time',
+                    peakTime,
+                    Icons.trending_up,
+                    const Color(0xFFC8D4B8),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSummaryCard(
+                    'Low Time',
+                    lowTime,
+                    Icons.trending_down,
+                    const Color(0xFFfdd78c),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildSummaryCard(
+                    'Consistency',
+                    consistency,
+                    Icons.show_chart,
+                    const Color(0xFFdad5fd),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSummaryCard(
-                'Low Time',
-                '3 PM',
-                Icons.trending_down,
-                const Color(0xFFfdd78c),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSummaryCard(
-                'Consistency',
-                'Good',
-                Icons.show_chart,
-                const Color(0xFFdad5fd),
-              ),
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -259,138 +272,170 @@ class _EnergyInsightsPageState extends State<EnergyInsightsPage> {
   }
 
   Widget _buildEnergyChart() {
-    final chartData = _getEnergyChartData();
-    
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(
-          show: true,
-          horizontalInterval: 20,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey.shade200,
-              strokeWidth: 1,
-            );
-          },
-          drawVerticalLine: false,
-        ),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 40,
-              interval: 20,
-              getTitlesWidget: (value, meta) {
-                if (value >= 0 && value <= 100 && value % 20 == 0) {
-                  return Text(
-                    '${value.toInt()}',
-                    style: const TextStyle(
-                      color: Color(0xFF0E3C26),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  );
-                }
-                return const Text('');
-              },
+    return Consumer<MentalStateProvider>(
+      builder: (context, mentalStateProvider, child) {
+        final chartData = _getEnergyChartDataReal(mentalStateProvider);
+        
+        if (chartData.isEmpty) {
+          return const Center(
+            child: Text(
+              'No energy data available',
+              style: TextStyle(
+                color: Color(0xFF666666),
+                fontSize: 16,
+              ),
             ),
-          ),
-          rightTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              getTitlesWidget: (value, meta) {
-                final labels = _getTimeLabels();
-                if (value.toInt() >= 0 && value.toInt() < labels.length) {
-                  return Text(
-                    labels[value.toInt()],
-                    style: const TextStyle(
-                      color: Color(0xFF0E3C26),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  );
-                }
-                return const Text('');
-              },
-            ),
-          ),
-        ),
-        borderData: FlBorderData(show: false),
-        lineBarsData: [
-          LineChartBarData(
-            spots: chartData,
-            isCurved: true,
-            color: const Color(0xFFe7bf57),
-            barWidth: 3,
-            dotData: FlDotData(
+          );
+        }
+        
+        return LineChart(
+          LineChartData(
+            gridData: FlGridData(
               show: true,
-              getDotPainter: (spot, percent, barData, index) {
-                return FlDotCirclePainter(
-                  radius: 4,
-                  color: Colors.white,
-                  strokeWidth: 2,
-                  strokeColor: const Color(0xFFe7bf57),
+              horizontalInterval: 20,
+              getDrawingHorizontalLine: (value) {
+                return FlLine(
+                  color: Colors.grey.shade200,
+                  strokeWidth: 1,
                 );
               },
+              drawVerticalLine: false,
             ),
-            belowBarData: BarAreaData(
-              show: true,
-              color: const Color(0xFFe7bf57).withOpacity(0.1),
+            titlesData: FlTitlesData(
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 40,
+                  interval: 20,
+                  getTitlesWidget: (value, meta) {
+                    if (value >= 0 && value <= 100 && value % 20 == 0) {
+                      return Text(
+                        '${value.toInt()}',
+                        style: const TextStyle(
+                          color: Color(0xFF0E3C26),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    }
+                    return const Text('');
+                  },
+                ),
+              ),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 30,
+                  interval: _getXAxisInterval(chartData.length),
+                  getTitlesWidget: (value, meta) {
+                    final labels = _getRealTimeLabels(mentalStateProvider);
+                    final index = _getXAxisLabelIndex(value, chartData.length, labels.length);
+                    if (index >= 0 && index < labels.length) {
+                      return Text(
+                        labels[index],
+                        style: const TextStyle(
+                          color: Color(0xFF0E3C26),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    }
+                    return const Text('');
+                  },
+                ),
+              ),
+            ),
+            borderData: FlBorderData(show: false),
+            minX: 0,
+            maxX: (chartData.length - 1).toDouble(),
+            minY: 0,
+            maxY: 100,
+            lineBarsData: [
+              LineChartBarData(
+                spots: chartData,
+                isCurved: true,
+                color: const Color(0xFFe7bf57),
+                barWidth: 3,
+                dotData: FlDotData(
+                  show: true,
+                  getDotPainter: (spot, percent, barData, index) {
+                    return FlDotCirclePainter(
+                      radius: 4,
+                      color: Colors.white,
+                      strokeWidth: 2,
+                      strokeColor: const Color(0xFFe7bf57),
+                    );
+                  },
+                ),
+                belowBarData: BarAreaData(
+                  show: true,
+                  color: const Color(0xFFe7bf57).withOpacity(0.1),
+                ),
+              ),
+            ],
+            lineTouchData: LineTouchData(
+              touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {},
+              handleBuiltInTouches: true,
             ),
           ),
-        ],
-        lineTouchData: LineTouchData(
-          touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {},
-          handleBuiltInTouches: true,
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildEnergyPatterns() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Energy Patterns',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF0E3C26),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+    return Consumer<MentalStateProvider>(
+      builder: (context, mentalStateProvider, child) {
+        final patterns = _analyzeEnergyPatterns(mentalStateProvider);
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Energy Patterns',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0E3C26),
               ),
-            ],
-          ),
-          child: Column(
-            children: [
-              _buildPatternItem('Morning Energy', '85', 'High', const Color(0xFFC8D4B8)),
-              const SizedBox(height: 16),
-              _buildPatternItem('Afternoon Dip', '45', 'Low', const Color(0xFFfdd78c)),
-              const SizedBox(height: 16),
-              _buildPatternItem('Evening Recovery', '65', 'Moderate', const Color(0xFFdad5fd)),
-            ],
-          ),
-        ),
-      ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: patterns.map((pattern) => 
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _buildPatternItem(
+                      pattern['title'],
+                      pattern['value'],
+                      pattern['level'],
+                      pattern['color'],
+                    ),
+                  ),
+                ).toList(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -441,92 +486,138 @@ class _EnergyInsightsPageState extends State<EnergyInsightsPage> {
   }
 
   Widget _buildDailyBreakdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Daily Breakdown',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF0E3C26),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+    return Consumer<MentalStateProvider>(
+      builder: (context, mentalStateProvider, child) {
+        final dailyData = _getRealDailyBreakdownData(mentalStateProvider);
+        
+        if (dailyData.isEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Daily Breakdown',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0E3C26),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    'No daily breakdown data available',
+                    style: TextStyle(
+                      color: Color(0xFF666666),
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
               ),
             ],
-          ),
-          child: Column(
-            children: _getDailyBreakdownData().map((day) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      child: Text(
-                        day['day'],
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF0E3C26),
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Daily Breakdown',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0E3C26),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: dailyData.map((day) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            day['day'],
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF0E3C26),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Avg: ${day['avg']}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF0E3C26),
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Avg: ${day['avg'].toInt()}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF0E3C26),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Range: ${day['range']}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'Range: ${day['range']}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
+                              const SizedBox(height: 4),
+                              LinearProgressIndicator(
+                                value: day['avg'] / 100,
+                                backgroundColor: Colors.grey.shade200,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  day['avg'] >= 70 ? const Color(0xFFC8D4B8) :
+                                  day['avg'] >= 50 ? const Color(0xFFe7bf57) :
+                                  const Color(0xFFfdd78c),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
-                          LinearProgressIndicator(
-                            value: day['avg'] / 100,
-                            backgroundColor: Colors.grey.shade200,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              day['avg'] >= 70 ? const Color(0xFFC8D4B8) :
-                              day['avg'] >= 50 ? const Color(0xFFe7bf57) :
-                              const Color(0xFFfdd78c),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -604,60 +695,235 @@ class _EnergyInsightsPageState extends State<EnergyInsightsPage> {
     );
   }
 
-  List<FlSpot> _getEnergyChartData() {
-    final random = Random(42); // Seeded for consistency
+  // Real data helper methods
+  List<double> _getEnergyDataForPeriod(MentalStateProvider provider) {
+    switch (_selectedPeriod) {
+      case 'Day':
+        return provider.energyData24h;
+      case 'Week':
+        return provider.timeline7d.map((p) => p.energyScore).toList();
+      case 'Month':
+        // For month, use 7-day data as placeholder until month data is available
+        return provider.timeline7d.map((p) => p.energyScore).toList();
+      default:
+        return provider.energyData24h;
+    }
+  }
+
+  List<FlSpot> _getEnergyChartDataReal(MentalStateProvider provider) {
+    final energyData = _getEnergyDataForPeriod(provider);
+    
+    return energyData.asMap().entries.map((entry) {
+      return FlSpot(entry.key.toDouble(), entry.value);
+    }).toList();
+  }
+
+  List<String> _getRealTimeLabels(MentalStateProvider provider) {
+    switch (_selectedPeriod) {
+      case 'Day':
+        // Show every 3 hours: 0, 3, 6, 9, 12, 15, 18, 21
+        return ['0', '3', '6', '9', '12', '15', '18', '21'];
+      case 'Week':
+        // Show first point of every day
+        return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      case 'Month':
+        // Show evenly spaced points for month view
+        return ['1', '5', '10', '15', '20', '25', '30'];
+      default:
+        return [];
+    }
+  }
+
+  double _calculateAverage(List<double> data) {
+    if (data.isEmpty) return 0.0;
+    return data.reduce((a, b) => a + b) / data.length;
+  }
+
+  String _findPeakTime(MentalStateProvider provider) {
+    final timeline = _selectedPeriod == 'Day' ? provider.timeline24h : provider.timeline7d;
+    if (timeline.isEmpty) return 'N/A';
+    
+    double maxEnergy = 0;
+    int maxIndex = 0;
+    for (int i = 0; i < timeline.length; i++) {
+      if (timeline[i].energyScore > maxEnergy) {
+        maxEnergy = timeline[i].energyScore;
+        maxIndex = i;
+      }
+    }
     
     if (_selectedPeriod == 'Day') {
-      // 24 hours data points (every hour)
-      return List.generate(24, (index) {
-        double energy;
-        if (index >= 6 && index <= 10) {
-          energy = 70 + random.nextDouble() * 20; // Morning peak
-        } else if (index >= 14 && index <= 16) {
-          energy = 35 + random.nextDouble() * 20; // Afternoon dip
-        } else if (index >= 19 && index <= 22) {
-          energy = 55 + random.nextDouble() * 20; // Evening recovery
-        } else if (index >= 23 || index <= 5) {
-          energy = 20 + random.nextDouble() * 15; // Night/early morning
-        } else {
-          energy = 50 + random.nextDouble() * 25; // Other times
-        }
-        return FlSpot(index.toDouble(), energy);
-      });
-    } else if (_selectedPeriod == 'Week') {
-      // 7 days data
-      return List.generate(7, (index) {
-        double energy = 65 + random.nextDouble() * 20;
-        return FlSpot(index.toDouble(), energy);
-      });
+      return DateFormat('h a').format(timeline[maxIndex].timestamp);
     } else {
-      // 30 days data
-      return List.generate(30, (index) {
-        double energy = 60 + random.nextDouble() * 30;
-        return FlSpot(index.toDouble(), energy);
-      });
+      return DateFormat('E').format(timeline[maxIndex].timestamp);
     }
   }
 
-  List<String> _getTimeLabels() {
+  String _findLowTime(MentalStateProvider provider) {
+    final timeline = _selectedPeriod == 'Day' ? provider.timeline24h : provider.timeline7d;
+    if (timeline.isEmpty) return 'N/A';
+    
+    double minEnergy = 100;
+    int minIndex = 0;
+    for (int i = 0; i < timeline.length; i++) {
+      if (timeline[i].energyScore < minEnergy) {
+        minEnergy = timeline[i].energyScore;
+        minIndex = i;
+      }
+    }
+    
     if (_selectedPeriod == 'Day') {
-      return ['12AM', '3AM', '6AM', '9AM', '12PM', '3PM', '6PM', '9PM'];
-    } else if (_selectedPeriod == 'Week') {
-      return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      return DateFormat('h a').format(timeline[minIndex].timestamp);
     } else {
-      return ['1', '5', '10', '15', '20', '25', '30'];
+      return DateFormat('E').format(timeline[minIndex].timestamp);
     }
   }
 
-  List<Map<String, dynamic>> _getDailyBreakdownData() {
-    return [
-      {'day': 'Mon', 'avg': 75.0, 'range': '55-85'},
-      {'day': 'Tue', 'avg': 68.0, 'range': '50-80'},
-      {'day': 'Wed', 'avg': 72.0, 'range': '60-85'},
-      {'day': 'Thu', 'avg': 65.0, 'range': '45-75'},
-      {'day': 'Fri', 'avg': 70.0, 'range': '55-80'},
-      {'day': 'Sat', 'avg': 78.0, 'range': '65-90'},
-      {'day': 'Sun', 'avg': 74.0, 'range': '60-85'},
+  String _calculateConsistency(List<double> data) {
+    if (data.isEmpty) return 'N/A';
+    if (data.length < 2) return 'Limited Data';
+    
+    final avg = _calculateAverage(data);
+    final variance = data.map((x) => pow(x - avg, 2)).reduce((a, b) => a + b) / data.length;
+    final stdDev = sqrt(variance);
+    
+    if (stdDev < 10) return 'Excellent';
+    if (stdDev < 15) return 'Good';
+    if (stdDev < 25) return 'Fair';
+    return 'Variable';
+  }
+
+  List<Map<String, dynamic>> _getRealDailyBreakdownData(MentalStateProvider provider) {
+    final timeline7d = provider.timeline7d;
+    if (timeline7d.isEmpty) return [];
+    
+    // Group by day of week
+    Map<String, List<double>> dailyData = {};
+    for (final point in timeline7d) {
+      final dayKey = DateFormat('E').format(point.timestamp);
+      dailyData[dayKey] ??= [];
+      dailyData[dayKey]!.add(point.energyScore);
+    }
+    
+    return dailyData.entries.map((entry) {
+      final avg = _calculateAverage(entry.value);
+      final minVal = entry.value.reduce(min);
+      final maxVal = entry.value.reduce(max);
+      return {
+        'day': entry.key,
+        'avg': avg,
+        'range': '${minVal.toInt()}-${maxVal.toInt()}',
+      };
+    }).toList();
+  }
+
+  List<Map<String, dynamic>> _analyzeEnergyPatterns(MentalStateProvider provider) {
+    final timeline24h = provider.timeline24h;
+    if (timeline24h.isEmpty) {
+      return [
+        {
+          'title': 'No Data Available',
+          'value': 'N/A',
+          'level': 'Insufficient Data',
+          'color': const Color(0xFF9E9E9E),
+        }
+      ];
+    }
+    
+    // Analyze morning (6-12), afternoon (12-18), evening (18-24) energy
+    final morning = timeline24h
+        .where((p) => p.timestamp.hour >= 6 && p.timestamp.hour < 12)
+        .map((p) => p.energyScore)
+        .toList();
+    final afternoon = timeline24h
+        .where((p) => p.timestamp.hour >= 12 && p.timestamp.hour < 18)
+        .map((p) => p.energyScore)
+        .toList();
+    final evening = timeline24h
+        .where((p) => p.timestamp.hour >= 18)
+        .map((p) => p.energyScore)
+        .toList();
+    
+    final patterns = <Map<String, dynamic>>[];
+    
+    if (morning.isNotEmpty) {
+      final avg = _calculateAverage(morning);
+      patterns.add({
+        'title': 'Morning Energy',
+        'value': avg.toInt().toString(),
+        'level': _getEnergyLevel(avg),
+        'color': _getEnergyColor(avg),
+      });
+    }
+    
+    if (afternoon.isNotEmpty) {
+      final avg = _calculateAverage(afternoon);
+      patterns.add({
+        'title': 'Afternoon Energy',
+        'value': avg.toInt().toString(),
+        'level': _getEnergyLevel(avg),
+        'color': _getEnergyColor(avg),
+      });
+    }
+    
+    if (evening.isNotEmpty) {
+      final avg = _calculateAverage(evening);
+      patterns.add({
+        'title': 'Evening Energy',
+        'value': avg.toInt().toString(),
+        'level': _getEnergyLevel(avg),
+        'color': _getEnergyColor(avg),
+      });
+    }
+    
+    return patterns.isNotEmpty ? patterns : [
+      {
+        'title': 'Limited Data',
+        'value': 'N/A',
+        'level': 'More data needed',
+        'color': const Color(0xFF9E9E9E),
+      }
     ];
+  }
+
+  String _getEnergyLevel(double energy) {
+    if (energy >= 80) return 'Excellent';
+    if (energy >= 65) return 'High';
+    if (energy >= 50) return 'Moderate';
+    if (energy >= 35) return 'Low';
+    return 'Very Low';
+  }
+
+  Color _getEnergyColor(double energy) {
+    if (energy >= 80) return const Color(0xFF4CAF50); // Green
+    if (energy >= 65) return const Color(0xFFC8D4B8); // Light Green
+    if (energy >= 50) return const Color(0xFFe7bf57); // Yellow
+    if (energy >= 35) return const Color(0xFFfdd78c); // Light Orange
+    return const Color(0xFFFF9800); // Orange
+  }
+
+  double _getXAxisInterval(int dataLength) {
+    switch (_selectedPeriod) {
+      case 'Day':
+        // For day view, show every 3 hours (every 3rd data point if hourly data)
+        return (dataLength / 8).clamp(1.0, double.infinity);
+      case 'Week':
+        // For week view, show every day
+        return (dataLength / 7).clamp(1.0, double.infinity);
+      case 'Month':
+        // For month view, show every 5 days
+        return (dataLength / 6).clamp(1.0, double.infinity);
+      default:
+        return 1.0;
+    }
+  }
+
+  int _getXAxisLabelIndex(double value, int dataLength, int labelCount) {
+    if (dataLength <= 1 || labelCount <= 1) return 0;
+    
+    // Map the x-axis value to label index
+    final ratio = value / (dataLength - 1);
+    final labelIndex = (ratio * (labelCount - 1)).round();
+    return labelIndex.clamp(0, labelCount - 1);
   }
 }
