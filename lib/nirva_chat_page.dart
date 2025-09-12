@@ -58,18 +58,33 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
   @override
   void initState() {
     super.initState();
-    // Load existing chat history from provider
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Load conversation history from server and sync with local storage
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final chatProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
-      // Chat history is already loaded from Hive by the provider
-      // Just scroll to bottom if there are messages
+      
+      // First load from local storage for immediate display
       if (chatProvider.chatHistory.isNotEmpty) {
         _scrollToBottomWithDelay();
       }
+      
+      // Then sync from server to get latest conversation
+      try {
+        final success = await chatProvider.syncFromServer(limit: 50);
+        if (success && chatProvider.chatHistory.isNotEmpty) {
+          // Scroll to bottom after server sync
+          _scrollToBottomWithDelay();
+        }
+      } catch (e) {
+        // If server sync fails, we still have local data
+        print('Failed to sync conversation from server: $e');
+      }
+      
       // Check if we should show "load more" based on message count
-      setState(() {
-        _showLoadMore = chatProvider.chatHistory.length >= 20; // Show if we have many messages
-      });
+      if (mounted) {
+        setState(() {
+          _showLoadMore = chatProvider.chatHistory.length >= 50; // Show if we have many messages
+        });
+      }
     });
   }
 
@@ -337,26 +352,31 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
       _isLoadingMore = true;
     });
 
-    // Simulate loading delay for UX
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    // In a real implementation, you would:
-    // 1. Load older messages from local storage (Hive)
-    // 2. Or fetch message history from the server if implemented
-    // For now, we just work with what's in the ChatHistoryProvider
-    
-    if (mounted) {
+    try {
       final chatProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
+      final currentCount = chatProvider.chatHistory.length;
       
-      // Check if we have enough messages to warrant "load more"
-      // In the future, this could paginate through older messages
-      final totalMessages = chatProvider.chatHistory.length;
+      // Fetch older messages from server using current count as offset
+      final success = await chatProvider.syncFromServer(
+        limit: 50,
+        offset: currentCount,
+      );
       
-      setState(() {
-        _isLoadingMore = false;
-        // Hide load more if we don't have many messages
-        _showLoadMore = totalMessages > 50; // Only show if we have lots of messages
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+          // Keep showing load more if we got a full batch (suggests more messages available)
+          _showLoadMore = success && (chatProvider.chatHistory.length - currentCount) >= 50;
+        });
+      }
+    } catch (e) {
+      print('Failed to load more messages: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+          _showLoadMore = false; // Hide on error
+        });
+      }
     }
   }
 
@@ -450,6 +470,107 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
     } else {
       // Stop recording
       // TODO: Stop audio recording and process the audio
+    }
+  }
+
+  void _showSearchDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Search Conversation'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Search messages...',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (query) async {
+                Navigator.pop(context);
+                if (query.isNotEmpty) {
+                  await _performSearch(query);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _performSearch(String query) async {
+    try {
+      final chatProvider = Provider.of<ChatHistoryProvider>(context, listen: false);
+      final results = await chatProvider.searchMessages(query);
+      
+      if (results != null && results.isNotEmpty) {
+        // Show search results in a new dialog
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Search Results for "$query"'),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 300,
+                child: ListView.builder(
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    final message = results[index];
+                    return ListTile(
+                      title: Text(
+                        message.content,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        '${_getRoleName(message.role)} - ${DateTime.parse(message.time_stamp).toLocal().toString().substring(0, 16)}',
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Scroll to message in conversation
+                      },
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        }
+      } else {
+        // Show no results message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('No messages found for "$query"'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Search failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -652,7 +773,7 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
           IconButton(
             icon: const Icon(Icons.search_outlined, color: Color(0xFF0E3C26)),
             onPressed: () {
-              // Show search functionality
+              _showSearchDialog();
             },
             padding: const EdgeInsets.all(4),
           ),
@@ -861,4 +982,16 @@ class _NirvaChatPageState extends State<NirvaChatPage> {
     );
   }
 
+  String _getRoleName(int role) {
+    switch (role) {
+      case MessageRole.system:
+        return 'System';
+      case MessageRole.human:
+        return 'Human';
+      case MessageRole.ai:
+        return 'AI';
+      default:
+        return 'Unknown';
+    }
+  }
 } 

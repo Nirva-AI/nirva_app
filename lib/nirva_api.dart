@@ -389,12 +389,10 @@ class NirvaAPI {
       HiveHelper.saveChatHistory(chatHistoryProvider.chatHistory);
     }
 
-    // Create request with the updated chat history (including the new user message)
+    // Create request with empty chat history since v2 endpoint manages this server-side
     final chatActionRequest = ChatActionRequest(
       human_message: userMessage,
-      chat_history: chatHistoryProvider?.chatHistory.where((msg) => 
-        msg.id != userMessage.id  // Exclude the current message from history
-      ).toList() ?? [],
+      chat_history: [], // Server manages conversation history in v2
     );
 
     // 添加详细日志，查看完整请求体
@@ -793,6 +791,90 @@ class NirvaAPI {
     } catch (e) {
       Logger().e('Error fetching transcription details: $e');
       rethrow;
+    }
+  }
+
+  // 获取对话历史记录（从服务器）
+  static Future<Map<String, dynamic>?> getConversationHistory({
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    try {
+      final response = await safeGet<Map<String, dynamic>>(
+        _dio,
+        _urlConfig.conversationHistoryUrl,
+        query: {
+          'limit': limit,
+          'offset': offset,
+        },
+        receiveTimeout: 10,
+      );
+
+      if (response == null || response.data == null) {
+        Logger().e('Failed to get conversation history: No response data');
+        return null;
+      }
+
+      Logger().d('Conversation history response: ${jsonEncode(response.data!)}');
+      return response.data!;
+    } catch (e) {
+      Logger().e('Error getting conversation history: $e');
+      return null;
+    }
+  }
+
+  // 搜索对话
+  static Future<Map<String, dynamic>?> searchConversation({
+    required String query,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        _urlConfig.conversationSearchUrl,
+        data: FormData.fromMap({
+          'query': query,
+          'limit': limit,
+        }),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${HiveHelper.getUserToken().access_token}',
+          },
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        Logger().d('Conversation search response: ${jsonEncode(response.data!)}');
+        return response.data!;
+      } else {
+        Logger().e('Failed to search conversation: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      Logger().e('Error searching conversation: $e');
+      return null;
+    }
+  }
+
+  // 获取对话统计信息
+  static Future<Map<String, dynamic>?> getConversationStats() async {
+    try {
+      final response = await safeGet<Map<String, dynamic>>(
+        _dio,
+        _urlConfig.conversationStatsUrl,
+        receiveTimeout: 10,
+      );
+
+      if (response == null || response.data == null) {
+        Logger().e('Failed to get conversation stats: No response data');
+        return null;
+      }
+
+      Logger().d('Conversation stats response: ${jsonEncode(response.data!)}');
+      return response.data!;
+    } catch (e) {
+      Logger().e('Error getting conversation stats: $e');
+      return null;
     }
   }
 

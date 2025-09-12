@@ -67,4 +67,17 @@ class URLConfiguration {
         ) ??
         '';
   }
+
+  // Enhanced chat endpoints
+  String get conversationHistoryUrl {
+    return _urlConfig.endpoints['conversation_history'] ?? '';
+  }
+
+  String get conversationStatsUrl {
+    return _urlConfig.endpoints['conversation_stats'] ?? '';
+  }
+
+  String get conversationSearchUrl {
+    return _urlConfig.endpoints['conversation_search'] ?? '';
+  }
 }

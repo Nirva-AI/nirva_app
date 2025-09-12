@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:nirva_app/api_models.dart';
+import 'package:nirva_app/nirva_api.dart';
+import 'package:nirva_app/hive_helper.dart';
+import 'package:logger/logger.dart';
 
 class ChatHistoryProvider extends ChangeNotifier {
   List<ChatMessage> _chatHistory = [];
@@ -88,8 +91,8 @@ class ChatHistoryProvider extends ChangeNotifier {
   /// 检查聊天历史是否不为空
   bool get isNotEmpty => _chatHistory.isNotEmpty;
 
-  /// 根据内容搜索消息
-  List<ChatMessage> searchMessages(String query) {
+  /// 根据内容搜索消息（本地搜索）
+  List<ChatMessage> searchMessagesLocal(String query) {
     if (query.isEmpty) return chatHistory;
     return _chatHistory
         .where(
@@ -128,5 +131,93 @@ class ChatHistoryProvider extends ChangeNotifier {
   void clearData() {
     _chatHistory = [];
     notifyListeners();
+  }
+
+  /// 从服务器同步对话历史记录
+  Future<bool> syncFromServer({int limit = 50, int offset = 0}) async {
+    try {
+      Logger().i('Syncing conversation history from server...');
+      
+      final response = await NirvaAPI.getConversationHistory(
+        limit: limit,
+        offset: offset,
+      );
+
+      if (response == null) {
+        Logger().e('Failed to sync conversation history from server');
+        return false;
+      }
+
+      final messages = response['messages'] as List<dynamic>?;
+      if (messages == null) {
+        Logger().w('No messages in server response');
+        return true; // Empty is valid
+      }
+
+      // Convert server response to ChatMessage objects
+      final serverMessages = messages
+          .map((messageJson) => ChatMessage.fromJson(messageJson as Map<String, dynamic>))
+          .toList();
+
+      // Replace local history with server data if offset is 0
+      // Otherwise append for pagination
+      if (offset == 0) {
+        _chatHistory = serverMessages;
+        Logger().i('Replaced local chat history with ${serverMessages.length} messages from server');
+      } else {
+        // Insert at beginning for pagination (older messages)
+        _chatHistory.insertAll(0, serverMessages);
+        Logger().i('Added ${serverMessages.length} older messages from server');
+      }
+
+      // Save to local storage
+      HiveHelper.saveChatHistory(_chatHistory);
+      notifyListeners();
+
+      Logger().i('Successfully synced conversation history');
+      return true;
+    } catch (e) {
+      Logger().e('Error syncing conversation history: $e');
+      return false;
+    }
+  }
+
+  /// 搜索对话消息
+  Future<List<ChatMessage>?> searchMessages(String query) async {
+    try {
+      if (query.trim().isEmpty) {
+        return chatHistory; // Return all messages for empty query
+      }
+
+      Logger().i('Searching conversation for: $query');
+      
+      final response = await NirvaAPI.searchConversation(query: query);
+      if (response == null) {
+        Logger().e('Failed to search conversation');
+        return null;
+      }
+
+      final messages = response['messages'] as List<dynamic>?;
+      if (messages == null) {
+        return [];
+      }
+
+      return messages
+          .map((messageJson) => ChatMessage.fromJson(messageJson as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      Logger().e('Error searching conversation: $e');
+      return null;
+    }
+  }
+
+  /// 获取对话统计信息
+  Future<Map<String, dynamic>?> getConversationStats() async {
+    try {
+      return await NirvaAPI.getConversationStats();
+    } catch (e) {
+      Logger().e('Error getting conversation stats: $e');
+      return null;
+    }
   }
 }
