@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../my_hive_objects.dart';
 import '../nirva_api.dart';
@@ -21,6 +22,13 @@ class TranscriptionSyncService extends ChangeNotifier {
   bool _isSyncing = false;
   DateTime? _lastSentTimestamp;
   final List<String> _pendingTranscriptionIds = [];
+  
+  // App state management for foreground/background behavior
+  bool _isAppInForeground = true;
+  static const MethodChannel _platform = MethodChannel('app_lifecycle');
+  
+  // Foreground vs background behavior
+  bool get shouldUseForegroundMode => _isAppInForeground;
   
   // Getters
   bool get isInitialized => _isInitialized;
@@ -74,8 +82,15 @@ class TranscriptionSyncService extends ChangeNotifier {
     if (!_pendingTranscriptionIds.contains(transcriptionId)) {
       _pendingTranscriptionIds.add(transcriptionId);
       
-      // Start timer if this is the first pending transcription
-      _startBatchTimer();
+      if (shouldUseForegroundMode) {
+        // In foreground: process immediately (no batching)
+        debugPrint('TranscriptionSyncService: 🚀 FOREGROUND mode - processing transcription immediately');
+        _processSingleTranscription(transcriptionId);
+      } else {
+        // In background: use batch timer (conservative)
+        debugPrint('TranscriptionSyncService: 🐌 BACKGROUND mode - batching transcription');
+        _startBatchTimer();
+      }
       
       notifyListeners();
     }
@@ -308,6 +323,95 @@ class TranscriptionSyncService extends ChangeNotifier {
       
     } catch (e) {
       debugPrint('TranscriptionSyncService: Error triggering analysis after sync: $e');
+    }
+  }
+  
+  /// Process single transcription immediately (foreground mode)
+  Future<void> _processSingleTranscription(String transcriptionId) async {
+    if (_isSyncing) {
+      debugPrint('TranscriptionSyncService: Sync already in progress, queuing single transcription');
+      return;
+    }
+    
+    _isSyncing = true;
+    notifyListeners();
+    
+    try {
+      debugPrint('TranscriptionSyncService: Processing single transcription immediately: $transcriptionId');
+      
+      // Get the transcription from Hive
+      final resultsBox = HiveHelper.getCloudAsrResultsBox();
+      CloudAsrResultStorage? transcription;
+      
+      try {
+        transcription = resultsBox.values.firstWhere((r) => r.id == transcriptionId);
+      } catch (e) {
+        debugPrint('TranscriptionSyncService: Could not find transcription with ID: $transcriptionId');
+        _pendingTranscriptionIds.remove(transcriptionId);
+        return;
+      }
+      
+      if (transcription.transcription == null || transcription.transcription!.isEmpty) {
+        debugPrint('TranscriptionSyncService: Empty transcription for $transcriptionId');
+        _pendingTranscriptionIds.remove(transcriptionId);
+        return;
+      }
+      
+      // Send single transcription
+      final transcriptItem = {
+        'time_stamp': transcription.startTimeIso,
+        'content': transcription.transcription!,
+        'start_time': transcription.startTimeIso,
+        'end_time': transcription.endTimeIso,
+      };
+      
+      debugPrint('TranscriptionSyncService: Sending single transcription immediately');
+      
+      // Send single transcription
+      final response = await NirvaAPI.uploadTranscriptBatch([transcriptItem]);
+      final success = response != null;
+      
+      if (success) {
+        // Remove from pending queue
+        _pendingTranscriptionIds.remove(transcriptionId);
+        
+        // Update last sent timestamp
+        _lastSentTimestamp = DateTime.now();
+        
+        // Save timestamp to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_lastSentTimestampKey, _lastSentTimestamp!.toIso8601String());
+        
+        debugPrint('TranscriptionSyncService: ✅ Single transcription sent successfully');
+        
+        // Trigger analysis immediately
+        await _triggerAnalysisAfterSync([transcriptItem]);
+        
+        notifyListeners();
+      } else {
+        debugPrint('TranscriptionSyncService: ❌ Failed to send single transcription');
+      }
+      
+    } catch (e) {
+      debugPrint('TranscriptionSyncService: Error processing single transcription: $e');
+    } finally {
+      _isSyncing = false;
+      notifyListeners();
+    }
+  }
+  
+  /// Update app state for foreground/background behavior
+  void updateAppState(bool isInForeground) {
+    if (_isAppInForeground != isInForeground) {
+      _isAppInForeground = isInForeground;
+      
+      debugPrint('TranscriptionSyncService: App state changed to ${isInForeground ? "FOREGROUND" : "BACKGROUND"}');
+      
+      if (isInForeground && _pendingTranscriptionIds.isNotEmpty) {
+        // Process all pending transcriptions immediately when entering foreground
+        debugPrint('TranscriptionSyncService: Processing ${_pendingTranscriptionIds.length} pending transcriptions immediately');
+        syncPendingTranscriptions();
+      }
     }
   }
 

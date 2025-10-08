@@ -8,6 +8,9 @@ import '../services/transcription_sync_service.dart';
 class TranscriptionSyncProvider extends ChangeNotifier {
   final TranscriptionSyncService _syncService = TranscriptionSyncService();
   
+  // Direct access to sync service for app state updates
+  TranscriptionSyncService get syncService => _syncService;
+  
   // Getters that delegate to the sync service
   bool get isInitialized => _syncService.isInitialized;
   bool get isSyncing => _syncService.isSyncing;

@@ -3,6 +3,7 @@ import 'package:nirva_app/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'services/ios_background_audio_manager.dart';
 import 'services/app_lifecycle_logging_service.dart';
+import 'providers/transcription_sync_provider.dart';
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -92,6 +93,14 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         debugPrint('App resumed - iOS background manager is ready for BT wake events');
       }
     }
+    
+    // Notify transcription sync service about foreground state
+    try {
+      final transcriptionSyncProvider = context.read<TranscriptionSyncProvider>();
+      transcriptionSyncProvider.syncService.updateAppState(true);
+    } catch (e) {
+      debugPrint('Failed to update transcription sync service state: $e');
+    }
   }
   
   /// Handle app going to background
@@ -103,6 +112,14 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       if (_iosBackgroundAudioManager!.isInitialized) {
         debugPrint('App paused - iOS background manager is ready for BT wake events');
       }
+    }
+    
+    // Notify transcription sync service about background state
+    try {
+      final transcriptionSyncProvider = context.read<TranscriptionSyncProvider>();
+      transcriptionSyncProvider.syncService.updateAppState(false);
+    } catch (e) {
+      debugPrint('Failed to update transcription sync service state: $e');
     }
   }
   
