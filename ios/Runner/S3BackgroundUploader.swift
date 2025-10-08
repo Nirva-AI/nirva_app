@@ -10,16 +10,28 @@ class S3BackgroundUploader: NSObject {
     
     // MARK: - Properties
     private var backgroundSession: URLSession?  // Made optional to handle recreation
+    private var foregroundSession: URLSession?  // Aggressive foreground session
     private let sessionIdentifier = "com.nirva.s3upload"  // MUST be constant across app launches
+    private let foregroundSessionIdentifier = "com.nirva.s3upload.foreground"
     private let delegateQueue = OperationQueue()
+    private let foregroundQueue = OperationQueue()
     
     // AWS Credentials (stored securely)
     private var credentials: S3Credentials?
     
-    // Simplified configuration
-    private let maxConcurrentUploads = 5  // Process 5 files at once
+    // App State Management
+    private var isAppInForeground: Bool = true
+    private var appStateObserver: NSObjectProtocol?
+    
+    // Configuration (background mode - conservative)
+    private let backgroundMaxConcurrentUploads = 5  // Conservative for background
     private var lastSyncTime: Date?
-    private let syncInterval: TimeInterval = 10.0  // Check for new files every 10 seconds
+    private let backgroundSyncInterval: TimeInterval = 10.0  // Check for new files every 10 seconds in background
+    
+    // Configuration (foreground mode - aggressive)
+    private let foregroundMaxConcurrentUploads = 100  // Aggressive for foreground
+    private let foregroundBatchSize = 100  // Process files in chunks of 100
+    private var isForegroundUploading = false
     
     // Directory to monitor
     private var audioDirectory: String {
@@ -42,9 +54,11 @@ class S3BackgroundUploader: NSObject {
     private override init() {
         super.init()
         setupBackgroundSession()
+        setupForegroundSession()
+        setupAppStateObservers()
         
-        print("S3BackgroundUploader: Initialized (Simplified)")
-        DebugLogger.shared.log("S3BackgroundUploader: Initialized with simplified directory sync")
+        print("S3BackgroundUploader: Initialized with dual-mode upload (Background + Aggressive Foreground)")
+        DebugLogger.shared.log("S3BackgroundUploader: Initialized with aggressive foreground mode")
         
         // Start syncing immediately if we have credentials
         if credentials != nil {
@@ -104,6 +118,72 @@ class S3BackgroundUploader: NSObject {
         }
     }
     
+    private func setupForegroundSession() {
+        DebugLogger.shared.log("S3BackgroundUploader: Setting up aggressive foreground session")
+        
+        let config = URLSessionConfiguration.default
+        config.allowsCellularAccess = true
+        config.allowsExpensiveNetworkAccess = true
+        config.allowsConstrainedNetworkAccess = true
+        config.timeoutIntervalForRequest = 60  // Shorter timeout for foreground
+        config.timeoutIntervalForResource = 300  // 5 minutes total
+        config.waitsForConnectivity = false
+        config.httpMaximumConnectionsPerHost = 0  // Unlimited connections per host
+        config.networkServiceType = .responsiveData
+        
+        // Configure foreground queue for aggressive processing
+        foregroundQueue.maxConcurrentOperationCount = OperationQueue.defaultMaxConcurrentOperationCount
+        foregroundQueue.qualityOfService = .userInitiated
+        foregroundQueue.name = "com.nirva.s3upload.foreground.queue"
+        
+        foregroundSession = URLSession(configuration: config, delegate: self, delegateQueue: foregroundQueue)
+        
+        DebugLogger.shared.log("S3BackgroundUploader: Aggressive foreground session created")
+    }
+    
+    private func setupAppStateObservers() {
+        // Observe app state changes
+        appStateObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleAppEnteredForeground()
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleAppEnteredBackground()
+        }
+        
+        // Set initial state
+        isAppInForeground = UIApplication.shared.applicationState == .active
+        
+        DebugLogger.shared.log("S3BackgroundUploader: App state observers set up. Current state: \(isAppInForeground ? "FOREGROUND" : "BACKGROUND")")
+    }
+    
+    private func handleAppEnteredForeground() {
+        isAppInForeground = true
+        DebugLogger.shared.log("S3BackgroundUploader: 🚀 App entered FOREGROUND - switching to aggressive upload mode")
+        
+        // Immediately start aggressive upload if we have credentials
+        if credentials != nil {
+            startAggressiveForegroundUpload()
+        }
+    }
+    
+    private func handleAppEnteredBackground() {
+        isAppInForeground = false
+        isForegroundUploading = false
+        DebugLogger.shared.log("S3BackgroundUploader: 🐌 App entered BACKGROUND - switching to conservative upload mode")
+        
+        // Background processing handled by existing background session
+        syncAllAudioFiles()
+    }
+    
     // MARK: - Credentials Management
     
     func setCredentials(_ creds: [String: Any]) {
@@ -122,8 +202,12 @@ class S3BackgroundUploader: NSObject {
         print("S3BackgroundUploader: Credentials updated in \(stateString)")
         DebugLogger.shared.log("S3BackgroundUploader: ✅ Credentials updated for bucket: \(credentials?.bucket ?? "") in \(stateString)")
         
-        // Immediately sync all audio files
-        syncAllAudioFiles()
+        // Start appropriate upload mode based on app state
+        if isAppInForeground {
+            startAggressiveForegroundUpload()
+        } else {
+            syncAllAudioFiles()
+        }
     }
     
     // MARK: - Simplified Directory Sync
@@ -134,11 +218,13 @@ class S3BackgroundUploader: NSObject {
             return
         }
         
-        // Check if enough time has passed since last sync
-        if let lastSync = lastSyncTime {
-            let timeSinceSync = Date().timeIntervalSince(lastSync)
-            if timeSinceSync < syncInterval {
-                return
+        // Only apply sync interval restrictions in background mode
+        if !isAppInForeground {
+            if let lastSync = lastSyncTime {
+                let timeSinceSync = Date().timeIntervalSince(lastSync)
+                if timeSinceSync < backgroundSyncInterval {
+                    return
+                }
             }
         }
         
@@ -179,8 +265,10 @@ class S3BackgroundUploader: NSObject {
             
             DebugLogger.shared.log("S3BackgroundUploader: Starting upload for \(filesToUpload.count) new files")
             
-            // Upload files in batches
-            let batch = Array(filesToUpload.prefix(self.maxConcurrentUploads))
+            // Use appropriate concurrency based on app state
+            let maxConcurrent = self.isAppInForeground ? self.foregroundMaxConcurrentUploads : self.backgroundMaxConcurrentUploads
+            let batch = Array(filesToUpload.prefix(maxConcurrent))
+            
             for fileName in batch {
                 self.uploadFile(fileName: fileName, credentials: creds)
             }
@@ -273,9 +361,14 @@ class S3BackgroundUploader: NSObject {
                 request.setValue(value, forHTTPHeaderField: key)
             }
             
-            // Create upload task (ensure session exists)
-            guard let session = self.backgroundSession else {
-                DebugLogger.shared.log("S3BackgroundUploader: ERROR - Session is nil, recreating...")
+            // Use appropriate session based on app state
+            let session: URLSession
+            if isAppInForeground, let foregroundSession = self.foregroundSession {
+                session = foregroundSession
+            } else if let backgroundSession = self.backgroundSession {
+                session = backgroundSession
+            } else {
+                DebugLogger.shared.log("S3BackgroundUploader: ERROR - No session available, recreating...")
                 self.setupBackgroundSession()
                 return
             }
@@ -312,6 +405,103 @@ class S3BackgroundUploader: NSObject {
             print("S3BackgroundUploader: Failed to start upload: \(error)")
             DebugLogger.shared.log("S3BackgroundUploader: Failed to start upload for \(localPath): \(error.localizedDescription)")
             onUploadFailed?(localPath, error)
+        }
+    }
+    
+    // MARK: - Aggressive Foreground Upload
+    
+    private func startAggressiveForegroundUpload() {
+        guard let creds = credentials else {
+            DebugLogger.shared.log("S3BackgroundUploader: No credentials for aggressive upload")
+            return
+        }
+        
+        guard isAppInForeground else {
+            DebugLogger.shared.log("S3BackgroundUploader: App not in foreground, skipping aggressive upload")
+            return
+        }
+        
+        guard !isForegroundUploading else {
+            DebugLogger.shared.log("S3BackgroundUploader: Aggressive upload already in progress")
+            return
+        }
+        
+        isForegroundUploading = true
+        
+        DebugLogger.shared.log("S3BackgroundUploader: 🚀 Starting AGGRESSIVE foreground upload")
+        
+        // Get all wav files
+        guard let files = try? FileManager.default.contentsOfDirectory(atPath: audioDirectory) else {
+            DebugLogger.shared.log("S3BackgroundUploader: Could not read audio directory for aggressive upload")
+            isForegroundUploading = false
+            return
+        }
+        
+        let wavFiles = files.filter { $0.hasSuffix(".wav") }
+        
+        if wavFiles.isEmpty {
+            DebugLogger.shared.log("S3BackgroundUploader: No wav files found for aggressive upload")
+            isForegroundUploading = false
+            return
+        }
+        
+        DebugLogger.shared.log("S3BackgroundUploader: Found \(wavFiles.count) files for aggressive upload")
+        
+        // Check what's already uploading
+        foregroundSession?.getAllTasks { [weak self] tasks in
+            guard let self = self else { return }
+            
+            // Get list of files currently uploading
+            let uploadingFiles = Set(tasks.compactMap { task -> String? in
+                guard let url = task.originalRequest?.url?.absoluteString else { return nil }
+                // Extract filename from S3 URL
+                return url.components(separatedBy: "/").last
+            })
+            
+            // Find files not yet uploading
+            let filesToUpload = wavFiles.filter { !uploadingFiles.contains($0) }
+            
+            if filesToUpload.isEmpty {
+                DebugLogger.shared.log("S3BackgroundUploader: All files already uploading in aggressive mode")
+                self.isForegroundUploading = false
+                return
+            }
+            
+            DebugLogger.shared.log("S3BackgroundUploader: Aggressively uploading \(filesToUpload.count) files in batches of \(self.foregroundBatchSize)")
+            
+            // Process files in batches to handle large quantities
+            self.processFilesBatch(filesToUpload, credentials: creds, batchIndex: 0)
+        }
+    }
+    
+    private func processFilesBatch(_ files: [String], credentials: S3Credentials, batchIndex: Int) {
+        guard isAppInForeground && isForegroundUploading else {
+            DebugLogger.shared.log("S3BackgroundUploader: Stopping batch processing - app backgrounded or upload stopped")
+            return
+        }
+        
+        let startIndex = batchIndex * foregroundBatchSize
+        let endIndex = min(startIndex + foregroundBatchSize, files.count)
+        
+        guard startIndex < files.count else {
+            DebugLogger.shared.log("S3BackgroundUploader: ✅ Aggressive upload completed all batches")
+            isForegroundUploading = false
+            return
+        }
+        
+        let batch = Array(files[startIndex..<endIndex])
+        DebugLogger.shared.log("S3BackgroundUploader: Processing batch \(batchIndex + 1): uploading \(batch.count) files")
+        
+        // Upload current batch
+        for fileName in batch {
+            uploadFile(fileName: fileName, credentials: credentials)
+        }
+        
+        // Schedule next batch immediately (no delay in foreground!)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            // Small delay to prevent overwhelming the system
+            usleep(10000) // 10ms delay
+            self?.processFilesBatch(files, credentials: credentials, batchIndex: batchIndex + 1)
         }
     }
     
@@ -685,8 +875,12 @@ extension S3BackgroundUploader: URLSessionDelegate, URLSessionTaskDelegate, URLS
                     DebugLogger.shared.log("S3BackgroundUploader: Deleted metadata file: \(metadataFileName)")
                 }
                 
-                // Sync again to upload any remaining files
-                syncAllAudioFiles()
+                // Continue appropriate upload mode
+                if isAppInForeground && !isForegroundUploading {
+                    startAggressiveForegroundUpload()
+                } else {
+                    syncAllAudioFiles()
+                }
             } else {
                 // HTTP error
                 print("S3BackgroundUploader: Upload failed with status \(response.statusCode) for \(fileName)")
