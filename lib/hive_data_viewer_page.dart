@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/providers/favorites_provider.dart';
-import 'package:nirva_app/update_data_task.dart';
+// REMOVED: import 'package:nirva_app/update_data_task.dart'; (legacy Amplify code - deleted)
+// UpdateDataTaskStatus enum is now in my_hive_objects.dart
 import 'package:nirva_app/hive_helper.dart';
 import 'package:nirva_app/mini_call_bar.dart';
 

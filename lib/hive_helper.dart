@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:nirva_app/my_hive_objects.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/update_data_task.dart';
+// REMOVED: import 'package:nirva_app/update_data_task.dart'; (legacy Amplify code - deleted)
+// UpdateDataTaskStatus enum is now in my_hive_objects.dart
 import 'package:nirva_app/models/hardware_device.dart';
 import 'dart:convert';
 

@@ -3,12 +3,27 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:nirva_app/api_models.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/update_data_task.dart';
+// REMOVED: import 'package:nirva_app/update_data_task.dart'; (legacy Amplify code - deleted)
 import 'package:nirva_app/analyze_task.dart';
 import 'package:nirva_app/transcribe_file_name.dart';
 import 'package:nirva_app/services/cloud_audio_processor.dart';
 import 'package:nirva_app/models/hardware_device.dart';
 part 'my_hive_objects.g.dart';
+
+// NOTE: UpdateDataTaskStatus enum moved here after removing update_data_task.dart (legacy Amplify code)
+// Kept for Hive storage compatibility even though the feature is disabled in UI
+enum UpdateDataTaskStatus {
+  idle,
+  preparing,
+  uploading,
+  waitingTranscription,
+  transcriptionReady,
+  analyzingRequest,
+  waitingAnalysis,
+  analysisReady,
+  completed,
+  failed,
+}
 
 // 本机存储的日记收藏列表
 @HiveType(typeId: 1)
