@@ -32,12 +32,7 @@ import 'package:nirva_app/main_app.dart';
 //import 'package:nirva_app/test_sliding_chart_app.dart';
 //import 'package:nirva_app/test_aws_amplify_s3_transcribe_app.dart';
 //import 'package:nirva_app/test_hardware_integration.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'amplifyconfiguration.dart';
 import 'package:nirva_app/hive_helper.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart'; // Import sherpa_onnx for initBindings
 import 'package:hive/hive.dart'; // Import hive for checking boxes
@@ -231,9 +226,6 @@ Future<void> _initializeApp() async {
     // Initialize with empty values to prevent NotInitializedError
     await dotenv.load(fileName: '.env', mergeWith: {'DEEPGRAM_API_KEY': ''});
   }
-  
-  // 初始化 Amplify
-  await _configureAmplify();
 
   // 正式步骤：初始化 Hive, 这个是必须调用的，因为本app会使用 Hive 来存储数据。
   await HiveHelper.initializeHive();
@@ -245,21 +237,5 @@ Future<void> _initializeApp() async {
     final cloudAsrSessionsBox = Hive.box<CloudAsrSessionStorage>('cloudAsrSessionsBox');
   } catch (e) {
     debugPrint('Main: Error checking Cloud ASR boxes: $e');
-  }
-}
-
-Future<void> _configureAmplify() async {
-  try {
-    // 添加 Amplify 插件
-    await Amplify.addPlugin(AmplifyAPI());
-    await Amplify.addPlugin(AmplifyAuthCognito());
-    await Amplify.addPlugin(AmplifyStorageS3());
-
-    // 配置 Amplify
-    await Amplify.configure(amplifyconfig);
-
-    safePrint('Successfully configured Amplify');
-  } on AmplifyException catch (e) {
-    safePrint('Error configuring Amplify: ${e.message}');
   }
 }

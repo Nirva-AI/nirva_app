@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/user_profile_page.dart';
-import 'package:nirva_app/update_data_page.dart';
+// DISABLED: Old Amplify-based update data page
+// import 'package:nirva_app/update_data_page.dart';
 import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/providers/events_provider.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
@@ -407,21 +408,22 @@ class _MePageState extends State<MePage> {
                 },
               ),
               _buildDivider(),
-              _buildSettingsItem(
-                icon: Icons.upload,
-                title: 'Update Data',
-                subtitle: 'Upload your recorded audio',
-                onTap: () {
-                  debugPrint('Update Data tapped');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const UpdateDataPage(),
-                    ),
-                  );
-                },
-              ),
-              _buildDivider(),
+              // DISABLED: Old Amplify-based update data feature
+              // _buildSettingsItem(
+              //   icon: Icons.upload,
+              //   title: 'Update Data',
+              //   subtitle: 'Upload your recorded audio',
+              //   onTap: () {
+              //     debugPrint('Update Data tapped');
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const UpdateDataPage(),
+              //       ),
+              //     );
+              //   },
+              // ),
+              // _buildDivider(),
               _buildSettingsItem(
                 icon: Icons.storage,
                 title: 'Local Data',

@@ -57,11 +57,6 @@ dependencies:
   google_fonts: ^6.1.0
   shared_preferences: ^2.2.2
   flutter_dotenv: ^5.2.1
-  # Amplify Flutter SDK
-  amplify_flutter: ^2.4.0
-  amplify_api: ^2.4.0
-  amplify_auth_cognito: ^2.4.0
-  amplify_storage_s3: ^2.4.0
   http: ^1.1.0
   audioplayers: ^5.2.1
   flutter_blue_plus: ^1.33.6
@@ -100,13 +95,6 @@ flutter:
     - assets/onnx/
     - assets/onnx/vad/
     - assets/onnx/whisper_small/
-    - assets/analyze_result_nirva-2025-04-19-00.txt.json
-    - assets/analyze_result_nirva-2025-05-09-00.txt.json
-    - assets/analyze_result_nirva-2025-07-30-00.txt.json
-    - assets/analyze_result_nirva-2025-08-15-00.txt.json
-    - assets/analyze_result_nirva-2025-08-16-00.txt.json
-    - assets/analyze_result_nirva-2025-08-17-00.txt.json
-    - assets/analyze_result_nirva-2025-08-18-00.txt.json
     - .env
 
   # To add assets to your application, add an assets section, like this:
