@@ -21,7 +21,7 @@ class AudioConfig {
   // ===== VAD (Voice Activity Detection) Configuration =====
   
   /// VAD model configuration
-  static const double vadThreshold = 0.45; // Original threshold for speech detection
+  static const double vadThreshold = 0.25; // Lowered for distant speakers
   static const double vadMinSilenceDuration = 3.0;
   static const double vadMinSpeechDuration = 0.5;
   static const double vadMaxSpeechDuration = 30.0;
@@ -39,17 +39,17 @@ class AudioConfig {
   /// VAD optimization parameters
   static const int vadMinProcessingGap = 500; // Minimum 500ms between VAD calls (exactly 2Hz max)
   static const bool vadSkipSilentFrames = true; // Skip processing for silent frames
-  static const double vadSilenceThreshold = 0.001; // Higher threshold to skip more silent frames
+  static const double vadSilenceThreshold = 0.0001; // Lowered to capture quieter speech
   
   /// VAD audio quality thresholds
-  static const double vadMinAmplitudeThreshold = 0.0001;
+  static const double vadMinAmplitudeThreshold = 0.00005; // Lowered for distant speakers
   static const double vadAmplificationFactor = 5.0;
   
   // ===== Audio Segmentation Configuration =====
   
   /// Segment timing configuration
-  static const Duration segmentCloseDelay = Duration(seconds: 3);
-  static const Duration minSegmentDuration = Duration(milliseconds: 500);
+  static const Duration segmentCloseDelay = Duration(milliseconds: 1500); // Synchronized with server
+  static const Duration minSegmentDuration = Duration(milliseconds: 250); // Synchronized with server
   static const Duration maxSegmentDuration = Duration(seconds: 30);
   static const Duration minSegmentGap = Duration(milliseconds: 1000); // Minimum time gap between segments (prevents false splits, NOT audio loss)
   
