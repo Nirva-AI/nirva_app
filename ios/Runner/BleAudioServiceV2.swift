@@ -129,8 +129,8 @@ class BleAudioServiceV2: NSObject {
             print("BleAudioServiceV2: AudioProcessor created successfully")
             // DebugLogger.shared.log("BleAudioServiceV2: AudioProcessor created successfully")
             
-            audioProcessor?.onSegmentReady = { [weak self] wavData, duration, filePath in
-                self?.handleAudioSegment(wavData, duration: duration, filePath: filePath)
+            audioProcessor?.onSegmentReady = { [weak self] wavData, duration, filePath, captureTime in
+                self?.handleAudioSegment(wavData, duration: duration, filePath: filePath, captureTime: captureTime)
             }
             audioProcessor?.onError = { error in
                 print("BleAudioServiceV2: AudioProcessor error: \(error)")
@@ -449,7 +449,7 @@ class BleAudioServiceV2: NSObject {
         ])
     }
     
-    private func handleAudioSegment(_ wavData: Data, duration: TimeInterval, filePath: String) {
+    private func handleAudioSegment(_ wavData: Data, duration: TimeInterval, filePath: String, captureTime: Date) {
         print("BleAudioServiceV2: Audio segment ready - Duration: \(duration)s, Size: \(wavData.count) bytes")
         print("BleAudioServiceV2: Segment file path: \(filePath)")
         // Keep segment creation for tracking
@@ -482,7 +482,7 @@ class BleAudioServiceV2: NSObject {
                 "duration": String(duration),
                 "segmentNumber": String(totalSegments),
                 "deviceId": connectionOrchestrator?.getConnectionInfo()["deviceId"] as? String ?? "unknown",
-                "capturedAt": String(Date().timeIntervalSince1970 * 1000),
+                "capturedAt": String(captureTime.timeIntervalSince1970 * 1000),
                 "localDate": localDateString,
                 "timezoneOffset": String(timezoneOffset),
                 "timezoneName": TimeZone.current.identifier,

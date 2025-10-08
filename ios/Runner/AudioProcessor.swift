@@ -33,7 +33,7 @@ class AudioProcessor {
     private var isSpeechActive = false
     
     // Callbacks
-    var onSegmentReady: ((Data, TimeInterval, String) -> Void)?  // Added filePath parameter
+    var onSegmentReady: ((Data, TimeInterval, String, Date) -> Void)?  // Added filePath and captureTime parameters
     var onError: ((Error) -> Void)?
     
     // Statistics
@@ -221,8 +221,11 @@ class AudioProcessor {
                 // Keep segment creation logging for tracking
                 DebugLogger.shared.log("AudioProcessor: Segment saved: \(fileName)")
                 
-                // Notify that segment is ready with the actual file path
-                onSegmentReady?(wavData, duration, filePath)
+                // Store the actual capture start time for proper timestamping
+                let captureTime = segmentStartTime ?? Date()
+                
+                // Notify that segment is ready with the actual file path and capture time
+                onSegmentReady?(wavData, duration, filePath, captureTime)
             }
         }
         
