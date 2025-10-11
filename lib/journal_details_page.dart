@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:nirva_app/mini_call_bar.dart';
 import 'package:nirva_app/transcription_detail_page.dart';
 import 'package:nirva_app/api_models.dart';
+import 'package:nirva_app/utils/time_utils.dart';
 
 class JournalDetailsPage extends StatefulWidget {
   final EventAnalysis eventData;
@@ -283,7 +284,7 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
               ),
               const SizedBox(width: 6),
               Text(
-                widget.eventData.time_range,
+                TimeUtils.formatLocalTimeRange(widget.eventData.time_range, context),
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade600,
@@ -520,7 +521,8 @@ class _JournalDetailsPageState extends State<JournalDetailsPage> {
             ...widget.eventData.transcriptions!.map((transcript) {
               final startTime = DateTime.tryParse(
                   transcript['start_time'] ?? '') ?? DateTime.now();
-              final timeStr = DateFormat('HH:mm').format(startTime);
+              final localTime = startTime.toLocal();
+              final timeStr = DateFormat('HH:mm').format(localTime);
               final text = transcript['transcription_text'] ?? '';
               final truncatedText = text.length > 150 
                   ? '${text.substring(0, 150)}...' 
