@@ -438,11 +438,11 @@ VadResult _processVadInBackground(VadComputeInput input) {
     final config = VadModelConfig(
       sileroVad: SileroVadModelConfig(
         model: input.vadModelPath,
-        threshold: 0.5,
-        minSilenceDuration: 0.5,
-        minSpeechDuration: 0.3,
+        threshold: 0.08,  // Ultra-sensitive to match client config
+        minSilenceDuration: 10.0,
+        minSpeechDuration: 0.25,  // Match client config
         windowSize: 512,
-        maxSpeechDuration: 30.0,
+        maxSpeechDuration: 180.0,
       ),
       sampleRate: 16000,
       numThreads: 1,

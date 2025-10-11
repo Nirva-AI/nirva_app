@@ -10,8 +10,8 @@ class AudioProcessor {
         let sampleRate: Int = 16000
         let channels: Int = 1
         let bufferDuration: TimeInterval = 0.5  // 500ms buffer
-        let maxSegmentDuration: TimeInterval = 30.0 // Maximum 30 second segments (failsafe)
-        let silenceThreshold: TimeInterval = 2.0 // 2 seconds of silence triggers segment close
+        let maxSegmentDuration: TimeInterval = 180.0 // Maximum 3 minute segments
+        let silenceThreshold: TimeInterval = 10.0 // 10 seconds of silence triggers segment close
         let minSegmentDuration: TimeInterval = 1.0 // Minimum 1 second for valid segment
     }
     
