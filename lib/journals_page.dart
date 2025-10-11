@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/data.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
+import 'package:nirva_app/providers/user_provider.dart';
 import 'package:nirva_app/journal_details_page.dart';
 import 'package:nirva_app/reflections_page.dart';
 import 'package:nirva_app/daily_reflection_page.dart';
@@ -445,14 +446,21 @@ class _JournalsPageState extends State<JournalsPage> with AutomaticKeepAliveClie
               // Greeting row with profile picture
               Row(
                 children: [
-                  const Text(
-                    'Hi, Jason',
-                    style: TextStyle(
-                      fontSize: 36, // Much bigger text size
-                      fontWeight: FontWeight.normal, // Removed bold
-                      color: Color(0xFF0E3C26), // Keep dark green color for main text
-                      fontFamily: 'Georgia',
-                    ),
+                  Consumer<UserProvider>(
+                    builder: (context, userProvider, child) {
+                      final displayName = userProvider.user.displayName.isNotEmpty
+                          ? userProvider.user.displayName
+                          : 'there';
+                      return Text(
+                        'Hi, $displayName',
+                        style: const TextStyle(
+                          fontSize: 36, // Much bigger text size
+                          fontWeight: FontWeight.normal, // Removed bold
+                          color: Color(0xFF0E3C26), // Keep dark green color for main text
+                          fontFamily: 'Georgia',
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
