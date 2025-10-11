@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/stress_level_details_page.dart'; // 导入新页面
 
 class StressLevelCard extends StatelessWidget {
   const StressLevelCard({super.key});
@@ -26,17 +25,6 @@ class StressLevelCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween, // 两端对齐
                 children: [
                   Text('Stress Level', style: const TextStyle(fontSize: 16)),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StressLevelDetailsPage(),
-                        ),
-                      );
-                    },
-                  ),
                 ],
               ),
               const SizedBox(height: 8),

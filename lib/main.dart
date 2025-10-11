@@ -12,7 +12,6 @@ import 'package:nirva_app/services/hardware_audio_recorder.dart';
 // DISABLED: Old Amplify flow - using native S3 upload instead
 // import 'package:nirva_app/services/audio_streaming_service.dart';
 
-import 'package:nirva_app/providers/local_audio_provider.dart';
 import 'package:nirva_app/providers/cloud_audio_provider.dart';
 import 'package:nirva_app/providers/transcription_sync_provider.dart';
 import 'package:nirva_app/providers/events_provider.dart';
@@ -20,7 +19,6 @@ import 'package:nirva_app/providers/mental_state_provider.dart';
 import 'package:nirva_app/services/app_settings_service.dart';
 import 'package:nirva_app/services/ios_background_audio_manager.dart';
 import 'package:nirva_app/services/app_lifecycle_logging_service.dart';
-import 'package:nirva_app/services/ble_audio_service.dart';
 import 'package:nirva_app/services/native_s3_bridge.dart';
 //import 'package:nirva_app/hive_object.dart';
 import 'package:nirva_app/main_app.dart';
@@ -62,7 +60,6 @@ void main() async {
   // Create HardwareAudioCapture immediately to enable automatic recording
   final hardwareAudioCapture = HardwareAudioCapture(
     hardwareService,
-    null, // Local audio processor will be set later
     null, // Cloud audio processor will be set later
     null, // Settings service will be set later
   );
@@ -108,41 +105,18 @@ void main() async {
         ChangeNotifierProvider<IosBackgroundAudioManager>(
           create: (_) => IosBackgroundAudioManager(),
         ),
-        // Only create providers based on ASR mode setting
-        ChangeNotifierProxyProvider<AppSettingsService, LocalAudioProvider?>(
-          create: (context) {
-            final settings = context.read<AppSettingsService>();
-            return settings.localAsrEnabled ? LocalAudioProvider() : null;
-          },
-          update: (_, settings, previous) {
-            if (settings.localAsrEnabled) {
-              return previous ?? LocalAudioProvider();
-            } else {
-              previous?.dispose();
-              return null;
-            }
-          },
-        ),
         ChangeNotifierProvider<CloudAudioProvider>(
           create: (context) {
-            final settingsService = context.read<AppSettingsService>();
-            if (settingsService.cloudAsrEnabled) {
-              // Get the OpusDecoderService from HardwareService to avoid multiple initialization
-              final hardwareService = context.read<HardwareService>();
-              final userProvider = context.read<UserProvider>();
-              final cloudProvider = CloudAudioProvider(
-                opusDecoderService: hardwareService.opusDecoder,
-                userId: userProvider.id,
-              );
-              // Initialize immediately so it's ready when hardware connects
-              cloudProvider.initialize();
-              return cloudProvider;
-            }
-            // Return a dummy provider if cloud ASR is disabled
-            return CloudAudioProvider(
-              opusDecoderService: context.read<HardwareService>().opusDecoder,
-              userId: context.read<UserProvider>().id,
+            // Get the OpusDecoderService from HardwareService to avoid multiple initialization
+            final hardwareService = context.read<HardwareService>();
+            final userProvider = context.read<UserProvider>();
+            final cloudProvider = CloudAudioProvider(
+              opusDecoderService: hardwareService.opusDecoder,
+              userId: userProvider.id,
             );
+            // Initialize immediately so it's ready when hardware connects
+            cloudProvider.initialize();
+            return cloudProvider;
           },
         ),
         ChangeNotifierProvider<HardwareAudioCapture>.value(
@@ -161,9 +135,6 @@ void main() async {
         ChangeNotifierProvider<EventsProvider>(
           create: (context) => EventsProvider(),
         ),
-        ChangeNotifierProvider<BleAudioService>(
-          create: (context) => BleAudioService(),
-        ),
         ChangeNotifierProvider<MentalStateProvider>(
           create: (context) => MentalStateProvider(),
         ),
@@ -174,25 +145,18 @@ void main() async {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               final settingsService = context.read<AppSettingsService>();
               final cloudProvider = context.read<CloudAudioProvider>();
-              final localAudioProvider = context.read<LocalAudioProvider?>();
               final syncProvider = context.read<TranscriptionSyncProvider>();
-              
+
               // Initialize the sync provider
               await syncProvider.initialize();
-              
+
               // Connect sync provider to cloud audio processor
               cloudProvider.cloudProcessor.setSyncProvider(syncProvider);
-              
+
               hardwareAudioCapture.updateProviders(
-                localAudioProvider?.localAudioProcessor,
                 cloudProvider.cloudProcessor,
                 settingsService,
               );
-              
-              // Also set the local audio processor in the hardware service
-              if (localAudioProvider != null) {
-                context.read<HardwareService>().setLocalAudioProcessor(localAudioProvider.localAudioProcessor);
-              }
             });
             
             return const MainApp();

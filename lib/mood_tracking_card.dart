@@ -3,7 +3,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:nirva_app/providers/journal_files_provider.dart';
 import 'package:nirva_app/data.dart';
-import 'package:nirva_app/mood_tracking_details_page.dart'; // 导入新页面
 
 class MoodTrackingCard extends StatelessWidget {
   const MoodTrackingCard({super.key});
@@ -42,17 +41,6 @@ class MoodTrackingCard extends StatelessWidget {
               children: [
                 const Text('Mood Tracking', style: TextStyle(fontSize: 16)),
                 const Spacer(), // 添加Spacer将按钮推到最右侧
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MoodTrackingDetailsPage(),
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
             const SizedBox(height: 16),

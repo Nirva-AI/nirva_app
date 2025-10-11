@@ -11,7 +11,6 @@ import '../models/hardware_device.dart';
 import 'hardware_constants.dart';
 import 'omi_packet_reassembler.dart';
 import 'opus_decoder_service.dart';
-import 'local_audio_processor.dart';
 import 'hardware_audio_recorder.dart';
 import '../hive_helper.dart';
 import '../my_hive_objects.dart';
@@ -38,8 +37,6 @@ class HardwareService extends ChangeNotifier {
   late OmiPacketReassembler _packetReassembler;
   late OpusDecoderService _opusDecoder;
   
-  // Local audio processing services
-  LocalAudioProcessor? _localAudioProcessor;
   
   // Audio recording service for automatic recording
   HardwareAudioCapture? _audioCapture;
@@ -64,8 +61,6 @@ class HardwareService extends ChangeNotifier {
   OmiPacketReassembler get packetReassembler => _packetReassembler;
   OpusDecoderService get opusDecoder => _opusDecoder;
   
-  // Local audio processing getters
-  LocalAudioProcessor? get localAudioProcessor => _localAudioProcessor;
   
   // Audio recording getters
   HardwareAudioCapture? get audioCapture => _audioCapture;
@@ -145,11 +140,6 @@ class HardwareService extends ChangeNotifier {
     debugPrint('HardwareService: OMI services initialization complete');
   }
   
-  /// Set local audio processor for VAD and ASR
-  void setLocalAudioProcessor(LocalAudioProcessor processor) {
-    _localAudioProcessor = processor;
-    debugPrint('HardwareService: Local audio processor set');
-  }
   
   /// Set the audio capture service for automatic recording
   void setAudioCapture(HardwareAudioCapture audioCapture) {

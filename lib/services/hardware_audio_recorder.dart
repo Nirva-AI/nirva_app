@@ -8,7 +8,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../models/hardware_device.dart';
 import 'hardware_service.dart';
-import 'local_audio_processor.dart';
 import 'cloud_audio_processor.dart';
 import 'app_settings_service.dart';
 import 'ios_background_audio_manager.dart';
@@ -16,7 +15,6 @@ import 'audio_config.dart';
 
 class HardwareAudioCapture extends ChangeNotifier {
   final HardwareService _hardwareService;
-  LocalAudioProcessor? _localAudioProcessor;
   CloudAudioProcessor? _cloudAudioProcessor;
   AppSettingsService? _settingsService;
   final IosBackgroundAudioManager _iosBackgroundAudioManager;
@@ -73,7 +71,7 @@ class HardwareAudioCapture extends ChangeNotifier {
   CloudAudioProcessor? get cloudAudioProcessor => _cloudAudioProcessor;
   AppSettingsService? get settingsService => _settingsService;
   
-  HardwareAudioCapture(this._hardwareService, [this._localAudioProcessor, this._cloudAudioProcessor, this._settingsService]) 
+  HardwareAudioCapture(this._hardwareService, [this._cloudAudioProcessor, this._settingsService]) 
       : _iosBackgroundAudioManager = IosBackgroundAudioManager() {
     // Listen to hardware service changes to ensure we're always up to date
     _hardwareService.addListener(_onHardwareServiceChanged);
@@ -86,12 +84,11 @@ class HardwareAudioCapture extends ChangeNotifier {
   }
   
   /// Update audio processors (called when providers change)
-  void updateProviders(LocalAudioProcessor? localProcessor, CloudAudioProcessor? cloudProcessor, AppSettingsService? settingsService) {
-    _localAudioProcessor = localProcessor;
+  void updateProviders(CloudAudioProcessor? cloudProcessor, AppSettingsService? settingsService) {
     _cloudAudioProcessor = cloudProcessor;
     _settingsService = settingsService;
-    
-    debugPrint('HardwareAudioCapture: Updated providers - Local: ${localProcessor != null}, Cloud: ${cloudProcessor != null}');
+
+    debugPrint('HardwareAudioCapture: Updated providers - Cloud: ${cloudProcessor != null}');
     
     // Check if we should start automatic recording now that providers are available
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -129,48 +126,20 @@ class HardwareAudioCapture extends ChangeNotifier {
         debugPrint('HardwareAudioCapture: iOS background manager ready for BT wake events');
       }
       
-      // Check ASR mode setting and initialize appropriate processor
-      final shouldUseLocalAsr = _settingsService?.localAsrEnabled ?? false;
-      final shouldUseCloudAsr = _settingsService?.cloudAsrEnabled ?? true;
-      
-      debugPrint('HardwareAudioCapture: ASR Mode - Local: $shouldUseLocalAsr, Cloud: $shouldUseCloudAsr');
-      
-
-      
-      // Initialize and enable local audio processing if requested (fallback)
-      if (shouldUseLocalAsr && _localAudioProcessor != null) {
-        debugPrint('HardwareAudioCapture: Initializing local audio processor (fallback)...');
-        final initialized = await _localAudioProcessor!.initialize();
-        debugPrint('HardwareAudioCapture: Local audio processor initialization result: $initialized');
-        
-        if (initialized) {
-          _localAudioProcessor!.enable();
-          debugPrint('HardwareAudioCapture: Local audio processing enabled (fallback)');
-        } else {
-          debugPrint('HardwareAudioCapture: Failed to initialize local audio processor');
-        }
-      } else if (shouldUseLocalAsr) {
-        debugPrint('HardwareAudioCapture: Local ASR requested but no processor available');
-      } else {
-        debugPrint('HardwareAudioCapture: Local ASR disabled by settings');
-      }
-      
-      // Initialize and enable cloud audio processing if requested (enhanced with iOS background)
-      if (shouldUseCloudAsr && _cloudAudioProcessor != null) {
-        debugPrint('HardwareAudioCapture: Initializing cloud audio processor (enhanced with iOS background)...');
+      // Initialize and enable cloud audio processing
+      if (_cloudAudioProcessor != null) {
+        debugPrint('HardwareAudioCapture: Initializing cloud audio processor...');
         final initialized = await _cloudAudioProcessor!.initialize();
         debugPrint('HardwareAudioCapture: Cloud audio processor initialization result: $initialized');
-        
+
         if (initialized) {
           _cloudAudioProcessor!.enable();
-          debugPrint('HardwareAudioCapture: ✅ Cloud audio processing enabled (enhanced with iOS background)');
+          debugPrint('HardwareAudioCapture: ✅ Cloud audio processing enabled');
         } else {
           debugPrint('HardwareAudioCapture: Failed to initialize cloud audio processor');
         }
-      } else if (shouldUseCloudAsr) {
-        debugPrint('HardwareAudioCapture: Cloud ASR requested but no processor available');
       } else {
-        debugPrint('HardwareAudioCapture: Cloud ASR disabled by settings');
+        debugPrint('HardwareAudioCapture: No cloud processor available');
       }
       
       // Subscribe to audio stream from hardware
@@ -208,22 +177,10 @@ class HardwareAudioCapture extends ChangeNotifier {
       // Stop the file rotation timer
       _stopFileRotationTimer();
       
-      // Disable processors based on ASR mode setting
-      final shouldUseLocalAsr = _settingsService?.localAsrEnabled ?? false;
-      final shouldUseCloudAsr = _settingsService?.cloudAsrEnabled ?? true;
-      
-
-      
-      // Disable local audio processing if it was enabled (fallback)
-      if (shouldUseLocalAsr && _localAudioProcessor != null) {
-        _localAudioProcessor!.disable();
-        debugPrint('HardwareAudioCapture: Local audio processing disabled (fallback)');
-      }
-      
-      // Disable cloud audio processing if it was enabled (fallback)
-      if (shouldUseCloudAsr && _cloudAudioProcessor != null) {
+      // Disable cloud audio processing
+      if (_cloudAudioProcessor != null) {
         _cloudAudioProcessor!.disable();
-        debugPrint('HardwareAudioCapture: Cloud audio processing disabled (fallback)');
+        debugPrint('HardwareAudioCapture: Cloud audio processing disabled');
       }
       
       // Unsubscribe from audio stream FIRST (before stopping hardware stream)
@@ -353,34 +310,14 @@ class HardwareAudioCapture extends ChangeNotifier {
   
 
   
-  /// Handle audio data with existing processors
+  /// Handle audio data with cloud processor
   void _handleAudioWithExistingProcessors(Uint8List decodedPcm) {
-    // Process audio based on ASR mode setting
-    final shouldUseLocalAsr = _settingsService?.localAsrEnabled ?? false;
-    final shouldUseCloudAsr = _settingsService?.cloudAsrEnabled ?? true;
-    
-    // Process audio with local VAD and ASR if enabled
-    // SEQUENTIAL PROCESSING: Process one at a time to prevent overlaps
-    if (shouldUseLocalAsr && _localAudioProcessor != null && _localAudioProcessor!.isEnabled) {
-      _processAudioDataSequentially(decodedPcm);
-    }
-
-    // Process audio with cloud VAD and ASR if enabled
-    // SEQUENTIAL PROCESSING: Process one at a time to prevent overlaps
-    if (shouldUseCloudAsr && _cloudAudioProcessor != null && _cloudAudioProcessor!.isEnabled) {
+    // Process audio with cloud VAD and ASR
+    if (_cloudAudioProcessor != null && _cloudAudioProcessor!.isEnabled) {
       _processCloudAudioDataSequentially(decodedPcm);
     }
   }
   
-  /// Process audio data sequentially to prevent UI blocking and race conditions
-  void _processAudioDataSequentially(Uint8List decodedPcm) {
-    // Process audio data directly - the isolate processor handles background processing
-    try {
-      _localAudioProcessor!.processAudioData(decodedPcm);
-    } catch (e) {
-      debugPrint('HardwareAudioCapture: Error processing audio data: $e');
-    }
-  }
   
   /// Process audio data with cloud processor sequentially to prevent race conditions
   void _processCloudAudioDataSequentially(Uint8List decodedPcm) {
@@ -414,20 +351,8 @@ class HardwareAudioCapture extends ChangeNotifier {
   /// Rotate to a new capture file when size limit is reached or timer triggers
   Future<void> _rotateCaptureFile() async {
     try {
-              // Process final audio chunk based on ASR mode setting
-        final shouldUseLocalAsr = _settingsService?.localAsrEnabled ?? false;
-        final shouldUseCloudAsr = _settingsService?.cloudAsrEnabled ?? true;
-        
-        // Process final audio chunk with local VAD and ASR if enabled
-        if (shouldUseLocalAsr && _localAudioProcessor != null && _localAudioProcessor!.isEnabled) {
-          _localAudioProcessor!.processAudioData(
-            Uint8List.fromList(_decodedPcmBuffer),
-          );
-          debugPrint('HardwareAudioCapture: Final audio chunk processed with local VAD/ASR');
-        }
-        
-        // Process final audio chunk with cloud VAD and ASR if enabled
-        if (shouldUseCloudAsr && _cloudAudioProcessor != null && _cloudAudioProcessor!.isEnabled) {
+              // Process final audio chunk with cloud VAD and ASR
+        if (_cloudAudioProcessor != null && _cloudAudioProcessor!.isEnabled) {
           _cloudAudioProcessor!.processAudioData(
             Uint8List.fromList(_decodedPcmBuffer),
           );
@@ -589,9 +514,7 @@ class HardwareAudioCapture extends ChangeNotifier {
       'totalPcmBytesDecoded': _totalPcmBytesDecoded,
       'failedDecodes': _failedDecodes,
       'decodeSuccessRate': decodeSuccessRate,
-      'asrMode': _settingsService?.localAsrEnabled == true ? 'Local' : 'Cloud',
-      'localAudioProcessingEnabled': _localAudioProcessor?.isEnabled ?? false,
-      'localAudioProcessingStats': _localAudioProcessor?.getStats(),
+      'asrMode': 'Cloud',
       'cloudAudioProcessingEnabled': _cloudAudioProcessor?.isEnabled ?? false,
       'cloudAudioProcessingStats': _cloudAudioProcessor?.getStats(),
               'iosBackgroundAudioEnabled': _iosBackgroundAudioManager.isInitialized,
